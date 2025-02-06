@@ -1,0 +1,70 @@
+﻿<Window x:Class="ADLMRateGen.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:ADLMRateGen.ViewModel"
+        xmlns:controls="clr-namespace:ADLMCivilPlugin.Controls"
+        xmlns:view="clr-namespace:ADLMRateGen.View"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="720" Width="1020">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:MaterialPriceViewModel}">
+            <view:MaterialPriceView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MaterialLibraryViewModel}">
+            <view:MaterialLibraryView/>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar for menu items -->
+        <StackPanel Grid.Row="2" Grid.Column="0" Background="LightGray">
+            <TextBlock Text="Side Bar" FontSize="18" FontWeight="Bold" Margin="10"/>
+            <Button Content="Input Material Price" Command="{Binding SelectedMaterialInputViewCommand}" Margin="10" Padding="5"/>
+            <Button Content="Material Price Library" Command="{Binding SelectedMaterialLibraryViewCommand}" Margin="10" Padding="5"/>
+            <Button Content="Input Labour Rate" Command="" Margin="10" Padding="5"/>
+            <Button Content="Labour Rate Library" Command="" Margin="10" Padding="5"/>
+        </StackPanel>
+
+        <!-- Header -->
+        <controls:Header Grid.Row="0" Grid.ColumnSpan="2"/>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <!-- Section buttons -->
+                <RowDefinition/>
+                <!-- View content -->
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Background="LightGray" Orientation="Horizontal">
+                <Button Content="Ground" Command="" Margin="5" Padding="2"/>
+                <Button Content="Concrete" Command="" Margin="5" Padding="2"/>
+                <Button Content="BlockWorks" Command="" Margin="5" Padding="2"/>
+                <Button Content="Finishes" Command="" Margin="5" Padding="2"/>
+                <Button Content="Roof" Command="" Margin="5" Padding="2"/>
+                <Button Content="WindowsDoors" Command="" Margin="5" Padding="2"/>
+                <Button Content="Painting" Command="" Margin="5" Padding="2"/>
+                <Button Content="Steel" Command="" Margin="5" Padding="2"/>
+                <Button Content="Plumbing" Command="" Margin="5" Padding="2"/>
+                <Button Content="Electrical" Command="" Margin="5" Padding="2"/>
+            </StackPanel>
+            <!-- The ContentControl will display the current view (MaterialPriceView in this case) -->
+            <ContentControl Grid.Row="1" Content="{Binding SelectedViewModel}"/>
+        </Grid>
+
+        <!-- Footer -->
+        <controls:Footer Grid.Row="3" Grid.ColumnSpan="2"/>
+    </Grid>
+</Window>

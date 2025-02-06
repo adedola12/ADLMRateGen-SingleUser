@@ -1,0 +1,1031 @@
+[
+  {
+    "SerialNumber": 1,
+    "MaterialName": "Cement (50kg bag)",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 4300.00,
+    "MaterialCategory": "Cement Based Products"
+  },
+  {
+    "SerialNumber": 2,
+    "MaterialName": "Cement (Jumbo bag)",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 26000.00,
+    "MaterialCategory": "Cement Based Products"
+  },
+  {
+    "SerialNumber": 3,
+    "MaterialName": "White Cement",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 2100.00,
+    "MaterialCategory": "Cement Based Products"
+  },
+  {
+    "SerialNumber": 4,
+    "MaterialName": "Coloured Cement",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 1000.00,
+    "MaterialCategory": "Cement Based Products"
+  },
+  {
+    "SerialNumber": 5,
+    "MaterialName": "225 x 225 x 450mm (9 x 9 x 18\") Hollow blocks",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 150.00,
+    "MaterialCategory": "Cement Based Products"
+  },
+  {
+    "SerialNumber": 6,
+    "MaterialName": "150 x 225 x 450mm (6 x 9 x 18\") Hollow blocks",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 175.00,
+    "MaterialCategory": "Cement Based Products"
+  },
+  {
+    "SerialNumber": 7,
+    "MaterialName": "100 x 225 x 450mm (4 x 9 x 18\") Hollow blocks",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 165.00,
+    "MaterialCategory": "Cement Based Products"
+  },
+  {
+    "SerialNumber": 8,
+    "MaterialName": "EMACO S88CA (imported shrinkage compensated cement for concrete repair)",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 59500.00,
+    "MaterialCategory": "Cement Based Products"
+  },
+  {
+    "SerialNumber": 9,
+    "MaterialName": "Loading and unloading cement",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 50.00,
+    "MaterialCategory": "Cement Based Products"
+  },
+  {
+    "SerialNumber": 10,
+    "MaterialName": "Loading and unloading blocks",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 50.00,
+    "MaterialCategory": "Cement Based Products"
+  },
+  {
+    "SerialNumber": 11,
+    "MaterialName": "Sharp Sand",
+    "MaterialUnit": "m3",
+    "MaterialPrice": 842.11,
+    "MaterialCategory": "Earthwork And Filling Materials (Per 3.82m3 tipper load i.e. 5 cu.yd tipper load) - Including Transportation"
+  },
+  {
+    "SerialNumber": 12,
+    "MaterialName": "Soft Sand",
+    "MaterialUnit": "m3",
+    "MaterialPrice": 921.05,
+    "MaterialCategory": "Earthwork And Filling Materials (Per 3.82m3 tipper load i.e. 5 cu.yd tipper load) - Including Transportation"
+  },
+  {
+    "SerialNumber": 13,
+    "MaterialName": "Filling Sand (Beach)",
+    "MaterialUnit": "m3",
+    "MaterialPrice": 3289.47,
+    "MaterialCategory": "Earthwork And Filling Materials (Per 3.82m3 tipper load i.e. 5 cu.yd tipper load) - Including Transportation"
+  },
+  {
+    "SerialNumber": 14,
+    "MaterialName": "Grit (for sand blasting)",
+    "MaterialUnit": "m3",
+    "MaterialPrice": 57637.00,
+    "MaterialCategory": "Earthwork And Filling Materials (Per 3.82m3 tipper load i.e. 5 cu.yd tipper load) - Including Transportation"
+  },
+  {
+    "SerialNumber": 15,
+    "MaterialName": "Laterite filling",
+    "MaterialUnit": "m3",
+    "MaterialPrice": 789.47,
+    "MaterialCategory": "Earthwork And Filling Materials (Per 3.82m3 tipper load i.e. 5 cu.yd tipper load) - Including Transportation"
+  },
+  {
+    "SerialNumber": 16,
+    "MaterialName": "Washed gravel (local)",
+    "MaterialUnit": "m3",
+    "MaterialPrice": 1315.79,
+    "MaterialCategory": "Earthwork And Filling Materials (Per 3.82m3 tipper load i.e. 5 cu.yd tipper load) - Including Transportation"
+  },
+  {
+    "SerialNumber": 17,
+    "MaterialName": "Unwashed gravel (local)",
+    "MaterialUnit": "m3",
+    "MaterialPrice": 1184.21,
+    "MaterialCategory": "Earthwork And Filling Materials (Per 3.82m3 tipper load i.e. 5 cu.yd tipper load) - Including Transportation"
+  },
+  {
+    "SerialNumber": 18,
+    "MaterialName": "Beach sand",
+    "MaterialUnit": "m3",
+    "MaterialPrice": 4200.00,
+    "MaterialCategory": "Earthwork And Filling Materials (Per 3.82m3 tipper load i.e. 5 cu.yd tipper load) - Including Transportation"
+  },
+  {
+    "SerialNumber": 19,
+    "MaterialName": "2-10mm",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 1200.00,
+    "MaterialCategory": "Crushed Rock Products"
+  },
+  {
+    "SerialNumber": 20,
+    "MaterialName": "5-15mm",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 1860.00,
+    "MaterialCategory": "Crushed Rock Products"
+  },
+  {
+    "SerialNumber": 21,
+    "MaterialName": "10-15mm",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 1860.00,
+    "MaterialCategory": "Crushed Rock Products"
+  },
+  {
+    "SerialNumber": 22,
+    "MaterialName": "15-25mm",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 1860.00,
+    "MaterialCategory": "Crushed Rock Products"
+  },
+  {
+    "SerialNumber": 23,
+    "MaterialName": "Hardcore filling",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 1440.00,
+    "MaterialCategory": "Crushed Rock Products"
+  },
+  {
+    "SerialNumber": 24,
+    "MaterialName": "Transportation",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 800.00,
+    "MaterialCategory": "Crushed Rock Products"
+  },
+  {
+    "SerialNumber": 25,
+    "MaterialName": "Terrazzo Chipping - White",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 160.00,
+    "MaterialCategory": "Terrazzo Products"
+  },
+  {
+    "SerialNumber": 26,
+    "MaterialName": "Terrazzo Chipping - Black",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 120.00,
+    "MaterialCategory": "Terrazzo Products"
+  },
+  {
+    "SerialNumber": 27,
+    "MaterialName": "Terrazzo Chipping - Brown",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 160.00,
+    "MaterialCategory": "Terrazzo Products"
+  },
+  {
+    "SerialNumber": 28,
+    "MaterialName": "Carborumdum stone. (8 No. per set) 00, 01, 02, 03.",
+    "MaterialUnit": "Stone",
+    "MaterialPrice": 450.00,
+    "MaterialCategory": "Terrazzo Products"
+  },
+  {
+    "SerialNumber": 29,
+    "MaterialName": "Acid (Sodium Silicate Solution)",
+    "MaterialUnit": "Packet",
+    "MaterialPrice": 1000.00,
+    "MaterialCategory": "Terrazzo Products"
+  },
+  {
+    "SerialNumber": 30,
+    "MaterialName": "Wax polish",
+    "MaterialUnit": "Tin",
+    "MaterialPrice": 1250.00,
+    "MaterialCategory": "Terrazzo Products"
+  },
+  {
+    "SerialNumber": 31,
+    "MaterialName": "1/4\" diameter (350 pieces) - 6mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 380000.00,
+    "MaterialCategory": "Mild Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 32,
+    "MaterialName": "3/8\" diameter (180 pieces) - 10mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 380000.00,
+    "MaterialCategory": "Mild Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 33,
+    "MaterialName": "1/2\" diameter (112 pieces) - 12mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 380000.00,
+    "MaterialCategory": "Mild Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 34,
+    "MaterialName": "5/8\" diameter (70 pieces) - 16mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 380000.00,
+    "MaterialCategory": "Mild Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 35,
+    "MaterialName": "3/4\" diameter (45 pieces) - 18mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 380000.00,
+    "MaterialCategory": "Mild Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 36,
+    "MaterialName": "7/8\" diameter (36 pieces) - 20mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 380000.00,
+    "MaterialCategory": "Mild Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 37,
+    "MaterialName": "1\" diameter (27 pieces) - 25mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 380000.00,
+    "MaterialCategory": "Mild Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 38,
+    "MaterialName": "1/4\" diameter (350 pieces) - 6mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 350000.00,
+    "MaterialCategory": "High Tensile Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 39,
+    "MaterialName": "3/8\" diameter (133 pieces) - 10mm diameter",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 350000.00,
+    "MaterialCategory": "High Tensile Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 40,
+    "MaterialName": "1/2\" diameter (93 pieces) - 12mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 350000.00,
+    "MaterialCategory": "High Tensile Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 41,
+    "MaterialName": "5/8\" diameter (52 pieces) - 16mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 350000.00,
+    "MaterialCategory": "High Tensile Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 42,
+    "MaterialName": "3/4\" diameter (33 pieces) - 18mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 350000.00,
+    "MaterialCategory": "High Tensile Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 43,
+    "MaterialName": "7/8\" diameter (28 pieces) - 20mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 350000.00,
+    "MaterialCategory": "High Tensile Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 44,
+    "MaterialName": "1\" diameter (21 pieces) - 25mm diameter.",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 350000.00,
+    "MaterialCategory": "High Tensile Steel Bar Reinforcement"
+  },
+  {
+    "SerialNumber": 45,
+    "MaterialName": "A193 at 3.95kg/m2 size 4.8 x 2.4m x 3.02kg/m2",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 3438.75,
+    "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
+  },
+  {
+    "SerialNumber": 46,
+    "MaterialName": "A252 at 3.02kg/m2 size 4.8 x 2.4m x 3.95kg/m2",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 0.00,
+    "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
+  },
+  {
+    "SerialNumber": 47,
+    "MaterialName": "A142 at 2.22kg/m2 size 4.8 x 2.4m x 2.2kg/m2",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 2310.00,
+    "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
+  },
+  {
+    "SerialNumber": 48,
+    "MaterialName": "Binding Wire - 25kg roll",
+    "MaterialUnit": "Roll",
+    "MaterialPrice": 3200.00,
+    "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
+  },
+  {
+    "SerialNumber": 49,
+    "MaterialName": "6mm mesh size 40m x 2.1m",
+    "MaterialUnit": "Roll",
+    "MaterialPrice": 9500.00,
+    "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
+  },
+  {
+    "SerialNumber": 50,
+    "MaterialName": "6mm mesh size 30m x 2.1m",
+    "MaterialUnit": "Roll",
+    "MaterialPrice": 7500.00,
+    "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
+  },
+  {
+    "SerialNumber": 51,
+    "MaterialName": "6mm mesh size 25m x 2.1m",
+    "MaterialUnit": "Roll",
+    "MaterialPrice": 6500.00,
+    "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
+  },
+  {
+    "SerialNumber": 52,
+    "MaterialName": "2x2\"x12' (50x50x3600mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 250.00,
+    "MaterialCategory": "Timber - Softwood"
+  },
+  {
+    "SerialNumber": 53,
+    "MaterialName": "2x3\"x12' (50x75x3600mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 400.00,
+    "MaterialCategory": "Timber - Softwood"
+  },
+  {
+    "SerialNumber": 54,
+    "MaterialName": "2x4\"x12' (50x100x3600mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 450.00,
+    "MaterialCategory": "Timber - Softwood"
+  },
+  {
+    "SerialNumber": 55,
+    "MaterialName": "2x6\"x12' (50x150x3600mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 750.00,
+    "MaterialCategory": "Timber - Softwood"
+  },
+  {
+    "SerialNumber": 56,
+    "MaterialName": "1x12\"x12' (25x300x3600mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 1000.00,
+    "MaterialCategory": "Timber - Softwood"
+  },
+  {
+    "SerialNumber": 57,
+    "MaterialName": "2x2\"x12' (50x50x3600mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 80.00,
+    "MaterialCategory": "Timber - Hardwood"
+  },
+  {
+    "SerialNumber": 58,
+    "MaterialName": "2x3\"x12' (50x75x3600mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 230.00,
+    "MaterialCategory": "Timber - Hardwood"
+  },
+  {
+    "SerialNumber": 59,
+    "MaterialName": "2x4\"x12' (50x100x3600mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 280.00,
+    "MaterialCategory": "Timber - Hardwood"
+  },
+  {
+    "SerialNumber": 60,
+    "MaterialName": "2x6\"x12' (50x150x3600mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 300.00,
+    "MaterialCategory": "Timber - Hardwood"
+  },
+  {
+    "SerialNumber": 61,
+    "MaterialName": "1x12\"x12' (25x300x4200mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 1000.00,
+    "MaterialCategory": "Timber - Hardwood"
+  },
+  {
+    "SerialNumber": 62,
+    "MaterialName": "2x4\"x12' (50x100x4200mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 170.00,
+    "MaterialCategory": "Timber - Hardwood"
+  },
+  {
+    "SerialNumber": 63,
+    "MaterialName": "2x12\"x12' (50x300x3600mm)",
+    "MaterialUnit": "Length",
+    "MaterialPrice": 1400.00,
+    "MaterialCategory": "Timber - Hardwood"
+  },
+  {
+    "SerialNumber": 64,
+    "MaterialName": "1/8\"x4x8'(3x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 1520.00,
+    "MaterialCategory": "Plywood - White"
+  },
+  {
+    "SerialNumber": 65,
+    "MaterialName": "1/4\"x4x8'(6x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 1800.00,
+    "MaterialCategory": "Plywood - White"
+  },
+  {
+    "SerialNumber": 66,
+    "MaterialName": "1/2\"x4x8'(12x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 2800.00,
+    "MaterialCategory": "Plywood - White"
+  },
+  {
+    "SerialNumber": 67,
+    "MaterialName": "3/4\"x4x8'(18 x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 3400.00,
+    "MaterialCategory": "Plywood - White"
+  },
+  {
+    "SerialNumber": 68,
+    "MaterialName": "1\"x4x8'(25x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 3600.00,
+    "MaterialCategory": "Plywood - White"
+  },
+  {
+    "SerialNumber": 69,
+    "MaterialName": "1/8\"x4x8'(3x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 1520.00,
+    "MaterialCategory": "Plywood - Brown"
+  },
+  {
+    "SerialNumber": 70,
+    "MaterialName": "1/4\"x4x8'(6x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 1800.00,
+    "MaterialCategory": "Plywood - Brown"
+  },
+  {
+    "SerialNumber": 71,
+    "MaterialName": "1/2\"x4x8'(12x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 2800.00,
+    "MaterialCategory": "Plywood - Brown"
+  },
+  {
+    "SerialNumber": 72,
+    "MaterialName": "3/4\"x4x8'(18x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 3400.00,
+    "MaterialCategory": "Plywood - Brown"
+  },
+  {
+    "SerialNumber": 73,
+    "MaterialName": "1\"x4x8'(25x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 3600.00,
+    "MaterialCategory": "Plywood - Brown"
+  },
+  {
+    "SerialNumber": 74,
+    "MaterialName": "1/2\"x4x8'(12x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 2000.00,
+    "MaterialCategory": "Particle Board"
+  },
+  {
+    "SerialNumber": 75,
+    "MaterialName": "3/4\"x4x8'(6x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 2500.00,
+    "MaterialCategory": "Particle Board"
+  },
+  {
+    "SerialNumber": 76,
+    "MaterialName": "5/8\"x4x8'(16x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 1500.00,
+    "MaterialCategory": "Particle Board"
+  },
+  {
+    "SerialNumber": 77,
+    "MaterialName": "1/4\"x4x8'(6x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 1200.00,
+    "MaterialCategory": "Plywood - Veneer"
+  },
+  {
+    "SerialNumber": 78,
+    "MaterialName": "3/4\"x4x8'(18x1200x2400mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 3400.00,
+    "MaterialCategory": "Plywood - Veneer"
+  },
+  {
+    "SerialNumber": 79,
+    "MaterialName": "Nails 1\"",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 4500.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 80,
+    "MaterialName": "Nails 1 1/2\"",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 4500.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 81,
+    "MaterialName": "Nails 2\"",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 4500.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 82,
+    "MaterialName": "Nails 3\"",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 4500.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 83,
+    "MaterialName": "Nails 4\"",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 4500.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 84,
+    "MaterialName": "Nails 6\"",
+    "MaterialUnit": "Bag",
+    "MaterialPrice": 4500.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 85,
+    "MaterialName": "Solignum (normal)",
+    "MaterialUnit": "20 lit Gal",
+    "MaterialPrice": 750.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 86,
+    "MaterialName": "Solignum (colourless)",
+    "MaterialUnit": "5 lit Gal",
+    "MaterialPrice": 1900.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 87,
+    "MaterialName": "Mould oil",
+    "MaterialUnit": "Gal",
+    "MaterialPrice": 1150.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 88,
+    "MaterialName": "Screw Nails 1/2\"",
+    "MaterialUnit": "Pkt",
+    "MaterialPrice": 80.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 89,
+    "MaterialName": "Screw Nails 1\"",
+    "MaterialUnit": "Pkt",
+    "MaterialPrice": 100.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 90,
+    "MaterialName": "Screw Nails 2\"",
+    "MaterialUnit": "Pkt",
+    "MaterialPrice": 120.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 91,
+    "MaterialName": "Screw Nails 3\"",
+    "MaterialUnit": "Pkt",
+    "MaterialPrice": 150.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 92,
+    "MaterialName": "Planing Timber One Face",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 20.00,
+    "MaterialCategory": "Timber Others"
+  },
+  {
+    "SerialNumber": 93,
+    "MaterialName": "2' (600mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 70.00,
+    "MaterialCategory": "Glasswork - Louver Blade-Plain"
+  },
+  {
+    "SerialNumber": 94,
+    "MaterialName": "3' (900mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 80.00,
+    "MaterialCategory": "Glasswork - Louver Blade-Plain"
+  },
+  {
+    "SerialNumber": 95,
+    "MaterialName": "2' (600mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 90.00,
+    "MaterialCategory": "Glasswork - Louver Blade-Obscured"
+  },
+  {
+    "SerialNumber": 96,
+    "MaterialName": "3' (900mm)",
+    "MaterialUnit": "Piece",
+    "MaterialPrice": 100.00,
+    "MaterialCategory": "Glasswork - Louver Blade-Obscured"
+  },
+  {
+    "SerialNumber": 97,
+    "MaterialName": "Anodised Aluminium - Four Blade",
+    "MaterialUnit": "Pair",
+    "MaterialPrice": 0.00,
+    "MaterialCategory": "Glasswork - Nacco Louver Carrier"
+  },
+  {
+    "SerialNumber": 98,
+    "MaterialName": "Ditto - Six Blade",
+    "MaterialUnit": "Pair",
+    "MaterialPrice": 0.00,
+    "MaterialCategory": "Glasswork - Nacco Louver Carrier"
+  },
+  {
+    "SerialNumber": 99,
+    "MaterialName": "Ditto - Eight Blade",
+    "MaterialUnit": "Pair",
+    "MaterialPrice": 0.00,
+    "MaterialCategory": "Glasswork - Nacco Louver Carrier"
+  },
+  {
+    "SerialNumber": 100,
+    "MaterialName": "Standard louver Carrier - Four Blade",
+    "MaterialUnit": "Pair",
+    "MaterialPrice": 350.00,
+    "MaterialCategory": "Glasswork - Nacco Louver Carrier"
+  },
+  {
+    "SerialNumber": 101,
+    "MaterialName": "Standard louver Carrier - Six Blade",
+    "MaterialUnit": "Pair",
+    "MaterialPrice": 400.00,
+    "MaterialCategory": "Glasswork - Nacco Louver Carrier"
+  },
+  {
+    "SerialNumber": 102,
+    "MaterialName": "Standard louver Carrier - Eight Blade",
+    "MaterialUnit": "Pair",
+    "MaterialPrice": 450.00,
+    "MaterialCategory": "Glasswork - Nacco Louver Carrier"
+  },
+  {
+    "SerialNumber": 103,
+    "MaterialName": "24x36' (610x920mm)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 730.00,
+    "MaterialCategory": "Glasswork - Sheet Glass 3mm"
+  },
+  {
+    "SerialNumber": 104,
+    "MaterialName": "24x38' (610x975mm)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 730.00,
+    "MaterialCategory": "Glasswork - Sheet Glass 3mm"
+  },
+  {
+    "SerialNumber": 105,
+    "MaterialName": "36x36' (975x975mm)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 1150.00,
+    "MaterialCategory": "Glasswork - Sheet Glass 3mm"
+  },
+  {
+    "SerialNumber": 106,
+    "MaterialName": "24x36' (610x920mm)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 700.00,
+    "MaterialCategory": "Glasswork - Sheet Glass 4mm"
+  },
+  {
+    "SerialNumber": 107,
+    "MaterialName": "24x38' (610x975mm)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 700.00,
+    "MaterialCategory": "Glasswork - Sheet Glass 4mm"
+  },
+  {
+    "SerialNumber": 108,
+    "MaterialName": "36x36' (975x975mm)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 1000.00,
+    "MaterialCategory": "Glasswork - Sheet Glass 4mm"
+  },
+  {
+    "SerialNumber": 109,
+    "MaterialName": "24x36' (610x920mm)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 690.00,
+    "MaterialCategory": "Glasswork - Sheet Glass 5mm"
+  },
+  {
+    "SerialNumber": 110,
+    "MaterialName": "24x38' (610x975mm)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 690.00,
+    "MaterialCategory": "Glasswork - Sheet Glass 5mm"
+  },
+  {
+    "SerialNumber": 111,
+    "MaterialName": "36x36' (975x975mm)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 990.00,
+    "MaterialCategory": "Glasswork - Sheet Glass 5mm"
+  },
+  {
+    "SerialNumber": 112,
+    "MaterialName": "6x6\" (150x150mm) - Royal",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 1000.00,
+    "MaterialCategory": "Finishes - Ceramic Floor Tiles"
+  },
+  {
+    "SerialNumber": 113,
+    "MaterialName": "8x8\" (200x200mm) Italian Product",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 1350.00,
+    "MaterialCategory": "Finishes - Ceramic Floor Tiles"
+  },
+  {
+    "SerialNumber": 114,
+    "MaterialName": "12x12\" (300x300mm) - Brazilian product",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 1400.00,
+    "MaterialCategory": "Finishes - Ceramic Floor Tiles"
+  },
+  {
+    "SerialNumber": 115,
+    "MaterialName": "Ditto - Italian make",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 1500.00,
+    "MaterialCategory": "Finishes - Ceramic Floor Tiles"
+  },
+  {
+    "SerialNumber": 116,
+    "MaterialName": "Ditto - Spanish make",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 1450.00,
+    "MaterialCategory": "Finishes - Ceramic Floor Tiles"
+  },
+  {
+    "SerialNumber": 117,
+    "MaterialName": "6x6\" (150x150mm - 72 pieces per crate) - Brazilian make",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 1350.00,
+    "MaterialCategory": "Finishes - Ceramic Wall Tiles"
+  },
+  {
+    "SerialNumber": 118,
+    "MaterialName": "Ditto - Italian make",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 1100.00,
+    "MaterialCategory": "Finishes - Ceramic Wall Tiles"
+  },
+  {
+    "SerialNumber": 119,
+    "MaterialName": "Ditto - Abeokuta make",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 780.00,
+    "MaterialCategory": "Finishes - Ceramic Wall Tiles"
+  },
+  {
+    "SerialNumber": 120,
+    "MaterialName": "Ditto - Lagos make - Royal",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 950.00,
+    "MaterialCategory": "Finishes - Ceramic Wall Tiles"
+  },
+  {
+    "SerialNumber": 121,
+    "MaterialName": "8x8\" (200x200mm)",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 0.00,
+    "MaterialCategory": "Finishes - Ceramic Wall Tiles"
+  },
+  {
+    "SerialNumber": 122,
+    "MaterialName": "12x12\" (300x300mm)",
+    "MaterialUnit": "m2",
+    "MaterialPrice": 0.00,
+    "MaterialCategory": "Finishes - Ceramic Wall Tiles"
+  },
+  {
+    "SerialNumber": 123,
+    "MaterialName": "MCO ex PH",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 36000.00,
+    "MaterialCategory": "Bituminous Products"
+  },
+  {
+    "SerialNumber": 124,
+    "MaterialName": "MCI ex PH",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 36000.00,
+    "MaterialCategory": "Bituminous Products"
+  },
+  {
+    "SerialNumber": 125,
+    "MaterialName": "S125 ex PH",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 34734.00,
+    "MaterialCategory": "Bituminous Products"
+  },
+  {
+    "SerialNumber": 126,
+    "MaterialName": "60/70 ex PH",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 39000.00,
+    "MaterialCategory": "Bituminous Products"
+  },
+  {
+    "SerialNumber": 127,
+    "MaterialName": "80/100 ex PH",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 0.00,
+    "MaterialCategory": "Bituminous Products"
+  },
+  {
+    "SerialNumber": 128,
+    "MaterialName": "Colas Emulsion ex PH",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 34000.00,
+    "MaterialCategory": "Bituminous Products"
+  },
+  {
+    "SerialNumber": 129,
+    "MaterialName": "Asphalt",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 10000.00,
+    "MaterialCategory": "Bituminous Products"
+  },
+  {
+    "SerialNumber": 130,
+    "MaterialName": "Transportation",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 800.00,
+    "MaterialCategory": "Bituminous Products"
+  },
+  {
+    "SerialNumber": 131,
+    "MaterialName": "Petrol",
+    "MaterialUnit": "Litre",
+    "MaterialPrice": 500.00,
+    "MaterialCategory": "Fuels"
+  },
+  {
+    "SerialNumber": 132,
+    "MaterialName": "Diesel",
+    "MaterialUnit": "Litre",
+    "MaterialPrice": 675.00,
+    "MaterialCategory": "Fuels"
+  },
+  {
+    "SerialNumber": 133,
+    "MaterialName": "Gas (13 kg Cylinder)",
+    "MaterialUnit": "Cylinder",
+    "MaterialPrice": 9750.00,
+    "MaterialCategory": "Fuels"
+  },
+  {
+    "SerialNumber": 134,
+    "MaterialName": "Engine Oil - 4 litre.",
+    "MaterialUnit": "Gal",
+    "MaterialPrice": 4500.00,
+    "MaterialCategory": "Fuels"
+  },
+  {
+    "SerialNumber": 135,
+    "MaterialName": "Hydraulic Oil - 4 litre.",
+    "MaterialUnit": "Gal",
+    "MaterialPrice": 1500.00,
+    "MaterialCategory": "Fuels"
+  },
+  {
+    "SerialNumber": 136,
+    "MaterialName": "Aviation Fuel - Jet A1",
+    "MaterialUnit": "Litre",
+    "MaterialPrice": 450.00,
+    "MaterialCategory": "Fuels"
+  },
+  {
+    "SerialNumber": 137,
+    "MaterialName": "Grease GR3 - 50kg drum",
+    "MaterialUnit": "Drum",
+    "MaterialPrice": 25000.00,
+    "MaterialCategory": "Fuels"
+  },
+  {
+    "SerialNumber": 138,
+    "MaterialName": "Grease GR3 - 300g can",
+    "MaterialUnit": "Drum",
+    "MaterialPrice": 600.00,
+    "MaterialCategory": "Fuels"
+  },
+  {
+    "SerialNumber": 139,
+    "MaterialName": "Mild steel plate size 2.4 x 1.2 x 1mm",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 1350.00,
+    "MaterialCategory": "Structural Steel Plates"
+  },
+  {
+    "SerialNumber": 140,
+    "MaterialName": "Plate size 2.4 x 1.2 x 2mm",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 1950.00,
+    "MaterialCategory": "Structural Steel Plates"
+  },
+  {
+    "SerialNumber": 141,
+    "MaterialName": "Plate size 2.4 x 1.2 x 3mm",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 2875.00,
+    "MaterialCategory": "Structural Steel Plates"
+  },
+  {
+    "SerialNumber": 142,
+    "MaterialName": "Plate size 2.4 x 1.2 x 6mm",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 7500.00,
+    "MaterialCategory": "Structural Steel Plates"
+  },
+  {
+    "SerialNumber": 143,
+    "MaterialName": "Plate size 2.4 x 1.2 x 8mm",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 11500.00,
+    "MaterialCategory": "Structural Steel Plates"
+  },
+  {
+    "SerialNumber": 144,
+    "MaterialName": "Plate size 2.4 x 1.2 x 10mm",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 15500.00,
+    "MaterialCategory": "Structural Steel Plates"
+  },
+  {
+    "SerialNumber": 145,
+    "MaterialName": "Plate size 2.4 x 1.2 x 13-16mm",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 15500.00,
+    "MaterialCategory": "Structural Steel Plates"
+  },
+  {
+    "SerialNumber": 146,
+    "MaterialName": "Plate size 2.4 x 1.2 x 20mm",
+    "MaterialUnit": "Sheet",
+    "MaterialPrice": 43000.00,
+    "MaterialCategory": "Structural Steel Plates"
+  },
+  {
+    "SerialNumber": 147,
+    "MaterialName": "Structural Steel",
+    "MaterialUnit": "Tonne",
+    "MaterialPrice": 150000.00,
+    "MaterialCategory": "Structural Steel"
+  }
+]
