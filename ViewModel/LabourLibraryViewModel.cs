@@ -55,22 +55,66 @@ namespace ADLMRateGen.ViewModel
 
         private void ApplyFilter()
         {
-            throw new NotImplementedException();
+           if(LabourCollectionView != null)
+            {
+                if (SelecctedLabourCategory == "All" || string.IsNullOrEmpty(SelecctedLabourCategory))
+                    LabourCollectionView.Filter = null;
+                else
+                    LabourCollectionView.Filter = o =>
+                    {
+                        var labour = o as LabourModel;
+                        return labour != null && labour.LabourCategory == SelecctedLabourCategory;
+                    };
+                LabourCollectionView.Refresh();
+            }
         }
 
         private void ClearDatabase()
         {
-            throw new NotImplementedException();
+            LabourLibrary.Clear();
+            _dataServices.SaveData(LabourLibrary);
+            ApplyFilter();
         }
 
         private void DeleteLabour(object o)
         {
-            throw new NotImplementedException();
+            if(o is LabourModel labour)
+            {
+                LabourLibrary.Remove(labour);
+                ReassignSerialNumbers();
+                _dataServices.SaveData(LabourLibrary);
+                ApplyFilter();
+            }
+        }
+
+        private void ReassignSerialNumbers()
+        {
+            int serial = 1;
+            foreach(var labour in LabourLibrary)
+            {
+                labour.SerialNumber = serial++;
+            }
         }
 
         private void EditLabour(object o)
         {
-            throw new NotImplementedException();
+          if(o is LabourModel labour)
+            {
+                EditLabourRequested?.Invoke(labour);
+            }
+        }
+
+        public void AddOrUpdateLabour(LabourModel labour)
+        {
+            if(labour.SerialNumber == 0)
+            {
+                int newSerial = LabourLibrary.Count > 0 ? LabourLibrary[^1].SerialNumber + 1 : 1;
+                labour.SerialNumber = newSerial;
+                LabourLibrary.Add(labour);
+            }
+
+            _dataServices.SaveData(LabourLibrary);
+            ApplyFilter();
         }
     }
 }

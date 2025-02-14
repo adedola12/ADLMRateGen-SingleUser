@@ -15,6 +15,12 @@
         <DataTemplate DataType="{x:Type vm:MaterialLibraryViewModel}">
             <view:MaterialLibraryView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LabourPriceViewModel}">
+            <view:LabourPriceView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LabourLibraryViewModel}">
+            <view:LabourLibraryView/>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -33,8 +39,8 @@
             <TextBlock Text="Side Bar" FontSize="18" FontWeight="Bold" Margin="10"/>
             <Button Content="Input Material Price" Command="{Binding SelectedMaterialInputViewCommand}" Margin="10" Padding="5"/>
             <Button Content="Material Price Library" Command="{Binding SelectedMaterialLibraryViewCommand}" Margin="10" Padding="5"/>
-            <Button Content="Input Labour Rate" Command="" Margin="10" Padding="5"/>
-            <Button Content="Labour Rate Library" Command="" Margin="10" Padding="5"/>
+            <Button Content="Input Labour Rate" Command="{Binding SelectedLabourInputViewCommand}" Margin="10" Padding="5"/>
+            <Button Content="Labour Rate Library" Command="{Binding SelectedLabourLibraryViewCommand}" Margin="10" Padding="5"/>
         </StackPanel>
 
         <!-- Header -->

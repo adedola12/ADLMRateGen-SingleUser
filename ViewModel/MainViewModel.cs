@@ -7,8 +7,12 @@ namespace ADLMRateGen.ViewModel
     {
         public DelegateCommand SelectedMaterialInputViewCommand { get; }
         public DelegateCommand SelectedMaterialLibraryViewCommand { get; }
+        public DelegateCommand SelectedLabourInputViewCommand { get; }
+        public DelegateCommand SelectedLabourLibraryViewCommand { get; }
         public MaterialPriceViewModel MaterialPriceViewModel { get; }
         public MaterialLibraryViewModel MaterialLibraryViewModel { get; }
+        public LabourPriceViewModel LabourPriceViewModel { get; }
+        public LabourLibraryViewModel LabourLibraryViewModel { get; }
 
         private ViewModelBase _selectedViewModel;
         public ViewModelBase SelectedViewModel
@@ -21,24 +25,36 @@ namespace ADLMRateGen.ViewModel
             }
         }
 
-        public MainViewModel(MaterialPriceViewModel priceVM, MaterialLibraryViewModel libraryVM)
+        public MainViewModel(MaterialPriceViewModel priceVM, MaterialLibraryViewModel libraryVM, LabourPriceViewModel labourVM, LabourLibraryViewModel labourLibraryVM)
         {
             MaterialPriceViewModel = priceVM;
             MaterialLibraryViewModel = libraryVM;
+            LabourPriceViewModel = labourVM;
+            LabourLibraryViewModel = labourLibraryVM;
 
             // Wire events.
             MaterialPriceViewModel.MaterialSaved += OnMaterialSaved;
             MaterialLibraryViewModel.EditMaterialRequested += OnEditMaterialRequested;
 
+            LabourPriceViewModel.LabourSaved += OnLabourSaved;
+            LabourLibraryViewModel.EditLabourRequested += OnEditLabourRequested;
+
             // Set default view.
             SelectedViewModel = MaterialPriceViewModel;
             SelectedMaterialInputViewCommand = new DelegateCommand(param => SelectViewModel(MaterialPriceViewModel));
             SelectedMaterialLibraryViewCommand = new DelegateCommand(param => SelectViewModel(MaterialLibraryViewModel));
+            SelectedLabourInputViewCommand = new DelegateCommand(param => SelectViewModel(LabourPriceViewModel));
+            SelectedLabourLibraryViewCommand = new DelegateCommand(param => SelectViewModel(LabourLibraryViewModel));
         }
 
         private void OnMaterialSaved(MaterialModel material)
         {
             MaterialLibraryViewModel.AddOrUpdateMaterial(material);
+        }
+
+        private void OnLabourSaved(LabourModel labour)
+        {
+            LabourLibraryViewModel.AddOrUpdateLabour(labour);
         }
 
         private void OnEditMaterialRequested(MaterialModel material)
@@ -51,6 +67,18 @@ namespace ADLMRateGen.ViewModel
             MaterialPriceViewModel.NewMaterialCategory = material.MaterialCategory;
             // Switch to the input view.
             SelectedViewModel = MaterialPriceViewModel;
+        }
+
+        private void OnEditLabourRequested(LabourModel labour)
+        {
+            // Load the labour into the price view for editing.
+            LabourPriceViewModel.EditingLabour = labour;
+            LabourPriceViewModel.LabourName = labour.LabourName;
+            LabourPriceViewModel.LabourUnit = labour.LabourUnit;
+            LabourPriceViewModel.LabourPrice = labour.LabourPrice;
+            LabourPriceViewModel.NewLabourCategory = labour.LabourCategory;
+            // Switch to the input view.
+            SelectedViewModel = LabourPriceViewModel;
         }
 
         private void SelectViewModel(object parameter)

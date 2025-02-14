@@ -12,7 +12,9 @@ namespace ADLMRateGen
             InitializeComponent();
             var priceVM = new MaterialPriceViewModel();
             var libraryVM = new MaterialLibraryViewModel();
-            this.DataContext = new MainViewModel(priceVM, libraryVM);
+            var labourVm = new LabourPriceViewModel();
+            var labourLibraryVM = new LabourLibraryViewModel();
+            this.DataContext = new MainViewModel(priceVM, libraryVM, labourVm, labourLibraryVM);
 
         }
     }
