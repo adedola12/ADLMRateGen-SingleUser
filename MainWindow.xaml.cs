@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using ADLMRateGen.ViewModel;
+using ADLMRateGen.ViewModel.Groundwork;
 
 namespace ADLMRateGen
 {
@@ -14,7 +15,9 @@ namespace ADLMRateGen
             var libraryVM = new MaterialLibraryViewModel();
             var labourVm = new LabourPriceViewModel();
             var labourLibraryVM = new LabourLibraryViewModel();
-            this.DataContext = new MainViewModel(priceVM, libraryVM, labourVm, labourLibraryVM);
+
+            var groundworkVM = new GroundWorkViewModel(libraryVM, labourLibraryVM);
+            this.DataContext = new MainViewModel(priceVM, libraryVM, labourVm, labourLibraryVM, groundworkVM);
 
         }
     }
