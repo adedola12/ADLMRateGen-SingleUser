@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Input;
 using ADLMRateGen.Command;
+using ADLMRateGen.View;
 
 namespace ADLMRateGen.ViewModel.Groundwork
 {
@@ -14,6 +15,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
         private double _overheadPercent = 10.0;
         private double _profitPercent = 25.0;
         private string _searchTerm = string.Empty;
+        private object _selectedDetail;
+
 
         public double OverheadPercent
         {
@@ -58,7 +61,21 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 }
             }
         }
+
+        public object SelectedDetail
+        {
+            get => _selectedDetail;
+            set
+            {
+                if (_selectedDetail != value)
+                {
+                    _selectedDetail = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
         public ICommand RecomputeCommand { get; }
+        public ICommand ShowDetailsCommand { get; }
         public GroundWorkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourLib)
         {
             _materialLib = matLib;
@@ -73,6 +90,24 @@ namespace ADLMRateGen.ViewModel.Groundwork
             GroundworkCollectionView.Filter = FilterGroundWorkItem;
 
             RecomputeCommand = new DelegateCommand(o => RecomputeAll());
+            ShowDetailsCommand = new DelegateCommand(o => ShowDetails(o));
+        }
+
+        private void ShowDetails(object o)
+        {
+            if (o is GroundworkItem item)
+            {
+                var detailedControl = new GroundworkItemDetailControl();
+                detailedControl.DataContext = item;
+
+                detailedControl.BackRequested += () =>
+                {
+                    // When user clicks Back, we remove the detail control
+                    SelectedDetail = null;
+                };
+
+                SelectedDetail = detailedControl;
+            }
         }
 
         private bool FilterGroundWorkItem(object obj)
@@ -143,6 +178,76 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             double costPerM2 = totalPlantDay / outputPerDay;
             var ohp = ApplyOHP(costPerM2);
+
+            var breakdown = new ObservableCollection<GroundworkBreakdownLine>
+            {
+                new GroundworkBreakdownLine
+                {
+                    ComponentName = "D8 Bulldozer",
+                    Quantity = 1,
+                    Unit = "No/Day",
+                    UnitPrice = d8Cost,
+                    TotalPrice = d8Cost
+                },
+                new GroundworkBreakdownLine
+                {
+                    ComponentName = "Diesel",
+                    Quantity = literPerDay,
+                    Unit = "Liters",
+                    UnitPrice = dieselPrice,
+                    TotalPrice = literPerDay * dieselPrice
+               
+                },
+                new GroundworkBreakdownLine
+                {
+                    ComponentName = "Operator",
+                    Quantity = 1,
+                    Unit = "No/Day",
+                    UnitPrice = operatorCost,
+                    TotalPrice = operatorCost
+                },
+                new GroundworkBreakdownLine
+                {
+                  ComponentName = "Oil & Consumables (3% of Diesel)",
+                  Quantity = 1,
+                    Unit = "3%",
+                    UnitPrice = 0.03 * dieselPrice,
+                    TotalPrice = 0.03 * dieselPrice
+                },
+                new GroundworkBreakdownLine
+                {
+                    ComponentName = "Banksman",
+                    Quantity = 1,
+                    Unit = "No/Day",
+                    UnitPrice = banksmanCost,
+                    TotalPrice = banksmanCost
+                },
+                new GroundworkBreakdownLine
+                {
+                    ComponentName = "Labour",
+                    Quantity = 2,
+                    Unit = "No/Day",
+                    UnitPrice = labourCost,
+                    TotalPrice = 2 * labourCost
+                },
+                 new GroundworkBreakdownLine
+                {
+                    ComponentName = "Total",
+                    Quantity = 1,
+                    Unit = "Unit",
+                    UnitPrice = totalPlantDay,
+                    TotalPrice = totalPlantDay
+                },
+                 new GroundworkBreakdownLine
+                {
+                    ComponentName = "Total Cost/m2",
+                    Quantity = 1,
+                    Unit = "Unit",
+                    UnitPrice = costPerM2,
+                    TotalPrice = costPerM2
+                }
+            };
+
             return new GroundworkItem
             {
                 ItemNo = 1,
@@ -152,7 +257,9 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 NetCost = Math.Round(costPerM2, 2),
                 OverheadValue = Math.Round(ohp.overheadVal, 0),
                 ProfitValue = Math.Round(ohp.profitVal, 0),
-                TotalCost = Math.Round(ohp.total, 2)
+                TotalCost = Math.Round(ohp.total, 2),
+                BreakdownLines = breakdown
+
             };
         }
         private GroundworkItem ComputeItem2()

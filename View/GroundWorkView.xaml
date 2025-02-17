@@ -45,9 +45,9 @@
                 <TextBlock Text="Search Description" FontSize="15" FontWeight="DemiBold"/>
                 <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
             </StackPanel>
-            <!-- Update Button -->
+            <!-- Update Button --><!--
             <Button Grid.Column="3" Content="Update" Height="40" FontSize="15" FontWeight="DemiBold" 
-                    VerticalAlignment="Center" Margin="5" Command="{Binding RecomputeCommand}"/>
+                    VerticalAlignment="Center" Margin="5" Command="{Binding RecomputeCommand}"/>-->
         </Grid>
 
         <!-- 3. Rate Data -->
@@ -69,8 +69,21 @@
                     <DataGridTextColumn Header="Overhead" Binding="{Binding OverheadValue, StringFormat={}{0:N2}}" Width="Auto"/>
                     <DataGridTextColumn Header="Profit" Binding="{Binding ProfitValue, StringFormat={}{0:N2}}" Width="Auto"/>
                     <DataGridTextColumn Header="Total Cost" Binding="{Binding TotalCost, StringFormat={}{0:N2}}" Width="Auto"/>
+                    <!-- New column for View/Edit -->
+                    <DataGridTemplateColumn Header="Actions" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="View/Edit" 
+                      Command="{Binding DataContext.ShowDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                      CommandParameter="{Binding}" Margin="2"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
                 </DataGrid.Columns>
             </DataGrid>
+
+            <ContentControl Grid.Row="3" Content="{Binding SelectedDetail}" Margin="0,10,0,0"/>
 
         </Grid>
 

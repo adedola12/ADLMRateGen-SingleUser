@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace ADLMRateGen.ViewModel.Groundwork
 {
@@ -94,6 +95,20 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 {
                     _unit = value;
                     OnPropertyChanged(nameof(Unit));
+                }
+            }
+        }
+
+        private ObservableCollection<GroundworkBreakdownLine> _breakdownLines = new ObservableCollection<GroundworkBreakdownLine>();
+        public ObservableCollection<GroundworkBreakdownLine> BreakdownLines
+        {
+            get => _breakdownLines;
+            set
+            {
+                if (_breakdownLines != value)
+                {
+                    _breakdownLines = value;
+                    OnPropertyChanged(nameof(BreakdownLines));
                 }
             }
         }

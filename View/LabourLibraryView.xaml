@@ -26,8 +26,8 @@
         <Grid Grid.Row="1" Margin="0,10,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
                 <TextBlock Text="Select Labour Category:" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
@@ -39,8 +39,9 @@
         Command="{Binding SearchLabourCommand}" 
               Margin="5,5,41,5" 
                   Height="40" FontSize="15" FontWeight="DemiBold"/>
-            <Button Grid.Column="2" Content="Clear Database" 
-        Command="{Binding ClearDatabaseCommand}" Height="40" FontSize="15" FontWeight="DemiBold" Margin="0,5,42,5"/>
+            <!--<Button Grid.Column="2" Content="Clear Database" 
+        Command="{Binding ClearDatabaseCommand}" Height="40" FontSize="15" 
+                    FontWeight="DemiBold" Margin="0,5,42,5"/>-->
         </Grid>
 
         <!-- 4. DataGrid -->
