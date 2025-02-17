@@ -32,6 +32,16 @@
         <!-- DataGrid: Display breakdown lines -->
         <DataGrid Grid.Row="1" ItemsSource="{Binding BreakdownLines}" 
                   AutoGenerateColumns="False" CanUserAddRows="False">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <!-- If IsTotalLine is true, make the row bold -->
+                        <DataTrigger Binding="{Binding IsTotalLine}" Value="True">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Component" Binding="{Binding ComponentName}" 
                                     IsReadOnly="True" Width="*" />

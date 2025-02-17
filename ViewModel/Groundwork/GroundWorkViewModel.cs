@@ -270,6 +270,50 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double costPerM3 = subCost / outputPerDay;
             var ohp = ApplyOHP(costPerM3);
 
+            var breakdown = new ObservableCollection<GroundworkBreakdownLine>
+    {
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Subtotal from Item1 approach",
+            Quantity = 1,
+            Unit = "Lump",
+            UnitPrice = subCost,
+            TotalPrice = subCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Output per day",
+            Quantity = outputPerDay,
+            Unit = "m3/day",
+            UnitPrice = 0,
+            TotalPrice = 0
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Cost per m3",
+            Quantity = 1,
+            Unit = "m3",
+            UnitPrice = costPerM3,
+            TotalPrice = costPerM3
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total",
+            Quantity = 1,
+            Unit = "Unit",
+            UnitPrice = subCost,
+            TotalPrice = subCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total Cost/m3",
+            Quantity = 1,
+            Unit = "Unit",
+            UnitPrice = costPerM3,
+            TotalPrice = costPerM3
+        }
+    };
+
             return new GroundworkItem
             {
                 ItemNo = 2,
@@ -278,7 +322,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 NetCost = Math.Round(costPerM3, 2),
                 OverheadValue = Math.Round(ohp.overheadVal, 0),
                 ProfitValue = Math.Round(ohp.profitVal, 0),
-                TotalCost = Math.Round(ohp.total, 2)
+                TotalCost = Math.Round(ohp.total, 2),
+                BreakdownLines = breakdown
             };
         }
         private GroundworkItem ComputeItem3()
@@ -289,6 +334,50 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double costPerM2 = subCost / outputPerDay;
             var ohp = ApplyOHP(costPerM2);
 
+            var breakdown = new ObservableCollection<GroundworkBreakdownLine>
+    {
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "SubItem from Item1 approach",
+            Quantity = 1,
+            Unit = "Lump",
+            UnitPrice = subCost,
+            TotalPrice = subCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Output per day",
+            Quantity = outputPerDay,
+            Unit = "m2/day",
+            UnitPrice = 0,
+            TotalPrice = 0
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Cost per m2",
+            Quantity = 1,
+            Unit = "m2",
+            UnitPrice = costPerM2,
+            TotalPrice = costPerM2
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total",
+            Quantity = 1,
+            Unit = "Unit",
+            UnitPrice = subCost,
+            TotalPrice = subCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total Cost/m2",
+            Quantity = 1,
+            Unit = "Unit",
+            UnitPrice = costPerM2,
+            TotalPrice = costPerM2
+        }
+    };
+
             return new GroundworkItem
             {
                 ItemNo = 3,
@@ -298,6 +387,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 OverheadValue = Math.Round(ohp.overheadVal, 0),
                 ProfitValue = Math.Round(ohp.profitVal, 0),
                 TotalCost = Math.Round(ohp.total, 2),
+                BreakdownLines = breakdown
             };
         }
         private GroundworkItem ComputeItem4()
@@ -314,6 +404,42 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double costPerM2 = costPerM3 * 0.15;
             var ohp = ApplyOHP(costPerM2);
 
+            var breakdown = new ObservableCollection<GroundworkBreakdownLine>
+    {
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Skilled/Artisan for excavation",
+            Quantity = labourDuration,
+            Unit = "hr/m3",
+            UnitPrice = ratePerHr,
+            TotalPrice = excavateLabour
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Skilled/Artisan for wheel deposit",
+            Quantity = wheelDuration,
+            Unit = "hr/m3",
+            UnitPrice = ratePerHr,
+            TotalPrice = wheelLabour
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total (m3)",
+            Quantity = 1,
+            Unit = "m3",
+            UnitPrice = costPerM3,
+            TotalPrice = costPerM3
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total Cost/m2",
+            Quantity = 1,
+            Unit = "m2",
+            UnitPrice = costPerM2,
+            TotalPrice = costPerM2
+        }
+    };
+
             return new GroundworkItem
             {
                 ItemNo = 4,
@@ -322,7 +448,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 NetCost = Math.Round(costPerM2, 0),
                 OverheadValue = Math.Round(ohp.overheadVal,2),
                 ProfitValue = Math.Round(ohp.profitVal, 2),
-                TotalCost = Math.Round(ohp.total, 0)
+                TotalCost = Math.Round(ohp.total, 0),
+                BreakdownLines = breakdown
             };
 
         }
@@ -335,6 +462,34 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double costPerM3 = workDuration * ratePerHr;
             var ohp = ApplyOHP(costPerM3);
 
+            var breakdown = new ObservableCollection<GroundworkBreakdownLine>
+    {
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Labourer (soft sand excavation)",
+            Quantity = workDuration,
+            Unit = "hr/m3",
+            UnitPrice = ratePerHr,
+            TotalPrice = costPerM3
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total",
+            Quantity = 1,
+            Unit = "m3",
+            UnitPrice = costPerM3,
+            TotalPrice = costPerM3
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total Cost/m3",
+            Quantity = 1,
+            Unit = "m3",
+            UnitPrice = costPerM3,
+            TotalPrice = costPerM3
+        }
+    };
+
             return new GroundworkItem
             {
                 ItemNo = 5,
@@ -343,7 +498,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 NetCost = Math.Round(costPerM3, 0),
                 OverheadValue = Math.Round(ohp.overheadVal, 2),
                 ProfitValue = Math.Round(ohp.profitVal, 2),
-                TotalCost = Math.Round(ohp.total, 0)
+                TotalCost = Math.Round(ohp.total, 0),
+                BreakdownLines = breakdown
             };
         }
         private GroundworkItem ComputeItem6()
@@ -356,6 +512,34 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double costPerM3 = workDuration * rateWithBonus;
             var ohp = ApplyOHP(costPerM3);
 
+            var breakdown = new ObservableCollection<GroundworkBreakdownLine>
+    {
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Labourer (stiff clay excavation)",
+            Quantity = workDuration,
+            Unit = "hr/m3",
+            UnitPrice = rateWithBonus,
+            TotalPrice = costPerM3
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total",
+            Quantity = 1,
+            Unit = "m3",
+            UnitPrice = costPerM3,
+            TotalPrice = costPerM3
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total Cost/m3",
+            Quantity = 1,
+            Unit = "m3",
+            UnitPrice = costPerM3,
+            TotalPrice = costPerM3
+        }
+    };
+
             return new GroundworkItem
             {
                 ItemNo = 6,
@@ -364,7 +548,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 NetCost = Math.Round(costPerM3, 0),
                 OverheadValue = Math.Round(ohp.overheadVal, 2),
                 ProfitValue = Math.Round(ohp.profitVal, 2),
-                TotalCost = Math.Round(ohp.total, 0)
+                TotalCost = Math.Round(ohp.total, 0),
+                BreakdownLines = breakdown
             };
         }
         private GroundworkItem ComputeItem7()
@@ -389,6 +574,83 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             double totalCompact = plantCost + fillingPerM2;
             var ohp = ApplyOHP(totalCompact);
+
+            var breakdown = new ObservableCollection<GroundworkBreakdownLine>
+    {
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Static steel roller (2.7 to 6 tonnes)",
+            Quantity = 1,
+            Unit = "No/Day",
+            UnitPrice = rollerCost,
+            TotalPrice = rollerCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Diesel",
+            Quantity = literPerDay,
+            Unit = "Liters",
+            UnitPrice = dieselPrice,
+            TotalPrice = fuelCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Oil & Consumables (3% Diesel)",
+            Quantity = 1,
+            Unit = "",
+            UnitPrice = 0.03*fuelCost,
+            TotalPrice =  0.03*fuelCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Operator (Heavy plant operator)",
+            Quantity = 1,
+            Unit = "No/Day",
+            UnitPrice = operatorCost,
+            TotalPrice = operatorCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Banksman (Semi skilled)",
+            Quantity = 2,
+            Unit = "No/Day",
+            UnitPrice = banksmanCost,
+            TotalPrice = 2 * banksmanCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Labour",
+            Quantity = 2,
+            Unit = "No/Day",
+            UnitPrice = labourCost,
+            TotalPrice = 2 * labourCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total Plant Cost/m2",
+            Quantity = 1,
+            Unit = "m2",
+            UnitPrice = plantCost,
+            TotalPrice = plantCost
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Filling Sand (Beach)",
+            Quantity = fillingInM2,
+            Unit = "m3 per m2",
+            UnitPrice = fillingCostPerM3,
+            TotalPrice = fillingPerM2
+        },
+        new GroundworkBreakdownLine
+        {
+            ComponentName = "Total",
+            Quantity = 1,
+            Unit = "m2",
+            UnitPrice = totalCompact,
+            TotalPrice = totalCompact
+        },
+
+    };
             return new GroundworkItem
             {
                 ItemNo = 7,
@@ -397,7 +659,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 NetCost = Math.Round(totalCompact, 2),
                 OverheadValue = Math.Round(ohp.overheadVal, 0),
                 ProfitValue = Math.Round(ohp.profitVal, 0),
-                TotalCost = Math.Round(ohp.total, 2)
+                TotalCost = Math.Round(ohp.total, 2),
+                BreakdownLines = breakdown
             };
         }
         private GroundworkItem ComputeItem8()
@@ -426,6 +689,21 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             double totalCompact = plantCost + fillingPerM2;
             var ohp = ApplyOHP(totalCompact);
+
+            var breakdown = new ObservableCollection<GroundworkBreakdownLine>
+    {
+        new GroundworkBreakdownLine { ComponentName="Vibratory Roller (8-10 tons)", Quantity=1, Unit="No/Day", UnitPrice=rollerCost, TotalPrice=rollerCost },
+        new GroundworkBreakdownLine { ComponentName="Diesel", Quantity=literPerDay, Unit="Liters", UnitPrice=dieselPrice, TotalPrice=fuelCost },
+        new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=1, Unit="", UnitPrice=0.03*fuelCost, TotalPrice=0.03 *fuelCost },
+        new GroundworkBreakdownLine { ComponentName="Operator (Heavy plant operator)", Quantity=1, Unit="No/Day", UnitPrice=operatorCost, TotalPrice=operatorCost },
+        new GroundworkBreakdownLine { ComponentName="Banksman (Semi skilled)", Quantity=2, Unit="No/Day", UnitPrice=banksmanCost, TotalPrice=2*banksmanCost },
+        new GroundworkBreakdownLine { ComponentName="Labour", Quantity=2, Unit="No/Day", UnitPrice=labourCost, TotalPrice=2*labourCost },
+        new GroundworkBreakdownLine { ComponentName="Total Plant Cost/m2", Quantity=1, Unit="m2", UnitPrice=plantCost, TotalPrice=plantCost },
+        new GroundworkBreakdownLine { ComponentName="Filling Sand (Beach)", Quantity=fillingInM2, Unit="m3 per m2", UnitPrice=fillingCostPerM3, TotalPrice=fillingPerM2 },
+        new GroundworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", UnitPrice=totalCompact, TotalPrice=totalCompact },
+        //new GroundworkBreakdownLine { ComponentName="Total Cost/m2", Quantity=1, Unit="m2", UnitPrice=totalCompact, TotalPrice=totalCompact }
+    };
+
             return new GroundworkItem
             {
                 ItemNo = 8,
@@ -435,7 +713,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 NetCost = Math.Round(totalCompact, 2),
                 OverheadValue = Math.Round(ohp.overheadVal, 0),
                 ProfitValue = Math.Round(ohp.profitVal, 0),
-                TotalCost = Math.Round(ohp.total, 2)
+                TotalCost = Math.Round(ohp.total, 2),
+                BreakdownLines = breakdown
             };
         }
         private GroundworkItem ComputeItem9()
@@ -464,6 +743,20 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             double totalCompact = plantCost + fillingPerM2;
             var ohp = ApplyOHP(totalCompact);
+
+            var breakdown = new ObservableCollection<GroundworkBreakdownLine>
+    {
+        new GroundworkBreakdownLine { ComponentName="Vibratory Roller (8-10 tons)", Quantity=1, Unit="No/Day", UnitPrice=rollerCost, TotalPrice=rollerCost },
+        new GroundworkBreakdownLine { ComponentName="Diesel", Quantity=literPerDay, Unit="Liters", UnitPrice=dieselPrice, TotalPrice=fuelCost },
+        new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=1, Unit="", UnitPrice=0.03 *dieselPrice, TotalPrice=0.03 *dieselPrice },
+        new GroundworkBreakdownLine { ComponentName="Operator", Quantity=1, Unit="No/Day", UnitPrice=operatorCost, TotalPrice=operatorCost },
+        new GroundworkBreakdownLine { ComponentName="Banksman", Quantity=2, Unit="No/Day", UnitPrice=banksmanCost, TotalPrice=2*banksmanCost },
+        new GroundworkBreakdownLine { ComponentName="Labour", Quantity=2, Unit="No/Day", UnitPrice=labourCost, TotalPrice=2*labourCost },
+        new GroundworkBreakdownLine { ComponentName="Total Plant Cost/m2", Quantity=1, Unit="m2", UnitPrice=plantCost, TotalPrice=plantCost },
+        new GroundworkBreakdownLine { ComponentName="Filling Sand (Beach)", Quantity=fillingInM2, Unit="m3 per m2", UnitPrice=fillingCostPerM3, TotalPrice=fillingPerM2 },
+        new GroundworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", UnitPrice=totalCompact, TotalPrice=totalCompact },
+        //new GroundworkBreakdownLine { ComponentName="Total Cost/m2", Quantity=1, Unit="m2", UnitPrice=totalCompact, TotalPrice=totalCompact }
+    };
             return new GroundworkItem
             {
                 ItemNo = 9,
@@ -472,7 +765,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 NetCost = Math.Round(totalCompact, 2),
                 OverheadValue = Math.Round(ohp.overheadVal, 0),
                 ProfitValue = Math.Round(ohp.profitVal, 0),
-                TotalCost = Math.Round(ohp.total, 2)
+                TotalCost = Math.Round(ohp.total, 2),
+                BreakdownLines = breakdown
             };
         }
         private GroundworkItem ComputeItem10()
@@ -501,6 +795,20 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             double totalCompact = plantCost + fillingPerM2;
             var ohp = ApplyOHP(totalCompact);
+
+            var breakdown = new ObservableCollection<GroundworkBreakdownLine>
+    {
+        new GroundworkBreakdownLine { ComponentName="Vibratory Roller (8-10 tons)", Quantity=1, Unit="No/Day", UnitPrice=rollerCost, TotalPrice=rollerCost },
+        new GroundworkBreakdownLine { ComponentName="Diesel", Quantity=literPerDay, Unit="Liters", UnitPrice=dieselPrice, TotalPrice=fuelCost },
+        new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=1, Unit="", UnitPrice=0.03 * fuelCost, TotalPrice=0.03 * fuelCost },
+        new GroundworkBreakdownLine { ComponentName="Operator", Quantity=1, Unit="No/Day", UnitPrice=operatorCost, TotalPrice=operatorCost },
+        new GroundworkBreakdownLine { ComponentName="Banksman", Quantity=2, Unit="No/Day", UnitPrice=banksmanCost, TotalPrice=2*banksmanCost },
+        new GroundworkBreakdownLine { ComponentName="Labour", Quantity=2, Unit="No/Day", UnitPrice=labourCost, TotalPrice=2*labourCost },
+        new GroundworkBreakdownLine { ComponentName="Total Plant Cost/m3", Quantity=1, Unit="m3", UnitPrice=plantCost, TotalPrice=plantCost },
+        new GroundworkBreakdownLine { ComponentName="Filling Sand (Beach)", Quantity=fillingInM2, Unit="m3 per m2", UnitPrice=fillingCostPerM3, TotalPrice=fillingPerM2 },
+        new GroundworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", UnitPrice=totalCompact, TotalPrice=totalCompact },
+        //new GroundworkBreakdownLine { ComponentName="Total Cost/m2", Quantity=1, Unit="m2", UnitPrice=totalCompact, TotalPrice=totalCompact }
+    };
             return new GroundworkItem
             {
                 ItemNo = 10,
@@ -509,7 +817,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 NetCost = Math.Round(totalCompact, 2),
                 OverheadValue = Math.Round(ohp.overheadVal, 0),
                 ProfitValue = Math.Round(ohp.profitVal, 0),
-                TotalCost = Math.Round(ohp.total, 2)
+                TotalCost = Math.Round(ohp.total, 2),
+                BreakdownLines = breakdown
             };
         }
 

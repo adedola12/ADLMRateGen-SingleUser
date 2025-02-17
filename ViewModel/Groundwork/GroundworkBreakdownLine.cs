@@ -58,5 +58,14 @@
             }
         }
 
+        public bool IsTotalLine
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(ComponentName)
+                    && ComponentName.IndexOf("total", StringComparison.OrdinalIgnoreCase) >= 0;
+            }
+        }
+
     }
 }
