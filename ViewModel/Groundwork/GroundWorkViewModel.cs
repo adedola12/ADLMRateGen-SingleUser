@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
 using System.Windows.Input;
 using ADLMRateGen.Command;
 
@@ -11,6 +13,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
         private double _overheadPercent = 10.0;
         private double _profitPercent = 25.0;
+        private string _searchTerm = string.Empty;
 
         public double OverheadPercent
         {
@@ -38,17 +41,54 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 }
             }
         }
+        
         public ObservableCollection<GroundworkItem> GroundworkItems { get; set; } 
             = new ObservableCollection<GroundworkItem>();
+        public ICollectionView GroundworkCollectionView { get;private set; }
+        public string SearchTerm
+        {
+            get => _searchTerm;
+            set
+            {
+                if (_searchTerm != value)
+                {
+                    _searchTerm = value;
+                    RaisePropertyChanged();
+                    GroundworkCollectionView.Refresh();
+                }
+            }
+        }
         public ICommand RecomputeCommand { get; }
         public GroundWorkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourLib)
         {
             _materialLib = matLib;
             _labourLib = labourLib;
 
+            _materialLib.LibraryChanged += OnLibraryChanged;
+            _labourLib.LibraryChanged += OnLibraryChanged;
+
             BuildGroundWorkItems();
 
+            GroundworkCollectionView = CollectionViewSource.GetDefaultView(GroundworkItems);
+            GroundworkCollectionView.Filter = FilterGroundWorkItem;
+
             RecomputeCommand = new DelegateCommand(o => RecomputeAll());
+        }
+
+        private bool FilterGroundWorkItem(object obj)
+        {
+          if(obj is GroundworkItem item)
+            {
+                if (string.IsNullOrEmpty(SearchTerm))
+                    return true;
+                return item.Description?.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0;
+            }
+            return false;
+        }
+
+        private void OnLibraryChanged()
+        {
+            RecomputeAll();
         }
         private void RecomputeAll()
         {
@@ -328,7 +368,6 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 TotalCost = Math.Round(ohp.total, 2)
             };
         }
-
         private GroundworkItem ComputeItem10()
         {
             double rollerCost = GetLabourRate("Vibratory whelled roller (8 to 10 tons)");

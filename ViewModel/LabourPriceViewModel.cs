@@ -89,7 +89,7 @@ namespace ADLMRateGen.ViewModel
             _newLabourCategory = string.Empty;
             EditingLabour = null;
             SaveLabourCommand = new DelegateCommand(o => SaveLabour(), o => !IsEditing);
-            UpdateLabourCommand = new DelegateCommand(o => UpdateLabour(), o => !IsEditing);
+            UpdateLabourCommand = new DelegateCommand(o => UpdateLabour(), o => IsEditing);
         }
 
         private void SaveLabour()
@@ -114,11 +114,14 @@ namespace ADLMRateGen.ViewModel
         {
            if(EditingLabour != null)
             {
-                EditingLabour.LabourName = LabourName;
+                //EditingLabour.LabourName = LabourName;
                 EditingLabour.LabourUnit = LabourUnit;
                 EditingLabour.LabourPrice = LabourPrice;
-                string categoryToUse = !string.IsNullOrEmpty(NewLabourCategory) ? NewLabourCategory : EditingLabour.LabourCategory;
+
+                string categoryToUse = !string.IsNullOrEmpty(NewLabourCategory) 
+                    ? NewLabourCategory : EditingLabour.LabourCategory;
                 EditingLabour.LabourCategory = categoryToUse;
+
                 LabourSaved?.Invoke(EditingLabour);
                 ClearInputFields();
                 EditingLabour = null;

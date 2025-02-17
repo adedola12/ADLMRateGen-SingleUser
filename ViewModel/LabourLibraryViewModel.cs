@@ -36,6 +36,7 @@ namespace ADLMRateGen.ViewModel
         public ICommand DeleteLabourCommand { get;}
         public ICommand EditLabourCommand { get;}
         public event Action<LabourModel> EditLabourRequested;
+        public event Action LibraryChanged;
 
         public LabourLibraryViewModel()
         {
@@ -83,6 +84,7 @@ namespace ADLMRateGen.ViewModel
                 LabourLibrary.Remove(labour);
                 ReassignSerialNumbers();
                 _dataServices.SaveData(LabourLibrary);
+                LibraryChanged?.Invoke();
                 ApplyFilter();
             }
         }
@@ -114,6 +116,7 @@ namespace ADLMRateGen.ViewModel
             }
 
             _dataServices.SaveData(LabourLibrary);
+            LibraryChanged?.Invoke();
             ApplyFilter();
         }
     }

@@ -13,7 +13,7 @@ namespace ADLMRateGen.ViewModel
     {
         private readonly JsonDataServices _dataServices;
         private readonly string _filePath = "materials.json";
-        private readonly string _defaultfilePath = "defaultMaterials.json";
+        private readonly string _defaultFilePath = "Data\\defaultMaterials.json";
 
         public ObservableCollection<MaterialModel> MaterialLibrary { get; set; }
         public ICollectionView MaterialCollectionView { get; set; }
@@ -41,10 +41,12 @@ namespace ADLMRateGen.ViewModel
 
         // Raised when the user clicks Edit on an item.
         public event Action<MaterialModel>? EditMaterialRequested;
+        public event Action LibraryChanged;
 
         public MaterialLibraryViewModel()
         {
-            _dataServices = new JsonDataServices("materials.json", "Data\\defaultMaterials.json");
+            //_dataServices = new JsonDataServices("materials.json", "Data\\defaultMaterials.json");
+            _dataServices = new JsonDataServices(_filePath, _defaultFilePath);
 
             MaterialLibrary = _dataServices.LoadData<ObservableCollection<MaterialModel>>()
                               ?? new ObservableCollection<MaterialModel>();
@@ -89,6 +91,7 @@ namespace ADLMRateGen.ViewModel
                 MaterialLibrary.Remove(material);
                 ReassignSerialNumbers();
                 _dataServices.SaveData(MaterialLibrary);
+                LibraryChanged?.Invoke();
                 ApplyFilter();
             }
         }
@@ -122,6 +125,7 @@ namespace ADLMRateGen.ViewModel
             }
             // For updates, the item is already in the collection (its properties have been updated).
             _dataServices.SaveData(MaterialLibrary);
+            LibraryChanged?.Invoke();
             ApplyFilter();
         }
     }

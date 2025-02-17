@@ -38,11 +38,23 @@
 
                 </Grid.ColumnDefinitions>
 
-                <!-- Material Name -->
+                <!-- Labour Name -->
                 <StackPanel Grid.Column="0" Margin="5">
                     <TextBlock Text="Labour Name" FontSize="15" FontWeight="DemiBold"/>
-                    <TextBox Text="{Binding LabourName, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+                    <TextBox Text="{Binding LabourName, UpdateSourceTrigger=PropertyChanged}" Height="30">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="IsReadOnly" Value="False"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                                        <Setter Property="IsReadOnly" Value="True"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
                 </StackPanel>
+
 
                 <!-- Material Unit -->
                 <StackPanel Grid.Column="1" Margin="5">

@@ -23,32 +23,31 @@
             <TextBlock Text="Using Material and Labour Prices from the Library" FontSize="15"/>
         </StackPanel>
 
-        <!-- 2. Input Form -->
         <Grid Grid.Row="1" Margin="0,10,0,10">
-
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Overhead -->
-                <StackPanel Grid.Column="0" Margin="5">
-                    <TextBlock Text="Overhead (%)" FontSize="15" FontWeight="DemiBold"/>
-                    <TextBox Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
-                </StackPanel>
-
-                <!-- Profit -->
-                <StackPanel Grid.Column="1" Margin="5">
-                    <TextBlock Text="Profit (%) " FontSize="15" FontWeight="DemiBold"/>
-                    <TextBox Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
-                </StackPanel>
-
-                <Button Grid.Column="2" Content="Update"  Height="40" FontSize="15" FontWeight="DemiBold" 
-                VerticalAlignment="Center" Margin="5" Command="{Binding RecomputeCommand}"/>
-
-            </Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <!-- Overhead -->
+            <StackPanel Grid.Column="0" Margin="5">
+                <TextBlock Text="Overhead (%)" FontSize="15" FontWeight="DemiBold"/>
+                <TextBox Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+            </StackPanel>
+            <!-- Profit -->
+            <StackPanel Grid.Column="1" Margin="5">
+                <TextBlock Text="Profit (%)" FontSize="15" FontWeight="DemiBold"/>
+                <TextBox Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+            </StackPanel>
+            <!-- Search -->
+            <StackPanel Grid.Column="2" Margin="5">
+                <TextBlock Text="Search Description" FontSize="15" FontWeight="DemiBold"/>
+                <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+            </StackPanel>
+            <!-- Update Button -->
+            <Button Grid.Column="3" Content="Update" Height="40" FontSize="15" FontWeight="DemiBold" 
+                    VerticalAlignment="Center" Margin="5" Command="{Binding RecomputeCommand}"/>
         </Grid>
 
         <!-- 3. Rate Data -->
