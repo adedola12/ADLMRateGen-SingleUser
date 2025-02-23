@@ -3,20 +3,20 @@ using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Input;
 using ADLMRateGen.Command;
+using ADLMRateGen.Helpers;
 using ADLMRateGen.View;
 
 namespace ADLMRateGen.ViewModel.Groundwork
 {
 	public class GroundWorkViewModel : ViewModelBase
 	{
-		private readonly MaterialLibraryViewModel _materialLib;
-		private readonly LabourLibraryViewModel _labourLib;
+		private readonly GetItemsFromDB _helper;
+
 
 		private double _overheadPercent = 10.0;
 		private double _profitPercent = 25.0;
 		private string _searchTerm = string.Empty;
 		private object _selectedDetail;
-
 
 		public double OverheadPercent
 		{
@@ -61,7 +61,6 @@ namespace ADLMRateGen.ViewModel.Groundwork
 				}
 			}
 		}
-
 		public object SelectedDetail
 		{
 			get => _selectedDetail;
@@ -78,11 +77,13 @@ namespace ADLMRateGen.ViewModel.Groundwork
 		public ICommand ShowDetailsCommand { get; }
 		public GroundWorkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourLib)
 		{
-			_materialLib = matLib;
-			_labourLib = labourLib;
+			//_materialLib = matLib;
+			//_labourLib = labourLib;
 
-			_materialLib.LibraryChanged += OnLibraryChanged;
-			_labourLib.LibraryChanged += OnLibraryChanged;
+			_helper = new GetItemsFromDB(matLib, labourLib);
+
+			matLib.LibraryChanged += OnLibraryChanged;
+			labourLib.LibraryChanged += OnLibraryChanged;
 
 			BuildGroundWorkItems();
 
@@ -92,7 +93,6 @@ namespace ADLMRateGen.ViewModel.Groundwork
 			RecomputeCommand = new DelegateCommand(o => RecomputeAll());
 			ShowDetailsCommand = new DelegateCommand(o => ShowDetails(o));
 		}
-
 		private void ShowDetails(object o)
 		{
 			if (o is GroundworkItem item)
@@ -109,7 +109,6 @@ namespace ADLMRateGen.ViewModel.Groundwork
 				SelectedDetail = detailedControl;
 			}
 		}
-
 		private bool FilterGroundWorkItem(object obj)
 		{
 			if (obj is GroundworkItem item)
@@ -120,7 +119,6 @@ namespace ADLMRateGen.ViewModel.Groundwork
 			}
 			return false;
 		}
-
 		private void OnLibraryChanged()
 		{
 			RecomputeAll();
@@ -160,6 +158,10 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
 			return (ov, pv, total);
 		}
+
+		private double GetMaterialPrice(string name) => _helper.GetMaterialPrice(name);
+		private double GetLabourRate(string name) => _helper.GetLabourRate(name);
+
 		private GroundworkItem ComputeItem1()
 		{
 			double d8Cost = GetLabourRate("Bulldozer D8");
@@ -259,6 +261,17 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
 			};
 		}
+
+		//private double GetMaterialPrice(string v)
+		//{
+		//	throw new NotImplementedException();
+		//}
+
+		//private double GetLabourRate(string v)
+		//{
+		//	throw new NotImplementedException();
+		//}
+
 		private GroundworkItem ComputeItem2()
 		{
 			double subCost = ComputeItem1_SubTotal();
@@ -1163,17 +1176,6 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
 			return subTotal;
 		}
-		private double GetMaterialPrice(string name)
-		{
-			var found = _materialLib.MaterialLibrary
-				.FirstOrDefault(m => m.MaterialName == name);
-			return (double)(found?.MaterialPrice ?? 0);
-		}
-		private double GetLabourRate(string name)
-		{
-			var found = _labourLib.LabourLibrary
-				.FirstOrDefault(l => l.LabourName == name);
-			return (double)(found?.LabourPrice ?? 0);
-		}
+
 	}
 }
