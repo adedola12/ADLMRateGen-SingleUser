@@ -1,15 +1,15 @@
-﻿using System.Collections.ObjectModel;
+﻿using ADLMRateGen.Command;
+using ADLMRateGen.Helpers;
+using ADLMRateGen.View;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Input;
-using ADLMRateGen.Command;
-using ADLMRateGen.Helpers;
-using ADLMRateGen.View;
 
 namespace ADLMRateGen.ViewModel.ConcreteWork
 {
-	public class ConcreteWorkViewModel : ViewModelBase
-	{
+    public class ConcreteViewModel: ViewModelBase
+    {
 		private readonly GetItemsFromDB _helper;
 
 		private double _overheadPercent = 10.0;
@@ -71,7 +71,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 		}
 		public ICommand RecomputeCommand { get; }
 		public ICommand ShowDetailsCommand { get; }
-		public ConcreteWorkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourlib)
+		public ConcreteViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourlib)
 		{
 			_helper = new GetItemsFromDB(matLib, labourlib);
 			matLib.LibraryChanged += OnLibraryChanged;

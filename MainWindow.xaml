@@ -7,6 +7,7 @@
         xmlns:controls="clr-namespace:ADLMCivilPlugin.Controls"
         xmlns:view="clr-namespace:ADLMRateGen.View"
         xmlns:ground="clr-namespace:ADLMRateGen.ViewModel.Groundwork"
+        xmlns:concrete="clr-namespace:ADLMRateGen.ViewModel.ConcreteWork"
         mc:Ignorable="d"
         Title="MainWindow" Height="720" Width="1020">
     <Window.Resources>
@@ -24,6 +25,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type ground:GroundWorkViewModel}">
             <view:GroundWorkView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type concrete:ConcreteViewModel}">
+            <view:ConcreteWorkView/>
         </DataTemplate>
     </Window.Resources>
     <Grid>
@@ -60,7 +64,7 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Background="LightGray" Orientation="Horizontal">
                 <Button Content="Ground" Command="{Binding SelectedGroundworkViewCommand}" Margin="5" Padding="2"/>
-                <Button Content="Concrete" Command="" Margin="5" Padding="2"/>
+                <Button Content="Concrete" Command="{Binding SelectedConcreteWorkViewCommand}" Margin="5" Padding="2"/>
                 <Button Content="BlockWorks" Command="" Margin="5" Padding="2"/>
                 <Button Content="Finishes" Command="" Margin="5" Padding="2"/>
                 <Button Content="Roof" Command="" Margin="5" Padding="2"/>

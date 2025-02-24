@@ -261,17 +261,6 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
 			};
 		}
-
-		//private double GetMaterialPrice(string v)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//private double GetLabourRate(string v)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
 		private GroundworkItem ComputeItem2()
 		{
 			double subCost = ComputeItem1_SubTotal();
@@ -1176,6 +1165,5 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
 			return subTotal;
 		}
-
 	}
 }

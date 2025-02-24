@@ -65,17 +65,20 @@
                     </DataGridTextColumn>
 
                     <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="Auto"/>
-                    <DataGridTextColumn Header="Net Cost" Binding="{Binding NetCost, StringFormat={}{0:N2}}" Width="Auto"/>
-                    <DataGridTextColumn Header="Overhead" Binding="{Binding OverheadValue, StringFormat={}{0:N2}}" Width="Auto"/>
-                    <DataGridTextColumn Header="Profit" Binding="{Binding ProfitValue, StringFormat={}{0:N2}}" Width="Auto"/>
-                    <DataGridTextColumn Header="Total Cost" Binding="{Binding TotalCost, StringFormat={}{0:N2}}" Width="Auto"/>
-                    <!-- New column for View/Edit -->
+                    <DataGridTextColumn Header="Net Cost" 
+                                        Binding="{Binding NetCost, StringFormat={}{0:N2}}" Width="Auto"/>
+                    <DataGridTextColumn Header="Overhead" 
+                                        Binding="{Binding OverheadValue, StringFormat={}{0:N2}}" Width="Auto"/>
+                    <DataGridTextColumn Header="Profit" 
+                                        Binding="{Binding ProfitValue, StringFormat={}{0:N2}}" Width="Auto"/>
+                    <DataGridTextColumn Header="Total Cost" 
+                                        Binding="{Binding TotalCost, StringFormat={}{0:N2}}" Width="Auto"/>
                     <DataGridTemplateColumn Header="Actions" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Content="View" 
-                      Command="{Binding DataContext.ShowDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                      CommandParameter="{Binding}" Margin="2"/>
+                                        Command="{Binding DataContext.ShowDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}" Margin="2"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

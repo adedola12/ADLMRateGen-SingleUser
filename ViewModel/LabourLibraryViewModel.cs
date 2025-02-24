@@ -27,11 +27,27 @@ namespace ADLMRateGen.ViewModel
                 {
                     _selectedLabourcategory = value;
                     RaisePropertyChanged();
-                }
-            }
+					ApplyFilter();
+				}
+			}
         }
 
-        public ICommand SearchLabourCommand { get;}
+        private string _searchTerm = string.Empty;
+		public string SearchTerm
+		{
+			get => _searchTerm;
+			set
+			{
+				if (_searchTerm != value)
+				{
+					_searchTerm = value;
+					RaisePropertyChanged();
+					ApplyFilter();
+				}
+			}
+		}
+
+		public ICommand SearchLabourCommand { get;}
         public ICommand ClearDatabaseCommand { get;}
         public ICommand DeleteLabourCommand { get;}
         public ICommand EditLabourCommand { get;}
@@ -54,23 +70,33 @@ namespace ADLMRateGen.ViewModel
             EditLabourCommand = new DelegateCommand(o => EditLabour(o));
         }
 
-        private void ApplyFilter()
-        {
-           if(LabourCollectionView != null)
-            {
-                if (SelecctedLabourCategory == "All" || string.IsNullOrEmpty(SelecctedLabourCategory))
-                    LabourCollectionView.Filter = null;
-                else
-                    LabourCollectionView.Filter = o =>
-                    {
-                        var labour = o as LabourModel;
-                        return labour != null && labour.LabourCategory == SelecctedLabourCategory;
-                    };
-                LabourCollectionView.Refresh();
-            }
-        }
+		private void ApplyFilter()
+		{
+			if (LabourCollectionView != null)
+			{
+				LabourCollectionView.Filter = o =>
+				{
+					if (o is LabourModel labour)
+					{
+						// Filter by category if not "All"
+						bool matchesCategory = SelecctedLabourCategory == "All" ||
+											   string.IsNullOrEmpty(SelecctedLabourCategory) ||
+											   labour.LabourCategory == SelecctedLabourCategory;
+						// Filter by text if search term is provided.
+						// Assuming LabourModel has a LabourName property (or similar)
+						bool matchesText = string.IsNullOrEmpty(SearchTerm) ||
+										   (!string.IsNullOrEmpty(labour.LabourName) &&
+										   labour.LabourName.IndexOf(SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0);
+						return matchesCategory && matchesText;
+					}
+					return false;
+				};
+				LabourCollectionView.Refresh();
+			}
+		}
 
-        private void ClearDatabase()
+
+		private void ClearDatabase()
         {
             LabourLibrary.Clear();
             _dataServices.SaveData(LabourLibrary);

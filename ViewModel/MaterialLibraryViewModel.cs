@@ -28,13 +28,29 @@ namespace ADLMRateGen.ViewModel
                 {
                     _selectedMaterialCategory = value;
                     RaisePropertyChanged();
-                }
-            }
+					ApplyFilter();
+
+				}
+			}
         }
 
+		private string _searchTerm = string.Empty;
+		public string SearchTerm
+		{
+			get => _searchTerm;
+			set
+			{
+				if (_searchTerm != value)
+				{
+					_searchTerm = value;
+					RaisePropertyChanged();
+					ApplyFilter();
+				}
+			}
+		}
 
 
-        public ICommand SearchMaterialCommand { get; }
+		public ICommand SearchMaterialCommand { get; }
         public ICommand ClearDatabaseCommand { get; }
         public ICommand DeleteMaterialCommand { get; }
         public ICommand EditMaterialCommand { get; }
@@ -63,18 +79,27 @@ namespace ADLMRateGen.ViewModel
 
         private void ApplyFilter()
         {
-            if (MaterialCollectionView != null)
-            {
-                if (SelectedMaterialCategory == "All" || string.IsNullOrEmpty(SelectedMaterialCategory))
-                    MaterialCollectionView.Filter = null;
-                else
-                    MaterialCollectionView.Filter = o =>
-                    {
-                        var material = o as MaterialModel;
-                        return material != null && material.MaterialCategory == SelectedMaterialCategory;
-                    };
-                MaterialCollectionView.Refresh();
-            }
+			if (MaterialCollectionView != null)
+			{
+				MaterialCollectionView.Filter = o =>
+				{
+					if (o is MaterialModel material)
+					{
+						// Filter by category if not "All"
+						bool matchesCategory = SelectedMaterialCategory == "All" ||
+											   string.IsNullOrEmpty(SelectedMaterialCategory) ||
+											   material.MaterialCategory == SelectedMaterialCategory;
+						// Filter by text if search term is provided.
+						bool matchesText = string.IsNullOrEmpty(SearchTerm) ||
+										   (!string.IsNullOrEmpty(material.MaterialName) &&
+										   material.MaterialName.IndexOf(SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0);
+						return matchesCategory && matchesText;
+					}
+					return false;
+				};
+				MaterialCollectionView.Refresh();
+			}
+			
         }
 
         private void ClearDatabase()

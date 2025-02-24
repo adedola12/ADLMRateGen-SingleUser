@@ -26,22 +26,27 @@
         <Grid Grid.Row="1" Margin="0,10,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+               
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
+            <StackPanel Grid.Column="0"  VerticalAlignment="Center" Margin="5">
                 <TextBlock Text="Select Material Category:" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
                 <ComboBox ItemsSource="{Binding MaterialCategory}"
-               SelectedItem="{Binding SelectedMaterialCategory, Mode=TwoWay}"
-               Height="30" Width="150" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+                  SelectedItem="{Binding SelectedMaterialCategory, Mode=TwoWay}"
+                   Height="30" Width="150" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
             </StackPanel>
-            <Button Grid.Column="1" Content="Search" 
-           Command="{Binding SearchMaterialCommand}" 
-                 Margin="5,5,41,5" 
-                     Height="40" FontSize="15" FontWeight="DemiBold"/>
-            <!--<Button Grid.Column="2" Content="Clear Database" 
-           Command="{Binding ClearDatabaseCommand}" Height="40" FontSize="15" 
-                    FontWeight="DemiBold" Margin="0,5,42,5"/>-->
+
+            <!-- Search -->
+            <StackPanel Grid.Column="1" Margin="5">
+                <TextBlock Text="Search Name" FontSize="15" FontWeight="DemiBold"/>
+                <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+            </StackPanel>
+
+            <!--<Button Grid.Column="2" Content="Search" 
+            Command="{Binding SearchLabourCommand}" 
+            Margin="5,5,41,5" 
+            Height="40" FontSize="15" FontWeight="DemiBold"/>-->
+
         </Grid>
 
         <!-- 4. DataGrid -->
@@ -65,16 +70,16 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Header="Delete" Width="Auto">
+                <!--<DataGridTemplateColumn Header="Delete" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="X" 
-                   Command="{Binding DataContext.DeleteMaterialCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                   CommandParameter="{Binding}"
-                   Width="30" Height="30" ToolTip="Delete this entry"/>
+                                    Command="{Binding DataContext.DeleteMaterialCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Width="30" Height="30" ToolTip="Delete this entry"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                </DataGridTemplateColumn>-->
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
