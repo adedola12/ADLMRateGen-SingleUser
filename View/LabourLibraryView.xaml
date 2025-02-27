@@ -30,10 +30,11 @@
                 
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0"  VerticalAlignment="Center" Margin="5">
-                <TextBlock Text="Select Labour Category:" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                <TextBlock Text="Select Labour Category:" FontSize="15" FontWeight="DemiBold" 
+                           VerticalAlignment="Center"/>
                 <ComboBox ItemsSource="{Binding LabourCategory}"
                           SelectedItem="{Binding SelecctedLabourCategory, Mode=TwoWay}"
-                           Height="30" Width="150" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+                           Height="30" Width="250" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
             </StackPanel>
             
             <!-- Search -->
@@ -41,11 +42,6 @@
                 <TextBlock Text="Search Name" FontSize="15" FontWeight="DemiBold"/>
                 <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
             </StackPanel>
-
-            <!--<Button Grid.Column="2" Content="Search" 
-                    Command="{Binding SearchLabourCommand}" 
-                    Margin="5,5,41,5" 
-                    Height="40" FontSize="15" FontWeight="DemiBold"/>-->
 
         </Grid>
      
