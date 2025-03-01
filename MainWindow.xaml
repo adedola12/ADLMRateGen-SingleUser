@@ -9,7 +9,7 @@
         xmlns:ground="clr-namespace:ADLMRateGen.ViewModel.Groundwork"
         xmlns:concrete="clr-namespace:ADLMRateGen.ViewModel.ConcreteWork"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1020">
+        Title="MainWindow" Height="750" Width="1080">
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:MaterialPriceViewModel}">
             <view:MaterialPriceView/>

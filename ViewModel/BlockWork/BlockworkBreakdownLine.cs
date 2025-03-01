@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ADLMRateGen.ViewModel
+namespace ADLMRateGen.ViewModel.BlockWork
 {
-    class BlockworkViewModel
+    class BlockworkBreakdownLine
     {
     }
 }
