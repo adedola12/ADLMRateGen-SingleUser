@@ -137,37 +137,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 			{
 				ConcreteWorkItems.Add(compute());
 			}
-			//ConcreteWorkItems.Add(ComputeItem1());
-			//ConcreteWorkItems.Add(ComputeItem2());
-			//ConcreteWorkItems.Add(ComputeItem3());
-			//ConcreteWorkItems.Add(ComputeItem4());
-			//ConcreteWorkItems.Add(ComputeItem5());
-			//ConcreteWorkItems.Add(ComputeItem6());
-			//ConcreteWorkItems.Add(ComputeItem7());
-			//ConcreteWorkItems.Add(ComputeItem8());
-			//ConcreteWorkItems.Add(ComputeItem9());
-			//ConcreteWorkItems.Add(ComputeItem10());
-			//ConcreteWorkItems.Add(ComputeItem11());
-			//ConcreteWorkItems.Add(ComputeItem12());
-			//ConcreteWorkItems.Add(ComputeItem13());
-			//ConcreteWorkItems.Add(ComputeItem14());
-			//ConcreteWorkItems.Add(ComputeItem15());
-			//ConcreteWorkItems.Add(ComputeItem16());
-			//ConcreteWorkItems.Add(ComputeItem17());
-			//ConcreteWorkItems.Add(ComputeItem18());
-			//ConcreteWorkItems.Add(ComputeItem19());
-			//ConcreteWorkItems.Add(ComputeItem20());
-			//ConcreteWorkItems.Add(ComputeItem21());
-			//ConcreteWorkItems.Add(ComputeItem22());
-			//ConcreteWorkItems.Add(ComputeItem23());
-			//ConcreteWorkItems.Add(ComputeItem24());
-			//ConcreteWorkItems.Add(ComputeItem25());
-			//ConcreteWorkItems.Add(ComputeItem26());
-			//ConcreteWorkItems.Add(ComputeItem27());
-			//ConcreteWorkItems.Add(ComputeItem28());
-			//ConcreteWorkItems.Add(ComputeItem29());
-			//ConcreteWorkItems.Add(ComputeItem30());
-			//ConcreteWorkItems.Add(ComputeItem31());
+
 		}
 
 		#region Helper Methods
