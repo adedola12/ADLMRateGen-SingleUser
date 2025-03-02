@@ -2,6 +2,7 @@
 using ADLMRateGen.ViewModel;
 using ADLMRateGen.ViewModel.BlockWork;
 using ADLMRateGen.ViewModel.ConcreteWork;
+using ADLMRateGen.ViewModel.Finishes;
 using ADLMRateGen.ViewModel.Groundwork;
 
 namespace ADLMRateGen
@@ -22,8 +23,9 @@ namespace ADLMRateGen
             var groundworkVM = new GroundWorkViewModel(libraryVM, labourLibraryVM);
             var concreteWorkVM = new ConcreteViewModel(libraryVM, labourLibraryVM);
             var blockworkVM = new BlockworkViewModel(libraryVM, labourLibraryVM, concreteWorkVM);
+            var finishesVM = new FinishesViewModel(libraryVM, labourLibraryVM, blockworkVM);
 
-			this.DataContext = new MainViewModel(priceVM, libraryVM, labourVm, labourLibraryVM, groundworkVM, concreteWorkVM, blockworkVM);
+			this.DataContext = new MainViewModel(priceVM, libraryVM, labourVm, labourLibraryVM, groundworkVM, concreteWorkVM, blockworkVM, finishesVM);
 
         }
     }

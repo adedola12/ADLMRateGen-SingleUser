@@ -3,6 +3,7 @@ using ADLMRateGen.ViewModel.Groundwork;
 using ADLMRateGen.ViewModel.ConcreteWork;
 using ADLMRateGen.ViewModel.Model;
 using ADLMRateGen.ViewModel.BlockWork;
+using ADLMRateGen.ViewModel.Finishes;
 
 namespace ADLMRateGen.ViewModel
 {
@@ -16,6 +17,7 @@ namespace ADLMRateGen.ViewModel
 		public DelegateCommand SelectedGroundworkViewCommand { get; }
 		public DelegateCommand SelectedConcreteWorkViewCommand { get; }
 		public DelegateCommand SelectedBlockworkViewCommand { get; }
+		public DelegateCommand SelectedFinishesViewCommand { get; }
 
 		// ViewModels for the different sections of the application.
 		public MaterialPriceViewModel MaterialPriceViewModel { get; }
@@ -25,6 +27,7 @@ namespace ADLMRateGen.ViewModel
 		public GroundWorkViewModel GroundWorkViewModel { get; }
 		public ConcreteViewModel ConcreteViewModel { get; }
 		public BlockworkViewModel BlockworkViewModel { get; }
+		public FinishesViewModel FinishesViewModel { get; }
 		private ViewModelBase _selectedViewModel;
 
 		public ViewModelBase SelectedViewModel
@@ -39,7 +42,7 @@ namespace ADLMRateGen.ViewModel
 
 		public MainViewModel(MaterialPriceViewModel priceVM, MaterialLibraryViewModel libraryVM, LabourPriceViewModel labourVM,
 			LabourLibraryViewModel labourLibraryVM, GroundWorkViewModel groundworkVM, ConcreteViewModel concreteWorkViewModel,
-			BlockworkViewModel blockworkViewModel)
+			BlockworkViewModel blockworkViewModel, FinishesViewModel finishesViewModel)
 		{
 			MaterialPriceViewModel = priceVM;
 			MaterialLibraryViewModel = libraryVM;
@@ -48,6 +51,7 @@ namespace ADLMRateGen.ViewModel
 			GroundWorkViewModel = groundworkVM;
 			ConcreteViewModel = concreteWorkViewModel;
 			BlockworkViewModel = blockworkViewModel;
+			FinishesViewModel = finishesViewModel;
 
 			// Wire events.
 			MaterialPriceViewModel.MaterialSaved += OnMaterialSaved;
@@ -65,6 +69,7 @@ namespace ADLMRateGen.ViewModel
 			SelectedGroundworkViewCommand = new DelegateCommand(param => SelectViewModel(GroundWorkViewModel));
 			SelectedConcreteWorkViewCommand = new DelegateCommand(param => SelectViewModel(ConcreteViewModel));
 			SelectedBlockworkViewCommand = new DelegateCommand(param => SelectViewModel(BlockworkViewModel));
+			SelectedFinishesViewCommand = new DelegateCommand(param => SelectViewModel(FinishesViewModel));
 		}
 
 		private void OnMaterialSaved(MaterialModel material)

@@ -160,6 +160,10 @@ namespace ADLMRateGen.ViewModel.BlockWork
 		{
 			return _concreteViewModel.GetConcreteNetValue(computeFunc);
 		}
+		public double GetBlockworkNetValue(Func<ConcreteworkItem> computeFunc)
+		{
+			return computeFunc().NetCost;
+		}
 		#endregion
 
 		#region Compute Methods
