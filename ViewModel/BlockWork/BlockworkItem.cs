@@ -9,6 +9,7 @@ namespace ADLMRateGen.ViewModel.BlockWork
         private int _itemNo;
 		private string? _description;
 		private double _netCost;
+		private double _outVal;
 		private double _overheadValue;
 		private double _profitValue;
 		private double _totalCost;
@@ -46,6 +47,18 @@ namespace ADLMRateGen.ViewModel.BlockWork
 				{
 					_netCost = value;
 					OnPropertyChanged(nameof(NetCost));
+				}
+			}
+		}
+		public double OutVal
+		{
+			get => _outVal;
+			set
+			{
+				if (_outVal != value)
+				{
+					_outVal = value;
+					OnPropertyChanged(nameof(OutVal));
 				}
 			}
 		}

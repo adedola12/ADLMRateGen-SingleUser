@@ -7,11 +7,13 @@ using ADLMRateGen.Helpers;
 using ADLMRateGen.View;
 using ADLMRateGen.ViewModel.ConcreteWork;
 
+
 namespace ADLMRateGen.ViewModel.BlockWork
 {
     public class BlockworkViewModel: ViewModelBase
     {
         private readonly GetItemsFromDB _helper;
+		private readonly ConcreteViewModel _concreteViewModel;
 
         private double _overheadPercent = 10.0;
 		private double _profitPercent = 25.0;
@@ -72,9 +74,10 @@ namespace ADLMRateGen.ViewModel.BlockWork
 		}
         public ICommand RecomputeCommand { get; }
         public ICommand ShowDetailsCommand { get; }
-        public BlockworkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourLib)
+        public BlockworkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourLib, ConcreteViewModel concreteViewModel)
 		{
 			_helper = new GetItemsFromDB(matLib, labourLib);
+			_concreteViewModel = concreteViewModel;
             matLib.LibraryChanged += OnLibraryChange;
             labourLib.LibraryChanged += OnLibraryChange;
 
@@ -130,7 +133,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
 			Func<BlockworkItem>[] computeMethods =
 			{
 				ComputeItem1,ComputeItem2,ComputeItem3,ComputeItem4,ComputeItem5,ComputeItem6,
-				//ComputeItem7, ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12,
+				ComputeItem7,ComputeItem8,ComputeItem9,ComputeItem10,ComputeItem11, ComputeItem12,ComputeItem13,
+				ComputeItem14,ComputeItem15,ComputeItem16,ComputeItem17,ComputeItem18
 			};
 			foreach (var compute in computeMethods)
 			{
@@ -147,6 +151,15 @@ namespace ADLMRateGen.ViewModel.BlockWork
 		}
 		private double GetMaterialPrice(string name) => _helper.GetMaterialPrice(name);
 		private double GetLabourRate(string name) => _helper.GetLabourRate(name);
+		public double GetNetValue(Func<BlockworkItem> computeItemFunc)
+		{
+			var item = computeItemFunc();
+			return item.NetCost;
+		}
+		public double GetConcreteNetValue(Func<ConcreteworkItem> computeFunc)
+		{
+			return _concreteViewModel.GetConcreteNetValue(computeFunc);
+		}
 		#endregion
 
 		#region Compute Methods
@@ -479,7 +492,6 @@ namespace ADLMRateGen.ViewModel.BlockWork
 				BlockworkBreakdownLine = breakdown
 			};
 		}
-
 		private BlockworkItem ComputeItem6()
 		{
 			//MATERIAL COST
@@ -552,36 +564,811 @@ namespace ADLMRateGen.ViewModel.BlockWork
 				BlockworkBreakdownLine = breakdown
 			};
 		}
+		private BlockworkItem ComputeItem7()
+		{
+			//MATERIAL COST
+			double blockPrice = GetMaterialPrice("225 x 225 x 450mm (9 x 9 x 18\") Hollow blocks");
+			double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
 
-		//private BlockworkItem ComputeItem7()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double blockPerM2 = 10;
+			double wastePer =10;
 
-		//private BlockworkItem ComputeItem8()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double blockCost = blockPrice * blockPerM2;
+			double blockLoadingCost = blockLoadingPrice * blockPerM2;
 
-		//private BlockworkItem ComputeItem9()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double totalMaterialCost = blockCost  ;
+			double waste = totalMaterialCost * (wastePer / 100);
+			double finalMaterialCost = totalMaterialCost + waste+ blockLoadingCost;
 
-		//private BlockworkItem ComputeItem10()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double mortarCost = GetNetValue(ComputeItem4);
+			double mortarQty = 0.013;
+			double totalMortarCost = mortarCost * mortarQty;
+			double mortarWastePer = 5;
+			double mortarWaste = totalMortarCost * (mortarWastePer / 100);
+			double finalCost = totalMortarCost + mortarWaste;
 
-		//private BlockworkItem ComputeItem11()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			//LABOUR COST
+			double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
+			double labourCost = GetLabourRate("Labourer") * 1.4;
 
-		//private BlockworkItem ComputeItem12()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double masonQty = 3;
+			double labourQty = 2;
+
+			double masonPrice = masonCost * masonQty;
+			double labourPrice = labourCost * labourQty;
+			double totalLabourCost = masonPrice + labourPrice;
+
+			double outputPerDay = 140;
+			double areaPerDay = outputPerDay / blockPerM2;
+			double labourCostPerM2 = totalLabourCost/areaPerDay;
+
+			double netCostPerm2 = finalMaterialCost+finalCost+labourCostPerM2;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="Blocks per square meter.", Quantity=blockPerM2, Unit="No", UnitPrice=blockPrice, TotalPrice=blockCost },
+				new BlockworkBreakdownLine { ComponentName="Loading and unloading blocks", Quantity=blockPerM2, Unit="No", UnitPrice=blockLoadingPrice, TotalPrice=blockLoadingCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Block", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
+
+				new BlockworkBreakdownLine { ComponentName="Mortar per square meter", Quantity=mortarQty, Unit="m3/m2", UnitPrice=mortarCost, TotalPrice=totalMortarCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=mortarWastePer, Unit="%", TotalPrice=mortarWaste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Mortar", Quantity=1, Unit="", TotalPrice=finalCost },
+
+				new BlockworkBreakdownLine { ComponentName="Masons", Quantity=masonQty, Unit="per day", UnitPrice=masonCost, TotalPrice=masonPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="per day", UnitPrice=labourCost, TotalPrice=labourPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour cost per day", Quantity=1, Unit="per day", TotalPrice=totalLabourCost },
+
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Output 140 blocks per day @ 10 blocks/m2", Quantity=areaPerDay, Unit="m2", UnitPrice=totalLabourCost, TotalPrice=labourCostPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 7,
+				Description = "225mm blockwall in cement and sand mortar (1:6)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
+		private BlockworkItem ComputeItem8()
+		{
+			double concreteFillingQty = 0.1030;
+			double concreteCost = GetConcreteNetValue(_concreteViewModel.ComputeItem3);
+			double concreteTotal = concreteFillingQty * concreteCost;
+
+			double wastePer = 2.5;
+			double waste = concreteTotal * (wastePer / 100);
+			double finalMaterialCost = concreteTotal + waste;
+
+			//LABOUR COST
+			double labourCost = (GetLabourRate("Labourer")/8) * 1.4;
+			double labourDuration = 0.5;
+			double labourPrice = labourCost * labourDuration;
+
+			double netFillingCost = finalMaterialCost + labourPrice;
+			double blockCost = GetNetValue(ComputeItem7);
+
+			double netCostPerm2 = netFillingCost + blockCost;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="Concrete filling in 225mm blockwall", Quantity=concreteFillingQty, Unit="m3/m2", UnitPrice=concreteCost, TotalPrice=concreteTotal },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
+
+				new BlockworkBreakdownLine { ComponentName="Labour filling 225mm blockwall", Quantity=labourDuration, Unit="hr/m2", UnitPrice=labourCost, TotalPrice=labourPrice },
+
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Filling Cost", Quantity=1, Unit="", TotalPrice=netFillingCost },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 8,
+				Description = "Concrete filling in 225mm blockwall",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+
+		}
+		private BlockworkItem ComputeItem9()
+		{
+			//MATERIAL COST
+			double blockPrice = GetMaterialPrice("150 x 225 x 450mm (6 x 9 x 18\") Hollow blocks");
+			double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
+
+			double blockPerM2 = 10;
+			double wastePer = 10;
+
+			double blockCost = blockPrice * blockPerM2;
+			double blockLoadingCost = blockLoadingPrice * blockPerM2;
+
+			double totalMaterialCost = blockCost;
+			double waste = totalMaterialCost * (wastePer / 100);
+			double finalMaterialCost = totalMaterialCost + waste + blockLoadingCost;
+
+			double mortarCost = GetNetValue(ComputeItem4);
+			double mortarQty = 0.0084;
+			double totalMortarCost = mortarCost * mortarQty;
+			double mortarWastePer = 5;
+			double mortarWaste = totalMortarCost * (mortarWastePer / 100);
+			double finalCost = totalMortarCost + mortarWaste;
+
+			//LABOUR COST
+			double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
+			double labourCost = GetLabourRate("Labourer") * 1.4;
+
+			double masonQty = 3;
+			double labourQty = 2;
+
+			double masonPrice = masonCost * masonQty;
+			double labourPrice = labourCost * labourQty;
+			double totalLabourCost = masonPrice + labourPrice;
+
+			double outputPerDay = 160;
+			double areaPerDay = outputPerDay / blockPerM2;
+			double labourCostPerM2 = totalLabourCost / areaPerDay;
+
+			double netCostPerm2 = finalMaterialCost + finalCost + labourCostPerM2;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="Blocks per square meter.", Quantity=blockPerM2, Unit="No", UnitPrice=blockPrice, TotalPrice=blockCost },
+				new BlockworkBreakdownLine { ComponentName="Loading and unloading blocks", Quantity=blockPerM2, Unit="No", UnitPrice=blockLoadingPrice, TotalPrice=blockLoadingCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Block", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
+
+				new BlockworkBreakdownLine { ComponentName="Mortar per square meter", Quantity=mortarQty, Unit="m3/m2", UnitPrice=mortarCost, TotalPrice=totalMortarCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=mortarWastePer, Unit="%", TotalPrice=mortarWaste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Mortar", Quantity=1, Unit="", TotalPrice=finalCost },
+
+				new BlockworkBreakdownLine { ComponentName="Masons", Quantity=masonQty, Unit="per day", UnitPrice=masonCost, TotalPrice=masonPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="per day", UnitPrice=labourCost, TotalPrice=labourPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour cost per day", Quantity=1, Unit="per day", TotalPrice=totalLabourCost },
+
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Output 160 blocks per day @ 10 blocks/m2", Quantity=areaPerDay, Unit="m2", UnitPrice=totalLabourCost, TotalPrice=labourCostPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 9,
+				Description = "150mm blockwall in cement and sand mortar (1:6)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
+		private BlockworkItem ComputeItem10()
+		{
+			double concreteFillingQty = 0.0618;
+			double concreteCost = GetConcreteNetValue(_concreteViewModel.ComputeItem3);
+			double concreteTotal = concreteFillingQty * concreteCost;
+
+			double wastePer = 2.5;
+			double waste = concreteTotal * (wastePer / 100);
+			double finalMaterialCost = concreteTotal + waste;
+
+			//LABOUR COST
+			double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+			double labourDuration = 0.33;
+			double labourPrice = labourCost * labourDuration;
+
+			double netFillingCost = finalMaterialCost + labourPrice;
+			double blockCost = GetNetValue(ComputeItem7);
+
+			double netCostPerm2 = netFillingCost + blockCost;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="Concrete filling in 150mm blockwall", Quantity=concreteFillingQty, Unit="m3/m2", UnitPrice=concreteCost, TotalPrice=concreteTotal },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
+
+				new BlockworkBreakdownLine { ComponentName="Labour filling 150mm blockwall", Quantity=labourDuration, Unit="hr/m2", UnitPrice=labourCost, TotalPrice=labourPrice },
+
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Filling Cost", Quantity=1, Unit="", TotalPrice=netFillingCost },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 10,
+				Description = "Concrete filling in 150mm blockwall",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
+		private BlockworkItem ComputeItem11()
+		{
+			//MATERIAL COST
+			double blockPrice = GetMaterialPrice("100 x 225 x 450mm (4 x 9 x 18\") Hollow blocks");
+			double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
+
+			double blockPerM2 = 10;
+			double wastePer = 10;
+
+			double blockCost = blockPrice * blockPerM2;
+			double blockLoadingCost = blockLoadingPrice * blockPerM2;
+
+			double totalMaterialCost = blockCost;
+			double waste = totalMaterialCost * (wastePer / 100);
+			double finalMaterialCost = totalMaterialCost + waste + blockLoadingCost;
+
+			double mortarCost = GetNetValue(ComputeItem4);
+			double mortarQty = 0.0058;
+			double totalMortarCost = mortarCost * mortarQty;
+			double mortarWastePer = 5;
+			double mortarWaste = totalMortarCost * (mortarWastePer / 100);
+			double finalCost = totalMortarCost + mortarWaste;
+
+			//LABOUR COST
+			double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
+			double labourCost = GetLabourRate("Labourer") * 1.4;
+
+			double masonQty = 3;
+			double labourQty = 2;
+
+			double masonPrice = masonCost * masonQty;
+			double labourPrice = labourCost * labourQty;
+			double totalLabourCost = masonPrice + labourPrice;
+
+			double outputPerDay = 200;
+			double areaPerDay = outputPerDay / blockPerM2;
+			double labourCostPerM2 = totalLabourCost / areaPerDay;
+
+			double netCostPerm2 = finalMaterialCost + finalCost + labourCostPerM2;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="Blocks per square meter.", Quantity=blockPerM2, Unit="No", UnitPrice=blockPrice, TotalPrice=blockCost },
+				new BlockworkBreakdownLine { ComponentName="Loading and unloading blocks", Quantity=blockPerM2, Unit="No", UnitPrice=blockLoadingPrice, TotalPrice=blockLoadingCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Block", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
+
+				new BlockworkBreakdownLine { ComponentName="Mortar per square meter", Quantity=mortarQty, Unit="m3/m2", UnitPrice=mortarCost, TotalPrice=totalMortarCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=mortarWastePer, Unit="%", TotalPrice=mortarWaste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Mortar", Quantity=1, Unit="", TotalPrice=finalCost },
+
+				new BlockworkBreakdownLine { ComponentName="Masons", Quantity=masonQty, Unit="per day", UnitPrice=masonCost, TotalPrice=masonPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="per day", UnitPrice=labourCost, TotalPrice=labourPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour cost per day", Quantity=1, Unit="per day", TotalPrice=totalLabourCost },
+
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Output 160 blocks per day @ 10 blocks/m2", Quantity=areaPerDay, Unit="m2", UnitPrice=totalLabourCost, TotalPrice=labourCostPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 11,
+				Description = "100mm blockwall in cement and sand mortar (1:6)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
+		private BlockworkItem ComputeItem12()
+		{
+			double concreteFillingQty = 0.0442;
+			double concreteCost = GetConcreteNetValue(_concreteViewModel.ComputeItem3);
+			double concreteTotal = concreteFillingQty * concreteCost;
+
+			double wastePer = 2.5;
+			double waste = concreteTotal * (wastePer / 100);
+			double finalMaterialCost = concreteTotal + waste;
+
+			//LABOUR COST
+			double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+			double labourDuration = 0.25;
+			double labourPrice = labourCost * labourDuration;
+
+			double netFillingCost = finalMaterialCost + labourPrice;
+			double blockCost = GetNetValue(ComputeItem7);
+
+			double netCostPerm2 = netFillingCost + blockCost;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="Concrete filling in 100mm blockwall", Quantity=concreteFillingQty, Unit="m3/m2", UnitPrice=concreteCost, TotalPrice=concreteTotal },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
+
+				new BlockworkBreakdownLine { ComponentName="Labour filling 100mm blockwall", Quantity=labourDuration, Unit="hr/m2", UnitPrice=labourCost, TotalPrice=labourPrice },
+
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Filling Cost", Quantity=1, Unit="", TotalPrice=netFillingCost },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 12,
+				Description = "Concrete filling in 100mm blockwall",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
+		private BlockworkItem ComputeItem13()
+		{
+			//MATERIAL COST
+			double blockPrice = GetMaterialPrice("225 x 225 x 450mm (9 x 9 x 18\") Hollow blocks");
+			double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
+
+			double blockPerM2 = 10;
+			double wastePer = 10;
+
+			double blockCost = blockPrice * blockPerM2;
+			double blockLoadingCost = blockLoadingPrice * blockPerM2;
+
+			double totalMaterialCost = blockCost;
+			double waste = totalMaterialCost * (wastePer / 100);
+			double finalMaterialCost = totalMaterialCost + waste + blockLoadingCost;
+
+			double mortarCost = GetNetValue(ComputeItem3);
+			double mortarQty = 0.013;
+			double totalMortarCost = mortarCost * mortarQty;
+			double mortarWastePer = 5;
+			double mortarWaste = totalMortarCost * (mortarWastePer / 100);
+			double finalCost = totalMortarCost + mortarWaste;
+
+			//LABOUR COST
+			double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
+			double labourCost = GetLabourRate("Labourer") * 1.4;
+
+			double masonQty = 3;
+			double labourQty = 2;
+
+			double masonPrice = masonCost * masonQty;
+			double labourPrice = labourCost * labourQty;
+			double totalLabourCost = masonPrice + labourPrice;
+
+			double outputPerDay = 140;
+			double areaPerDay = outputPerDay / blockPerM2;
+			double labourCostPerM2 = totalLabourCost / areaPerDay;
+
+			double netCostPerm2 = finalMaterialCost + finalCost + labourCostPerM2;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="Blocks per square meter.", Quantity=blockPerM2, Unit="No", UnitPrice=blockPrice, TotalPrice=blockCost },
+				new BlockworkBreakdownLine { ComponentName="Loading and unloading blocks", Quantity=blockPerM2, Unit="No", UnitPrice=blockLoadingPrice, TotalPrice=blockLoadingCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Block", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
+
+				new BlockworkBreakdownLine { ComponentName="Mortar per square meter", Quantity=mortarQty, Unit="m3/m2", UnitPrice=mortarCost, TotalPrice=totalMortarCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=mortarWastePer, Unit="%", TotalPrice=mortarWaste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Mortar", Quantity=1, Unit="", TotalPrice=finalCost },
+
+				new BlockworkBreakdownLine { ComponentName="Masons", Quantity=masonQty, Unit="per day", UnitPrice=masonCost, TotalPrice=masonPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="per day", UnitPrice=labourCost, TotalPrice=labourPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour cost per day", Quantity=1, Unit="per day", TotalPrice=totalLabourCost },
+
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Output 140 blocks per day @ 10 blocks/m2", Quantity=areaPerDay, Unit="m2", UnitPrice=totalLabourCost, TotalPrice=labourCostPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 13,
+				Description = "225mm blockwall in cement and sand mortar (1:4)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
+		private BlockworkItem ComputeItem14()
+		{
+			//MATERIAL COST
+			double blockPrice = GetMaterialPrice("150 x 225 x 450mm (6 x 9 x 18\") Hollow blocks");
+			double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
+
+			double blockPerM2 = 10;
+			double wastePer = 10;
+
+			double blockCost = blockPrice * blockPerM2;
+			double blockLoadingCost = blockLoadingPrice * blockPerM2;
+
+			double totalMaterialCost = blockCost;
+			double waste = totalMaterialCost * (wastePer / 100);
+			double finalMaterialCost = totalMaterialCost + waste + blockLoadingCost;
+
+			double mortarCost = GetNetValue(ComputeItem3);
+			double mortarQty = 0.0084;
+			double totalMortarCost = mortarCost * mortarQty;
+			double mortarWastePer = 5;
+			double mortarWaste = totalMortarCost * (mortarWastePer / 100);
+			double finalCost = totalMortarCost + mortarWaste;
+
+			//LABOUR COST
+			double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
+			double labourCost = GetLabourRate("Labourer") * 1.4;
+
+			double masonQty = 3;
+			double labourQty = 2;
+
+			double masonPrice = masonCost * masonQty;
+			double labourPrice = labourCost * labourQty;
+			double totalLabourCost = masonPrice + labourPrice;
+
+			double outputPerDay = 160;
+			double areaPerDay = outputPerDay / blockPerM2;
+			double labourCostPerM2 = totalLabourCost / areaPerDay;
+
+			double netCostPerm2 = finalMaterialCost + finalCost + labourCostPerM2;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="Blocks per square meter.", Quantity=blockPerM2, Unit="No", UnitPrice=blockPrice, TotalPrice=blockCost },
+				new BlockworkBreakdownLine { ComponentName="Loading and unloading blocks", Quantity=blockPerM2, Unit="No", UnitPrice=blockLoadingPrice, TotalPrice=blockLoadingCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Block", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
+
+				new BlockworkBreakdownLine { ComponentName="Mortar per square meter", Quantity=mortarQty, Unit="m3/m2", UnitPrice=mortarCost, TotalPrice=totalMortarCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=mortarWastePer, Unit="%", TotalPrice=mortarWaste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Mortar", Quantity=1, Unit="", TotalPrice=finalCost },
+
+				new BlockworkBreakdownLine { ComponentName="Masons", Quantity=masonQty, Unit="per day", UnitPrice=masonCost, TotalPrice=masonPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="per day", UnitPrice=labourCost, TotalPrice=labourPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour cost per day", Quantity=1, Unit="per day", TotalPrice=totalLabourCost },
+
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Output 160 blocks per day @ 10 blocks/m2", Quantity=areaPerDay, Unit="m2", UnitPrice=totalLabourCost, TotalPrice=labourCostPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 14,
+				Description = "150mm blockwall in cement and sand mortar (1:4)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
+		private BlockworkItem ComputeItem15()
+		{
+			//MATERIAL COST
+			double blockPrice = GetMaterialPrice("100 x 225 x 450mm (4 x 9 x 18\") Hollow blocks");
+			double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
+
+			double blockPerM2 = 10;
+			double wastePer = 10;
+
+			double blockCost = blockPrice * blockPerM2;
+			double blockLoadingCost = blockLoadingPrice * blockPerM2;
+
+			double totalMaterialCost = blockCost;
+			double waste = totalMaterialCost * (wastePer / 100);
+			double finalMaterialCost = totalMaterialCost + waste + blockLoadingCost;
+
+			double mortarCost = GetNetValue(ComputeItem3);
+			double mortarQty = 0.0058;
+			double totalMortarCost = mortarCost * mortarQty;
+			double mortarWastePer = 5;
+			double mortarWaste = totalMortarCost * (mortarWastePer / 100);
+			double finalCost = totalMortarCost + mortarWaste;
+
+			//LABOUR COST
+			double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
+			double labourCost = GetLabourRate("Labourer") * 1.4;
+
+			double masonQty = 3;
+			double labourQty = 2;
+
+			double masonPrice = masonCost * masonQty;
+			double labourPrice = labourCost * labourQty;
+			double totalLabourCost = masonPrice + labourPrice;
+
+			double outputPerDay = 200;
+			double areaPerDay = outputPerDay / blockPerM2;
+			double labourCostPerM2 = totalLabourCost / areaPerDay;
+
+			double netCostPerm2 = finalMaterialCost + finalCost + labourCostPerM2;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="Blocks per square meter.", Quantity=blockPerM2, Unit="No", UnitPrice=blockPrice, TotalPrice=blockCost },
+				new BlockworkBreakdownLine { ComponentName="Loading and unloading blocks", Quantity=blockPerM2, Unit="No", UnitPrice=blockLoadingPrice, TotalPrice=blockLoadingCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Block", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
+
+				new BlockworkBreakdownLine { ComponentName="Mortar per square meter", Quantity=mortarQty, Unit="m3/m2", UnitPrice=mortarCost, TotalPrice=totalMortarCost },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=mortarWastePer, Unit="%", TotalPrice=mortarWaste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Mortar", Quantity=1, Unit="", TotalPrice=finalCost },
+
+				new BlockworkBreakdownLine { ComponentName="Masons", Quantity=masonQty, Unit="per day", UnitPrice=masonCost, TotalPrice=masonPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="per day", UnitPrice=labourCost, TotalPrice=labourPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour cost per day", Quantity=1, Unit="per day", TotalPrice=totalLabourCost },
+
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Output 160 blocks per day @ 10 blocks/m2", Quantity=areaPerDay, Unit="m2", UnitPrice=totalLabourCost, TotalPrice=labourCostPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 15,
+				Description = "100mm blockwall in cement and sand mortar (1:4)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
+		private BlockworkItem ComputeItem16()
+		{
+			//MATERIAL COST
+			double plywoodPrice = GetMaterialPrice("3/4\"x4x8'(18x1200x2400mm)");
+			double hardwoodPrice = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
+			double solignumPrice = GetMaterialPrice("Solignum (normal)")/20;
+
+			double panelPer100m2 = 35;
+			double hardwoodPer100m2 = 130;
+			double solignumPer100m2 = 50;
+
+			double panelCost = plywoodPrice * panelPer100m2;
+			double hardwoodCost = hardwoodPer100m2 * hardwoodPrice;
+			double solignumCost = solignumPrice * solignumPer100m2;
+			double nailPer = 2.5;
+			double nails = (panelCost+hardwoodCost) * (nailPer / 100);
+			double wastePer = 5;
+			double waste = (panelCost + hardwoodCost+solignumCost+nails) * (wastePer / 100);
+
+			double totalMaterial = panelCost + hardwoodCost + solignumCost + nails + waste;
+			double materialPerM2 = totalMaterial / 100;
+
+			//LABOUR COST
+			double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
+			double labourCost = GetLabourRate("Labourer") * 1.4;
+
+			double masonQty = 3;
+			double labourQty = 2;
+
+			double masonPrice = masonCost * masonQty;
+			double labourPrice = labourCost * labourQty;
+			double totalLabourCost = masonPrice + labourPrice;
+
+			double outputPerDay = 30;
+			double labourPerM2 = totalLabourCost / outputPerDay;
+
+			double netCostPerm2 = materialPerM2 + labourPerM2 ;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="18mm plywood", Quantity=panelPer100m2, Unit="No", UnitPrice=plywoodPrice, TotalPrice=panelCost },
+				new BlockworkBreakdownLine { ComponentName="50 x 50mm hardwood", Quantity=hardwoodPer100m2, Unit="No", UnitPrice=hardwoodPrice, TotalPrice=hardwoodCost },
+				new BlockworkBreakdownLine { ComponentName="Solignum", Quantity=solignumPer100m2, Unit="No", UnitPrice=solignumPrice, TotalPrice=solignumCost },
+				new BlockworkBreakdownLine { ComponentName="Add for nail.", Quantity=nailPer, Unit="%", TotalPrice=nails },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Material per 100m2", Quantity=1, Unit="", TotalPrice=totalMaterial },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Material per m2", Quantity=1, Unit="", TotalPrice=materialPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Masons", Quantity=masonQty, Unit="per day", UnitPrice=masonCost, TotalPrice=masonPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="per day", UnitPrice=labourCost, TotalPrice=labourPrice },
+				new BlockworkBreakdownLine { ComponentName="Output 30m2 per day", Quantity=outputPerDay, Unit="m2", UnitPrice=totalLabourCost, TotalPrice=labourPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 16,
+				Description = "Single face timber paneling to wall comprising 18mm plywood, and 50 x 50mm timber framing at 600mm centers and including treating with solignum (Panel area to be 100m2)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
+		private BlockworkItem ComputeItem17()
+		{
+			//MATERIAL COST
+			double plywoodPrice = GetMaterialPrice("3/4\"x4x8'(18x1200x2400mm)");
+			double hardwoodPrice = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
+			double solignumPrice = GetMaterialPrice("Solignum (normal)") / 20;
+
+			double panelPer100m2 = 35;
+			double hardwoodPer100m2 = 80;
+			double solignumPer100m2 = 50;
+
+			double panelCost = plywoodPrice * panelPer100m2;
+			double hardwoodCost = hardwoodPer100m2 * hardwoodPrice;
+			double solignumCost = solignumPrice * solignumPer100m2;
+			double nailPer = 2.5;
+			double nails = (panelCost + hardwoodCost) * (nailPer / 100);
+			double wastePer = 5;
+			double waste = (panelCost + hardwoodCost + solignumCost + nails) * (wastePer / 100);
+
+			double totalMaterial = panelCost + hardwoodCost + solignumCost + nails + waste;
+			double materialPerM2 = totalMaterial / 100;
+
+			//LABOUR COST
+			double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
+			double labourCost = GetLabourRate("Labourer") * 1.4;
+
+			double masonQty = 3;
+			double labourQty = 2;
+
+			double masonPrice = masonCost * masonQty;
+			double labourPrice = labourCost * labourQty;
+			double totalLabourCost = masonPrice + labourPrice;
+
+			double outputPerDay = 40;
+			double labourPerM2 = totalLabourCost / outputPerDay;
+
+			double netCostPerm2 = materialPerM2 + labourPerM2;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="18mm plywood", Quantity=panelPer100m2, Unit="No", UnitPrice=plywoodPrice, TotalPrice=panelCost },
+				new BlockworkBreakdownLine { ComponentName="50 x 50mm hardwood", Quantity=hardwoodPer100m2, Unit="No", UnitPrice=hardwoodPrice, TotalPrice=hardwoodCost },
+				new BlockworkBreakdownLine { ComponentName="Solignum", Quantity=solignumPer100m2, Unit="No", UnitPrice=solignumPrice, TotalPrice=solignumCost },
+				new BlockworkBreakdownLine { ComponentName="Add for nail.", Quantity=nailPer, Unit="%", TotalPrice=nails },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Material per 100m2", Quantity=1, Unit="", TotalPrice=totalMaterial },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Material per m2", Quantity=1, Unit="", TotalPrice=materialPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Masons", Quantity=masonQty, Unit="per day", UnitPrice=masonCost, TotalPrice=masonPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="per day", UnitPrice=labourCost, TotalPrice=labourPrice },
+				new BlockworkBreakdownLine { ComponentName="Output 30m2 per day", Quantity=outputPerDay, Unit="m2", UnitPrice=totalLabourCost, TotalPrice=labourPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 17,
+				Description = "Single face timber paneling to wall comprising 18mm plywood, and 50 x 50mm timber framing at 1200mm centers and including treating with solignum (Panel area to be 100m2)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
+		private BlockworkItem ComputeItem18()
+		{
+			//MATERIAL COST
+			double plywoodPrice = GetMaterialPrice("3/4\"x4x8'(18x1200x2400mm)");
+			double hardwoodPrice = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
+			double solignumPrice = GetMaterialPrice("Solignum (normal)") / 20;
+
+			double panelPer100m2 = 70;
+			double hardwoodPer100m2 = 80;
+			double solignumPer100m2 = 50;
+
+			double panelCost = plywoodPrice * panelPer100m2;
+			double hardwoodCost = hardwoodPer100m2 * hardwoodPrice;
+			double solignumCost = solignumPrice * solignumPer100m2;
+			double nailPer = 2.5;
+			double nails = (panelCost + hardwoodCost) * (nailPer / 100);
+			double wastePer = 5;
+			double waste = (panelCost + hardwoodCost + solignumCost + nails) * (wastePer / 100);
+
+			double totalMaterial = panelCost + hardwoodCost + solignumCost + nails + waste;
+			double materialPerM2 = totalMaterial / 100;
+
+			//LABOUR COST
+			double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
+			double labourCost = GetLabourRate("Labourer") * 1.4;
+
+			double masonQty = 3;
+			double labourQty = 2;
+
+			double masonPrice = masonCost * masonQty;
+			double labourPrice = labourCost * labourQty;
+			double totalLabourCost = masonPrice + labourPrice;
+
+			double outputPerDay = 25;
+			double labourPerM2 = totalLabourCost / outputPerDay;
+
+			double netCostPerm2 = materialPerM2 + labourPerM2;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<BlockworkBreakdownLine>
+			{
+				//MATERIALCOST
+				new BlockworkBreakdownLine { ComponentName="18mm plywood", Quantity=panelPer100m2, Unit="No", UnitPrice=plywoodPrice, TotalPrice=panelCost },
+				new BlockworkBreakdownLine { ComponentName="50 x 50mm hardwood", Quantity=hardwoodPer100m2, Unit="No", UnitPrice=hardwoodPrice, TotalPrice=hardwoodCost },
+				new BlockworkBreakdownLine { ComponentName="Solignum", Quantity=solignumPer100m2, Unit="No", UnitPrice=solignumPrice, TotalPrice=solignumCost },
+				new BlockworkBreakdownLine { ComponentName="Add for nail.", Quantity=nailPer, Unit="%", TotalPrice=nails },
+				new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Material per 100m2", Quantity=1, Unit="", TotalPrice=totalMaterial },
+				new BlockworkBreakdownLine { ComponentName="Sub-total: Material per m2", Quantity=1, Unit="", TotalPrice=materialPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Masons", Quantity=masonQty, Unit="per day", UnitPrice=masonCost, TotalPrice=masonPrice },
+				new BlockworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="per day", UnitPrice=labourCost, TotalPrice=labourPrice },
+				new BlockworkBreakdownLine { ComponentName="Output 30m2 per day", Quantity=outputPerDay, Unit="m2", UnitPrice=totalLabourCost, TotalPrice=labourPerM2 },
+
+				new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", TotalPrice=netCostPerm2 },
+			};
+
+			return new BlockworkItem
+			{
+				ItemNo = 18,
+				Description = "Double face timber paneling to wall comprising 18mm plywood, and 50 x 50mm timber framing at 1200mm centers and including treating with solignum (Panel area to be 100m2)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 2),
+				BlockworkBreakdownLine = breakdown
+			};
+		}
 
 		#endregion
 

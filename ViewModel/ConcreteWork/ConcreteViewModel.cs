@@ -182,6 +182,12 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 			};
 		}
 
+		public double GetConcreteNetValue(Func<ConcreteworkItem> computeFunc)
+		{
+			return computeFunc().NetCost;
+		}
+
+
 		#endregion
 		private (double overheadVal, double profitVal, double total) ApplyOHP(double netCost)
 		{
@@ -241,7 +247,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 				ConcreteBreakdownLine = breakdown
 			};
 		}
-		private ConcreteworkItem ComputeItem2()
+		public ConcreteworkItem ComputeItem2()
 		{
 			double mixerCost = GetLabourRate("Concrete mixer 21/14");
 			double dieselPrice = (GetLabourRate("Labourer") / 8) *1.4;
@@ -284,7 +290,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 				ConcreteBreakdownLine = breakdown
 			};
 		}
-		private ConcreteworkItem ComputeItem3()
+		public ConcreteworkItem ComputeItem3()
 		{
 			//MATERIAL COST
 			double cementPrice = GetMaterialPrice("Cement (50kg bag)");

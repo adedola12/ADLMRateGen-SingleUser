@@ -67,7 +67,22 @@ namespace ADLMRateGen.ViewModel
             MaterialLibrary = _dataServices.LoadData<ObservableCollection<MaterialModel>>()
                               ?? new ObservableCollection<MaterialModel>();
             MaterialCollectionView = CollectionViewSource.GetDefaultView(MaterialLibrary);
-            MaterialCategory = new ObservableCollection<string> { "All", "Ground Work", "Concrete Work", "FormWork" };
+            MaterialCategory = new ObservableCollection<string> { "All", "Cement Based Products", "Earthwork And Filling Materials", "Crushed Rock Products", "Terrazzo Products", 
+                "Mild Steel Bar Reinforcement", "High Tensile Steel Bar Reinforcement", "Mesh Reinforcement to B.S. 4483", "Timber - Softwood", "Timber - Hardwood", 
+                "Plywood - White", "Plywood - Brown", "Particle Board", "Plywood - Veneer", "Timber Others", "Glasswork - Louver Blade-Plain", "Glasswork - Louver Blade-Obscured", 
+                "Glasswork - Nacco Louver Carrier", "Glasswork - Sheet Glass 3mm", "Glasswork - Sheet Glass 4mm", "Glasswork - Sheet Glass 5mm", "Finishes - Ceramic Floor Tiles", 
+                "Finishes - Ceramic Wall Tiles", "Bituminous Products", "Fuels", "Structural Steel Plates", "Structural Steel", "Asa Ceilings Limited - Ceiling Boards", 
+                "Luxalon Ceilings", "Efisol Mineral Ceilings", "Nigerite Limited - Ceilings", "PVC Floor Tiles", "Longspan Aluminium Roofing Sheet", "Nigerite Products - SLW Asbestos",
+                "Nigerite Products - Super Seven Asbestos", "Nails And Screws And Other Accessories", "Roof Felting", "Zinc Roofing Sheet", 
+                "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)", "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)", 
+                "Aluminium Doors And Windows - Bullet Proof Glazing", "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)", 
+                "Aluminium Doors And Windows - Entrance Doors (Bullet Proof)", "Aluminium Doors And Windows - Entrance Doors (Georgian Wired)", 
+                "Aluminium Doors And Windows - Entrance Doors (Georgian Wired, Mylar)", "Aluminium Doors And Windows - Composite (Clear Glazing)", 
+                "Aluminium Doors And Windows - Steel Doors (Vandal Proof)", "Aluminium Doors And Windows - Steel Doors (Bullet Proof)", "Insulated Wall Panels", "Curtain Wall", 
+                "Timber Doors", "Casement Window", "Paints - Emulsion", "Paints - Gloss Oil", "Paints - Chlorinated", "Paints - Peacock", "Paints - Road", "Paints - Wood", 
+                "AMERON PAINTS", "AMERON PAINTS - Finish Coating", "AMERON PAINTS - Anti-Fouling", "AMERON PAINTS - Degreaser", "AMERON PAINTS - Etching", "AMERON PAINTS - Cleaners", 
+                "AMERON PAINTS - Thinners", "AMERON PAINTS - Starter Liquid", "AMERON PAINTS - Solvent Free Epoxy", "CARBOLINE PAINTS", "PORTLAND PAINTS"
+            };
             _selectedMaterialCategory = "All";
 
             SearchMaterialCommand = new DelegateCommand(o => ApplyFilter());

@@ -21,7 +21,7 @@ namespace ADLMRateGen
 
             var groundworkVM = new GroundWorkViewModel(libraryVM, labourLibraryVM);
             var concreteWorkVM = new ConcreteViewModel(libraryVM, labourLibraryVM);
-            var blockworkVM = new BlockworkViewModel(libraryVM, labourLibraryVM);
+            var blockworkVM = new BlockworkViewModel(libraryVM, labourLibraryVM, concreteWorkVM);
 
 			this.DataContext = new MainViewModel(priceVM, libraryVM, labourVm, labourLibraryVM, groundworkVM, concreteWorkVM, blockworkVM);
 
