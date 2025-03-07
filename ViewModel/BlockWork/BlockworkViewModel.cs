@@ -208,7 +208,7 @@ namespace ADLMRateGen.ViewModel.BlockWork
 				BlockworkBreakdownLine = breakdown
 			};
 		}
-		private BlockworkItem ComputeItem2()
+		public BlockworkItem ComputeItem2()
 		{
 			//MATERIAL COST
 			double cementPrice = GetMaterialPrice("Cement (50kg bag)");
@@ -280,7 +280,7 @@ namespace ADLMRateGen.ViewModel.BlockWork
 				BlockworkBreakdownLine = breakdown
 			};
 		}
-		private BlockworkItem ComputeItem3()
+		public BlockworkItem ComputeItem3()
 		{
 			//MATERIAL COST
 			double cementPrice = GetMaterialPrice("Cement (50kg bag)");
@@ -424,7 +424,7 @@ namespace ADLMRateGen.ViewModel.BlockWork
 				BlockworkBreakdownLine = breakdown
 			};
 		}
-		private BlockworkItem ComputeItem5()
+		public BlockworkItem ComputeItem5()
 		{
 			//MATERIAL COST
 			double cementPrice = GetMaterialPrice("Cement (50kg bag)");

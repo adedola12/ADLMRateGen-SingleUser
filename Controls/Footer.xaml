@@ -8,7 +8,8 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="{StaticResource SecondaryColor}">
         <StatusBar Background="{StaticResource SecondaryColor}" Foreground="Wheat" HorizontalAlignment="Center">
-            <StatusBarItem FontSize="20" FontWeight="Bold" Content="ADLM Complete Planswift Plugin"/>
+            <StatusBarItem FontSize="20" FontWeight="Bold" 
+                           Content="ADLM Complete Rate Gen"/>
         </StatusBar>
     </Grid>
 </UserControl>
