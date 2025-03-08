@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using ADLMRateGen.Command;
 using ADLMRateGen.Services;
@@ -8,7 +9,21 @@ namespace ADLMRateGen.ViewModel.CustomRate
 {
     public class CustomRateEntryViewModel: ViewModelBase
     {
-        public ObservableCollection<string> AvailableMaterials { get; } =
+		private string _rateName;
+		public string RateName
+		{
+			get => _rateName;
+			set
+			{
+				if (_rateName != value)
+				{
+					_rateName = value;
+					RaisePropertyChanged(nameof(RateName));
+				}
+			}
+		}
+
+		public ObservableCollection<string> AvailableMaterials { get; } =
             new ObservableCollection<string>(MaterialLibraryService.GetAllMaterialNames());
         public ObservableCollection<string> AvailableLabourItems { get; } =
             new ObservableCollection<string>(LabourLibraryService.GetAllLabourNames());
@@ -82,15 +97,31 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
 		private void AddMaterialItem()
         {
-            MaterialItems.Add(new RateEntryItem());
-            RaisePropertyChanged(nameof(TotalMaterialCost));
+			var item = new RateEntryItem
+			{
+				RateType = RateItemType.Material,
+				Quantity = 0,
+				UnitPrice = 0,
+				Unit = "",
+				Description = ""
+			};
+			MaterialItems.Add(item);
+			RaisePropertyChanged(nameof(TotalMaterialCost));
             RaisePropertyChanged(nameof(OverallTotal));
             RaisePropertyChanged(nameof(GrandTotal));
         }
         private void AddLabourItem()
         {
-            LabourItems.Add(new RateEntryItem());
-            RaisePropertyChanged(nameof (TotalLabourCost));
+			var item = new RateEntryItem
+			{
+				RateType = RateItemType.Labour,
+				Quantity = 0,
+				UnitPrice = 0,
+				Unit = "",
+				Description = ""
+			};
+			LabourItems.Add(item);
+			RaisePropertyChanged(nameof (TotalLabourCost));
 			RaisePropertyChanged(nameof(OverallTotal));
 			RaisePropertyChanged(nameof(GrandTotal));
 		}
@@ -98,6 +129,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
         {
             var newRate = new CustomRate
             {
+				Title = RateName,
 				Description = Description,
 				MaterialItems = MaterialItems.ToList(),
 				LabourItems = LabourItems.ToList(),
@@ -107,6 +139,21 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			};
 
             CustomRateServices.SaveCustomRate(newRate);
-        }
+
+			MessageBox.Show("Custom Rate saved successfully!", "Save", MessageBoxButton.OK, MessageBoxImage.Information);
+
+			// Clear out the fields
+			RateName = string.Empty;
+			Description = string.Empty;
+			MaterialItems.Clear();
+			LabourItems.Clear();
+			OverheadPercent = 10;
+			ProfitPercent = 10;
+
+			RaisePropertyChanged(nameof(TotalMaterialCost));
+			RaisePropertyChanged(nameof(TotalLabourCost));
+			RaisePropertyChanged(nameof(OverallTotal));
+			RaisePropertyChanged(nameof(GrandTotal));
+		}
 	}
 }

@@ -4,8 +4,10 @@ using Newtonsoft.Json;
 
 namespace ADLMRateGen.Services
 {
-    public class CustomRateServices
+	public class CustomRateServices
     {
+		public static event Action<CustomRate> OnCustomRateSaved;
+
 		private static readonly string FilePath = Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
 			"MyApp", "CustomRates.json");
@@ -15,6 +17,8 @@ namespace ADLMRateGen.Services
 			var rates = LoadCustomRates().ToList();
 			rates.Add(rate);
 			SaveRates(rates);
+
+			OnCustomRateSaved?.Invoke(rate);
 		}
 
 		public static IEnumerable<CustomRate> LoadCustomRates()
@@ -28,7 +32,7 @@ namespace ADLMRateGen.Services
 			return JsonConvert.DeserializeObject<List<CustomRate>>(json) ?? new List<CustomRate>();
 		}
 
-		private static void SaveRates(IEnumerable<CustomRate> rates)
+		public static void SaveRates(IEnumerable<CustomRate> rates)
 		{
 			var directory = Path.GetDirectoryName(FilePath);
 			if (!Directory.Exists(directory))

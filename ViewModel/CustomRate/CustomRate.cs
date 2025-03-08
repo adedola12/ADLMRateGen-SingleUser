@@ -5,6 +5,8 @@ namespace ADLMRateGen.ViewModel.CustomRate
 	public class CustomRate
 	{
 		public Guid Id { get; set; } = Guid.NewGuid();
+
+		public string Title { get; set; }
 		public string Description { get; set; }
 		public List<RateEntryItem> MaterialItems { get; set; } = new List<RateEntryItem>();
 		public List<RateEntryItem> LabourItems { get; set; } = new List<RateEntryItem>();

@@ -5,22 +5,26 @@ using ADLMRateGen.Services;
 
 namespace ADLMRateGen.ViewModel.CustomRate
 {
+	public enum RateItemType
+	{
+		Material,Labour
+	}
 	public class RateEntryItem : INotifyPropertyChanged
 	{
-		private int _itemNo;
+		private RateItemType _rateType;
 		private string? _description;
 		private decimal _quantity;
 		private string? _unit;
 		private decimal _unitPrice;
 
-		public int ItemNo
+		public RateItemType RateType
 		{
-			get => _itemNo;
+			get => _rateType;
 			set
 			{
-				if (_itemNo != value)
+				if (_rateType != value)
 				{
-					_itemNo = value;
+					_rateType = value;
 					OnPropertyChanged();
 				}
 			}
@@ -33,10 +37,15 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				if (_description != value)
 				{
 					_description = value;
-					OnPropertyChanged();
-					if (!string.IsNullOrWhiteSpace(_description))
+					OnPropertyChanged(nameof(Description));
+					// Decide which library to use based on RateType:
+					if (RateType == RateItemType.Material)
 					{
 						UnitPrice = MaterialLibraryService.GetPrice(_description);
+					}
+					else // RateType == RateItemType.Labour
+					{
+						UnitPrice = LabourLibraryService.GetPrice(_description);
 					}
 				}
 			}
@@ -49,7 +58,8 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				if (_quantity != value)
 				{
 					_quantity = value;
-					OnPropertyChanged();
+					OnPropertyChanged(nameof(Quantity));
+					OnPropertyChanged(nameof(TotalCost)); 
 				}
 			}
 		}
@@ -61,7 +71,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				if (_unit != value)
 				{
 					_unit = value;
-					OnPropertyChanged();
+					OnPropertyChanged(nameof(Unit));
 				}
 			}
 		}
@@ -73,12 +83,12 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				if (_unitPrice != value)
 				{
 					_unitPrice = value;
-					OnPropertyChanged();
+					OnPropertyChanged(nameof(UnitPrice));
+					OnPropertyChanged(nameof(TotalCost));
 				}
 			}
 		}
 
-		[JsonIgnore]
 		public decimal TotalCost => Quantity * UnitPrice;
 
 		public event PropertyChangedEventHandler? PropertyChanged;
