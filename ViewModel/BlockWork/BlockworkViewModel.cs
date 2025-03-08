@@ -352,7 +352,7 @@ namespace ADLMRateGen.ViewModel.BlockWork
 				BlockworkBreakdownLine = breakdown
 			};
 		}
-		private BlockworkItem ComputeItem4()
+		public BlockworkItem ComputeItem4()
 		{
 			//MATERIAL COST
 			double cementPrice = GetMaterialPrice("Cement (50kg bag)");

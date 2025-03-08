@@ -62,9 +62,9 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
-                    <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="Auto"/>
+                    <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="Auto" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Net Cost" 
-                                 Binding="{Binding NetCost, StringFormat={}{0:N2}}" Width="Auto"/>
+                                 Binding="{Binding NetCost, StringFormat={}{0:N2}}" Width="Auto" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Overhead" 
                                  Binding="{Binding OverheadValue, StringFormat={}{0:N2}}" Width="Auto"/>
                     <DataGridTextColumn Header="Profit" 

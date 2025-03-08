@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="ADLMRateGen.View.CustomRateListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ADLMRateGen.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="10" Background="White">
+        <StackPanel>
+            <TextBlock Text="Saved Custom Rates" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBox Width="300" Margin="0,0,0,10" 
+                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
+                     ToolTip="Search by description..."/>
+            <ListView ItemsSource="{Binding RatesView}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Description" Width="250" DisplayMemberBinding="{Binding Description}" />
+                        <GridViewColumn Header="Grand Total" Width="100" DisplayMemberBinding="{Binding GrandTotal, StringFormat={}{0:C2}}" />
+                        <GridViewColumn Header="Date" Width="150" DisplayMemberBinding="{Binding CreatedDate}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </StackPanel>
+    </Grid>
+</UserControl>

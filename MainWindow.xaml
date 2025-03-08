@@ -10,6 +10,7 @@
         xmlns:concrete="clr-namespace:ADLMRateGen.ViewModel.ConcreteWork"
         xmlns:blockwork="clr-namespace:ADLMRateGen.ViewModel.BlockWork"
         xmlns:finishes="clr-namespace:ADLMRateGen.ViewModel.Finishes"
+        xmlns:customInput="clr-namespace:ADLMRateGen.ViewModel.CustomRate"
         mc:Ignorable="d"
         Title="MainWindow" Height="750" Width="1080">
     <Window.Resources>
@@ -37,6 +38,12 @@
         <DataTemplate DataType="{x:Type finishes:FinishesViewModel}">
             <view:FinishesView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type customInput:CustomRateEntryViewModel}">
+            <view:CustomRateEntryView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type customInput:CustomRateListViewModel}">
+            <view:CustomRateListView/>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -57,6 +64,7 @@
             <Button Content="Material Price Library" Command="{Binding SelectedMaterialLibraryViewCommand}" Margin="10" Padding="5"/>
             <Button Content="Input Labour Rate" Command="{Binding SelectedLabourInputViewCommand}" Margin="10" Padding="5"/>
             <Button Content="Labour Rate Library" Command="{Binding SelectedLabourLibraryViewCommand}" Margin="10" Padding="5"/>
+            <Button Content="Build Custom Rate" Command="{Binding SelectedCustomRateInputViewCommand}" Margin="10" Padding="5"/>
         </StackPanel>
 
         <!-- Header -->
@@ -81,6 +89,7 @@
                 <Button Content="Steel" Command="" Margin="5" Padding="2"/>
                 <Button Content="Plumbing" Command="" Margin="5" Padding="2"/>
                 <Button Content="Electrical" Command="" Margin="5" Padding="2"/>
+                <Button Content="Custom Rate " Command="{Binding SelectedCustomRateViewCommand}" Margin="5" Padding="2"/>
             </StackPanel>
             <!-- The ContentControl will display the current view (MaterialPriceView in this case) -->
             <ContentControl Grid.Row="1" Content="{Binding SelectedViewModel}"/>

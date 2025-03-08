@@ -1,0 +1,88 @@
+﻿<UserControl x:Class="ADLMRateGen.View.CustomRateEntryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ADLMRateGen.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="10" Background="White">
+        <StackPanel>
+            <TextBlock Text="Enter New Custom Rate" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <!-- Materials Section -->
+            <TextBlock Text="Materials" FontWeight="Bold" FontSize="16" />
+            <ItemsControl ItemsSource="{Binding MaterialItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <!-- Auto-complete ComboBox for Material Names -->
+                            <ComboBox 
+    Width="200" 
+    IsEditable="True"
+    Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+    ItemsSource="{Binding DataContext.AvailableMaterials, 
+                  RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+
+                            <TextBox Width="100" Margin="10,0,0,0"
+                                     Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" 
+                                     ToolTip="Price"/>
+                            <TextBox Width="100" Margin="10,0,0,0"
+                                     Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Quantity"/>
+                            <TextBox Width="50" Margin="10,0,0,0"
+                                     Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Unit"/>
+                            <TextBlock Width="100" Margin="10,0,0,0"
+                                       Text="{Binding TotalCost, StringFormat=N2}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Content="Add Material" Command="{Binding AddMaterialItemCommand}" Margin="0,10,0,0"/>
+
+            <!-- Labour Section -->
+            <TextBlock Text="Labour" FontWeight="Bold" FontSize="16" Margin="0,20,0,0"/>
+            <ItemsControl ItemsSource="{Binding LabourItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <ComboBox Width="200" IsEditable="True"
+                                      Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                      ItemsSource="{Binding DataContext.AvailableLabourItems, 
+                                RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                            <TextBox Width="100" Margin="10,0,0,0"
+                                     Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" 
+                                     ToolTip="Price"/>
+                            <TextBox Width="100" Margin="10,0,0,0"
+                                     Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Quantity"/>
+                            <TextBox Width="50" Margin="10,0,0,0"
+                                     Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Unit"/>
+                            <TextBlock Width="100" Margin="10,0,0,0"
+                                       Text="{Binding TotalCost, StringFormat=N2}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Content="Add Labour" Command="{Binding AddLabourItemCommand}" Margin="0,10,0,0"/>
+
+            <!-- Totals and Overhead/Profit -->
+            <TextBlock Text="{Binding TotalMaterialCost, StringFormat='Material Total: {0:C2}'}" FontWeight="Bold" Margin="0,20,0,0"/>
+            <TextBlock Text="{Binding TotalLabourCost, StringFormat='Labour Total: {0:C2}'}" FontWeight="Bold"/>
+            <TextBlock Text="{Binding OverallTotal, StringFormat='Overall Total: {0:C2}'}" FontWeight="Bold"/>
+            <TextBlock Text="" 
+                       FontWeight="Bold"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                <TextBlock Text="Overhead (%)" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Width="50" Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Text="Profit (%)" VerticalAlignment="Center" Margin="20,0,10,0"/>
+                <TextBox Width="50" Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+
+            <Button Content="Save Custom Rate" Command="{Binding SaveCustomRateCommand}" Margin="0,20,0,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

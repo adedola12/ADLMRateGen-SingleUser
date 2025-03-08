@@ -1,13 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Security.Policy;
 using System.Windows.Data;
 using System.Windows.Input;
 using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.View;
 using ADLMRateGen.ViewModel.BlockWork;
-using ADLMRateGen.ViewModel.ConcreteWork;
 
 namespace ADLMRateGen.ViewModel.Finishes
 {
@@ -134,9 +132,8 @@ namespace ADLMRateGen.ViewModel.Finishes
 			Func<FinishesItem>[] computeMethods =
 			{
 				ComputeItem1,ComputeItem2,ComputeItem3,ComputeItem4,ComputeItem5,ComputeItem6,ComputeItem7,
-				ComputeItem8,ComputeItem9,
-				//ComputeItem10,ComputeItem11, ComputeItem12,ComputeItem13,
-				//ComputeItem14,ComputeItem15,ComputeItem16,ComputeItem17,ComputeItem18, ComputeItem19,ComputeItem20,ComputeItem21
+				ComputeItem8,ComputeItem9,ComputeItem10,ComputeItem11, ComputeItem12,ComputeItem13,ComputeItem14,ComputeItem15,
+				ComputeItem16,ComputeItem17,ComputeItem18, ComputeItem19,ComputeItem20,ComputeItem21,ComputeItem22,ComputeItem23
 			};
 
 			foreach(var compute in computeMethods)
@@ -596,7 +593,6 @@ namespace ADLMRateGen.ViewModel.Finishes
 				FinishesBreakdownLine = breakdown
 			};
 		}
-
 		private FinishesItem ComputeItem9()
 		{
 			#region Material Cost
@@ -692,7 +688,7 @@ namespace ADLMRateGen.ViewModel.Finishes
 			double secondPolishTerrazoRate = secondPolishTerrazoMan * secondPolishTerrazoCost;
 			double secondPolishTilingRate = secondPolishTilingMan * secondPolishTilingCost;
 
-			double totalSecondPolish = secondPolishCostPer20SqmRate + secondPolishGrindingRate + secondPolishTerrazoRate + secondPolishTilingRate;
+			double totalSecondPolish = sodiumSillicateRate+ secondPolishCostPer20SqmRate + secondPolishGrindingRate + secondPolishTerrazoRate + secondPolishTilingRate;
 
 			double waxPolishPer = 15;
 			double finalPolishCostPer20SqmQty = Math.Round(4.0 / 20.0, 2);
@@ -712,7 +708,7 @@ namespace ADLMRateGen.ViewModel.Finishes
 			double finalPolishTerrazoRate = finalPolishTerrazoMan * finalPolishTerrazoCost;
 			double finalPolishTilingRate = finalPolishTilingMan * finalPolishTilingCost;
 
-			double totalFinalPolish = finalPolishCostPer20SqmRate + finalPolishGrindingRate + finalPolishTerrazoRate + finalPolishTilingRate;
+			double totalFinalPolish = waxPolishRate+ finalPolishCostPer20SqmRate + finalPolishGrindingRate + finalPolishTerrazoRate + finalPolishTilingRate;
 
 			double totalPolish = totalFirstPolish + totalSecondPolish + totalFinalPolish;
 			#endregion
@@ -752,6 +748,24 @@ namespace ADLMRateGen.ViewModel.Finishes
 				new FinishesBreakdownLine{ComponentName="Tiller/Terrazzo Man", Quantity=firstPolishTerrazoMan, Unit="hrs/m2", UnitPrice=firstPolishTerrazoCost, TotalPrice=firstPolishTerrazoRate},
 				new FinishesBreakdownLine{ComponentName="Tiling Assistant", Quantity=firstPolishTilingMan, Unit="hrs/m2", UnitPrice=firstPolishTilingCost, TotalPrice= firstPolishTilingRate},
 				new FinishesBreakdownLine{ComponentName="Total First Polish", TotalPrice=totalFirstPolish},
+
+				new FinishesBreakdownLine{ComponentName="20% Sodium Sillicate", Quantity=sodiumSillicatePer, Unit="%", UnitPrice=sodiumSillicateCost, TotalPrice=sodiumSillicateRate},
+				new FinishesBreakdownLine{ComponentName="4 sets per 20m2", Quantity=secondPolishCostPer20SqmQty, Unit="stone/m2", UnitPrice=secondPolishCostPer20SqmCost, TotalPrice=secondPolishCostPer20SqmRate},
+				new FinishesBreakdownLine{ComponentName="Grinding machine", Quantity=secondPolishGrindingMachine, Unit="hrs/m2", UnitPrice=secondPolishGrindingCost, TotalPrice=secondPolishGrindingRate},
+				new FinishesBreakdownLine{ComponentName="Tiller/Terrazzo Man", Quantity=secondPolishTerrazoMan, Unit="hrs/m2", UnitPrice=secondPolishTerrazoCost, TotalPrice=secondPolishTerrazoRate},
+				new FinishesBreakdownLine{ComponentName="Tiling Assistant", Quantity=secondPolishTilingMan, Unit="hrs/m2", UnitPrice=secondPolishTilingCost, TotalPrice=secondPolishTilingRate},
+				new FinishesBreakdownLine{ComponentName="Total Second Polish", TotalPrice=totalSecondPolish},
+
+				new FinishesBreakdownLine{ComponentName="15% Wax Polish", Quantity=waxPolishPer, Unit="%", UnitPrice=waxPolishCost, TotalPrice=waxPolishRate},
+				new FinishesBreakdownLine{ComponentName="4 sets per 20m2", Quantity=finalPolishCostPer20SqmQty, Unit="stone/m2", UnitPrice=finalPolishCostPer20SqmCost, TotalPrice=finalPolishCostPer20SqmRate},
+				new FinishesBreakdownLine{ComponentName="Grinding machine", Quantity=finalPolishGrindingMachine, Unit="hrs/m2", UnitPrice=finalPolishGrindingCost, TotalPrice=finalPolishGrindingRate},
+				new FinishesBreakdownLine{ComponentName="Tiller/Terrazzo Man", Quantity=finalPolishTerrazoMan, Unit="hrs/m2", UnitPrice=finalPolishTerrazoCost, TotalPrice=finalPolishTerrazoRate},
+				new FinishesBreakdownLine{ComponentName="Tiling Assistant", Quantity=finalPolishTilingMan, Unit="hrs/m2", UnitPrice=finalPolishTilingCost, TotalPrice=finalPolishTilingRate},
+				new FinishesBreakdownLine{ComponentName="Total Final Polish", TotalPrice=totalFinalPolish},
+
+				new FinishesBreakdownLine{ComponentName="Total Polish", TotalPrice=totalPolish},
+
+				new FinishesBreakdownLine{ComponentName="Net Cost per m2", TotalPrice=netTerrazoPerSqm},
 			};
 
 			return new FinishesItem
@@ -766,68 +780,851 @@ namespace ADLMRateGen.ViewModel.Finishes
 				FinishesBreakdownLine = breakdown
 			};
 		}
+		private FinishesItem ComputeItem10()
+		{
+			double flexTileCost = GetMaterialPrice("Floor tiles 300 x 300, 56 tiles per carton")/5.04;
+			double flexTileWastePer = 10;
+			double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
+			double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
+			double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)")/4.0)/17.5;
 
-		//private FinishesItem ComputeItem10()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double flexTileQty = 1;
+			double adhesiveQty = 1;
 
-		//private FinishesItem ComputeItem11()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double flexTileRate = flexTileCost * flexTileQty;
+			double adhesiveRate = adhesiveCost * adhesiveQty;
 
-		//private FinishesItem ComputeItem12()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double totalMaterialRate = flexTileRate + adhesiveRate + totalFlexTilesWaste;
 
-		//private FinishesItem ComputeItem13()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			//LABOUR COST
+			double tilesLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+			double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
 
-		//private FinishesItem ComputeItem14()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double tilesLabourQty = 12.0/60.0;
+			double labourQty = 12.0/60.0;
+			double headmanQty = 5.0/60.0;
 
-		//private FinishesItem ComputeItem15()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double tilesLabourRate = tilesLabourCost * tilesLabourQty;
+			double labourRate = labourCost * labourQty;
+			double headmanRate = headmanCost * headmanQty;
 
-		//private FinishesItem ComputeItem16()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double totalLabourRate = tilesLabourRate + labourRate + headmanRate;
 
-		//private FinishesItem ComputeItem17()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double netCostPerm2 = totalMaterialRate + totalLabourRate;
 
-		//private FinishesItem ComputeItem18()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			var ohp = ApplyOHP(netCostPerm2);
 
-		//private FinishesItem ComputeItem19()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "1.3mm floor flex tile", Quantity=flexTileQty, Unit="m2", UnitPrice=flexTileCost, TotalPrice=flexTileRate},
+				new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=flexTileWastePer, Unit="%", UnitPrice=flexTileWaste, TotalPrice=totalFlexTilesWaste},
+				new FinishesBreakdownLine{ ComponentName="Adhesive", Quantity=adhesiveQty, Unit="m2", UnitPrice=adhesiveCost, TotalPrice=adhesiveRate},
+				new FinishesBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialRate},
+				new FinishesBreakdownLine{ComponentName="Laying tiles using 1 tiler.", Quantity=tilesLabourQty, Unit="per hr", UnitPrice=tilesLabourCost, TotalPrice=tilesLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=labourQty, Unit="per hr", UnitPrice=labourCost, TotalPrice=labourRate},
+				new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="per hr", UnitPrice=headmanCost, TotalPrice=headmanRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Total Cost per m2", TotalPrice=netCostPerm2},
+			};
 
-		//private FinishesItem ComputeItem20()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			return new FinishesItem
+			{
+				ItemNo = 10,
+				Description = "1.3mm thick Nigerite PVC Floorflex tile (56 no. pack) fixed on smooth (timber or concrete) surface  with  floorflex  adhesive.",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem11()
+		{
+			double flexTileCost = GetMaterialPrice("300 x 300 x 1.3mm thick floor tiles (42 tiles per carton)") / 5.04;
+			double flexTileWastePer = 10;
+			double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
+			double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
 
-		//private FinishesItem ComputeItem21()
-		//{
-		//	throw new NotImplementedException();
-		//}
+			double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)") / 4.0) / 17.5;
 
+			double flexTileQty = 1;
+			double adhesiveQty = 1;
 
+			double flexTileRate = flexTileCost * flexTileQty;
+			double adhesiveRate = adhesiveCost * adhesiveQty;
+
+			double totalMaterialRate = flexTileRate + adhesiveRate + totalFlexTilesWaste;
+
+			//LABOUR COST
+			double tilesLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+			double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
+
+			double tilesLabourQty = 12.0 / 60.0;
+			double labourQty = 12.0 / 60.0;
+			double headmanQty = 5.0 / 60.0;
+
+			double tilesLabourRate = tilesLabourCost * tilesLabourQty;
+			double labourRate = labourCost * labourQty;
+			double headmanRate = headmanCost * headmanQty;
+
+			double totalLabourRate = tilesLabourRate + labourRate + headmanRate;
+
+			double netCostPerm2 = totalMaterialRate + totalLabourRate;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "1.3mm floor flex tile", Quantity=flexTileQty, Unit="m2", UnitPrice=flexTileCost, TotalPrice=flexTileRate},
+				new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=flexTileWastePer, Unit="%", UnitPrice=flexTileWaste, TotalPrice=totalFlexTilesWaste},
+				new FinishesBreakdownLine{ ComponentName="Adhesive", Quantity=adhesiveQty, Unit="m2", UnitPrice=adhesiveCost, TotalPrice=adhesiveRate},
+				new FinishesBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialRate},
+				new FinishesBreakdownLine{ComponentName="Laying tiles using 1 tiler.", Quantity=tilesLabourQty, Unit="hr/m2", UnitPrice=tilesLabourCost, TotalPrice=tilesLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=labourQty, Unit="hr/m2", UnitPrice=labourCost, TotalPrice=labourRate},
+				new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="hr/m2", UnitPrice=headmanCost, TotalPrice=headmanRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Total Cost per m2", TotalPrice=netCostPerm2},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 11,
+				Description = "1.3mm thick Nigerite PVC Floorflex tile (42 no. pack) fixed on smooth (timber or concrete) surface  with  floorflex  adhesive.",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem12()
+		{
+			double flexTileCost = GetMaterialPrice("Floor tiles 1.6mm thick, 36 tiles per carton") / 3.24;
+			double flexTileWastePer = 10;
+			double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
+			double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
+
+			double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)") / 4.0) / 17.5;
+
+			double flexTileQty = 1;
+			double adhesiveQty = 1;
+
+			double flexTileRate = flexTileCost * flexTileQty;
+			double adhesiveRate = adhesiveCost * adhesiveQty;
+
+			double totalMaterialRate = flexTileRate + adhesiveRate + totalFlexTilesWaste;
+
+			//LABOUR COST
+			double tilesLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+			double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
+
+			double tilesLabourQty = 12.0 / 60.0;
+			double labourQty = 12.0 / 60.0;
+			double headmanQty = 5.0 / 60.0;
+
+			double tilesLabourRate = tilesLabourCost * tilesLabourQty;
+			double labourRate = labourCost * labourQty;
+			double headmanRate = headmanCost * headmanQty;
+
+			double totalLabourRate = tilesLabourRate + labourRate + headmanRate;
+
+			double netCostPerm2 = totalMaterialRate + totalLabourRate;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "1.6mm floor flex tile", Quantity=flexTileQty, Unit="m2", UnitPrice=flexTileCost, TotalPrice=flexTileRate},
+				new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=flexTileWastePer, Unit="%", UnitPrice=flexTileWaste, TotalPrice=totalFlexTilesWaste},
+				new FinishesBreakdownLine{ ComponentName="Adhesive", Quantity=adhesiveQty, Unit="m2", UnitPrice=adhesiveCost, TotalPrice=adhesiveRate},
+				new FinishesBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialRate},
+				new FinishesBreakdownLine{ComponentName="Laying tiles using 1 tiler.", Quantity=tilesLabourQty, Unit="hr/m2", UnitPrice=tilesLabourCost, TotalPrice=tilesLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=labourQty, Unit="hr/m2", UnitPrice=labourCost, TotalPrice=labourRate},
+				new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="hr/m2", UnitPrice=headmanCost, TotalPrice=headmanRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Total Cost per m2", TotalPrice=netCostPerm2},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 12,
+				Description = "1.6mm thick Nigerite PVC Floorflex tile (36 no. pack) fixed on smooth (timber or concrete) surface  with  floorflex  adhesive.",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem13()
+		{
+			double flexTileCost = GetMaterialPrice("Floor tiles 56 tiles per carton") / 5.04;
+			double flexTileWastePer = 10;
+			double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
+			double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
+
+			double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)") / 4.0) / 17.5;
+
+			double flexTileQty = 1;
+			double adhesiveQty = 1;
+
+			double flexTileRate = flexTileCost * flexTileQty;
+			double adhesiveRate = adhesiveCost * adhesiveQty;
+
+			double totalMaterialRate = flexTileRate + adhesiveRate + totalFlexTilesWaste;
+
+			//LABOUR COST
+			double tilesLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+			double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
+
+			double tilesLabourQty = 12.0 / 60.0;
+			double labourQty = 12.0 / 60.0;
+			double headmanQty = 5.0 / 60.0;
+
+			double tilesLabourRate = tilesLabourCost * tilesLabourQty;
+			double labourRate = labourCost * labourQty;
+			double headmanRate = headmanCost * headmanQty;
+
+			double totalLabourRate = tilesLabourRate + labourRate + headmanRate;
+
+			double netCostPerm2 = totalMaterialRate + totalLabourRate;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "1.6mm floor flex tile", Quantity=flexTileQty, Unit="m2", UnitPrice=flexTileCost, TotalPrice=flexTileRate},
+				new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=flexTileWastePer, Unit="%", UnitPrice=flexTileWaste, TotalPrice=totalFlexTilesWaste},
+				new FinishesBreakdownLine{ ComponentName="Adhesive", Quantity=adhesiveQty, Unit="m2", UnitPrice=adhesiveCost, TotalPrice=adhesiveRate},
+				new FinishesBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialRate},
+				new FinishesBreakdownLine{ComponentName="Laying tiles using 1 tiler.", Quantity=tilesLabourQty, Unit="hr/m2", UnitPrice=tilesLabourCost, TotalPrice=tilesLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=labourQty, Unit="hr/m2", UnitPrice=labourCost, TotalPrice=labourRate},
+				new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="hr/m2", UnitPrice=headmanCost, TotalPrice=headmanRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Total Cost per m2", TotalPrice=netCostPerm2},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 13,
+				Description = "1.6mm thick Nigerite PVC Floorflex tile (56 no. pack) fixed on smooth (timber or concrete) surface  with  floorflex  adhesive.",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem14()
+		{
+			double flexTileCost = GetMaterialPrice("Floor tiles 2.0mm thick (56 tiles per carton)") / 5.04;
+			double flexTileWastePer = 10;
+			double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
+			double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
+
+			double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)") / 4.0) / 17.5;
+
+			double flexTileQty = 1;
+			double adhesiveQty = 1;
+
+			double flexTileRate = flexTileCost * flexTileQty;
+			double adhesiveRate = adhesiveCost * adhesiveQty;
+
+			double totalMaterialRate = flexTileRate + adhesiveRate + totalFlexTilesWaste;
+
+			//LABOUR COST
+			double tilesLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+			double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
+
+			double tilesLabourQty = 12.0 / 60.0;
+			double labourQty = 12.0 / 60.0;
+			double headmanQty = 5.0 / 60.0;
+
+			double tilesLabourRate = tilesLabourCost * tilesLabourQty;
+			double labourRate = labourCost * labourQty;
+			double headmanRate = headmanCost * headmanQty;
+
+			double totalLabourRate = tilesLabourRate + labourRate + headmanRate;
+
+			double netCostPerm2 = totalMaterialRate + totalLabourRate;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "2.0mm floor flex tile", Quantity=flexTileQty, Unit="m2", UnitPrice=flexTileCost, TotalPrice=flexTileRate},
+				new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=flexTileWastePer, Unit="%", UnitPrice=flexTileWaste, TotalPrice=totalFlexTilesWaste},
+				new FinishesBreakdownLine{ ComponentName="Adhesive", Quantity=adhesiveQty, Unit="m2", UnitPrice=adhesiveCost, TotalPrice=adhesiveRate},
+				new FinishesBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialRate},
+				new FinishesBreakdownLine{ComponentName="Laying tiles using 1 tiler.", Quantity=tilesLabourQty, Unit="hr/m2", UnitPrice=tilesLabourCost, TotalPrice=tilesLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=labourQty, Unit="hr/m2", UnitPrice=labourCost, TotalPrice=labourRate},
+				new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="hr/m2", UnitPrice=headmanCost, TotalPrice=headmanRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Total Cost per m2", TotalPrice=netCostPerm2},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 14,
+				Description = "2.0mm thick Nigerite PVC Floorflex tile (56 no. pack) fixed on smooth (timber or concrete) surface  with  floorflex  adhesive.",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem15()
+		{
+			double flexTileCost = GetMaterialPrice("Floor tiles 3.0mm thick (38 tiles per carton)") / 5.04;
+			double flexTileWastePer = 10;
+			double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
+			double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
+
+			double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)") / 4.0) / 17.5;
+
+			double flexTileQty = 1;
+			double adhesiveQty = 1;
+
+			double flexTileRate = flexTileCost * flexTileQty;
+			double adhesiveRate = adhesiveCost * adhesiveQty;
+
+			double totalMaterialRate = flexTileRate + adhesiveRate + totalFlexTilesWaste;
+
+			//LABOUR COST
+			double tilesLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+			double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
+
+			double tilesLabourQty = 12.0 / 60.0;
+			double labourQty = 12.0 / 60.0;
+			double headmanQty = 5.0 / 60.0;
+
+			double tilesLabourRate = tilesLabourCost * tilesLabourQty;
+			double labourRate = labourCost * labourQty;
+			double headmanRate = headmanCost * headmanQty;
+
+			double totalLabourRate = tilesLabourRate + labourRate + headmanRate;
+
+			double netCostPerm2 = totalMaterialRate + totalLabourRate;
+
+			var ohp = ApplyOHP(netCostPerm2);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "3.0mm floor flex tile", Quantity=flexTileQty, Unit="m2", UnitPrice=flexTileCost, TotalPrice=flexTileRate},
+				new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=flexTileWastePer, Unit="%", UnitPrice=flexTileWaste, TotalPrice=totalFlexTilesWaste},
+				new FinishesBreakdownLine{ ComponentName="Adhesive", Quantity=adhesiveQty, Unit="m2", UnitPrice=adhesiveCost, TotalPrice=adhesiveRate},
+				new FinishesBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialRate},
+				new FinishesBreakdownLine{ComponentName="Laying tiles using 1 tiler.", Quantity=tilesLabourQty, Unit="hr/m2", UnitPrice=tilesLabourCost, TotalPrice=tilesLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=labourQty, Unit="hr/m2", UnitPrice=labourCost, TotalPrice=labourRate},
+				new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="hr/m2", UnitPrice=headmanCost, TotalPrice=headmanRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Total Cost per m2", TotalPrice=netCostPerm2},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 15,
+				Description = "3.0mm thick Nigerite PVC Floorflex tile (38 no. pack) fixed on smooth (timber or concrete) surface  with  floorflex  adhesive.",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerm2, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem16()
+		{
+			double ceilingCost = GetMaterialPrice("84R with open sides");
+			double ceilingQty = 1;
+			double ceilingRate = ceilingCost * ceilingQty;
+			double wastePer = 5;
+			double waste = ceilingRate * (wastePer / 100);
+			double accessoriesPer = 7.5;
+			double accessories = ceilingRate * (accessoriesPer / 100);
+			double totalCeiling = ceilingRate + waste + accessories;
+
+			//LABOUR COST
+			double ceilingForemanCost = (GetLabourRate("Foreman") ) * 1.4;
+			double ceilingFitterCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
+			double ceilingLabourerCost = (GetLabourRate("Labourer")) * 1.4;
+
+			double ceilingForemanQty = 1;
+			double ceilingFitterQty = 2;
+			double ceilingLabourerQty = 1;
+
+			double ceilingForemanRate = ceilingForemanCost * ceilingForemanQty;
+			double ceilingFitterRate = ceilingFitterCost * ceilingFitterQty;
+			double ceilingLabourerRate = ceilingLabourerCost * ceilingLabourerQty;
+
+			double totalLabourRate = ceilingForemanRate + ceilingFitterRate + ceilingLabourerRate;
+			double dailyOutput = 25;
+			double labourPerSqm = totalLabourRate / dailyOutput;
+
+			double netCostPerSqm = totalCeiling + labourPerSqm;
+
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "Luxalon ceiling type 84R", Quantity=ceilingQty, Unit="m2", UnitPrice=ceilingCost, TotalPrice=ceilingRate},
+				new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=wastePer, Unit="%", TotalPrice=waste},
+				new FinishesBreakdownLine{ ComponentName="Accessories", Quantity=accessoriesPer, Unit="%", TotalPrice=accessories},
+				new FinishesBreakdownLine{ ComponentName="Total Ceiling", TotalPrice=totalCeiling},
+				new FinishesBreakdownLine{ComponentName="Foreman", Quantity=ceilingForemanQty, Unit="per day", UnitPrice=ceilingForemanCost, TotalPrice=ceilingForemanRate},
+				new FinishesBreakdownLine{ComponentName="Fitter", Quantity=ceilingFitterQty, Unit="per day", UnitPrice=ceilingFitterCost, TotalPrice=ceilingFitterRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=ceilingLabourerQty, Unit="per day", UnitPrice=ceilingLabourerCost, TotalPrice=ceilingLabourerRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labour per sqm", TotalPrice=labourPerSqm},
+				new FinishesBreakdownLine{ComponentName="Total Cost per sqm", TotalPrice=netCostPerSqm},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 16,
+				Description = "Procure and install luxalon ceiling type 84R self lock 84mm wide x 6000mm long complete. with hangers at height not exceeding 3.00m from ground level.",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem17()
+		{
+			double ceilingCost = GetMaterialPrice("2'x2' (600x600x13-15mm) Celotex acoustic ceiling tile (16 tiles per box) complete with aluminium suspension grid")/5.76;
+			double ceilingQty = 1;
+			double ceilingRate = ceilingCost * ceilingQty;
+			double wastePer = 5;
+			double waste = ceilingRate * (wastePer / 100);
+			double accessoriesPer = 5;
+			double accessories = ceilingRate * (accessoriesPer / 100);
+			double totalCeiling = ceilingRate + waste + accessories;
+
+			//LABOUR COST
+			double ceilingForemanCost = (GetLabourRate("Foreman")) * 1.4;
+			double ceilingFitterCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
+			double ceilingLabourerCost = (GetLabourRate("Labourer")) * 1.4;
+
+			double ceilingForemanQty = 1;
+			double ceilingFitterQty = 2;
+			double ceilingLabourerQty = 1;
+
+			double ceilingForemanRate = ceilingForemanCost * ceilingForemanQty;
+			double ceilingFitterRate = ceilingFitterCost * ceilingFitterQty;
+			double ceilingLabourerRate = ceilingLabourerCost * ceilingLabourerQty;
+
+			double totalLabourRate = ceilingForemanRate + ceilingFitterRate + ceilingLabourerRate;
+			double dailyOutput = 30;
+			double labourPerSqm = totalLabourRate / dailyOutput;
+
+			double netCostPerSqm = totalCeiling + labourPerSqm;
+
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "Celotex ceiling.", Quantity=ceilingQty, Unit="m2", UnitPrice=ceilingCost, TotalPrice=ceilingRate},
+				new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=wastePer, Unit="%", TotalPrice=waste},
+				new FinishesBreakdownLine{ ComponentName="Accessories", Quantity=accessoriesPer, Unit="%", TotalPrice=accessories},
+				new FinishesBreakdownLine{ ComponentName="Total Ceiling", TotalPrice=totalCeiling},
+				new FinishesBreakdownLine{ComponentName="Foreman", Quantity=ceilingForemanQty, Unit="per day", UnitPrice=ceilingForemanCost, TotalPrice=ceilingForemanRate},
+				new FinishesBreakdownLine{ComponentName="Fitter", Quantity=ceilingFitterQty, Unit="per day", UnitPrice=ceilingFitterCost, TotalPrice=ceilingFitterRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=ceilingLabourerQty, Unit="per day", UnitPrice=ceilingLabourerCost, TotalPrice=ceilingLabourerRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labour per sqm", TotalPrice=labourPerSqm},
+				new FinishesBreakdownLine{ComponentName="Total Cost per sqm", TotalPrice=netCostPerSqm},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 17,
+				Description = "Procure and install 600 x 600 x 13mm suspended celotex ceiling fixed in exposed aluminium grid at height not exceeding 3.00m form ground level.",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem18()
+		{
+			double ceilingCost = GetMaterialPrice("4'x4' (1200x1200mm x 3mm thick) Asbestos ceiling sheets") / 0.44;
+			double ceilingQty = 1;
+			double ceilingRate = ceilingCost * ceilingQty;
+			double wastePer = 5;
+			double waste = ceilingRate * (wastePer / 100);
+			double accessoriesPer = 5;
+			double accessories = ceilingRate * (accessoriesPer / 100);
+			double totalCeiling = ceilingRate + waste + accessories;
+
+			//LABOUR COST
+			//double ceilingForemanCost = (GetLabourRate("Foreman")) * 1.4;
+			double ceilingFitterCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
+			double ceilingLabourerCost = (GetLabourRate("Labourer")) * 1.4;
+
+			//double ceilingForemanQty = 1;
+			double ceilingFitterQty = 1;
+			double ceilingLabourerQty = 1;
+
+			//double ceilingForemanRate = ceilingForemanCost * ceilingForemanQty;
+			double ceilingFitterRate = ceilingFitterCost * ceilingFitterQty;
+			double ceilingLabourerRate = ceilingLabourerCost * ceilingLabourerQty;
+
+			double totalLabourRate =  ceilingFitterRate + ceilingLabourerRate;
+			double dailyOutput = 40;
+			double labourPerSqm = totalLabourRate / dailyOutput;
+
+			double netCostPerSqm = totalCeiling + labourPerSqm;
+
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "Asbestos ceiling.", Quantity=ceilingQty, Unit="m2", UnitPrice=ceilingCost, TotalPrice=ceilingRate},
+				new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=wastePer, Unit="%", TotalPrice=waste},
+				new FinishesBreakdownLine{ ComponentName="Accessories", Quantity=accessoriesPer, Unit="%", TotalPrice=accessories},
+				new FinishesBreakdownLine{ ComponentName="Total Ceiling", TotalPrice=totalCeiling},
+				//new FinishesBreakdownLine{ComponentName="Foreman", Quantity=ceilingForemanQty, Unit="per day", UnitPrice=ceilingForemanCost, TotalPrice=ceilingForemanRate},
+				new FinishesBreakdownLine{ComponentName="Carpenters", Quantity=ceilingFitterQty, Unit="per day", UnitPrice=ceilingFitterCost, TotalPrice=ceilingFitterRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=ceilingLabourerQty, Unit="per day", UnitPrice=ceilingLabourerCost, TotalPrice=ceilingLabourerRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labour per sqm", TotalPrice=labourPerSqm},
+				new FinishesBreakdownLine{ComponentName="Total Cost per sqm", TotalPrice=netCostPerSqm},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 18,
+				Description = "Procure and install 1200 x 1200 x 3mm asbestos ceiling boards fixed to timber soffit (Battens measured seperately).",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem19()
+		{
+			double ceilingCost = GetMaterialPrice("2'x2' (610x610x4mm) Decoceil decorative sheet (16 tiles per box)") / 5.95;
+			double ceilingQty = 1;
+			double ceilingRate = ceilingCost * ceilingQty;
+			double wastePer = 5;
+			double waste = ceilingRate * (wastePer / 100);
+			double accessoriesPer = 5;
+			double accessories = ceilingRate * (accessoriesPer / 100);
+			double totalCeiling = ceilingRate + waste + accessories;
+
+			//LABOUR COST
+			//double ceilingForemanCost = (GetLabourRate("Foreman")) * 1.4;
+			double ceilingFitterCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
+			double ceilingLabourerCost = (GetLabourRate("Labourer")) * 1.4;
+
+			//double ceilingForemanQty = 1;
+			double ceilingFitterQty = 1;
+			double ceilingLabourerQty = 1;
+
+			//double ceilingForemanRate = ceilingForemanCost * ceilingForemanQty;
+			double ceilingFitterRate = ceilingFitterCost * ceilingFitterQty;
+			double ceilingLabourerRate = ceilingLabourerCost * ceilingLabourerQty;
+
+			double totalLabourRate = ceilingFitterRate + ceilingLabourerRate;
+			double dailyOutput = 30;
+			double labourPerSqm = totalLabourRate / dailyOutput;
+
+			double netCostPerSqm = totalCeiling + labourPerSqm;
+
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "Asbestos ceiling.", Quantity=ceilingQty, Unit="m2", UnitPrice=ceilingCost, TotalPrice=ceilingRate},
+				new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=wastePer, Unit="%", TotalPrice=waste},
+				new FinishesBreakdownLine{ ComponentName="Accessories", Quantity=accessoriesPer, Unit="%", TotalPrice=accessories},
+				new FinishesBreakdownLine{ ComponentName="Total Ceiling", TotalPrice=totalCeiling},
+				//new FinishesBreakdownLine{ComponentName="Foreman", Quantity=ceilingForemanQty, Unit="per day", UnitPrice=ceilingForemanCost, TotalPrice=ceilingForemanRate},
+				new FinishesBreakdownLine{ComponentName="Carpenters", Quantity=ceilingFitterQty, Unit="per day", UnitPrice=ceilingFitterCost, TotalPrice=ceilingFitterRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=ceilingLabourerQty, Unit="per day", UnitPrice=ceilingLabourerCost, TotalPrice=ceilingLabourerRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labour per sqm", TotalPrice=labourPerSqm},
+				new FinishesBreakdownLine{ComponentName="Total Cost per sqm", TotalPrice=netCostPerSqm},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 19,
+				Description = "Procure and install 610 x 610 x 4mm 'decoceil' asbestos ceiling boards fixed to timber soffit (Battens measured seperately).",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem20()
+		{
+			double tileCost = GetMaterialPrice("12x12\" (300x300mm) Brazilian Floor Tiles") ;
+			double transportPer = 5;
+			double transport = tileCost * (transportPer / 100);
+			double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem4);
+
+			double tileQty = 1;
+			double mortarQty = 0.015;
+
+			double tileRate = tileCost * tileQty;
+			double mortarRate = mortarCost * mortarQty;
+
+			double totalMaterialRate = tileRate + transport + mortarRate;
+
+			//LABOUR COST
+			double tilesHeadmanCost = (GetLabourRate("Headman") ) * 1.4;
+			double tilerCost = (GetLabourRate("Skilled/Artisan") ) * 1.4;
+			double labourerCost = (GetLabourRate("Labourer") ) * 1.4;
+
+			double tilesHeadmanQty = 1;
+			double tilerQty = 1;
+			double labourerQty = 1;
+
+			double tilesHeadmanRate = tilesHeadmanCost * tilesHeadmanQty;
+			double tilerRate = tilerCost * tilerQty;
+			double labourerRate = labourerCost * labourerQty;
+
+			double totalLabourRate = tilesHeadmanRate + tilerRate + labourerRate;
+			double dailyOutput = 20;
+			double labourPerSqm = totalLabourRate / dailyOutput;
+
+			double netCostPerSqm = totalMaterialRate + labourPerSqm;
+
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "Vitrified floor tiles size 300 x 300 x 10mm", Quantity=tileQty, Unit="m2", UnitPrice=tileCost, TotalPrice=tileRate},
+				new FinishesBreakdownLine{ ComponentName="Transport", Quantity=transportPer, Unit="%", TotalPrice=transport},
+				new FinishesBreakdownLine{ ComponentName="Mortar", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarRate},
+				new FinishesBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialRate},
+				new FinishesBreakdownLine{ComponentName="Headman", Quantity=tilesHeadmanQty, Unit="per/day", UnitPrice=tilesHeadmanCost, TotalPrice=tilesHeadmanRate},
+				new FinishesBreakdownLine{ComponentName="Tiler", Quantity=tilerQty, Unit="per/day", UnitPrice=tilerCost, TotalPrice=tilerRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=labourerQty, Unit="per/day", UnitPrice=labourerCost, TotalPrice=labourerRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labour per sqm", TotalPrice=labourPerSqm},
+				new FinishesBreakdownLine{ComponentName="Total Cost per sqm", TotalPrice=netCostPerSqm},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 20,
+				Description = "Procure and install 300 x 300 x 10mm vitrified floor tiles on screeded bed. (Screeded bed not included in rate)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem21()
+		{
+			double tileCost = GetMaterialPrice("8x8\" (200x200mm) Italian Floor Tiles");
+			double transportPer = 5;
+			double transport = tileCost * (transportPer / 100);
+			double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem4);
+
+			double tileQty = 1;
+			double mortarQty = 0.015;
+
+			double tileRate = tileCost * tileQty;
+			double mortarRate = mortarCost * mortarQty;
+
+			double totalMaterialRate = tileRate + transport + mortarRate;
+
+			//LABOUR COST
+			double tilesHeadmanCost = (GetLabourRate("Headman")) * 1.4;
+			double tilerCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
+			double labourerCost = (GetLabourRate("Labourer")) * 1.4;
+
+			double tilesHeadmanQty = 1;
+			double tilerQty = 1;
+			double labourerQty = 1;
+
+			double tilesHeadmanRate = tilesHeadmanCost * tilesHeadmanQty;
+			double tilerRate = tilerCost * tilerQty;
+			double labourerRate = labourerCost * labourerQty;
+
+			double totalLabourRate = tilesHeadmanRate + tilerRate + labourerRate;
+			double dailyOutput = 20;
+			double labourPerSqm = totalLabourRate / dailyOutput;
+
+			double netCostPerSqm = totalMaterialRate + labourPerSqm;
+
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "Vitrified floor tiles size 200 x 200 x 10mm", Quantity=tileQty, Unit="m2", UnitPrice=tileCost, TotalPrice=tileRate},
+				new FinishesBreakdownLine{ ComponentName="Transport", Quantity=transportPer, Unit="%", TotalPrice=transport},
+				new FinishesBreakdownLine{ ComponentName="Mortar", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarRate},
+				new FinishesBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialRate},
+				new FinishesBreakdownLine{ComponentName="Headman", Quantity=tilesHeadmanQty, Unit="per/day", UnitPrice=tilesHeadmanCost, TotalPrice=tilesHeadmanRate},
+				new FinishesBreakdownLine{ComponentName="Tiler", Quantity=tilerQty, Unit="per/day", UnitPrice=tilerCost, TotalPrice=tilerRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=labourerQty, Unit="per/day", UnitPrice=labourerCost, TotalPrice=labourerRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labour per sqm", TotalPrice=labourPerSqm},
+				new FinishesBreakdownLine{ComponentName="Total Cost per sqm", TotalPrice=netCostPerSqm},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 21,
+				Description = "Procure and install 200 x 200 x 10mm vitrified floor tiles on screeded bed. (Screeded bed not included in rate)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem22()
+		{
+			double tileCost = GetMaterialPrice("6x6\" (150x150mm) - Royal Floor Tiles")/2;
+			double transportPer = 5;
+			double transport = tileCost * (transportPer / 100);
+			double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem4);
+
+			double tileQty = 1;
+			double mortarQty = 0.015;
+
+			double tileRate = tileCost * tileQty;
+			double mortarRate = mortarCost * mortarQty;
+
+			double totalMaterialRate = tileRate + transport + mortarRate;
+
+			//LABOUR COST
+			double tilesHeadmanCost = (GetLabourRate("Headman")) * 1.4;
+			double tilerCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
+			double labourerCost = (GetLabourRate("Labourer")) * 1.4;
+
+			double tilesHeadmanQty = 1;
+			double tilerQty = 1;
+			double labourerQty = 1;
+
+			double tilesHeadmanRate = tilesHeadmanCost * tilesHeadmanQty;
+			double tilerRate = tilerCost * tilerQty;
+			double labourerRate = labourerCost * labourerQty;
+
+			double totalLabourRate = tilesHeadmanRate + tilerRate + labourerRate;
+			double dailyOutput = 20;
+			double labourPerSqm = totalLabourRate / dailyOutput;
+
+			double netCostPerSqm = totalMaterialRate + labourPerSqm;
+
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "Ceramic Wall tiles size 150 x 150 x 6mm (Nigerian - Royal)", Quantity=tileQty, Unit="m2", UnitPrice=tileCost, TotalPrice=tileRate},
+				new FinishesBreakdownLine{ ComponentName="Transport", Quantity=transportPer, Unit="%", TotalPrice=transport},
+				new FinishesBreakdownLine{ ComponentName="Mortar", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarRate},
+				new FinishesBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialRate},
+				new FinishesBreakdownLine{ComponentName="Headman", Quantity=tilesHeadmanQty, Unit="per/day", UnitPrice=tilesHeadmanCost, TotalPrice=tilesHeadmanRate},
+				new FinishesBreakdownLine{ComponentName="Tiler", Quantity=tilerQty, Unit="per/day", UnitPrice=tilerCost, TotalPrice=tilerRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=labourerQty, Unit="per/day", UnitPrice=labourerCost, TotalPrice=labourerRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labour per sqm", TotalPrice=labourPerSqm},
+				new FinishesBreakdownLine{ComponentName="Total Cost per sqm", TotalPrice=netCostPerSqm},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 22,
+				Description = "Procure and install local maunfactured 150 x 150 x 6mm ceramic wall tiles on screeded backing. (Backing not included in rate)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
+		private FinishesItem ComputeItem23()
+		{
+			double tileCost = GetMaterialPrice("Italian Wall Tiles (6x6\")") ;
+			double transportPer = 5;
+			double transport = tileCost * (transportPer / 100);
+			double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem4);
+
+			double tileQty = 1;
+			double mortarQty = 0.015;
+
+			double tileRate = tileCost * tileQty;
+			double mortarRate = mortarCost * mortarQty;
+
+			double totalMaterialRate = tileRate + transport + mortarRate;
+
+			//LABOUR COST
+			double tilesHeadmanCost = (GetLabourRate("Headman")) * 1.4;
+			double tilerCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
+			double labourerCost = (GetLabourRate("Labourer")) * 1.4;
+
+			double tilesHeadmanQty = 1;
+			double tilerQty = 1;
+			double labourerQty = 1;
+
+			double tilesHeadmanRate = tilesHeadmanCost * tilesHeadmanQty;
+			double tilerRate = tilerCost * tilerQty;
+			double labourerRate = labourerCost * labourerQty;
+
+			double totalLabourRate = tilesHeadmanRate + tilerRate + labourerRate;
+			double dailyOutput = 20;
+			double labourPerSqm = totalLabourRate / dailyOutput;
+
+			double netCostPerSqm = totalMaterialRate + labourPerSqm;
+
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<FinishesBreakdownLine>
+			{
+				new FinishesBreakdownLine{ ComponentName= "Ceramic Wall tiles size 150 x 150 x 6mm (Italian)", Quantity=tileQty, Unit="m2", UnitPrice=tileCost, TotalPrice=tileRate},
+				new FinishesBreakdownLine{ ComponentName="Transport", Quantity=transportPer, Unit="%", TotalPrice=transport},
+				new FinishesBreakdownLine{ ComponentName="Mortar", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarRate},
+				new FinishesBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialRate},
+				new FinishesBreakdownLine{ComponentName="Headman", Quantity=tilesHeadmanQty, Unit="per/day", UnitPrice=tilesHeadmanCost, TotalPrice=tilesHeadmanRate},
+				new FinishesBreakdownLine{ComponentName="Tiler", Quantity=tilerQty, Unit="per/day", UnitPrice=tilerCost, TotalPrice=tilerRate},
+				new FinishesBreakdownLine{ComponentName="Labourer", Quantity=labourerQty, Unit="per/day", UnitPrice=labourerCost, TotalPrice=labourerRate},
+				new FinishesBreakdownLine{ComponentName="Total Labour", TotalPrice=totalLabourRate},
+				new FinishesBreakdownLine{ComponentName="Labour per sqm", TotalPrice=labourPerSqm},
+				new FinishesBreakdownLine{ComponentName="Total Cost per sqm", TotalPrice=netCostPerSqm},
+			};
+
+			return new FinishesItem
+			{
+				ItemNo = 24,
+				Description = "Procure and install imported 150 x 150 x 6mm ceramic wall tiles on screeded backing. (Backing not included in rate)",
+				Unit = "m2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 0),
+				ProfitValue = Math.Round(ohp.profitVal, 0),
+				TotalCost = Math.Round(ohp.total, 0),
+				FinishesBreakdownLine = breakdown
+			};
+		}
 
 
 
