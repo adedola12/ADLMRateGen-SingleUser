@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -22,6 +24,23 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				}
 			}
 		}
+
+		private bool _isEditing;
+		public bool IsEditing
+		{
+			get => _isEditing;
+			set
+			{
+				if (_isEditing != value)
+				{
+					_isEditing = value;
+					RaisePropertyChanged(nameof(IsEditing));
+				}
+			}
+		}
+
+		private CustomRate _currentRate;
+		private Guid _originalId;
 
 		public ObservableCollection<string> AvailableMaterials { get; } =
             new ObservableCollection<string>(MaterialLibraryService.GetAllMaterialNames());
@@ -86,12 +105,125 @@ namespace ADLMRateGen.ViewModel.CustomRate
         public ICommand AddMaterialItemCommand { get; }
         public ICommand AddLabourItemCommand { get; }
         public ICommand SaveCustomRateCommand { get; }
+		public event Action<CustomRate> OnViewRateRequested;
 
-        public CustomRateEntryViewModel()
+		public CustomRateEntryViewModel()
         {
-			AddMaterialItemCommand = new RelayCommand(AddMaterialItem);
-			AddLabourItemCommand = new RelayCommand(AddLabourItem);
-			SaveCustomRateCommand = new RelayCommand(SaveCustomRate);
+			MaterialItems.CollectionChanged += OnMaterialCollectionChanged;
+			LabourItems.CollectionChanged += OnLabourCollectionChanged;
+
+			//AddMaterialItemCommand = new RelayCommand(AddMaterialItem);
+			//AddLabourItemCommand = new RelayCommand(AddLabourItem);
+			//SaveCustomRateCommand = new RelayCommand(SaveCustomRate);
+
+			AddMaterialItemCommand = new RelayCommand(
+		_ => AddMaterialItem()
+	);
+			AddLabourItemCommand = new RelayCommand(
+				_ => AddLabourItem()
+			);
+			SaveCustomRateCommand = new RelayCommand(
+				_ => SaveCustomRate()
+			);
+
+		}
+		private void OnMaterialCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.NewItems != null)
+			{
+				foreach (RateEntryItem newItem in e.NewItems)
+				{
+					newItem.PropertyChanged += OnRateEntryItemChanged;
+				}
+			}
+			if (e.OldItems != null)
+			{
+				foreach (RateEntryItem oldItem in e.OldItems)
+				{
+					oldItem.PropertyChanged -= OnRateEntryItemChanged;
+				}
+			}
+
+			// When the collection changes (added/removed items),
+			// recalc the totals:
+			RaisePropertyChanged(nameof(TotalMaterialCost));
+			RaisePropertyChanged(nameof(OverallTotal));
+			RaisePropertyChanged(nameof(GrandTotal));
+		}
+
+		private void OnLabourCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.NewItems != null)
+			{
+				foreach (RateEntryItem newItem in e.NewItems)
+				{
+					newItem.PropertyChanged += OnRateEntryItemChanged;
+				}
+			}
+			if (e.OldItems != null)
+			{
+				foreach (RateEntryItem oldItem in e.OldItems)
+				{
+					oldItem.PropertyChanged -= OnRateEntryItemChanged;
+				}
+			}
+
+			RaisePropertyChanged(nameof(TotalLabourCost));
+			RaisePropertyChanged(nameof(OverallTotal));
+			RaisePropertyChanged(nameof(GrandTotal));
+		}
+		private void OnRateEntryItemChanged(object sender, PropertyChangedEventArgs e)
+		{
+			// We only need to refresh totals if "Quantity", "UnitPrice", or "TotalCost" changed,
+			// but it's simpler to just always recalc:
+			if (e.PropertyName == nameof(RateEntryItem.TotalCost)
+				|| e.PropertyName == nameof(RateEntryItem.Quantity)
+				|| e.PropertyName == nameof(RateEntryItem.UnitPrice))
+			{
+				RaisePropertyChanged(nameof(TotalMaterialCost));
+				RaisePropertyChanged(nameof(TotalLabourCost));
+				RaisePropertyChanged(nameof(OverallTotal));
+				RaisePropertyChanged(nameof(GrandTotal));
+			}
+		}
+
+
+		public void LoadRate(CustomRate rate)
+		{
+			if (rate == null) return;
+			IsEditing = true;
+			_currentRate = rate;
+			_originalId = rate.Id;
+
+			MaterialItems.Clear();
+			LabourItems.Clear();
+
+			RateName = rate.Title;
+			Description = rate.Description;
+			OverheadPercent = rate.OverheadPercent;
+			ProfitPercent = rate.ProfitPercent;
+
+			// Copy the items
+			foreach (var matItem in rate.MaterialItems)
+				MaterialItems.Add(new RateEntryItem
+				{
+					Description = matItem.Description,
+					Quantity = matItem.Quantity,
+					Unit = matItem.Unit,
+					UnitPrice = matItem.UnitPrice,
+					RateType = matItem.RateType
+				});
+
+			foreach (var labItem in rate.LabourItems)
+				LabourItems.Add(new RateEntryItem
+				{
+					Description = labItem.Description,
+					Quantity = labItem.Quantity,
+					Unit = labItem.Unit,
+					UnitPrice = labItem.UnitPrice,
+					RateType = labItem.RateType
+				});
+
 
 		}
 
@@ -129,19 +261,42 @@ namespace ADLMRateGen.ViewModel.CustomRate
         {
             var newRate = new CustomRate
             {
+				Id = _originalId,
 				Title = RateName,
 				Description = Description,
 				MaterialItems = MaterialItems.ToList(),
 				LabourItems = LabourItems.ToList(),
 				OverheadPercent = this.OverheadPercent,
 				ProfitPercent = this.ProfitPercent,
-				CreatedDate = DateTime.Now
+				CreatedDate = IsEditing? _currentRate.CreatedDate: DateTime.Now
 			};
+			
+			if (!IsEditing)
+			{
+				newRate.Id = Guid.NewGuid();
+				CustomRateServices.SaveCustomRate(newRate);
 
-            CustomRateServices.SaveCustomRate(newRate);
+				MessageBox.Show("New Custom Rate saved successfully!", 
+					"Save", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+			else
+			{
+				CustomRateServices.UpdateCustomRate(newRate);
+				MessageBox.Show("Existing Custom Rate updated successfully!",
+					"Update", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+			ClearForm();
 
-			MessageBox.Show("Custom Rate saved successfully!", "Save", MessageBoxButton.OK, MessageBoxImage.Information);
+		}
 
+		public void StartNewRate()
+		{
+			ClearForm();
+			IsEditing = false;
+		}
+
+		private void ClearForm()
+		{
 			// Clear out the fields
 			RateName = string.Empty;
 			Description = string.Empty;
@@ -149,11 +304,22 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			LabourItems.Clear();
 			OverheadPercent = 10;
 			ProfitPercent = 10;
-
+			IsEditing = false ;
+			_originalId = Guid.Empty;
+		}
+		private void ViewRate(CustomRate rate)
+		{
+			// Suppose we raise an event:
+			OnViewRateRequested?.Invoke(rate);
+		}
+		private void UpdateTotals()
+		{
 			RaisePropertyChanged(nameof(TotalMaterialCost));
 			RaisePropertyChanged(nameof(TotalLabourCost));
 			RaisePropertyChanged(nameof(OverallTotal));
 			RaisePropertyChanged(nameof(GrandTotal));
 		}
+
+
 	}
 }

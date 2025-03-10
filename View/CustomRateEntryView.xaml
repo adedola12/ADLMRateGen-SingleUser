@@ -26,36 +26,54 @@
 
         <!-- 2. Top Input Row -->
         <Grid Grid.Row="1" Margin="0,10,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                
+            </Grid.RowDefinitions>
 
-            <!-- Rate Name -->
-            <StackPanel Grid.Column="0" Margin="5">
-                <TextBlock Text="Rate Name" FontSize="15" FontWeight="DemiBold"/>
-                <TextBox Text="{Binding RateName, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
-            </StackPanel>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                   
+                </Grid.ColumnDefinitions>
 
-            <!-- Description -->
-            <StackPanel Grid.Column="1" Margin="5">
-                <TextBlock Text="Description" FontSize="15" FontWeight="DemiBold"/>
-                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
-            </StackPanel>
+                <!-- Rate Name -->
+                <StackPanel Grid.Column="0" Margin="5">
+                    <TextBlock Text="Rate Name" FontSize="15" FontWeight="DemiBold"/>
+                    <TextBox Text="{Binding RateName, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+                </StackPanel>
 
-            <!-- Overhead -->
-            <StackPanel Grid.Column="2" Margin="5">
-                <TextBlock Text="Overhead (%)" FontSize="15" FontWeight="DemiBold"/>
-                <TextBox Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
-            </StackPanel>
+                <!-- Description -->
+                <StackPanel Grid.Column="1" Margin="5">
+                    <TextBlock Text="Description" FontSize="15" FontWeight="DemiBold"/>
+                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+                </StackPanel>
+            </Grid>
 
-            <!-- Profit -->
-            <StackPanel Grid.Column="3" Margin="5">
-                <TextBlock Text="Profit (%)" FontSize="15" FontWeight="DemiBold"/>
-                <TextBox Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
-            </StackPanel>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+
+                </Grid.ColumnDefinitions>
+
+                <!-- Overhead -->
+                <StackPanel Grid.Column="0" Margin="5">
+                    <TextBlock Text="Overhead (%)" FontSize="15" FontWeight="DemiBold"/>
+                    <TextBox Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+                </StackPanel>
+
+                <!-- Profit -->
+                <StackPanel Grid.Column="1" Margin="5">
+                    <TextBlock Text="Profit (%)" FontSize="15" FontWeight="DemiBold"/>
+                    <TextBox Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+                </StackPanel>
+            </Grid>
+            
+
+
         </Grid>
 
         <!-- 3. Materials and Labour items -->
@@ -72,12 +90,13 @@
                             <TextBox Width="100" Margin="10,0,0,0"
                                      Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" 
                                      ToolTip="Price"/>
-                            <TextBox Width="100" Margin="10,0,0,0"
-                                     Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" 
-                                     ToolTip="Quantity"/>
                             <TextBox Width="50" Margin="10,0,0,0"
                                      Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}" 
                                      ToolTip="Unit"/>
+                            <TextBox Width="100" Margin="10,0,0,0"
+                                     Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Quantity"/>
+                          
                             <TextBlock Width="100" Margin="10,0,0,0"
                                        Text="{Binding TotalCost, StringFormat=N2}" />
                         </StackPanel>
@@ -100,12 +119,13 @@
                             <TextBox Width="100" Margin="10,0,0,0"
                                      Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" 
                                      ToolTip="Price"/>
-                            <TextBox Width="100" Margin="10,0,0,0"
-                                     Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" 
-                                     ToolTip="Quantity"/>
                             <TextBox Width="50" Margin="10,0,0,0"
                                      Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}" 
                                      ToolTip="Unit"/>
+                            <TextBox Width="100" Margin="10,0,0,0"
+                                     Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Quantity"/>
+                            
                             <TextBlock Width="100" Margin="10,0,0,0"
                                        Text="{Binding TotalCost, StringFormat=N2}" />
                         </StackPanel>
@@ -118,20 +138,33 @@
 
             <!-- Totals -->
             <TextBlock Text="{Binding TotalMaterialCost, StringFormat='Material Total: {0:N2}'}" 
-                       FontWeight="Bold" Margin="0,20,0,0"/>
+                        FontWeight="Bold" Margin="0,20,0,0"/>
             <TextBlock Text="{Binding TotalLabourCost, StringFormat='Labour Total: {0:N2}'}" 
-                       FontWeight="Bold"/>
+                        FontWeight="Bold"/>
             <TextBlock Text="{Binding OverallTotal, StringFormat='Overall Total: {0:N2}'}" 
-                       FontWeight="Bold"/>
+                        FontWeight="Bold"/>
+
         </StackPanel>
 
         <!-- 4. Save Button -->
-        <Button Grid.Row="3" 
-                Content="Save Custom Rate" 
-                Command="{Binding SaveCustomRateCommand}" 
-                Margin="0,20,0,0"
+        <Button Grid.Row="3"  Margin="0,20,0,0"
                 Width="200" Height="40" 
                 FontSize="15" FontWeight="Bold"
-                HorizontalAlignment="Left"/>
+                HorizontalAlignment="Right">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Content" Value="Save" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                            <Setter Property="Content" Value="Update" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+            <Button.Command>
+                <Binding Path="SaveCustomRateCommand"/>
+            </Button.Command>
+        </Button>
+
     </Grid>
 </UserControl>

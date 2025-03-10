@@ -10,6 +10,7 @@
         xmlns:concrete="clr-namespace:ADLMRateGen.ViewModel.ConcreteWork"
         xmlns:blockwork="clr-namespace:ADLMRateGen.ViewModel.BlockWork"
         xmlns:finishes="clr-namespace:ADLMRateGen.ViewModel.Finishes"
+        xmlns:roof="clr-namespace:ADLMRateGen.ViewModel.RoofWork"
         xmlns:customInput="clr-namespace:ADLMRateGen.ViewModel.CustomRate"
         mc:Ignorable="d"
         Title="MainWindow" Height="750" Width="1080">
@@ -43,6 +44,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type customInput:CustomRateListViewModel}">
             <view:CustomRateListView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type roof:RoofWorkViewModel}">
+            <view:RoofworkView/>
         </DataTemplate>
     </Window.Resources>
     <Grid>
@@ -83,7 +87,7 @@
                 <Button Content="Concrete" Command="{Binding SelectedConcreteWorkViewCommand}" Margin="5" Padding="2"/>
                 <Button Content="BlockWorks" Command="{Binding SelectedBlockworkViewCommand}" Margin="5" Padding="2"/>
                 <Button Content="Finishes" Command="{Binding SelectedFinishesViewCommand}" Margin="5" Padding="2"/>
-                <Button Content="Roof" Command="" Margin="5" Padding="2"/>
+                <Button Content="Roof" Command="{Binding SelectedRoofworkViewCommand}" Margin="5" Padding="2"/>
                 <Button Content="WindowsDoors" Command="" Margin="5" Padding="2"/>
                 <Button Content="Painting" Command="" Margin="5" Padding="2"/>
                 <Button Content="Steel" Command="" Margin="5" Padding="2"/>

@@ -38,6 +38,9 @@ namespace ADLMRateGen.ViewModel.CustomRate
 		public ICollectionView RatesView { get; }
 
 		public ICommand DeleteRateCommand { get; }
+		public ICommand ViewRateCommand { get; }
+		public event Action<CustomRate> OnViewRequested;
+
 
 		public CustomRateListViewModel()
 		{
@@ -50,10 +53,31 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			RatesView.Filter = RateFilter;
 
 			// Command
-			DeleteRateCommand = new RelayCommand(DeleteRate, CanDeleteRate);
+			ViewRateCommand = new RelayCommand(
+				param => ViewRateExecute(param),        // We'll pass the row item
+				param => param is CustomRate            // Only enabled if param is a CustomRate
+);
+			DeleteRateCommand = new RelayCommand(
+				_ => DeleteRate(),
+				_ => CanDeleteRate()
+			);
+
 
 			CustomRateServices.OnCustomRateSaved += CustomRateServices_OnCustomRateSaved;
+
+			CustomRateServices.OnCustomRateUpdated += CustomRateServices_OnCustomRateUpdated;
 		}
+
+		private void ViewRateExecute(object parameter)
+		{
+			var rate = parameter as CustomRate;
+			if (rate != null)
+			{
+				OnViewRequested?.Invoke(rate);
+			}
+		}
+
+
 
 		private void CustomRateServices_OnCustomRateSaved(CustomRate newRate)
 		{
@@ -61,6 +85,25 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			App.Current.Dispatcher.Invoke(() =>
 			{
 				CustomRates.Add(newRate);
+				RatesView.Refresh();
+			});
+		}
+
+		private void CustomRateServices_OnCustomRateUpdated(CustomRate updatedRate)
+		{
+			App.Current.Dispatcher.Invoke(() =>
+			{
+				var existing = CustomRates.FirstOrDefault(r => r.Id == updatedRate.Id);
+				if (existing != null)
+				{
+					var index = CustomRates.IndexOf(existing);
+					CustomRates[index] = updatedRate;
+				}
+				else
+				{
+					// If not found, you can add or ignore
+					CustomRates.Add(updatedRate);
+				}
 				RatesView.Refresh();
 			});
 		}

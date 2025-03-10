@@ -5,6 +5,7 @@ using ADLMRateGen.ViewModel.ConcreteWork;
 using ADLMRateGen.ViewModel.CustomRate;
 using ADLMRateGen.ViewModel.Finishes;
 using ADLMRateGen.ViewModel.Groundwork;
+using ADLMRateGen.ViewModel.RoofWork;
 
 namespace ADLMRateGen
 {
@@ -25,11 +26,12 @@ namespace ADLMRateGen
             var concreteWorkVM = new ConcreteViewModel(libraryVM, labourLibraryVM);
             var blockworkVM = new BlockworkViewModel(libraryVM, labourLibraryVM, concreteWorkVM);
             var finishesVM = new FinishesViewModel(libraryVM, labourLibraryVM, blockworkVM);
+            var roofworkVM = new RoofWorkViewModel(libraryVM, labourLibraryVM);
             var customInputVM = new CustomRateEntryViewModel();
             var customViewVM = new CustomRateListViewModel();
 
 			this.DataContext = new MainViewModel(priceVM, libraryVM, labourVm, labourLibraryVM, groundworkVM, concreteWorkVM, 
-                blockworkVM, finishesVM,customViewVM,customInputVM);
+                blockworkVM, finishesVM,roofworkVM, customViewVM,customInputVM);
 
         }
     }

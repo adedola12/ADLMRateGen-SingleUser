@@ -5,6 +5,7 @@ using ADLMRateGen.ViewModel.Model;
 using ADLMRateGen.ViewModel.BlockWork;
 using ADLMRateGen.ViewModel.Finishes;
 using ADLMRateGen.ViewModel.CustomRate;
+using ADLMRateGen.ViewModel.RoofWork;
 
 namespace ADLMRateGen.ViewModel
 {
@@ -19,6 +20,7 @@ namespace ADLMRateGen.ViewModel
 		public DelegateCommand SelectedConcreteWorkViewCommand { get; }
 		public DelegateCommand SelectedBlockworkViewCommand { get; }
 		public DelegateCommand SelectedFinishesViewCommand { get; }
+		public DelegateCommand SelectedRoofworkViewCommand { get; }
 		public DelegateCommand SelectedCustomRateInputViewCommand { get; }
 		public DelegateCommand SelectedCustomRateViewCommand { get; }
 
@@ -31,6 +33,7 @@ namespace ADLMRateGen.ViewModel
 		public ConcreteViewModel ConcreteViewModel { get; }
 		public BlockworkViewModel BlockworkViewModel { get; }
 		public FinishesViewModel FinishesViewModel { get; }
+		public RoofWorkViewModel RoofWorkViewModel { get; }
 		public CustomRateEntryViewModel CustomRateEntryViewModel { get; }
 		public CustomRateListViewModel CustomRateListViewModel { get; }
 		private ViewModelBase _selectedViewModel;
@@ -47,7 +50,7 @@ namespace ADLMRateGen.ViewModel
 
 		public MainViewModel(MaterialPriceViewModel priceVM, MaterialLibraryViewModel libraryVM, LabourPriceViewModel labourVM,
 			LabourLibraryViewModel labourLibraryVM, GroundWorkViewModel groundworkVM, ConcreteViewModel concreteWorkViewModel,
-			BlockworkViewModel blockworkViewModel, FinishesViewModel finishesViewModel, CustomRateListViewModel customRateListViewModel, 
+			BlockworkViewModel blockworkViewModel, FinishesViewModel finishesViewModel, RoofWorkViewModel roofworkVM, CustomRateListViewModel customRateListViewModel, 
 			CustomRateEntryViewModel customRateEntryViewModel)
 		{
 			MaterialPriceViewModel = priceVM;
@@ -58,8 +61,15 @@ namespace ADLMRateGen.ViewModel
 			ConcreteViewModel = concreteWorkViewModel;
 			BlockworkViewModel = blockworkViewModel;
 			FinishesViewModel = finishesViewModel;
+			RoofWorkViewModel = roofworkVM;
 			CustomRateListViewModel = customRateListViewModel;
 			CustomRateEntryViewModel = customRateEntryViewModel;
+
+			CustomRateListViewModel.OnViewRequested += (rate) =>
+			{
+				CustomRateEntryViewModel.LoadRate(rate);
+				SelectedViewModel = CustomRateEntryViewModel;
+			};
 
 			// Wire events.
 			MaterialPriceViewModel.MaterialSaved += OnMaterialSaved;
@@ -78,6 +88,7 @@ namespace ADLMRateGen.ViewModel
 			SelectedConcreteWorkViewCommand = new DelegateCommand(param => SelectViewModel(ConcreteViewModel));
 			SelectedBlockworkViewCommand = new DelegateCommand(param => SelectViewModel(BlockworkViewModel));
 			SelectedFinishesViewCommand = new DelegateCommand(param => SelectViewModel(FinishesViewModel));
+			SelectedRoofworkViewCommand = new DelegateCommand(param => SelectViewModel(RoofWorkViewModel));
 			SelectedCustomRateInputViewCommand = new DelegateCommand(param => SelectViewModel(CustomRateListViewModel));
 			SelectedCustomRateViewCommand = new DelegateCommand(param => SelectViewModel(CustomRateEntryViewModel));
 
