@@ -30,7 +30,7 @@
         </StackPanel>
 
         <!-- DataGrid: Display breakdown lines -->
-        <DataGrid Grid.Row="1" ItemsSource="{Binding WindowAndDoorBreakdownLine}" 
+        <DataGrid Grid.Row="1" ItemsSource="{Binding WindowAndDoorBreakdownLines}" 
          AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">

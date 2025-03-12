@@ -5,7 +5,7 @@ using System.Windows.Input;
 using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.View;
-using ADLMRateGen.ViewModel.Finishes;
+
 
 namespace ADLMRateGen.ViewModel.RoofWork
 {
