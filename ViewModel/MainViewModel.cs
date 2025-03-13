@@ -7,6 +7,7 @@ using ADLMRateGen.ViewModel.Finishes;
 using ADLMRateGen.ViewModel.CustomRate;
 using ADLMRateGen.ViewModel.RoofWork;
 using ADLMRateGen.ViewModel.WindowAndDoor;
+using ADLMRateGen.ViewModel.Painting;
 
 namespace ADLMRateGen.ViewModel
 {
@@ -23,6 +24,7 @@ namespace ADLMRateGen.ViewModel
 		public DelegateCommand SelectedFinishesViewCommand { get; }
 		public DelegateCommand SelectedRoofworkViewCommand { get; }
 		public DelegateCommand SelectedWindowAndDoorViewCommand { get; }
+		public DelegateCommand SelectedPaintworkViewCommand { get; }
 		public DelegateCommand SelectedCustomRateInputViewCommand { get; }
 		public DelegateCommand SelectedCustomRateViewCommand { get; }
 
@@ -37,6 +39,7 @@ namespace ADLMRateGen.ViewModel
 		public FinishesViewModel FinishesViewModel { get; }
 		public RoofWorkViewModel RoofWorkViewModel { get; }
 		public WindowAndDoorViewModel WindowAndDoorViewModel { get; }
+		public PaintWorkViewModel PaintWorkViewModel { get; }
 		public CustomRateEntryViewModel CustomRateEntryViewModel { get; }
 		public CustomRateListViewModel CustomRateListViewModel { get; }
 		private ViewModelBase _selectedViewModel;
@@ -53,7 +56,8 @@ namespace ADLMRateGen.ViewModel
 
 		public MainViewModel(MaterialPriceViewModel priceVM, MaterialLibraryViewModel libraryVM, LabourPriceViewModel labourVM,
 			LabourLibraryViewModel labourLibraryVM, GroundWorkViewModel groundworkVM, ConcreteViewModel concreteWorkViewModel,
-			BlockworkViewModel blockworkViewModel, FinishesViewModel finishesViewModel, RoofWorkViewModel roofworkVM, WindowAndDoorViewModel windowAndDoorVM,
+			BlockworkViewModel blockworkViewModel, FinishesViewModel finishesViewModel, RoofWorkViewModel roofworkVM, 
+			WindowAndDoorViewModel windowAndDoorVM, PaintWorkViewModel paintWorkViewModel,
 			CustomRateListViewModel customRateListViewModel, CustomRateEntryViewModel customRateEntryViewModel)
 		{
 			MaterialPriceViewModel = priceVM;
@@ -66,6 +70,7 @@ namespace ADLMRateGen.ViewModel
 			FinishesViewModel = finishesViewModel;
 			RoofWorkViewModel = roofworkVM;
 			WindowAndDoorViewModel = windowAndDoorVM;
+			PaintWorkViewModel = paintWorkViewModel;
 			CustomRateListViewModel = customRateListViewModel;
 			CustomRateEntryViewModel = customRateEntryViewModel;
 
@@ -94,6 +99,7 @@ namespace ADLMRateGen.ViewModel
 			SelectedFinishesViewCommand = new DelegateCommand(param => SelectViewModel(FinishesViewModel));
 			SelectedRoofworkViewCommand = new DelegateCommand(param => SelectViewModel(RoofWorkViewModel));
 			SelectedWindowAndDoorViewCommand = new DelegateCommand(param => SelectViewModel(WindowAndDoorViewModel));
+			SelectedPaintworkViewCommand = new DelegateCommand(param => SelectViewModel(PaintWorkViewModel));
 			SelectedCustomRateInputViewCommand = new DelegateCommand(param => SelectViewModel(CustomRateListViewModel));
 			SelectedCustomRateViewCommand = new DelegateCommand(param => SelectViewModel(CustomRateEntryViewModel));
 

@@ -147,13 +147,76 @@ namespace ADLMRateGen.ViewModel.Painting
         {
             Func<PaintWorkItem>[] computeMethods =
             {
-
+                //ComputeItem1,ComputeItem2,ComputeItem3,ComputeItem4,ComputeItem5,ComputeItem6,ComputeItem7,
+                //ComputeItem8,ComputeItem9,ComputeItem10,ComputeItem11,ComputeItem12
             };
 
             foreach(var compute in computeMethods)
             {
                 PaintWorkItems.Add(compute());
             }
+        }
+        #endregion
+
+        #region COMPUTE METHOD
+        private PaintWorkItem ComputeItem1()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem2()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem3()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem4()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem5()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem6()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem7()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem8()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem9()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem10()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem11()
+        {
+            throw new NotImplementedException();
+        }
+
+        private PaintWorkItem ComputeItem12()
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }
