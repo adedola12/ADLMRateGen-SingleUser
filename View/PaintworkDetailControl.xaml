@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="ADLMRateGen.View.PaintworkDetailControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ADLMRateGen.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="10" Background="White"    >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top row: Back button + heading text -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Stretch">
+            <Button Content="Back" 
+         Width="80" 
+         Margin="0,0,10,0"
+         Click="BackButton_Click" />
+
+            <TextBlock Text="{Binding Description}" 
+            TextWrapping="Wrap"
+            FontSize="18" 
+            FontWeight="Bold" 
+            Background="LightGray"
+            Padding="5" 
+            VerticalAlignment="Center"
+            Width="681" />
+        </StackPanel>
+
+        <!-- DataGrid: Display breakdown lines -->
+        <DataGrid Grid.Row="1" ItemsSource="{Binding PaintingBreakdownLines}" 
+       AutoGenerateColumns="False" CanUserAddRows="False">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <!-- If IsTotalLine is true, make the row bold -->
+                        <DataTrigger Binding="{Binding IsTotalLine}" Value="True">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Component" Binding="{Binding ComponentName}" 
+                         IsReadOnly="True" Width="*" />
+                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="Auto"/>
+                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="Auto"/>
+                <DataGridTextColumn Header="Unit Price" Binding="{Binding UnitPrice, StringFormat={}{0:N2}}" Width="Auto"/>
+                <DataGridTextColumn Header="Total Cost" Binding="{Binding TotalPrice, StringFormat={}{0:N2}}" Width="Auto"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
