@@ -148,10 +148,11 @@ namespace ADLMRateGen.ViewModel.Painting
         {
             Func<PaintWorkItem>[] computeMethods =
             {
-                ComputeItem1, ComputeItem2, ComputeItem3,
-                ComputeItem4,
-                //ComputeItem5,ComputeItem6,ComputeItem7,
-                //ComputeItem8,ComputeItem9,ComputeItem10,ComputeItem11,ComputeItem12
+                ComputeItem1, ComputeItem2, ComputeItem3,ComputeItem4,ComputeItem5,
+                ComputeItem6,ComputeItem7,
+                ComputeItem8,
+				ComputeItem9,
+				//ComputeItem10,ComputeItem11,ComputeItem12
             };
 
             foreach(var compute in computeMethods)
@@ -569,11 +570,410 @@ namespace ADLMRateGen.ViewModel.Painting
 				PaintingBreakdownLines = breakdown
 			};
 		}
-
         private PaintWorkItem ComputeItem5()
         {
+			//double chemicalCost = GetMaterialPrice("Oil and Grease Remover (Amercoat 57 OC)");
+			//double chemicalLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+
+			//double chemicalQty = 0.2;
+			//double chemicalLabourQty = 0.08;
+
+			//double chemicalRate = chemicalCost * chemicalQty;
+			//double chemicalLabourRate = chemicalLabourCost * chemicalLabourQty;
+			//double chemicalTotal = chemicalRate + chemicalLabourRate;
+
+			//Blasting
+			double compressorCost = GetLabourRate("Compressor") / 8;
+			double fuelCost = GetMaterialPrice("Diesel");
+			double sandPotCost = GetLabourRate("Sand Pot for sand blasting") / 8;
+			double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
+			double gritCost = GetMaterialPrice("Grit (for sand blasting)");
+
+			double compressorQty = 0.025;
+			double fuelQty = 45;
+			double sandPotQty = 0.025;
+			double respiratoryQty = 0.025;
+			double gritQty = 0.15;
+			double oilPer = 3;
+
+			double compressorRate = compressorCost * compressorQty;
+			double fuelRate = fuelCost * fuelQty;
+			double sandPotRate = sandPotCost * sandPotQty;
+			double respiratoryRate = respiratoryCost * respiratoryQty;
+			double gritRate = gritCost * gritQty;
+			double oilRate = fuelRate * (oilPer / 100);
+
+			double blastingOperatorCost = GetLabourRate("Light plant operator") * 1.4;
+			double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
+
+			double blastingOperatorQty = 1;
+			double blastingLabouurQty = 2;
+
+			double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
+			double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
+			double blastingLabour = blastingOperatorRate + blastingLabourRate;
+			double blastingOutputDaily = 300;
+
+			double blastingPerSqm = blastingLabour / blastingOutputDaily;
+
+			double totalBlastingPerDay = compressorRate + fuelRate + sandPotRate + respiratoryRate + gritRate + oilRate + blastingPerSqm;
+
+			//Base coat Application
+			double sprayingMachineCost = (GetLabourRate("Spraying machine") / 8);
+			double sprayingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double primerCost = GetMaterialPrice("Inorganic Zinc Silicate (Dimetcote 6, Redish Grey)");
+
+			double sprayingMachineQty = 0.10;
+			double sprayingLabouurQty = 0.10;
+			double primerQty = 0.11;
+			double primerWastePer = 5;
+
+			double sprayingMachineRate = sprayingMachineCost * sprayingMachineQty;
+			double sprayingLabourRate = sprayingLabourCost * sprayingLabouurQty;
+			double primerRate = primerCost * primerQty;
+			double primerWaste = primerRate * (primerWastePer / 100);
+
+			double totalPrimer = sprayingMachineRate + sprayingLabourRate + primerRate + primerWaste;
+
+			//First coat Application
+			double undercoatMachineCost = (GetLabourRate("Spraying machine") / 8);
+			double undercoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+            double epoxyCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)") + GetMaterialPrice("Amercoat 8");
+
+			double undercoatMachineQty = 0.10;
+			double undercoatLabouurQty = 0.10;
+			double epoxyQty = 0.11;
+			double epoxyWastePer = 5;
+
+			double undercoatMachineRate = undercoatMachineCost * undercoatMachineQty;
+			double undercoatLabourRate = undercoatLabourCost * undercoatLabouurQty;
+			double epoxyRate = epoxyCost * epoxyQty;
+			double epoxyWaste = epoxyRate * (epoxyWastePer / 100);
+
+			double totalUnderCoat = undercoatMachineRate + undercoatLabourRate + epoxyRate + epoxyWaste;
+
+			//Second Coat Application
+			double finishcoatMachineCost = (GetLabourRate("Spraying machine") / 8);
+			double finishcoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double enamelCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)") ;
+
+			double finishcoatMachineQty = 0.10;
+			double finishcoatLabouurQty = 0.10;
+			double enamelQty = 0.14;
+			double enamelWastePer = 5;
+
+			double finishcoatMachineRate = finishcoatMachineCost * finishcoatMachineQty;
+			double finishcoatLabourRate = finishcoatLabourCost * finishcoatLabouurQty;
+			double enamelRate = enamelCost * enamelQty;
+			double enamelWaste = enamelRate * (enamelWastePer / 100);
+
+			double totalFinishCoat = finishcoatMachineRate + finishcoatLabourRate + enamelRate + enamelWaste;
+
+			//Top Coat Application
+			double topcoatMachineCost = (GetLabourRate("Spraying machine") / 8);
+			double topcoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double beigeCost = GetMaterialPrice("Mobil Beige Epoxy Enamel") / 4;
+
+			double topcoatMachineQty = 0.10;
+			double topcoatLabouurQty = 0.10;
+			double beigeQty = 0.06;
+			double beigeWastePer = 5;
+
+			double topcoatMachineRate = topcoatMachineCost * topcoatMachineQty;
+			double topcoatLabourRate = topcoatLabourCost * topcoatLabouurQty;
+			double beigeRate = beigeCost * beigeQty;
+			double beigeWaste = beigeRate * (beigeWastePer / 100);
+
+			double totalTopCoat = topcoatMachineRate + topcoatLabourRate + beigeRate + beigeWaste;
+
+			double netCostPerSqm = totalBlastingPerDay + totalPrimer + totalUnderCoat + totalFinishCoat + totalTopCoat;
+
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<PaintingBreakdownLine>
+			{
+				//new PaintingBreakdownLine{ ComponentName="Material cost per square metre of degreasing chemical.", Quantity=chemicalQty, Unit="lit/m2",
+				//	UnitPrice= chemicalCost, TotalPrice=chemicalRate},
+				//new PaintingBreakdownLine{ ComponentName="Labour application", Quantity=chemicalLabourQty, Unit="hr/m2",
+				//	UnitPrice= chemicalLabourCost, TotalPrice=chemicalLabourRate},
+				//new PaintingBreakdownLine{ComponentName="Total Chemical Material", TotalPrice=chemicalTotal},
+
+				new PaintingBreakdownLine{ ComponentName="Compressor", Quantity=compressorQty, Unit="hr/m2",
+					UnitPrice= compressorCost, TotalPrice=compressorRate},
+				new PaintingBreakdownLine{ ComponentName="Fuel (Diesel)", Quantity=fuelQty, Unit="lit/day",
+					UnitPrice= fuelCost, TotalPrice=fuelRate},
+				new PaintingBreakdownLine{ComponentName="Oil and consumables (per day)", Quantity=oilPer, Unit="%",
+					TotalPrice=oilRate},
+				new PaintingBreakdownLine{ ComponentName="Sand Pot", Quantity=sandPotQty, Unit="hr/m2",
+					UnitPrice= sandPotCost, TotalPrice=sandPotRate},
+				new PaintingBreakdownLine{ ComponentName="Respiratory gear.", Quantity=respiratoryQty, Unit="hr/m2",
+					UnitPrice= respiratoryCost, TotalPrice=respiratoryRate},
+				new PaintingBreakdownLine{ ComponentName="Grit", Quantity=gritQty, Unit="m3/m2",
+					UnitPrice= gritCost, TotalPrice=gritRate},
+
+				new PaintingBreakdownLine{ ComponentName="Blasting operator.", Quantity=blastingOperatorQty, Unit="per/day",
+					UnitPrice= blastingOperatorCost, TotalPrice=blastingOperatorRate},
+				new PaintingBreakdownLine{ ComponentName="Labour (for loading sand pot)", Quantity=blastingLabouurQty, Unit="per/day",
+					UnitPrice= blastingLabourCost, TotalPrice=blastingLabourRate},
+				new PaintingBreakdownLine{ComponentName="Labour Output", Quantity=blastingOutputDaily, Unit="m2/day", UnitPrice=blastingLabour,
+					TotalPrice=blastingPerSqm},
+				new PaintingBreakdownLine{ComponentName="Total Blasting ", TotalPrice=totalBlastingPerDay},
+
+				new PaintingBreakdownLine{ ComponentName="Spraying machine", Quantity=sprayingMachineQty, Unit="hr/m2",
+					UnitPrice= sprayingMachineCost, TotalPrice=sprayingMachineRate},
+				new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=sprayingLabouurQty, Unit="hr/m2",
+					UnitPrice= sprayingLabourCost, TotalPrice=sprayingLabourRate},
+				new PaintingBreakdownLine{ ComponentName="Base coat - Inorganic Zinc Silicate", Quantity=primerQty, Unit="lit/m2",
+					UnitPrice= primerCost, TotalPrice=primerRate},
+				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=primerWastePer, Unit="%",
+					TotalPrice=primerWaste},
+				new PaintingBreakdownLine{ComponentName="Total Basecoat ", TotalPrice=totalPrimer},
+
+				new PaintingBreakdownLine{ ComponentName="Spraying machine", Quantity=undercoatMachineQty, Unit="hr/m2",
+					UnitPrice= undercoatMachineCost, TotalPrice=undercoatMachineRate},
+				new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=undercoatLabouurQty, Unit="hr/m2",
+					UnitPrice= undercoatLabourCost, TotalPrice=undercoatLabourRate},
+				new PaintingBreakdownLine{ ComponentName="First coat - Thinned high build epoxy", Quantity=epoxyQty, Unit="lit/m2",
+					UnitPrice= epoxyCost, TotalPrice=epoxyRate},
+				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=epoxyWastePer, Unit="%",
+					TotalPrice=epoxyWaste},
+				new PaintingBreakdownLine{ComponentName="Total Firstcoat ", TotalPrice=totalUnderCoat},
+
+				new PaintingBreakdownLine{ ComponentName="Spraying machine", Quantity=finishcoatMachineQty, Unit="hr/m2",
+					UnitPrice= finishcoatMachineCost, TotalPrice=finishcoatMachineRate},
+				new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=finishcoatLabouurQty, Unit="hr/m2",
+					UnitPrice= finishcoatLabourCost, TotalPrice=finishcoatLabourRate},
+				new PaintingBreakdownLine{ ComponentName="Second coat - High build epoxy", Quantity=enamelQty, Unit="lit/m2",
+					UnitPrice= enamelCost, TotalPrice=enamelRate},
+				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=enamelWastePer, Unit="%",
+					TotalPrice=enamelWaste},
+				new PaintingBreakdownLine{ComponentName="Total Secondcoat ", TotalPrice=totalFinishCoat},
+
+				new PaintingBreakdownLine{ ComponentName="Spraying machine", Quantity=topcoatMachineQty, Unit="hr/m2",
+					UnitPrice= topcoatMachineCost, TotalPrice=topcoatMachineRate},
+				new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=topcoatLabouurQty, Unit="hr/m2",
+					UnitPrice= topcoatLabourCost, TotalPrice=topcoatLabourRate},
+				new PaintingBreakdownLine{ ComponentName="Top coat - Mobil beige Urethane Enamel", Quantity=beigeQty, Unit="lit/m2",
+					UnitPrice= beigeCost, TotalPrice=beigeRate},
+				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=beigeWastePer, Unit="%",
+					TotalPrice=beigeWaste},
+				new PaintingBreakdownLine{ComponentName="Total Topcoat ", TotalPrice=totalTopCoat},
+
+				new PaintingBreakdownLine{ComponentName="Total Cost per m2", Unit="m2", TotalPrice=netCostPerSqm}
+			};
+
+			return new PaintWorkItem
+			{
+				ItemNo = 5,
+				Description = "Prepare surface of steel to SP10, apply zinc silicate as base coat, thinned high build epoxy as first coat, " +
+                "high build epoxy as second coat and urethane enamel as top coat, all works completed as specified. (Mobil EPG 35-B-70 Rev Oct 1996)",
+				Unit = "M2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 2),
+				ProfitValue = Math.Round(ohp.profitVal, 2),
+				TotalCost = Math.Round(ohp.total, 2),
+				PaintingBreakdownLines = breakdown
+			};
+		}
+        private PaintWorkItem ComputeItem6()
+        {
+			//Blasting
+			double compressorCost = GetLabourRate("Compressor") / 8;
+			double fuelCost = GetMaterialPrice("Diesel");
+			double sandPotCost = GetLabourRate("Sand Pot for sand blasting") / 8;
+			double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
+			double gritCost = GetMaterialPrice("Grit (for sand blasting)");
+
+			double compressorQty = 0.025;
+			double fuelQty = 45;
+			double sandPotQty = 0.025;
+			double respiratoryQty = 0.025;
+			double gritQty = 0.15;
+			double oilPer = 3;
+
+			double compressorRate = compressorCost * compressorQty;
+			double fuelRate = fuelCost * fuelQty;
+			double sandPotRate = sandPotCost * sandPotQty;
+			double respiratoryRate = respiratoryCost * respiratoryQty;
+			double gritRate = gritCost * gritQty;
+			double oilRate = fuelRate * (oilPer / 100);
+
+			double blastingOperatorCost = GetLabourRate("Light plant operator") * 1.4;
+			double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
+
+			double blastingOperatorQty = 1;
+			double blastingLabouurQty = 2;
+
+			double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
+			double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
+			double blastingLabour = blastingOperatorRate + blastingLabourRate;
+			double blastingOutputDaily = 300;
+
+			double blastingPerSqm = blastingLabour / blastingOutputDaily;
+
+			double totalBlastingPerDay = compressorRate + fuelRate + sandPotRate + respiratoryRate + gritRate + oilRate + blastingPerSqm;
+
+			//Base coat Application
+			double sprayingMachineCost = (GetLabourRate("Spraying machine") / 8);
+			double sprayingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double primerCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)");
+
+			double sprayingMachineQty = 0.10;
+			double sprayingLabouurQty = 0.10;
+			double primerQty = 0.52;
+			double primerWastePer = 5;
+
+			double sprayingMachineRate = sprayingMachineCost * sprayingMachineQty;
+			double sprayingLabourRate = sprayingLabourCost * sprayingLabouurQty;
+			double primerRate = primerCost * primerQty;
+			double primerWaste = primerRate * (primerWastePer / 100);
+
+			double totalPrimer = sprayingMachineRate + sprayingLabourRate + primerRate + primerWaste;
+
+			//First coat Application
+			double undercoatMachineCost = (GetLabourRate("Spraying machine") / 8);
+			double undercoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double epoxyCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)") ;
+
+			double undercoatMachineQty = 0.10;
+			double undercoatLabouurQty = 0.10;
+			double epoxyQty = 0.52;
+			double epoxyWastePer = 5;
+
+			double undercoatMachineRate = undercoatMachineCost * undercoatMachineQty;
+			double undercoatLabourRate = undercoatLabourCost * undercoatLabouurQty;
+			double epoxyRate = epoxyCost * epoxyQty;
+			double epoxyWaste = epoxyRate * (epoxyWastePer / 100);
+
+			double totalUnderCoat = undercoatMachineRate + undercoatLabourRate + epoxyRate + epoxyWaste;
+
+			////Second Coat Application
+			//double finishcoatMachineCost = (GetLabourRate("Spraying machine") / 8);
+			//double finishcoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			//double enamelCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)");
+
+			//double finishcoatMachineQty = 0.10;
+			//double finishcoatLabouurQty = 0.10;
+			//double enamelQty = 0.14;
+			//double enamelWastePer = 5;
+
+			//double finishcoatMachineRate = finishcoatMachineCost * finishcoatMachineQty;
+			//double finishcoatLabourRate = finishcoatLabourCost * finishcoatLabouurQty;
+			//double enamelRate = enamelCost * enamelQty;
+			//double enamelWaste = enamelRate * (enamelWastePer / 100);
+
+			//double totalFinishCoat = finishcoatMachineRate + finishcoatLabourRate + enamelRate + enamelWaste;
+
+			////Top Coat Application
+			//double topcoatMachineCost = (GetLabourRate("Spraying machine") / 8);
+			//double topcoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			//double beigeCost = GetMaterialPrice("Mobil Beige Epoxy Enamel") / 4;
+
+			//double topcoatMachineQty = 0.10;
+			//double topcoatLabouurQty = 0.10;
+			//double beigeQty = 0.06;
+			//double beigeWastePer = 5;
+
+			//double topcoatMachineRate = topcoatMachineCost * topcoatMachineQty;
+			//double topcoatLabourRate = topcoatLabourCost * topcoatLabouurQty;
+			//double beigeRate = beigeCost * beigeQty;
+			//double beigeWaste = beigeRate * (beigeWastePer / 100);
+
+			//double totalTopCoat = topcoatMachineRate + topcoatLabourRate + beigeRate + beigeWaste;
+
+			double netCostPerSqm = totalBlastingPerDay + totalPrimer + totalUnderCoat ;
+
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<PaintingBreakdownLine>
+			{
+				//new PaintingBreakdownLine{ ComponentName="Material cost per square metre of degreasing chemical.", Quantity=chemicalQty, Unit="lit/m2",
+				//	UnitPrice= chemicalCost, TotalPrice=chemicalRate},
+				//new PaintingBreakdownLine{ ComponentName="Labour application", Quantity=chemicalLabourQty, Unit="hr/m2",
+				//	UnitPrice= chemicalLabourCost, TotalPrice=chemicalLabourRate},
+				//new PaintingBreakdownLine{ComponentName="Total Chemical Material", TotalPrice=chemicalTotal},
+
+				new PaintingBreakdownLine{ ComponentName="Compressor", Quantity=compressorQty, Unit="hr/m2",
+					UnitPrice= compressorCost, TotalPrice=compressorRate},
+				new PaintingBreakdownLine{ ComponentName="Fuel (Diesel)", Quantity=fuelQty, Unit="lit/day",
+					UnitPrice= fuelCost, TotalPrice=fuelRate},
+				new PaintingBreakdownLine{ComponentName="Oil and consumables (per day)", Quantity=oilPer, Unit="%",
+					TotalPrice=oilRate},
+				new PaintingBreakdownLine{ ComponentName="Sand Pot", Quantity=sandPotQty, Unit="hr/m2",
+					UnitPrice= sandPotCost, TotalPrice=sandPotRate},
+				new PaintingBreakdownLine{ ComponentName="Respiratory gear.", Quantity=respiratoryQty, Unit="hr/m2",
+					UnitPrice= respiratoryCost, TotalPrice=respiratoryRate},
+				new PaintingBreakdownLine{ ComponentName="Grit", Quantity=gritQty, Unit="m3/m2",
+					UnitPrice= gritCost, TotalPrice=gritRate},
+
+				new PaintingBreakdownLine{ ComponentName="Blasting operator.", Quantity=blastingOperatorQty, Unit="per/day",
+					UnitPrice= blastingOperatorCost, TotalPrice=blastingOperatorRate},
+				new PaintingBreakdownLine{ ComponentName="Labour (for loading sand pot)", Quantity=blastingLabouurQty, Unit="per/day",
+					UnitPrice= blastingLabourCost, TotalPrice=blastingLabourRate},
+				new PaintingBreakdownLine{ComponentName="Labour Output", Quantity=blastingOutputDaily, Unit="m2/day", UnitPrice=blastingLabour,
+					TotalPrice=blastingPerSqm},
+				new PaintingBreakdownLine{ComponentName="Total Blasting ", TotalPrice=totalBlastingPerDay},
+
+				new PaintingBreakdownLine{ ComponentName="Spraying machine", Quantity=sprayingMachineQty, Unit="hr/m2",
+					UnitPrice= sprayingMachineCost, TotalPrice=sprayingMachineRate},
+				new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=sprayingLabouurQty, Unit="hr/m2",
+					UnitPrice= sprayingLabourCost, TotalPrice=sprayingLabourRate},
+				new PaintingBreakdownLine{ ComponentName="Base coat - Inorganic Zinc Silicate", Quantity=primerQty, Unit="lit/m2",
+					UnitPrice= primerCost, TotalPrice=primerRate},
+				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=primerWastePer, Unit="%",
+					TotalPrice=primerWaste},
+				new PaintingBreakdownLine{ComponentName="Total Basecoat ", TotalPrice=totalPrimer},
+
+				new PaintingBreakdownLine{ ComponentName="Spraying machine", Quantity=undercoatMachineQty, Unit="hr/m2",
+					UnitPrice= undercoatMachineCost, TotalPrice=undercoatMachineRate},
+				new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=undercoatLabouurQty, Unit="hr/m2",
+					UnitPrice= undercoatLabourCost, TotalPrice=undercoatLabourRate},
+				new PaintingBreakdownLine{ ComponentName="First coat - Thinned high build epoxy", Quantity=epoxyQty, Unit="lit/m2",
+					UnitPrice= epoxyCost, TotalPrice=epoxyRate},
+				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=epoxyWastePer, Unit="%",
+					TotalPrice=epoxyWaste},
+				new PaintingBreakdownLine{ComponentName="Total Topcoat ", TotalPrice=totalUnderCoat},
+
+				//new PaintingBreakdownLine{ ComponentName="Spraying machine", Quantity=finishcoatMachineQty, Unit="hr/m2",
+				//	UnitPrice= finishcoatMachineCost, TotalPrice=finishcoatMachineRate},
+				//new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=finishcoatLabouurQty, Unit="hr/m2",
+				//	UnitPrice= finishcoatLabourCost, TotalPrice=finishcoatLabourRate},
+				//new PaintingBreakdownLine{ ComponentName="Second coat - High build epoxy", Quantity=enamelQty, Unit="lit/m2",
+				//	UnitPrice= enamelCost, TotalPrice=enamelRate},
+				//new PaintingBreakdownLine{ComponentName="Add waste", Quantity=enamelWastePer, Unit="%",
+				//	TotalPrice=enamelWaste},
+				//new PaintingBreakdownLine{ComponentName="Total Secondcoat ", TotalPrice=totalFinishCoat},
+
+				//new PaintingBreakdownLine{ ComponentName="Spraying machine", Quantity=topcoatMachineQty, Unit="hr/m2",
+				//	UnitPrice= topcoatMachineCost, TotalPrice=topcoatMachineRate},
+				//new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=topcoatLabouurQty, Unit="hr/m2",
+				//	UnitPrice= topcoatLabourCost, TotalPrice=topcoatLabourRate},
+				//new PaintingBreakdownLine{ ComponentName="Top coat - Mobil beige Urethane Enamel", Quantity=beigeQty, Unit="lit/m2",
+				//	UnitPrice= beigeCost, TotalPrice=beigeRate},
+				//new PaintingBreakdownLine{ComponentName="Add waste", Quantity=beigeWastePer, Unit="%",
+				//	TotalPrice=beigeWaste},
+				//new PaintingBreakdownLine{ComponentName="Total Topcoat ", TotalPrice=totalTopCoat},
+
+				new PaintingBreakdownLine{ComponentName="Total Cost per m2", Unit="m2", TotalPrice=netCostPerSqm}
+			};
+
+			return new PaintWorkItem
+			{
+				ItemNo = 6,
+				Description = "Prepare surface of steel to SP5, coal tar epoxy as base coat, and coal tar epoxy as top coat, all works completed as specified. " +
+				"(Mobil EPG 35-B-81 Rev Jan 1993)",
+				Unit = "M2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 2),
+				ProfitValue = Math.Round(ohp.profitVal, 2),
+				TotalCost = Math.Round(ohp.total, 2),
+				PaintingBreakdownLines = breakdown
+			};
+		}
+        private PaintWorkItem ComputeItem7()
+        {
 			double chemicalCost = GetMaterialPrice("Oil and Grease Remover (Amercoat 57 OC)");
-			double chemicalLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+			double chemicalLabourCost = (GetLabourRate("Labourer") / 8) * 1.4 * 1.4;
 
 			double chemicalQty = 0.2;
 			double chemicalLabourQty = 0.08;
@@ -655,11 +1055,11 @@ namespace ADLMRateGen.ViewModel.Painting
 			//FinishCoat Application
 			double finishcoatMachineCost = (GetLabourRate("Spraying machine") / 8);
 			double finishcoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
-			double enamelCost = GetMaterialPrice("Mobil Beige Epoxy Enamel") / 4;
+			double enamelCost = GetMaterialPrice("Ditto but OSHA S/Yellow (Finish Coating)") ;
 
 			double finishcoatMachineQty = 0.10;
 			double finishcoatLabouurQty = 0.10;
-			double enamelQty = 0.08;
+			double enamelQty = 0.09;
 			double enamelWastePer = 5;
 
 			double finishcoatMachineRate = finishcoatMachineCost * finishcoatMachineQty;
@@ -726,7 +1126,7 @@ namespace ADLMRateGen.ViewModel.Painting
 					UnitPrice= finishcoatMachineCost, TotalPrice=finishcoatMachineRate},
 				new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=finishcoatLabouurQty, Unit="hr/m2",
 					UnitPrice= finishcoatLabourCost, TotalPrice=finishcoatLabourRate},
-				new PaintingBreakdownLine{ ComponentName="Finish coat - Mobil beige gloss", Quantity=enamelQty, Unit="lit/m2",
+				new PaintingBreakdownLine{ ComponentName="Finish coat - Aliphatic Polyurethane - Safety Yellow ", Quantity=enamelQty, Unit="lit/m2",
 					UnitPrice= enamelCost, TotalPrice=enamelRate},
 				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=enamelWastePer, Unit="%",
 					TotalPrice=enamelWaste},
@@ -737,8 +1137,80 @@ namespace ADLMRateGen.ViewModel.Painting
 
 			return new PaintWorkItem
 			{
-				ItemNo = 4,
-				Description = "Prepare  steel surface  to Mobil SP10, cleaning surface of grease, sand-blasting and applying high build epoxy priming coat and Mobil beige finish coat -(Ameron Paints)",
+				ItemNo = 7,
+				Description = "Prepare  steel surface  to Mobil SP10, cleaning surface of grease, sand-blasting and applying high build epoxy priming coat and Mobil beige " +
+				"finish coat -(Ameron Paints)",
+				Unit = "M2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 2),
+				ProfitValue = Math.Round(ohp.profitVal, 2),
+				TotalCost = Math.Round(ohp.total, 2),
+				PaintingBreakdownLines = breakdown
+			};
+		}
+        private PaintWorkItem ComputeItem8()
+        {
+			double scrubLabour = (GetLabourRate("Labourer") / 8) * 1.4;
+			double scrubLabourQty = 0.2;
+			double scrubLabourRate = scrubLabour * scrubLabourQty;
+
+			double latexCost = GetMaterialPrice("Multipurpose Polymaide Epoxy (Amercoat 385, Off White)");
+			double finishLatexCost = GetMaterialPrice("Ditto but Mobil Beige F38");
+
+			double latexQty = 0.4;
+			double finishLatexQty = 0.4;
+
+			double latexRate = latexCost * latexQty;
+			double finishLatexRate = finishLatexCost * finishLatexQty;
+
+			double waste = 10;
+
+			double latexWaste = latexRate * (waste / 100);
+			double finishLatexWaste = finishLatexRate * (waste / 100);
+
+			double latexTotal = latexRate + latexWaste;
+			double finishLatexTotal = finishLatexRate + finishLatexWaste;
+
+			double painterCost = GetLabourRate("Skilled/Artisan");
+			double painterQty = 1;
+			double painterRate = painterCost * painterQty;
+
+			double painterOutput = 18;
+			double painLabour = painterRate / painterOutput;
+
+			double netCostPerSqm = scrubLabourRate + latexTotal + finishLatexTotal + painLabour;
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<PaintingBreakdownLine>
+			{
+				new PaintingBreakdownLine{ ComponentName="Scrub wall down of all dirt. (Labour Only)", Quantity=scrubLabourQty, Unit="hr/m2",
+					UnitPrice= scrubLabour, TotalPrice=scrubLabourRate},
+				
+				new PaintingBreakdownLine{ ComponentName="Exterior Acrylic Latex.", Quantity=latexQty, Unit="Lit/m2",
+					UnitPrice= latexCost, TotalPrice=latexRate},
+				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=waste, Unit="%",
+					TotalPrice=latexWaste},
+				new PaintingBreakdownLine{ComponentName="Total Undercoat ", TotalPrice=latexTotal},
+
+				new PaintingBreakdownLine{ ComponentName="Exterior Acrylic Latex.", Quantity=latexQty, Unit="Lit/m2",
+					UnitPrice= latexCost, TotalPrice=latexRate},
+				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=waste, Unit="%",
+					TotalPrice=latexWaste},
+				new PaintingBreakdownLine{ComponentName="Total FinishCoat ", TotalPrice=finishLatexTotal},
+
+
+				new PaintingBreakdownLine{ ComponentName="Painter", Quantity=painterQty, Unit="per/day",
+					UnitPrice= painterCost, TotalPrice=painterRate},
+				new PaintingBreakdownLine{ComponentName="Output", Quantity=painterOutput, Unit="m2/day", UnitPrice=painterRate,
+					TotalPrice=painLabour},
+
+				new PaintingBreakdownLine{ComponentName="Total Cost per m2", Unit="m2", TotalPrice=netCostPerSqm}
+			};
+
+			return new PaintWorkItem
+			{
+				ItemNo = 8,
+				Description = "Prepare and apply exterior acrylic latex as prime coat and finish coat on concrete surface.",
 				Unit = "M2",
 				NetCost = Math.Round(netCostPerSqm, 2),
 				OverheadValue = Math.Round(ohp.overheadVal, 2),
@@ -748,25 +1220,101 @@ namespace ADLMRateGen.ViewModel.Painting
 			};
 		}
 
-        private PaintWorkItem ComputeItem6()
-        {
-            throw new NotImplementedException();
-        }
-
-        private PaintWorkItem ComputeItem7()
-        {
-            throw new NotImplementedException();
-        }
-
-        private PaintWorkItem ComputeItem8()
-        {
-            throw new NotImplementedException();
-        }
-
         private PaintWorkItem ComputeItem9()
         {
-            throw new NotImplementedException();
-        }
+			//Get value from steel work
+			double paintRemovalLabour = 171.67;//Get Cost From Steel Work
+			double paintRemovalQty = 1;
+			double paintRemovalRate = paintRemovalLabour * paintRemovalQty;
+
+			//Primer Application
+			double sprayingMachineCost = (GetLabourRate("Spraying machine") / 8);
+			double sprayingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double primerCost = GetMaterialPrice("Epoxy Mastic (Amerlock 400AL, Aluminium Grey)");
+			double thinnerCost = GetMaterialPrice("Amercoat 9HF");
+
+			double sprayingMachineQty = 0.10;
+			double sprayingLabouurQty = 0.15;
+			double primerQty = 0.15;
+			double primerWastePer = 15;
+			double thinnerQty = primerQty * 0.1;
+
+			double sprayingMachineRate = sprayingMachineCost * sprayingMachineQty;
+			double sprayingLabourRate = sprayingLabourCost * sprayingLabouurQty;
+			double primerRate = primerCost * primerQty;
+			double primerWaste = primerRate * (primerWastePer / 100);
+			double thinnerRate = thinnerCost * thinnerQty;
+
+			double totalPrimer = thinnerRate+ sprayingMachineRate + sprayingLabourRate + primerRate + primerWaste;
+
+			//Finish Application
+			double finishMachineCost = (GetLabourRate("Spraying machine") / 8);
+			double finishLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
+			double polyurethanerCost = GetMaterialPrice("Ditto but Blue 5010 (Finish Coating)");
+			double FinishthinnerCost = GetMaterialPrice("Amercoat 920");
+
+			double finishMachineQty = 0.10;
+			double finishLabouurQty = 0.15;
+			double polyurethanerQty = 0.09;
+			double polyurethanerWastePer = 15;
+			double thinnerFinishQty = polyurethanerQty * 0.1;
+
+			double finishMachineRate = finishMachineCost * finishMachineQty;
+			double finishLabourRate = finishLabourCost * finishLabouurQty;
+			double polyurethanerRate = polyurethanerCost * polyurethanerQty;
+			double polyurethanerWaste = polyurethanerRate * (polyurethanerWastePer / 100);
+			double thinnerFinishRate = FinishthinnerCost * thinnerFinishQty;
+
+			double totalFinish = finishMachineRate + finishLabourRate + polyurethanerRate + polyurethanerWaste + thinnerFinishRate;
+
+			double netCostPerSqm = paintRemovalRate + totalPrimer + totalFinish;
+			var ohp = ApplyOHP(netCostPerSqm);
+
+			var breakdown = new ObservableCollection<PaintingBreakdownLine>
+			{
+				new PaintingBreakdownLine{ ComponentName="Remove existing paint through power brushing. (see steel work)", Quantity=paintRemovalQty,
+					Unit="m2",
+					UnitPrice= paintRemovalLabour, TotalPrice=paintRemovalRate},
+
+				new PaintingBreakdownLine{ ComponentName="Spraying machine", Quantity=sprayingMachineQty, Unit="hr/m2",
+					UnitPrice= sprayingMachineCost, TotalPrice=sprayingMachineRate},
+				new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=sprayingLabouurQty, Unit="hr/m2",
+					UnitPrice= sprayingLabourCost, TotalPrice=sprayingLabourRate},
+				new PaintingBreakdownLine{ ComponentName="Aluminium epoxy primer", Quantity=primerQty, Unit="Lit/m2",
+					UnitPrice= primerCost, TotalPrice=primerRate},
+				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=primerWastePer, Unit="%",
+					TotalPrice=primerWaste},
+				new PaintingBreakdownLine{ ComponentName="Thinner - Amercoat 9HF", Quantity=thinnerQty, Unit="Lit/m2",
+					UnitPrice= thinnerCost, TotalPrice=thinnerRate},
+				new PaintingBreakdownLine{ComponentName="Total Undercoat ", TotalPrice=totalPrimer},
+
+				new PaintingBreakdownLine{ ComponentName="Spraying machine", Quantity=finishMachineQty, Unit="hr/m2",
+					UnitPrice= finishMachineCost, TotalPrice=finishMachineRate},
+				new PaintingBreakdownLine{ ComponentName="Labour spraying - spray painter", Quantity=finishLabouurQty, Unit="hr/m2",
+					UnitPrice= finishLabourCost, TotalPrice=finishLabourRate},
+				new PaintingBreakdownLine{ ComponentName="Blue/White Polyurethane", Quantity=polyurethanerQty, Unit="Lit/m2",
+					UnitPrice= polyurethanerCost, TotalPrice=polyurethanerRate},
+				new PaintingBreakdownLine{ComponentName="Add waste", Quantity=polyurethanerWastePer, Unit="%",
+					TotalPrice=polyurethanerWaste},
+				new PaintingBreakdownLine{ ComponentName="Thinner - Amercoat 920", Quantity=thinnerFinishQty, Unit="Lit/m2",
+					UnitPrice= FinishthinnerCost, TotalPrice=thinnerFinishRate},
+				new PaintingBreakdownLine{ComponentName="Total Finish Coat ", TotalPrice=totalFinish},
+
+				new PaintingBreakdownLine{ComponentName="Total Cost per m2", Unit="m2", TotalPrice=netCostPerSqm}
+			};
+
+			return new PaintWorkItem
+			{
+				ItemNo = 9,
+				Description = "Remove existing paint through wire brushing, and prepare and apply aluminium epoxy primer as base and Mobil blue polyurethane as topcoat. (Ameron)",
+				Unit = "M2",
+				NetCost = Math.Round(netCostPerSqm, 2),
+				OverheadValue = Math.Round(ohp.overheadVal, 2),
+				ProfitValue = Math.Round(ohp.profitVal, 2),
+				TotalCost = Math.Round(ohp.total, 2),
+				PaintingBreakdownLines = breakdown
+			};
+		}
 
         private PaintWorkItem ComputeItem10()
         {
