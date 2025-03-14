@@ -26,6 +26,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 				{
 					_overheadPercent = value;
 					RaisePropertyChanged();
+					RecomputeAll();
 				}
 			}
 		}
@@ -38,6 +39,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 				{
 					_profitPercent = value;
 					RaisePropertyChanged();
+					RecomputeAll();
 				}
 			}
 		}

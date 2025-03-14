@@ -13,6 +13,7 @@
         xmlns:roof="clr-namespace:ADLMRateGen.ViewModel.RoofWork"
         xmlns:windowAndDoor="clr-namespace:ADLMRateGen.ViewModel.WindowAndDoor"
         xmlns:paint="clr-namespace:ADLMRateGen.ViewModel.Painting"
+        xmlns:steel="clr-namespace:ADLMRateGen.ViewModel.SteelWork"
         xmlns:customInput="clr-namespace:ADLMRateGen.ViewModel.CustomRate"
         mc:Ignorable="d"
         Title="MainWindow" Height="750" Width="1080">
@@ -56,6 +57,9 @@
         <DataTemplate DataType="{x:Type paint:PaintWorkViewModel}">
             <view:PaintworkView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type steel:SteelWorkViewModel}">
+            <view:SteelworkView/>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -98,9 +102,9 @@
                 <Button Content="Roof" Command="{Binding SelectedRoofworkViewCommand}" Margin="5" Padding="2"/>
                 <Button Content="WindowsDoors" Command="{Binding SelectedWindowAndDoorViewCommand}" Margin="5" Padding="2"/>
                 <Button Content="Painting" Command="{Binding SelectedPaintworkViewCommand}" Margin="5" Padding="2"/>
-                <Button Content="Steel" Command="" Margin="5" Padding="2"/>
-                <Button Content="Plumbing" Command="" Margin="5" Padding="2"/>
-                <Button Content="Electrical" Command="" Margin="5" Padding="2"/>
+                <Button Content="Steel" Command="{Binding SelectedSteelworkViewCommand}" Margin="5" Padding="2"/>
+                <!--<Button Content="Plumbing" Command="" Margin="5" Padding="2"/>
+                <Button Content="Electrical" Command="" Margin="5" Padding="2"/>-->
                 <Button Content="Custom Rate " Command="{Binding SelectedCustomRateInputViewCommand }" Margin="5" Padding="2"/>
             </StackPanel>
             <!-- The ContentControl will display the current view (MaterialPriceView in this case) -->

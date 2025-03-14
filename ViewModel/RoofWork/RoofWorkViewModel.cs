@@ -27,8 +27,10 @@ namespace ADLMRateGen.ViewModel.RoofWork
                 {
                     _overheadPercent = value;
                     RaisePropertyChanged();
-                }
-            }
+					RecomputeAll();
+
+				}
+			}
         }
         public double ProfitPercent
         {
@@ -39,8 +41,10 @@ namespace ADLMRateGen.ViewModel.RoofWork
                 {
                     _profitPercent = value;
                     RaisePropertyChanged();
-                }
-            }
+					RecomputeAll();
+
+				}
+			}
         }
         public ObservableCollection<RoofWorkItem> RoofWorkItems { get; set; } =
             new ObservableCollection<RoofWorkItem>();

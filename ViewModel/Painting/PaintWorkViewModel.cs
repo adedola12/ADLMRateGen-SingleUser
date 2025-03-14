@@ -1,20 +1,20 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.View;
-using ADLMRateGen.ViewModel.WindowAndDoor;
+using ADLMRateGen.ViewModel.SteelWork;
 
 namespace ADLMRateGen.ViewModel.Painting
 {
     public class PaintWorkViewModel: ViewModelBase
     {
         private readonly GetItemsFromDB _helper;
+		private readonly SteelWorkViewModel _steelWorkViewModel;
 
-        private double _overheadPercent = 10.0;
+		private double _overheadPercent = 10.0;
         private double _profitPercent = 25.0;
         private string _searchTerm = string.Empty;
         private object _selectedDetail;
@@ -29,8 +29,10 @@ namespace ADLMRateGen.ViewModel.Painting
                 {
                     _overheadPercent = value;
                     RaisePropertyChanged();
-                }
-            }
+					RecomputeAll();
+
+				}
+			}
         }
         public double ProfitPercent
         {
@@ -41,8 +43,10 @@ namespace ADLMRateGen.ViewModel.Painting
                 {
                     _profitPercent = value;
                     RaisePropertyChanged();
-                }
-            }
+					RecomputeAll();
+
+				}
+			}
         }
 
         public ObservableCollection<PaintWorkItem> PaintWorkItems { get; set; } =
@@ -139,7 +143,12 @@ namespace ADLMRateGen.ViewModel.Painting
         }
         private double GetMaterialPrice(string name) => _helper.GetMaterialPrice(name);
         private double GetLabourRate(string name) => _helper.GetLabourRate(name);
-        public double GetNetValue(Func<PaintWorkItem> computeItemFunc)
+		public double GetSteelNetValue(Func<SteelworkItem> computeFunc)
+		{
+			return _steelWorkViewModel.GetSteelNetValue(computeFunc);
+		}
+
+		public double GetNetValue(Func<PaintWorkItem> computeItemFunc)
         {
             var item = computeItemFunc();
             return item.NetCost;
@@ -1219,11 +1228,10 @@ namespace ADLMRateGen.ViewModel.Painting
 				PaintingBreakdownLines = breakdown
 			};
 		}
-
         private PaintWorkItem ComputeItem9()
         {
 			//Get value from steel work
-			double paintRemovalLabour = 171.67;//Get Cost From Steel Work
+			double paintRemovalLabour = 171; //GetSteelNetValue(_steelWorkViewModel.ComputeItem1); 
 			double paintRemovalQty = 1;
 			double paintRemovalRate = paintRemovalLabour * paintRemovalQty;
 

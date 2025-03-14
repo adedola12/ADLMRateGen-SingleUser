@@ -28,6 +28,8 @@ namespace ADLMRateGen.ViewModel.Finishes
 				{
 					_overheadPercent = value;
 					RaisePropertyChanged();
+					RecomputeAll();
+
 				}
 			}
 		}
@@ -40,6 +42,8 @@ namespace ADLMRateGen.ViewModel.Finishes
 				{
 					_profitPercent = value;
 					RaisePropertyChanged();
+					RecomputeAll();
+
 				}
 			}
 		}

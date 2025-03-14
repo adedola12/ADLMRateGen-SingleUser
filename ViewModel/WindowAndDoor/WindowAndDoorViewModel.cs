@@ -27,6 +27,8 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
 				{
 					_overheadPercent = value;
 					RaisePropertyChanged();
+					RecomputeAll();
+
 				}
 			}
 		}
@@ -39,6 +41,8 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
 				{
 					_profitPercent = value;
 					RaisePropertyChanged();
+					RecomputeAll();
+
 				}
 			}
 		}

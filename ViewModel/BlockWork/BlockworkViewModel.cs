@@ -29,6 +29,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
 				{
 					_overheadPercent = value;
 					RaisePropertyChanged();
+					RecomputeAll();
+
 				}
 			}
         }
@@ -41,8 +43,11 @@ namespace ADLMRateGen.ViewModel.BlockWork
                 {
                     _profitPercent = value;
                     RaisePropertyChanged();
-                }
-            }
+					RecomputeAll();
+
+				}
+
+			}
         }
         public ObservableCollection<BlockworkItem> BlockworkItems { get; set; } =
 			new ObservableCollection<BlockworkItem>();
