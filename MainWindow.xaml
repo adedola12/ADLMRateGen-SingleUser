@@ -16,7 +16,9 @@
         xmlns:steel="clr-namespace:ADLMRateGen.ViewModel.SteelWork"
         xmlns:customInput="clr-namespace:ADLMRateGen.ViewModel.CustomRate"
         mc:Ignorable="d"
-        Title="MainWindow" Height="750" Width="1080">
+        Title="" 
+        WindowStyle="SingleBorderWindow"
+        Height="750" Width="1080">
 
     <Window.Resources>
         <!-- 
