@@ -27,6 +27,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
                
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0"  VerticalAlignment="Center" Margin="5">
@@ -42,10 +43,10 @@
                 <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
             </StackPanel>
 
-            <!--<Button Grid.Column="2" Content="Search" 
-            Command="{Binding SearchLabourCommand}" 
-            Margin="5,5,41,5" 
-            Height="40" FontSize="15" FontWeight="DemiBold"/>-->
+            <Button Grid.Column="2" Content="Update Prices"
+                    Command="{Binding UpdatePricesCommand}"
+                     Margin="10,10,18,10" Height="40" FontWeight="Bold" FontSize="15"/>
+
 
         </Grid>
 

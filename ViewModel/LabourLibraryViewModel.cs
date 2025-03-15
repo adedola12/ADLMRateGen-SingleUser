@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using ADLMRateGen.Command;
@@ -51,16 +52,50 @@ namespace ADLMRateGen.ViewModel
         public ICommand ClearDatabaseCommand { get;}
         public ICommand DeleteLabourCommand { get;}
         public ICommand EditLabourCommand { get;}
-        public event Action<LabourModel> EditLabourRequested;
+        public ICommand UpdatePricesCommand { get; }
+
+
+		public event Action<LabourModel> EditLabourRequested;
         public event Action LibraryChanged;
 
         public LabourLibraryViewModel()
         {
             _dataServices = new JsonDataServices(_filePath, _defaultFilePath);
 
-            LabourLibrary = _dataServices.LoadData<ObservableCollection<LabourModel>>()
-                ?? new ObservableCollection<LabourModel>();
-            LabourCollectionView = CollectionViewSource.GetDefaultView(LabourLibrary);
+            bool useMongo = false;
+            if (useMongo)
+            {
+                var mongoDataSource = new LabourMongoDataSource(
+					"mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
+					"ADLMRateDB",
+					"labours"
+				);
+                LabourLibraryService.Initialize(mongoDataSource);
+
+                var laboursFromMongo = LabourLibraryService.GetAllLabours();
+
+                if (laboursFromMongo == null || !laboursFromMongo.Any())
+				{
+                    BulkUploadLabourUtility.BulkUploadJsonToMongo(
+                        jsonFilePath: "Data\\defaultLabours.json",
+                        connectionString: "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
+                        databaseName: "ADLMRateDB",
+                        collectionName: "labours"
+                        );
+                    LabourLibraryService.Initialize(mongoDataSource);
+				}
+			}
+            else
+            {
+                LabourLibraryService.Initialize(new LabourJsonDataSource(_filePath));
+			}
+
+			//LabourLibrary = _dataServices.LoadData<ObservableCollection<LabourModel>>()
+			//    ?? new ObservableCollection<LabourModel>();
+
+
+			LabourLibrary = new ObservableCollection<LabourModel>(LabourLibraryService.GetAllLabours());
+			LabourCollectionView = CollectionViewSource.GetDefaultView(LabourLibrary);
             LabourCategory = new ObservableCollection<string> { "All", "Labour", "Plant", "Small Plant" };
             _selectedLabourcategory = "All";
 
@@ -68,7 +103,8 @@ namespace ADLMRateGen.ViewModel
             ClearDatabaseCommand = new DelegateCommand(o => ClearDatabase());
             DeleteLabourCommand = new DelegateCommand(o => DeleteLabour(o));
             EditLabourCommand = new DelegateCommand(o => EditLabour(o));
-        }
+			UpdatePricesCommand = new DelegateCommand(o => UpdatePricesFromMongo());
+		}
 
 		private void ApplyFilter()
 		{
@@ -145,5 +181,49 @@ namespace ADLMRateGen.ViewModel
             LibraryChanged?.Invoke();
             ApplyFilter();
         }
-    }
+
+		private void UpdatePricesFromMongo()
+        {
+
+			// Prompt the user for confirmation.
+	        var result = MessageBox.Show(
+		        "Are you sure you want to override the existing prices with prices from ADLM servers?",
+		        "Confirm Price Update",
+		        MessageBoxButton.YesNo,
+		        MessageBoxImage.Question);
+
+	        // If the user cancels, exit the method.
+	        if (result != MessageBoxResult.Yes)
+				{
+					MessageBox.Show("Price update canceled.", "Canceled", MessageBoxButton.OK, MessageBoxImage.Information);
+					return;
+				}
+			var mongoDataSource = new LabourMongoDataSource(
+					"mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
+					"ADLMRateDB",
+					"labours"
+				);
+
+            var mongoLabours = mongoDataSource.LoadLabours().ToList();
+
+            foreach (var localItem in LabourLibrary)
+            {
+                var matchingMongoItem = mongoLabours.FirstOrDefault(l =>
+                l.LabourName.Equals(localItem.LabourName, StringComparison.OrdinalIgnoreCase));
+
+				if (matchingMongoItem != null)
+				{
+					localItem.LabourPrice = matchingMongoItem.LabourPrice;
+				}
+			}
+
+            _dataServices.SaveData(LabourLibrary);
+            LibraryChanged?.Invoke();
+			ApplyFilter();
+
+            MessageBox.Show("Prices updated from ADLM Servers.");
+
+		}
+
+	}
 }

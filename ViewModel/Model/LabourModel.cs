@@ -1,10 +1,18 @@
 ﻿using System.ComponentModel;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ADLMRateGen.ViewModel.Model
 {
-    public class LabourModel: INotifyPropertyChanged
+    [BsonIgnoreExtraElements]
+	public class LabourModel: INotifyPropertyChanged
     {
-        private int _serialNumber;
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
+
+		private int _serialNumber;
         private string? _labourName;
         private string? _labourUnit;
         private decimal _labourPrice;

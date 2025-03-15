@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using ADLMRateGen.Command;
@@ -54,6 +55,7 @@ namespace ADLMRateGen.ViewModel
         public ICommand ClearDatabaseCommand { get; }
         public ICommand DeleteMaterialCommand { get; }
         public ICommand EditMaterialCommand { get; }
+        public ICommand UpdatePricesCommand { get; }
 
         // Raised when the user clicks Edit on an item.
         public event Action<MaterialModel>? EditMaterialRequested;
@@ -64,7 +66,7 @@ namespace ADLMRateGen.ViewModel
             //_dataServices = new JsonDataServices("materials.json", "Data\\defaultMaterials.json");
             _dataServices = new JsonDataServices(_filePath, _defaultFilePath);
 
-            bool useMongo = true;
+            bool useMongo = false; //true to upload to DB
             if (useMongo)
             {
                 var mongoDataSource = new MaterialMongoDataSource(
@@ -88,7 +90,7 @@ namespace ADLMRateGen.ViewModel
 				}
 			} else
             {
-				MaterialLibraryService.Initialize(new MaterialJsonDataSource(_defaultFilePath));
+				MaterialLibraryService.Initialize(new MaterialJsonDataSource(_filePath));
 			}
 
 
@@ -118,6 +120,8 @@ namespace ADLMRateGen.ViewModel
             ClearDatabaseCommand = new DelegateCommand(o => ClearDatabase());
             DeleteMaterialCommand = new DelegateCommand(o => DeleteMaterial(o));
             EditMaterialCommand = new DelegateCommand(o => EditMaterial(o));
+
+            UpdatePricesCommand = new DelegateCommand(_ => UpdatePricesFromMongo());
         }
 
 
@@ -197,5 +201,49 @@ namespace ADLMRateGen.ViewModel
             LibraryChanged?.Invoke();
             ApplyFilter();
         }
-    }
+
+        private void UpdatePricesFromMongo()
+        {
+			// Prompt the user for confirmation.
+			var result = MessageBox.Show(
+				"Are you sure you want to override the existing prices with prices from ADLM servers?",
+				"Confirm Price Update",
+				MessageBoxButton.YesNo,
+				MessageBoxImage.Question);
+
+			// If the user cancels, exit the method.
+			if (result != MessageBoxResult.Yes)
+			{
+				MessageBox.Show("Price update canceled.", "Canceled", MessageBoxButton.OK, MessageBoxImage.Information);
+				return;
+			}
+			var mongoDataSource = new MaterialMongoDataSource(
+					"mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
+					"ADLMRateDB",
+					"Materials"
+					);
+            var mongoMaterials = mongoDataSource.LoadMaterials().ToList();
+
+            foreach (var localItem in MaterialLibrary)
+            {
+                var matchingMongoItem = mongoMaterials.FirstOrDefault(m =>
+                m.MaterialName.Equals(localItem.MaterialName, StringComparison.OrdinalIgnoreCase));
+
+                if (matchingMongoItem != null)
+                {
+                    localItem.MaterialPrice = matchingMongoItem.MaterialPrice;
+				}
+			}
+
+            _dataServices.SaveData(MaterialLibrary);
+
+			LibraryChanged?.Invoke();
+			ApplyFilter();
+
+			MessageBox.Show("Prices updated from ADLM Servers.");
+
+
+		}
+
+	}
 }
