@@ -95,17 +95,17 @@
                 <!-- View content -->
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Background="LightGray" Orientation="Horizontal">
-                <Button Content="Ground" Command="{Binding SelectedGroundworkViewCommand}" Margin="5" Padding="2"/>
-                <Button Content="Concrete" Command="{Binding SelectedConcreteWorkViewCommand}" Margin="5" Padding="2"/>
-                <Button Content="BlockWorks" Command="{Binding SelectedBlockworkViewCommand}" Margin="5" Padding="2"/>
-                <Button Content="Finishes" Command="{Binding SelectedFinishesViewCommand}" Margin="5" Padding="2"/>
-                <Button Content="Roof" Command="{Binding SelectedRoofworkViewCommand}" Margin="5" Padding="2"/>
-                <Button Content="WindowsDoors" Command="{Binding SelectedWindowAndDoorViewCommand}" Margin="5" Padding="2"/>
-                <Button Content="Painting" Command="{Binding SelectedPaintworkViewCommand}" Margin="5" Padding="2"/>
-                <Button Content="Steel" Command="{Binding SelectedSteelworkViewCommand}" Margin="5" Padding="2"/>
+                <Button Content="Ground" Command="{Binding SelectedGroundworkViewCommand}" Margin="5,2" Padding="1,2" Width="80"/>
+                <Button Content="Concrete" Command="{Binding SelectedConcreteWorkViewCommand}" Margin="5" Padding="2" Width="80"/>
+                <Button Content="BlockWorks" Command="{Binding SelectedBlockworkViewCommand}" Margin="5" Padding="2" Width="80"/>
+                <Button Content="Finishes" Command="{Binding SelectedFinishesViewCommand}" Margin="5" Padding="2" Width="80"/>
+                <Button Content="Roof" Command="{Binding SelectedRoofworkViewCommand}" Margin="5" Padding="2" Width="80"/>
+                <Button Content="Windows Doors" Command="{Binding SelectedWindowAndDoorViewCommand}" Margin="5" Padding="2" Width="100"/>
+                <Button Content="Painting" Command="{Binding SelectedPaintworkViewCommand}" Margin="5" Padding="2" Width="80"/>
+                <Button Content="Steel" Command="{Binding SelectedSteelworkViewCommand}" Margin="5" Padding="2" Width="80"/>
                 <!--<Button Content="Plumbing" Command="" Margin="5" Padding="2"/>
                 <Button Content="Electrical" Command="" Margin="5" Padding="2"/>-->
-                <Button Content="Custom Rate " Command="{Binding SelectedCustomRateInputViewCommand }" Margin="5" Padding="2"/>
+                <Button Content="Custom Rate " Command="{Binding SelectedCustomRateInputViewCommand }" Margin="5" Padding="2" Width="80"/>
             </StackPanel>
             <!-- The ContentControl will display the current view (MaterialPriceView in this case) -->
             <ContentControl Grid.Row="1" Content="{Binding SelectedViewModel}"/>

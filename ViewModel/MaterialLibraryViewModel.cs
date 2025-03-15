@@ -64,9 +64,38 @@ namespace ADLMRateGen.ViewModel
             //_dataServices = new JsonDataServices("materials.json", "Data\\defaultMaterials.json");
             _dataServices = new JsonDataServices(_filePath, _defaultFilePath);
 
-            MaterialLibrary = _dataServices.LoadData<ObservableCollection<MaterialModel>>()
-                              ?? new ObservableCollection<MaterialModel>();
-            MaterialCollectionView = CollectionViewSource.GetDefaultView(MaterialLibrary);
+            bool useMongo = true;
+            if (useMongo)
+            {
+                var mongoDataSource = new MaterialMongoDataSource(
+                    "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
+                    "ADLMRateDB",
+                    "Materials"
+                    );
+                MaterialLibraryService.Initialize(mongoDataSource);
+
+                var materialsFromMongo = MaterialLibraryService.GetAllMaterials();
+                if(materialsFromMongo == null || !materialsFromMongo.Any())
+				{
+					BulkUploadUtility.BulkUploadJsonToMongo(
+                        jsonFilePath: "Data\\defaultMaterials.json",
+                        connectionString: "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
+                        databaseName: "ADLMRateDB",
+						collectionName: "Materials"
+						);
+
+                    MaterialLibraryService.Initialize(mongoDataSource);
+				}
+			} else
+            {
+				MaterialLibraryService.Initialize(new MaterialJsonDataSource(_defaultFilePath));
+			}
+
+
+			MaterialLibrary = new ObservableCollection<MaterialModel>(MaterialLibraryService.GetAllMaterials());
+			MaterialCollectionView = CollectionViewSource.GetDefaultView(MaterialLibrary);
+
+
             MaterialCategory = new ObservableCollection<string> { "All", "Cement Based Products", "Earthwork And Filling Materials", "Crushed Rock Products", "Terrazzo Products", 
                 "Mild Steel Bar Reinforcement", "High Tensile Steel Bar Reinforcement", "Mesh Reinforcement to B.S. 4483", "Timber - Softwood", "Timber - Hardwood", 
                 "Plywood - White", "Plywood - Brown", "Particle Board", "Plywood - Veneer", "Timber Others", "Glasswork - Louver Blade-Plain", "Glasswork - Louver Blade-Obscured", 

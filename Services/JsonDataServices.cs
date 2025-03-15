@@ -2,10 +2,11 @@
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using ADLMRateGen.ViewModel.Model;
 
 namespace ADLMRateGen.Services
 {
-    public class JsonDataServices
+	public class JsonDataServices
     {
         private readonly string _filePath;
         private readonly string _defaultFilePath;

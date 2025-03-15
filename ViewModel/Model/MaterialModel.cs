@@ -1,10 +1,17 @@
 ﻿using System.ComponentModel;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ADLMRateGen.ViewModel.Model
 {
-    public class MaterialModel: INotifyPropertyChanged
+    [BsonIgnoreExtraElements]
+	public class MaterialModel: INotifyPropertyChanged
     {
-        private int _serialNumber;
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
+		private int _serialNumber;
         private string _materialName;
         private string _materialUnit;
         private decimal _materialPrice;
