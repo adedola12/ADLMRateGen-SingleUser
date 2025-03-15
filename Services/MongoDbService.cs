@@ -57,5 +57,12 @@ namespace ADLMRateGen.Services
 
 			return user.IpAddress;
 		}
+		public async Task UpdateUserIpAddressAsync(string userId, string ipAddress)
+		{
+			var filter = Builders<UserModel>.Filter.Eq(u => u.Id, userId);
+			var update = Builders<UserModel>.Update.Set(u => u.IpAddress, ipAddress);
+
+			await _userCollection.UpdateOneAsync(filter, update);
+		}
 	}
 }

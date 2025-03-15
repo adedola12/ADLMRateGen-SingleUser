@@ -11,6 +11,10 @@ using ADLMRateGen.ViewModel.Painting;
 using ADLMRateGen.ViewModel.SteelWork;
 using ADLMRateGen.Services;
 using System.Net;
+using System.Windows;
+using System.Windows.Input;
+using ADLMRateGen.Helpers;
+
 
 namespace ADLMRateGen.ViewModel
 {
@@ -38,6 +42,8 @@ namespace ADLMRateGen.ViewModel
 
 
 		// ViewModels for the different sections of the application.
+		public SignInViewModel SignInViewModel { get; }
+
 		public MaterialPriceViewModel MaterialPriceViewModel { get; }
 		public MaterialLibraryViewModel MaterialLibraryViewModel { get; }
 		public LabourPriceViewModel LabourPriceViewModel { get; }
@@ -52,7 +58,6 @@ namespace ADLMRateGen.ViewModel
 		public SteelWorkViewModel SteelWorkViewModel { get; }
 		public CustomRateEntryViewModel CustomRateEntryViewModel { get; }
 		public CustomRateListViewModel CustomRateListViewModel { get; }
-		public SignInViewModel SignInViewModel { get; }
 
 		public bool IsLoggedIn
 		{
@@ -83,9 +88,13 @@ namespace ADLMRateGen.ViewModel
 			LabourLibraryViewModel labourLibraryVM, GroundWorkViewModel groundworkVM, ConcreteViewModel concreteWorkViewModel,
 			BlockworkViewModel blockworkViewModel, FinishesViewModel finishesViewModel, RoofWorkViewModel roofworkVM, 
 			WindowAndDoorViewModel windowAndDoorVM, PaintWorkViewModel paintWorkViewModel, SteelWorkViewModel steelWorkViewModel,
-			CustomRateListViewModel customRateListViewModel, CustomRateEntryViewModel customRateEntryViewModel, SignInViewModel signinVM, MongoDbService mongoDbService)
+			CustomRateListViewModel customRateListViewModel, CustomRateEntryViewModel customRateEntryViewModel,MongoDbService mongoDbService,
+			SignInViewModel signinVM)
 		{
-			//IsLoggedIn = false;
+			IsLoggedIn = false;
+			_mongoDbService = mongoDbService;
+
+			SignInViewModel = signinVM;
 
 			MaterialPriceViewModel = priceVM;
 			MaterialLibraryViewModel = libraryVM;
@@ -102,8 +111,6 @@ namespace ADLMRateGen.ViewModel
 			CustomRateListViewModel = customRateListViewModel;
 			CustomRateEntryViewModel = customRateEntryViewModel;
 
-			SignInViewModel = signinVM;
-			_mongoDbService = mongoDbService;
 
 			CustomRateListViewModel.OnViewRequested += (rate) =>
 			{
@@ -119,7 +126,7 @@ namespace ADLMRateGen.ViewModel
 			LabourLibraryViewModel.EditLabourRequested += OnEditLabourRequested;
 
 			// Set default view.
-			SelectedViewModel = MaterialPriceViewModel;
+			SelectedViewModel = SignInViewModel;
 			SignInViewModel.LoginSucceeded += OnLoginSucceeded;
 
 			SelectedMaterialInputViewCommand = new DelegateCommand(param => SelectViewModel(MaterialPriceViewModel));
@@ -183,9 +190,45 @@ namespace ADLMRateGen.ViewModel
 		{
 			if (e.LoggedInUser != null)
 			{
+				IsLoggedIn = true;
+
 				string deviceIpAddress = GetUserIpAddress();
 
-				var existingUserIp = await _mongoDbService.GetUserIpAddressAsync(e.LoggedInUser.Id);
+				var existingUserIp = await _mongoDbService.GetUserIpAddressByUserIdAsync(e.LoggedInUser.Id);
+
+				if(existingUserIp != null && existingUserIp != deviceIpAddress)
+				{
+					MessageBox.Show("Error: User already logged in from another device.");
+					return; // Important: Exit the login process
+				}
+
+				_currentUser = e.LoggedInUser;
+				_currentUser.IpAddress = deviceIpAddress;
+
+				try
+				{
+					await _mongoDbService.UpdateUserIpAddressAsync(_currentUser.Id, deviceIpAddress);
+
+				}
+				catch( Exception ex)
+				{
+					MessageBox.Show($"Error Updating IP address: {ex.Message}");
+
+				}
+
+
+				var authTok = new AuthTok();
+				var config = new AppConfig { AuthToken = authTok.GenerateAuthToken(_currentUser), AuthExpiry = DateTime.Now.AddDays(15) };
+				ConfigManager.SaveConfig(config);
+
+				SelectedViewModel = MaterialLibraryViewModel;
+
+				MessageBox.Show($"Welcome, {_currentUser.Username}! Your Account Secured");
+			}
+			else
+			{
+				MessageBox.Show("Unexpected login error.");
+
 			}
 		}
 

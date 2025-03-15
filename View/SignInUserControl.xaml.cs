@@ -14,22 +14,7 @@ namespace ADLMRateGen.View
 		{
 			InitializeComponent();
 
-			// Connect to your DB
-			var mongoDbService = new MongoDbService(
-				"mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
-				"ADLMRateDB",
-				"Users");
-
-			var signInVM = new SignInViewModel(mongoDbService);
-
-			// Bubble up the login event
-			signInVM.LoginSucceeded += (sender, args) =>
-			{
-				// Raise event to let MainWindow know
-				LoginSucceeded?.Invoke(this, args);
-			};
-
-			DataContext = signInVM;
+		
 		}
 
 		private void LoginButton_Click(object sender, RoutedEventArgs e)

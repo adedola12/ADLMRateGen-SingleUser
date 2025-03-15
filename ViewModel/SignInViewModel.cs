@@ -44,6 +44,7 @@ namespace ADLMRateGen.ViewModel
 		private async Task LoginAsync()
 		{
 			IsLoading = true;
+
 			if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
 			{
 				MessageBox.Show("Please enter your username and password");
@@ -64,16 +65,6 @@ namespace ADLMRateGen.ViewModel
 				var user = await _mongoDbService.GetUserAsync(Username, Password);
 				if (user != null)
 				{
-					// Update IP address if different and update expiration (set 30 days from now)
-					//string currentIp = GetUserIpAddress();
-					//if (user.IpAddress != currentIp)
-					//{
-					//	user.IpAddress = currentIp;
-					//	user.UpdatedAt = DateTime.UtcNow;
-					//	user.ExpirationDate = DateTime.UtcNow.AddDays(30);
-					//	await _mongoDbService.UpdateUserAsync(user);
-					//}
-					// Show a success message when sign-in is successful
 					LoginSucceeded?.Invoke(this, new LoginEventArgs(user));
 					MessageBox.Show("Sign in successful!");
 				}
