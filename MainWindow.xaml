@@ -15,9 +15,14 @@
         xmlns:paint="clr-namespace:ADLMRateGen.ViewModel.Painting"
         xmlns:steel="clr-namespace:ADLMRateGen.ViewModel.SteelWork"
         xmlns:customInput="clr-namespace:ADLMRateGen.ViewModel.CustomRate"
+        xmlns:helpers="clr-namespace:ADLMRateGen.Helpers"
         mc:Ignorable="d"
         Title="MainWindow" Height="750" Width="1080">
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+        <helpers:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisConverter" />
+
+
         <DataTemplate DataType="{x:Type vm:MaterialPriceViewModel}">
             <view:MaterialPriceView/>
         </DataTemplate>
@@ -61,57 +66,78 @@
             <view:SteelworkView/>
         </DataTemplate>
     </Window.Resources>
+
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <!-- Main Content Grid is only visible if IsLoggedIn == true -->
+        <Grid x:Name="MainContentGrid"
+              Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisConverter}}">
 
-        <!-- Sidebar for menu items -->
-        <StackPanel Grid.Row="2" Grid.Column="0" Background="LightGray">
-            <TextBlock Text="Side Bar" FontSize="18" FontWeight="Bold" Margin="10"/>
-            <Button Content="Input Material Price" Command="{Binding SelectedMaterialInputViewCommand}" Margin="10" Padding="5"/>
-            <Button Content="Material Price Library" Command="{Binding SelectedMaterialLibraryViewCommand}" Margin="10" Padding="5"/>
-            <Button Content="Input Labour Rate" Command="{Binding SelectedLabourInputViewCommand}" Margin="10" Padding="5"/>
-            <Button Content="Labour Rate Library" Command="{Binding SelectedLabourLibraryViewCommand}" Margin="10" Padding="5"/>
-            <Button Content="Build Custom Rate" Command="{Binding SelectedCustomRateViewCommand}" Margin="10" Padding="5"/>
-        </StackPanel>
-
-        <!-- Header -->
-        <controls:Header Grid.Row="0" Grid.ColumnSpan="2"/>
-
-        <!-- Main Content Area -->
-        <Grid Grid.Row="2" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="60"/>
-                <!-- Section buttons -->
-                <RowDefinition/>
-                <!-- View content -->
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Background="LightGray" Orientation="Horizontal">
-                <Button Content="Ground" Command="{Binding SelectedGroundworkViewCommand}" Margin="5,2" Padding="1,2" Width="80"/>
-                <Button Content="Concrete" Command="{Binding SelectedConcreteWorkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="BlockWorks" Command="{Binding SelectedBlockworkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="Finishes" Command="{Binding SelectedFinishesViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="Roof" Command="{Binding SelectedRoofworkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="Windows Doors" Command="{Binding SelectedWindowAndDoorViewCommand}" Margin="5" Padding="2" Width="100"/>
-                <Button Content="Painting" Command="{Binding SelectedPaintworkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="Steel" Command="{Binding SelectedSteelworkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <!--<Button Content="Plumbing" Command="" Margin="5" Padding="2"/>
-                <Button Content="Electrical" Command="" Margin="5" Padding="2"/>-->
-                <Button Content="Custom Rate " Command="{Binding SelectedCustomRateInputViewCommand }" Margin="5" Padding="2" Width="80"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Header -->
+            <controls:Header Grid.Row="0" Grid.ColumnSpan="2"/>
+
+            <!-- Sidebar -->
+            <StackPanel Grid.Row="2" Grid.Column="0" Background="LightGray">
+                <TextBlock Text="Side Bar" FontSize="18" FontWeight="Bold" Margin="10"/>
+                <Button Content="Input Material Price"
+                        Command="{Binding SelectedMaterialInputViewCommand}"
+                        Margin="10" Padding="5"/>
+                <Button Content="Material Price Library"
+                        Command="{Binding SelectedMaterialLibraryViewCommand}"
+                        Margin="10" Padding="5"/>
+                <Button Content="Input Labour Rate"
+                        Command="{Binding SelectedLabourInputViewCommand}"
+                        Margin="10" Padding="5"/>
+                <Button Content="Labour Rate Library"
+                        Command="{Binding SelectedLabourLibraryViewCommand}"
+                        Margin="10" Padding="5"/>
+                <Button Content="Build Custom Rate"
+                        Command="{Binding SelectedCustomRateViewCommand}"
+                        Margin="10" Padding="5"/>
             </StackPanel>
-            <!-- The ContentControl will display the current view (MaterialPriceView in this case) -->
-            <ContentControl Grid.Row="1" Content="{Binding SelectedViewModel}"/>
+
+            <!-- Main Section -->
+            <Grid Grid.Row="2" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <!-- Sub‐section Buttons -->
+                <StackPanel Grid.Row="0" Background="LightGray" Orientation="Horizontal">
+                    <Button Content="Ground" Command="{Binding SelectedGroundworkViewCommand}" Margin="5" Padding="2" Width="80"/>
+                    <Button Content="Concrete" Command="{Binding SelectedConcreteWorkViewCommand}" Margin="5" Padding="2" Width="80"/>
+                    <Button Content="BlockWorks" Command="{Binding SelectedBlockworkViewCommand}" Margin="5" Padding="2" Width="80"/>
+                    <Button Content="Finishes" Command="{Binding SelectedFinishesViewCommand}" Margin="5" Padding="2" Width="80"/>
+                    <Button Content="Roof" Command="{Binding SelectedRoofworkViewCommand}" Margin="5" Padding="2" Width="80"/>
+                    <Button Content="Windows Doors" Command="{Binding SelectedWindowAndDoorViewCommand}" Margin="5" Padding="2" Width="100"/>
+                    <Button Content="Painting" Command="{Binding SelectedPaintworkViewCommand}" Margin="5" Padding="2" Width="80"/>
+                    <Button Content="Steel" Command="{Binding SelectedSteelworkViewCommand}" Margin="5" Padding="2" Width="80"/>
+                    <Button Content="Custom Rate" Command="{Binding SelectedCustomRateInputViewCommand}" Margin="5" Padding="2" Width="80"/>
+                </StackPanel>
+
+                <!-- Main content area -->
+                <ContentControl Grid.Row="1" Content="{Binding SelectedViewModel}"/>
+            </Grid>
+
+            <!-- Footer -->
+            <controls:Footer Grid.Row="3" Grid.ColumnSpan="2"/>
         </Grid>
 
-        <!-- Footer -->
-        <controls:Footer Grid.Row="3" Grid.ColumnSpan="2"/>
+        <!-- SignInUserControl is only visible if IsLoggedIn == false -->
+        <view:SignInUserControl x:Name="SignInControl"
+            Visibility="{Binding IsLoggedIn, Converter={StaticResource InverseBoolToVisConverter}}"
+            HorizontalAlignment="Center" VerticalAlignment="Center" />
     </Grid>
 </Window>

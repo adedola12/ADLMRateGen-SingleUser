@@ -18,27 +18,39 @@ namespace ADLMRateGen
         
         public MainWindow()
         {
-            InitializeComponent();
-            var priceVM = new MaterialPriceViewModel();
-            var libraryVM = new MaterialLibraryViewModel();
-            var labourVm = new LabourPriceViewModel();
-            var labourLibraryVM = new LabourLibraryViewModel();
-            
+			InitializeComponent();
 
-            var groundworkVM = new GroundWorkViewModel(libraryVM, labourLibraryVM);
-            var concreteWorkVM = new ConcreteViewModel(libraryVM, labourLibraryVM);
-            var blockworkVM = new BlockworkViewModel(libraryVM, labourLibraryVM, concreteWorkVM);
-            var finishesVM = new FinishesViewModel(libraryVM, labourLibraryVM, blockworkVM);
-            var roofworkVM = new RoofWorkViewModel(libraryVM, labourLibraryVM);
-            var windowAndDoorVM = new WindowAndDoorViewModel(libraryVM, labourLibraryVM);
-            var paintVM = new PaintWorkViewModel(libraryVM, labourLibraryVM);
-            var steelWorkVM = new SteelWorkViewModel(libraryVM, labourLibraryVM);
+			var priceVM = new MaterialPriceViewModel();
+			var libraryVM = new MaterialLibraryViewModel();
+			var labourVm = new LabourPriceViewModel();
+			var labourLibraryVM = new LabourLibraryViewModel();
+
+			var groundworkVM = new GroundWorkViewModel(libraryVM, labourLibraryVM);
+			var concreteWorkVM = new ConcreteViewModel(libraryVM, labourLibraryVM);
+			var blockworkVM = new BlockworkViewModel(libraryVM, labourLibraryVM, concreteWorkVM);
+			var finishesVM = new FinishesViewModel(libraryVM, labourLibraryVM, blockworkVM);
+			var roofworkVM = new RoofWorkViewModel(libraryVM, labourLibraryVM);
+			var windowAndDoorVM = new WindowAndDoorViewModel(libraryVM, labourLibraryVM);
+			var paintVM = new PaintWorkViewModel(libraryVM, labourLibraryVM);
+			var steelWorkVM = new SteelWorkViewModel(libraryVM, labourLibraryVM);
 			var customInputVM = new CustomRateEntryViewModel();
-            var customViewVM = new CustomRateListViewModel();
+			var customViewVM = new CustomRateListViewModel();
 
-			this.DataContext = new MainViewModel(priceVM, libraryVM, labourVm, labourLibraryVM, groundworkVM, concreteWorkVM, 
-                blockworkVM, finishesVM,roofworkVM, windowAndDoorVM, paintVM,steelWorkVM, customViewVM,customInputVM);
+			var mainVM = new MainViewModel(
+				priceVM, libraryVM, labourVm, labourLibraryVM,
+				groundworkVM, concreteWorkVM, blockworkVM, finishesVM,
+				roofworkVM, windowAndDoorVM, paintVM, steelWorkVM,
+				customViewVM, customInputVM);
 
-        }
+			// Set the DataContext
+			this.DataContext = mainVM;
+
+			// If sign in is successful, set IsLoggedIn = true
+			SignInControl.LoginSucceeded += (sender, e) =>
+			{
+				mainVM.IsLoggedIn = true;
+			};
+
+		}
     }
 }

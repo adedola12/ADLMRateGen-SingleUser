@@ -9,11 +9,17 @@ using ADLMRateGen.ViewModel.RoofWork;
 using ADLMRateGen.ViewModel.WindowAndDoor;
 using ADLMRateGen.ViewModel.Painting;
 using ADLMRateGen.ViewModel.SteelWork;
+using ADLMRateGen.Services;
+using System.Net;
 
 namespace ADLMRateGen.ViewModel
 {
 	public class MainViewModel : ViewModelBase
 	{
+		private readonly MongoDbService _mongoDbService;
+		public UserModel _currentUser;
+		private bool _isLoggedIn;
+
 		// Commands for switching between different sections of the application.
 		public DelegateCommand SelectedMaterialInputViewCommand { get; }
 		public DelegateCommand SelectedMaterialLibraryViewCommand { get; }
@@ -46,6 +52,21 @@ namespace ADLMRateGen.ViewModel
 		public SteelWorkViewModel SteelWorkViewModel { get; }
 		public CustomRateEntryViewModel CustomRateEntryViewModel { get; }
 		public CustomRateListViewModel CustomRateListViewModel { get; }
+		public SignInViewModel SignInViewModel { get; }
+
+		public bool IsLoggedIn
+		{
+			get => _isLoggedIn;
+			set
+			{
+				if (_isLoggedIn != value)
+				{
+					_isLoggedIn = value;
+					RaisePropertyChanged();
+				}
+			}
+		}
+
 		private ViewModelBase _selectedViewModel;
 
 		public ViewModelBase SelectedViewModel
@@ -62,8 +83,10 @@ namespace ADLMRateGen.ViewModel
 			LabourLibraryViewModel labourLibraryVM, GroundWorkViewModel groundworkVM, ConcreteViewModel concreteWorkViewModel,
 			BlockworkViewModel blockworkViewModel, FinishesViewModel finishesViewModel, RoofWorkViewModel roofworkVM, 
 			WindowAndDoorViewModel windowAndDoorVM, PaintWorkViewModel paintWorkViewModel, SteelWorkViewModel steelWorkViewModel,
-			CustomRateListViewModel customRateListViewModel, CustomRateEntryViewModel customRateEntryViewModel)
+			CustomRateListViewModel customRateListViewModel, CustomRateEntryViewModel customRateEntryViewModel, SignInViewModel signinVM, MongoDbService mongoDbService)
 		{
+			//IsLoggedIn = false;
+
 			MaterialPriceViewModel = priceVM;
 			MaterialLibraryViewModel = libraryVM;
 			LabourPriceViewModel = labourVM;
@@ -78,6 +101,9 @@ namespace ADLMRateGen.ViewModel
 			SteelWorkViewModel = steelWorkViewModel;
 			CustomRateListViewModel = customRateListViewModel;
 			CustomRateEntryViewModel = customRateEntryViewModel;
+
+			SignInViewModel = signinVM;
+			_mongoDbService = mongoDbService;
 
 			CustomRateListViewModel.OnViewRequested += (rate) =>
 			{
@@ -94,6 +120,8 @@ namespace ADLMRateGen.ViewModel
 
 			// Set default view.
 			SelectedViewModel = MaterialPriceViewModel;
+			SignInViewModel.LoginSucceeded += OnLoginSucceeded;
+
 			SelectedMaterialInputViewCommand = new DelegateCommand(param => SelectViewModel(MaterialPriceViewModel));
 			SelectedMaterialLibraryViewCommand = new DelegateCommand(param => SelectViewModel(MaterialLibraryViewModel));
 			SelectedLabourInputViewCommand = new DelegateCommand(param => SelectViewModel(LabourPriceViewModel));
@@ -149,6 +177,32 @@ namespace ADLMRateGen.ViewModel
 		private void SelectViewModel(object parameter)
 		{
 			SelectedViewModel = parameter as ViewModelBase;
+		}
+
+		private async void OnLoginSucceeded(object sender, SignInViewModel.LoginEventArgs e)
+		{
+			if (e.LoggedInUser != null)
+			{
+				string deviceIpAddress = GetUserIpAddress();
+
+				var existingUserIp = await _mongoDbService.GetUserIpAddressAsync(e.LoggedInUser.Id);
+			}
+		}
+
+		private string GetUserIpAddress()
+		{
+			try
+			{
+				using (var webClient = new WebClient())
+				{
+					string ip = webClient.DownloadString("https://api.ipify.org/");
+					return ip.Trim();
+				}
+			}
+			catch
+			{
+				return "IP Unavailable";
+			}
 		}
 	}
 
