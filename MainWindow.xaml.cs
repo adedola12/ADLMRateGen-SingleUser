@@ -40,6 +40,7 @@ namespace ADLMRateGen
 
 			// 2) Create the sign-in VM + Mongo service
 			var connectionString = "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB";
+			
 			var databaseName = "ADLMRateDB";
 			var collectionName = "Users";
 

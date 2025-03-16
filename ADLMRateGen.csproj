@@ -12,6 +12,9 @@
   <ItemGroup>
     <None Remove="Data\defaultLabours.json" />
     <None Remove="Data\defaultMaterials.json" />
+    <None Remove="Images\logoBlack.png" />
+    <None Remove="Images\logoBlue.png" />
+    <None Remove="Images\logoWhite.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +24,15 @@
     <Content Include="Data\defaultMaterials.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\logoBlack.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\logoBlue.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\logoWhite.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\ADLMRate.ico" />
   </ItemGroup>
 
