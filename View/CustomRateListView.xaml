@@ -42,8 +42,26 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Title" Width="Auto" 
                                     Binding="{Binding Title}"/>
-                <DataGridTextColumn Header="Description" Width="*" 
-                                    Binding="{Binding Description}"/>
+               
+                <DataGridTemplateColumn Header="Description" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Description}"
+                        TextWrapping="Wrap"
+                        Padding="5,2,5,2"
+                        Foreground="DarkBlue"
+                        Cursor="Hand"
+                        >
+                                <TextBlock.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick"
+                                 Command="{Binding DataContext.ViewRateCommand,
+                                        RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                 CommandParameter="{Binding}"/>
+                                </TextBlock.InputBindings>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Overhead (%)" Width="Auto" 
                                     Binding="{Binding OverheadPercent}"/>
                 <DataGridTextColumn Header="Profit (%)" Width="Auto" 
@@ -52,7 +70,7 @@
                                     Binding="{Binding GrandTotal, StringFormat={}{0:N2}}"/>
                 <DataGridTextColumn Header="Date" Width="Auto" 
                                     Binding="{Binding CreatedDate}"/>
-                <DataGridTemplateColumn Header="Actions" Width="80">
+                <!--<DataGridTemplateColumn Header="Actions" Width="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="View"
@@ -61,7 +79,7 @@
                                 CommandParameter="{Binding}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                </DataGridTemplateColumn>-->
 
             </DataGrid.Columns>
         </DataGrid>

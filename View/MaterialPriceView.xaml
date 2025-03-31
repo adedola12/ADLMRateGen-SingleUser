@@ -40,7 +40,45 @@
                 <!-- Material Name -->
                 <StackPanel Grid.Column="0" Margin="5">
                     <TextBlock Text="Material Name" FontSize="15" FontWeight="DemiBold"/>
-                    <TextBox Text="{Binding MaterialName, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+                    <!--<TextBox Text="{Binding MaterialName, UpdateSourceTrigger=PropertyChanged}" Height="30"/>-->
+                    <TextBox Text="{Binding MaterialName, UpdateSourceTrigger=PropertyChanged}" Height="30">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="IsReadOnly" Value="False"/>
+                                <!-- Center text horizontally -->
+                                <Setter Property="TextAlignment" Value="Center"/>
+
+                                <!-- Center text vertically -->
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+                                <!-- Some padding so text isn't flush against the border -->
+                                <Setter Property="Padding" Value="5"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="TextBox">
+                                            <Border 
+                            x:Name="border"
+                            CornerRadius="6"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                                                <ScrollViewer x:Name="PART_ContentHost" 
+                                          Focusable="False"
+                                          HorizontalScrollBarVisibility="Hidden"
+                                          VerticalScrollBarVisibility="Hidden"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                                        <Setter Property="IsReadOnly" Value="True"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+
                 </StackPanel>
 
                 <!-- Material Unit -->

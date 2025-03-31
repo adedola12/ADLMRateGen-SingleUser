@@ -53,14 +53,24 @@
             <DataGrid ItemsSource="{Binding FinishesCollectionView}" AutoGenerateColumns="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Item No." Binding="{Binding ItemNo}" Width="Auto"/>
-                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" IsReadOnly="True">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="TextWrapping" Value="Wrap"/>
-                                <Setter Property="Padding" Value="5,2,5,2"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="Description" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Description}"
+                        TextWrapping="Wrap"
+                        Padding="5,2,5,2"
+                        Foreground="DarkBlue"
+                        Cursor="Hand"
+                        >
+                                    <TextBlock.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick"
+                                 Command="{Binding DataContext.ShowDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                 CommandParameter="{Binding}"/>
+                                    </TextBlock.InputBindings>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
                     <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="Auto" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Net Cost" 
@@ -71,16 +81,7 @@
                                  Binding="{Binding ProfitValue, StringFormat={}{0:N2}}" Width="Auto"/>
                     <DataGridTextColumn Header="Total Cost" 
                                  Binding="{Binding TotalCost, StringFormat={}{0:N2}}" Width="Auto"/>
-                    <!-- New column for View/Edit -->
-                    <DataGridTemplateColumn Header="Actions" Width="Auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="View" 
-                             Command="{Binding DataContext.ShowDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                             CommandParameter="{Binding}" Margin="2"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                    
 
                 </DataGrid.Columns>
             </DataGrid>

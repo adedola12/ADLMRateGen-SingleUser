@@ -15,6 +15,7 @@
         xmlns:paint="clr-namespace:ADLMRateGen.ViewModel.Painting"
         xmlns:steel="clr-namespace:ADLMRateGen.ViewModel.SteelWork"
         xmlns:customInput="clr-namespace:ADLMRateGen.ViewModel.CustomRate"
+        xmlns:helpers="clr-namespace:ADLMRateGen.Helpers"
         mc:Ignorable="d"
         Title="" 
         WindowStyle="SingleBorderWindow"
@@ -75,7 +76,7 @@
         </DataTemplate>
     </Window.Resources>
 
-    <Grid>
+    <Grid Background="#cdd6db">
         <!-- Overall layout: 
              Row 0: Header
              Row 1: (Auto) might be for something else if needed
@@ -103,21 +104,31 @@
                     IsEnabled="{Binding IsLoggedIn}">
             <TextBlock Text="Side Bar" FontSize="18" FontWeight="Bold" Margin="10"/>
 
-            <Button Content="Input Material Price"
+            <Button Style="{StaticResource SideBarButtonStyle}"
+                    Content="Input Material Price"
                     Command="{Binding SelectedMaterialInputViewCommand}"
-                    Margin="10" Padding="5"/>
-            <Button Content="Material Price Library"
+                    Margin="10" Padding="5"
+                    helpers:ButtonHelper.IsActive="{Binding IsMaterialInputActive}"/>
+            <Button Style="{StaticResource SideBarButtonStyle}"
+                    Content="Material Price Library"
                     Command="{Binding SelectedMaterialLibraryViewCommand}"
-                    Margin="10" Padding="5"/>
-            <Button Content="Input Labour Rate"
+                    Margin="10" Padding="5"
+                    helpers:ButtonHelper.IsActive="{Binding IsMaterialLibraryActive}"/>
+            <Button Style="{StaticResource SideBarButtonStyle}"
+                    Content="Input Labour Rate"
                     Command="{Binding SelectedLabourInputViewCommand}"
-                    Margin="10" Padding="5"/>
-            <Button Content="Labour Rate Library"
+                    Margin="10" Padding="5"
+                    helpers:ButtonHelper.IsActive="{Binding IsLabourInputActive}"/>
+            <Button Style="{StaticResource SideBarButtonStyle}"
+                    Content="Labour Rate Library"
                     Command="{Binding SelectedLabourLibraryViewCommand}"
-                    Margin="10" Padding="5"/>
-            <Button Content="Build Custom Rate"
+                    Margin="10" Padding="5"
+                    helpers:ButtonHelper.IsActive="{Binding IsLabourLibraryActive}"/>
+            <Button Style="{StaticResource SideBarButtonStyle}"
+                    Content="Build Custom Rate"
                     Command="{Binding SelectedCustomRateViewCommand}"
-                    Margin="10" Padding="5"/>
+                    Margin="10" Padding="5"
+                    helpers:ButtonHelper.IsActive="{Binding IsCustomRateInputActive}"/>
         </StackPanel>
 
         <!-- Main Section (right side): also disabled if not logged in. -->
@@ -128,16 +139,44 @@
             </Grid.RowDefinitions>
 
             <!-- Sub‐section Buttons row -->
+            <!-- Sub‐section Buttons row -->
             <StackPanel Grid.Row="0" Background="LightGray" Orientation="Horizontal" IsEnabled="{Binding IsLoggedIn}">
-                <Button Content="Ground" Command="{Binding SelectedGroundworkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="Concrete" Command="{Binding SelectedConcreteWorkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="BlockWorks" Command="{Binding SelectedBlockworkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="Finishes" Command="{Binding SelectedFinishesViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="Roof" Command="{Binding SelectedRoofworkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="Windows Doors" Command="{Binding SelectedWindowAndDoorViewCommand}" Margin="5" Padding="2" Width="100"/>
-                <Button Content="Painting" Command="{Binding SelectedPaintworkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="Steel" Command="{Binding SelectedSteelworkViewCommand}" Margin="5" Padding="2" Width="80"/>
-                <Button Content="Custom Rate" Command="{Binding SelectedCustomRateInputViewCommand}" Margin="5" Padding="2" Width="80"/>
+                <Button Style="{StaticResource TopNavButtonStyle}"
+            Content="Ground"
+            Command="{Binding SelectedGroundworkViewCommand}"
+            helpers:ButtonHelper.IsActive="{Binding IsGroundworkActive}"/>
+                <Button Style="{StaticResource TopNavButtonStyle}"
+            Content="Concrete"
+            Command="{Binding SelectedConcreteWorkViewCommand}"
+            helpers:ButtonHelper.IsActive="{Binding IsConcreteViewActive}"/>
+                <Button Style="{StaticResource TopNavButtonStyle}"
+            Content="BlockWorks"
+            Command="{Binding SelectedBlockworkViewCommand}"
+            helpers:ButtonHelper.IsActive="{Binding IsBlockworkActive}"/>
+                <Button Style="{StaticResource TopNavButtonStyle}"
+            Content="Finishes"
+            Command="{Binding SelectedFinishesViewCommand}"
+            helpers:ButtonHelper.IsActive="{Binding IsFinishesActive}"/>
+                <Button Style="{StaticResource TopNavButtonStyle}"
+            Content="Roof"
+            Command="{Binding SelectedRoofworkViewCommand}"
+            helpers:ButtonHelper.IsActive="{Binding IsRoofworkActive}"/>
+                <Button Style="{StaticResource TopNavButtonStyle}"
+            Content="Windows Doors"
+            Command="{Binding SelectedWindowAndDoorViewCommand}"
+            helpers:ButtonHelper.IsActive="{Binding IsWindowAndDoorActive}"/>
+                <Button Style="{StaticResource TopNavButtonStyle}"
+            Content="Painting"
+            Command="{Binding SelectedPaintworkViewCommand}"
+            helpers:ButtonHelper.IsActive="{Binding IsPaintingActive}"/>
+                <Button Style="{StaticResource TopNavButtonStyle}"
+            Content="Steel"
+            Command="{Binding SelectedSteelworkViewCommand}"
+            helpers:ButtonHelper.IsActive="{Binding IsSteelworkActive}"/>
+                <Button Style="{StaticResource TopNavButtonStyle}"
+            Content="Custom Rate"
+            Command="{Binding SelectedCustomRateInputViewCommand}"
+            helpers:ButtonHelper.IsActive="{Binding IsCustomRateInputActive}"/>
             </StackPanel>
 
             <!-- Content area: 

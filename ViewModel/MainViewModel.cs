@@ -15,7 +15,6 @@ using System.Windows;
 using System.Windows.Input;
 using ADLMRateGen.Helpers;
 
-
 namespace ADLMRateGen.ViewModel
 {
 	public class MainViewModel : ViewModelBase
@@ -24,7 +23,6 @@ namespace ADLMRateGen.ViewModel
 		public UserModel _currentUser;
 		private bool _isLoggedIn;
 
-		// Commands for switching between different sections of the application.
 		public DelegateCommand SelectedMaterialInputViewCommand { get; }
 		public DelegateCommand SelectedMaterialLibraryViewCommand { get; }
 		public DelegateCommand SelectedLabourInputViewCommand { get; }
@@ -40,8 +38,6 @@ namespace ADLMRateGen.ViewModel
 		public DelegateCommand SelectedCustomRateInputViewCommand { get; }
 		public DelegateCommand SelectedCustomRateViewCommand { get; }
 
-
-		// ViewModels for the different sections of the application.
 		public SignInViewModel SignInViewModel { get; }
 
 		public MaterialPriceViewModel MaterialPriceViewModel { get; }
@@ -62,33 +58,77 @@ namespace ADLMRateGen.ViewModel
 		public bool IsLoggedIn
 		{
 			get => _isLoggedIn;
-			set
-			{
-				if (_isLoggedIn != value)
-				{
-					_isLoggedIn = value;
-					RaisePropertyChanged();
-				}
-			}
+			set { _isLoggedIn = value; RaisePropertyChanged(); }
 		}
 
 		private ViewModelBase _selectedViewModel;
-
 		public ViewModelBase SelectedViewModel
 		{
 			get => _selectedViewModel;
 			set
 			{
 				_selectedViewModel = value;
+				IsMaterialInputActive = value == MaterialPriceViewModel;
+				IsMaterialLibraryActive = value == MaterialLibraryViewModel;
+				IsLabourInputActive = value == LabourPriceViewModel;
+				IsLabourLibraryActive = value == LabourLibraryViewModel;
+				IsGroundworkActive = value == GroundWorkViewModel;
+				IsConcreteViewActive = value == ConcreteViewModel;
+				IsBlockworkActive = value == BlockworkViewModel;
+				IsFinishesActive = value == FinishesViewModel;
+				IsRoofworkActive = value == RoofWorkViewModel;
+				IsWindowAndDoorActive = value == WindowAndDoorViewModel;
+				IsPaintingActive = value == PaintWorkViewModel;
+				IsSteelworkActive = value == SteelWorkViewModel;
+				IsCustomRateInputActive = value == CustomRateListViewModel;
 				RaisePropertyChanged();
 			}
 		}
 
+		private bool _isMaterialInputActive;
+		public bool IsMaterialInputActive { get => _isMaterialInputActive; set { _isMaterialInputActive = value; RaisePropertyChanged(); } }
+
+		private bool _isMaterialLibraryActive;
+		public bool IsMaterialLibraryActive { get => _isMaterialLibraryActive; set { _isMaterialLibraryActive = value; RaisePropertyChanged(); } }
+
+		private bool _isLabourInputActive;
+		public bool IsLabourInputActive { get => _isLabourInputActive; set { _isLabourInputActive = value; RaisePropertyChanged(); } }
+
+		private bool _isLabourLibraryActive;
+		public bool IsLabourLibraryActive { get => _isLabourLibraryActive; set { _isLabourLibraryActive = value; RaisePropertyChanged(); } }
+
+		private bool _isGroundworkActive;
+		public bool IsGroundworkActive { get => _isGroundworkActive; set { _isGroundworkActive = value; RaisePropertyChanged(); } }
+
+		private bool _isConcreteViewActive;
+		public bool IsConcreteViewActive { get => _isConcreteViewActive; set { _isConcreteViewActive = value; RaisePropertyChanged(); } }
+
+		private bool _isBlockworkActive;
+		public bool IsBlockworkActive { get => _isBlockworkActive; set { _isBlockworkActive = value; RaisePropertyChanged(); } }
+
+		private bool _isFinishesActive;
+		public bool IsFinishesActive { get => _isFinishesActive; set { _isFinishesActive = value; RaisePropertyChanged(); } }
+
+		private bool _isRoofworkActive;
+		public bool IsRoofworkActive { get => _isRoofworkActive; set { _isRoofworkActive = value; RaisePropertyChanged(); } }
+
+		private bool _isWindowAndDoorActive;
+		public bool IsWindowAndDoorActive { get => _isWindowAndDoorActive; set { _isWindowAndDoorActive = value; RaisePropertyChanged(); } }
+
+		private bool _isPaintingActive;
+		public bool IsPaintingActive { get => _isPaintingActive; set { _isPaintingActive = value; RaisePropertyChanged(); } }
+
+		private bool _isSteelworkActive;
+		public bool IsSteelworkActive { get => _isSteelworkActive; set { _isSteelworkActive = value; RaisePropertyChanged(); } }
+
+		private bool _isCustomRateInputActive;
+		public bool IsCustomRateInputActive { get => _isCustomRateInputActive; set { _isCustomRateInputActive = value; RaisePropertyChanged(); } }
+
 		public MainViewModel(MaterialPriceViewModel priceVM, MaterialLibraryViewModel libraryVM, LabourPriceViewModel labourVM,
 			LabourLibraryViewModel labourLibraryVM, GroundWorkViewModel groundworkVM, ConcreteViewModel concreteWorkViewModel,
-			BlockworkViewModel blockworkViewModel, FinishesViewModel finishesViewModel, RoofWorkViewModel roofworkVM, 
+			BlockworkViewModel blockworkViewModel, FinishesViewModel finishesViewModel, RoofWorkViewModel roofworkVM,
 			WindowAndDoorViewModel windowAndDoorVM, PaintWorkViewModel paintWorkViewModel, SteelWorkViewModel steelWorkViewModel,
-			CustomRateListViewModel customRateListViewModel, CustomRateEntryViewModel customRateEntryViewModel,MongoDbService mongoDbService,
+			CustomRateListViewModel customRateListViewModel, CustomRateEntryViewModel customRateEntryViewModel, MongoDbService mongoDbService,
 			SignInViewModel signinVM)
 		{
 			IsLoggedIn = false;
@@ -111,21 +151,18 @@ namespace ADLMRateGen.ViewModel
 			CustomRateListViewModel = customRateListViewModel;
 			CustomRateEntryViewModel = customRateEntryViewModel;
 
-
 			CustomRateListViewModel.OnViewRequested += (rate) =>
 			{
 				CustomRateEntryViewModel.LoadRate(rate);
 				SelectedViewModel = CustomRateEntryViewModel;
 			};
 
-			// Wire events.
 			MaterialPriceViewModel.MaterialSaved += OnMaterialSaved;
 			MaterialLibraryViewModel.EditMaterialRequested += OnEditMaterialRequested;
 
 			LabourPriceViewModel.LabourSaved += OnLabourSaved;
 			LabourLibraryViewModel.EditLabourRequested += OnEditLabourRequested;
 
-			// Set default view.
 			SelectedViewModel = SignInViewModel;
 			SignInViewModel.LoginSucceeded += OnLoginSucceeded;
 
@@ -143,8 +180,6 @@ namespace ADLMRateGen.ViewModel
 			SelectedSteelworkViewCommand = new DelegateCommand(param => SelectViewModel(SteelWorkViewModel));
 			SelectedCustomRateInputViewCommand = new DelegateCommand(param => SelectViewModel(CustomRateListViewModel));
 			SelectedCustomRateViewCommand = new DelegateCommand(param => SelectViewModel(CustomRateEntryViewModel));
-
-
 		}
 
 		private void OnMaterialSaved(MaterialModel material)
@@ -159,25 +194,21 @@ namespace ADLMRateGen.ViewModel
 
 		private void OnEditMaterialRequested(MaterialModel material)
 		{
-			// Load the material into the price view for editing.
 			MaterialPriceViewModel.EditingMaterial = material;
 			MaterialPriceViewModel.MaterialName = material.MaterialName;
 			MaterialPriceViewModel.MaterialUnit = material.MaterialUnit;
 			MaterialPriceViewModel.MaterialPrice = material.MaterialPrice;
 			MaterialPriceViewModel.NewMaterialCategory = material.MaterialCategory;
-			// Switch to the input view.
 			SelectedViewModel = MaterialPriceViewModel;
 		}
 
 		private void OnEditLabourRequested(LabourModel labour)
 		{
-			// Load the labour into the price view for editing.
 			LabourPriceViewModel.EditingLabour = labour;
 			LabourPriceViewModel.LabourName = labour.LabourName;
 			LabourPriceViewModel.LabourUnit = labour.LabourUnit;
 			LabourPriceViewModel.LabourPrice = labour.LabourPrice;
 			LabourPriceViewModel.NewLabourCategory = labour.LabourCategory;
-			// Switch to the input view.
 			SelectedViewModel = LabourPriceViewModel;
 		}
 
@@ -191,15 +222,13 @@ namespace ADLMRateGen.ViewModel
 			if (e.LoggedInUser != null)
 			{
 				IsLoggedIn = true;
-
 				string deviceIpAddress = GetUserIpAddress();
 
 				var existingUserIp = await _mongoDbService.GetUserIpAddressByUserIdAsync(e.LoggedInUser.Id);
-
-				if(existingUserIp != null && existingUserIp != deviceIpAddress)
+				if (existingUserIp != null && existingUserIp != deviceIpAddress)
 				{
 					MessageBox.Show("Error: User already logged in from another device.");
-					return; // Important: Exit the login process
+					return;
 				}
 
 				_currentUser = e.LoggedInUser;
@@ -208,27 +237,22 @@ namespace ADLMRateGen.ViewModel
 				try
 				{
 					await _mongoDbService.UpdateUserIpAddressAsync(_currentUser.Id, deviceIpAddress);
-
 				}
-				catch( Exception ex)
+				catch (Exception ex)
 				{
 					MessageBox.Show($"Error Updating IP address: {ex.Message}");
-
 				}
-
 
 				var authTok = new AuthTok();
 				var config = new AppConfig { AuthToken = authTok.GenerateAuthToken(_currentUser), AuthExpiry = DateTime.Now.AddDays(15) };
 				ConfigManager.SaveConfig(config);
 
 				SelectedViewModel = MaterialLibraryViewModel;
-
 				MessageBox.Show($"Welcome, {_currentUser.Username}! Your Account Secured");
 			}
 			else
 			{
 				MessageBox.Show("Unexpected login error.");
-
 			}
 		}
 
@@ -248,5 +272,4 @@ namespace ADLMRateGen.ViewModel
 			}
 		}
 	}
-
 }

@@ -56,31 +56,32 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="S/N" Binding="{Binding SerialNumber}" Width="Auto"/>
                 <DataGridTextColumn Header="Material Name" Binding="{Binding MaterialName}" Width="*"/>
+                <DataGridTemplateColumn Header="Material Name" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding MaterialName}"
+         TextWrapping="Wrap"
+         Padding="5,2,5,2"
+         Foreground="DarkBlue"
+         Cursor="Hand" ToolTip="Edit this entry"
+         >
+                                <TextBlock.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick"
+                  Command="{Binding DataContext.EditMaterialCommand, 
+                         RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                  CommandParameter="{Binding}"  />
+                                </TextBlock.InputBindings>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Material Unit" Binding="{Binding MaterialUnit}" Width="*"/>
                 <DataGridTextColumn Header="Price" Binding="{Binding MaterialPrice, StringFormat=N2}" Width="Auto"/>
                 <DataGridTextColumn Header="Category" Binding="{Binding MaterialCategory}" Width="*"/>
 
-                <DataGridTemplateColumn Header="Edit" Width="Auto">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Edit" 
-                   Command="{Binding DataContext.EditMaterialCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                   CommandParameter="{Binding}"
-                   Width="50" Height="30" ToolTip="Edit this entry"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+               
 
-                <!--<DataGridTemplateColumn Header="Delete" Width="Auto">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="X" 
-                                    Command="{Binding DataContext.DeleteMaterialCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                    CommandParameter="{Binding}"
-                                    Width="30" Height="30" ToolTip="Delete this entry"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>-->
+
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
