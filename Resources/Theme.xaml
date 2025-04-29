@@ -4,9 +4,9 @@
 
     <!-- 🎨 ADLM Color Palette (Centralized) -->
     <Color x:Key="Color.Primary">#FF1E90FF</Color>
-    <Color x:Key="Color.Dark">#FF00008B</Color>
+    <Color x:Key="Color.Dark">#091E39</Color>
     <Color x:Key="Color.Light">#FF87CEFA</Color>
-    <Color x:Key="Color.Success">#FFFFD700</Color>
+    <Color x:Key="Color.Success">#FFF0F0F0</Color>
     <Color x:Key="Color.DeepGreen">#FF006400</Color>
     <Color x:Key="Color.Danger">#FFFF4500</Color>
     <Color x:Key="Color.White">#FFFFFFFF</Color>
@@ -222,7 +222,7 @@
                     <Setter Property="HorizontalContentAlignment" Value="Center" />
                     <Setter Property="VerticalContentAlignment" Value="Center" />
                     <Setter Property="Height" Value="40" />
-                    <Setter Property="Padding" Value="15,30" />
+                    <Setter Property="Padding" Value="15,10" />
                     <Setter Property="BorderBrush" Value="Transparent" />
                     <Setter Property="Template">
                         <Setter.Value>

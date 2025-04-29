@@ -38,5 +38,28 @@ namespace ADLMRateGen.Helpers
 				Console.WriteLine($"Error saving config: {ex.Message}");
 			}
 		}
+
+		/* ───────── CLEAR ───────── */
+		/// <summary>
+		/// Deletes the persisted configuration file (if present) and
+		/// optionally returns a fresh, empty AppConfig instance.
+		/// </summary>
+		public static AppConfig ClearConfig()
+		{
+			try
+			{
+				if (File.Exists(ConfigFilePath))
+				{
+					File.Delete(ConfigFilePath);
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error clearing config: {ex.Message}");
+			}
+
+			// Return a brand-new object for callers that need it.
+			return new AppConfig();
+		}
 	}
 }

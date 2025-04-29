@@ -1,4 +1,94 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:helpers="clr-namespace:ADLMRateGen.Helpers">
+
+    <!-- soft shadow used on sidebar -->
+    <DropShadowEffect x:Key="SoftShadow"
+                      Color="#000000"
+                      BlurRadius="10"
+                      ShadowDepth="0"
+                      Opacity="0.12"/>
+
+    <!-- ─── PRIMARY NAVY BUTTON ─── -->
+    <Style x:Key="NavPrimaryButton" TargetType="Button">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="#001E44"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                            CornerRadius="6" Padding="14,8">
+                        <TextBlock Text="{TemplateBinding Content}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ─── FLAT NAV BUTTON (changes when active) ─── -->
+    <!-- ───── FLAT NAV BUTTON  (icon + label) ───── -->
+    <Style x:Key="NavFlatButton" TargetType="Button">
+        <!-- basic look -->
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="Padding"         Value="0"/>
+        <Setter Property="FontSize"        Value="16"/>
+        <Setter Property="FontWeight"      Value="Bold"/>
+        <!-- Template -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="root"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="6">
+                        <!-- horizontal icon + text -->
+                        <StackPanel Orientation="Horizontal"
+                                Margin="20,10"
+                                VerticalAlignment="Center">
+                            <!-- icon glyph comes from Tag -->
+                            <TextBlock x:Name="Icon"
+                                   Text="{TemplateBinding Tag}"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="18"
+                                   Foreground="#091E39"
+                                   VerticalAlignment="Center"/>
+                            <!-- label comes from Content -->
+                            <TextBlock x:Name="Label"
+                                   Text="{TemplateBinding Content}"
+                                   Margin="12,0,0,0"
+                                   FontFamily="Poppins"
+                                   Foreground="#091E39"
+                                   VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- states -->
+                    <ControlTemplate.Triggers>
+                        <!-- hover -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="root" Property="Background" Value="#F3F4F6"/>
+                        </Trigger>
+
+                        <!-- active  (attached property) -->
+                        <Trigger Property="helpers:ButtonHelper.IsActive" Value="True">
+                            <Setter TargetName="root"  Property="Background" Value="#E8F0FF"/>
+                            <Setter TargetName="Icon"  Property="Foreground" Value="#003087"/>
+                            <Setter TargetName="Label" Property="Foreground" Value="#003087"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
 </ResourceDictionary>

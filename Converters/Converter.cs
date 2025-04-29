@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Windows;
 
-namespace ADLMCivilPlugin.Converters
+namespace ADLMRateGen.Converters
 {
     public class ContainsStringToVisibilityConverter : IValueConverter
     {

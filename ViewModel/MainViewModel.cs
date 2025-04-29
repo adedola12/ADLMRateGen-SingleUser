@@ -13,6 +13,7 @@ using ADLMRateGen.Services;
 using System.Net;
 using System.Windows;
 using System.Windows.Input;
+using System.Threading.Tasks;
 using ADLMRateGen.Helpers;
 
 namespace ADLMRateGen.ViewModel
@@ -20,7 +21,13 @@ namespace ADLMRateGen.ViewModel
 	public class MainViewModel : ViewModelBase
 	{
 		private readonly MongoDbService _mongoDbService;
-		public UserModel _currentUser;
+		private UserModel _currentUser;
+		public UserModel CurrentUser
+		{
+			get => _currentUser;
+			set { _currentUser = value; RaisePropertyChanged(); }
+		}
+
 		private bool _isLoggedIn;
 
 		public DelegateCommand SelectedMaterialInputViewCommand { get; }
@@ -37,6 +44,8 @@ namespace ADLMRateGen.ViewModel
 		public DelegateCommand SelectedSteelworkViewCommand { get; }
 		public DelegateCommand SelectedCustomRateInputViewCommand { get; }
 		public DelegateCommand SelectedCustomRateViewCommand { get; }
+
+		public ICommand LogoutCommand { get; }
 
 		public SignInViewModel SignInViewModel { get; }
 
@@ -180,6 +189,7 @@ namespace ADLMRateGen.ViewModel
 			SelectedSteelworkViewCommand = new DelegateCommand(param => SelectViewModel(SteelWorkViewModel));
 			SelectedCustomRateInputViewCommand = new DelegateCommand(param => SelectViewModel(CustomRateListViewModel));
 			SelectedCustomRateViewCommand = new DelegateCommand(param => SelectViewModel(CustomRateEntryViewModel));
+			LogoutCommand = new RelayCommand(_ => Logout());
 		}
 
 		private void OnMaterialSaved(MaterialModel material)
@@ -269,6 +279,38 @@ namespace ADLMRateGen.ViewModel
 			catch
 			{
 				return "IP Unavailable";
+			}
+		}
+
+		// -------- LOG-OUT IMPLEMENTATION --------
+		private async void Logout()
+		{
+			try
+			{
+				// 1) clear the IP lock on this user (optional but polite)
+				if (_currentUser != null)
+				{
+					await _mongoDbService.UpdateUserIpAddressAsync(_currentUser.Id, "");
+				}
+
+				// 2) wipe any persisted token / cached config
+				ConfigManager.ClearConfig();          // implement as needed
+
+				// 3) reset local state
+				_currentUser = null;
+				IsLoggedIn = false;                 // hides the main shell
+				SelectedViewModel = SignInViewModel;  // shows the sign-in screen
+
+				// 4) optionally clear the textboxes
+				if (SignInViewModel is { } vm)
+				{
+					vm.Username = string.Empty;
+					vm.Password = string.Empty;
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Error while logging out: {ex.Message}");
 			}
 		}
 	}

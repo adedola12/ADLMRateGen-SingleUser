@@ -55,7 +55,7 @@
            AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" Margin="0,10,0,10" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="S/N" Binding="{Binding SerialNumber}" Width="Auto"/>
-                <DataGridTextColumn Header="Material Name" Binding="{Binding MaterialName}" Width="*"/>
+                
                 <DataGridTemplateColumn Header="Material Name" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
