@@ -14,8 +14,9 @@ namespace ADLMRateGen.ViewModel
         private readonly JsonDataServices _dataServices;
         private readonly string _filePath = "labour.json";
         private readonly string _defaultFilePath = "Data\\defaultLabours.json";
+		public ICommand AddNewCommand { get; }
 
-        public ObservableCollection<LabourModel> LabourLibrary { get; set; }
+		public ObservableCollection<LabourModel> LabourLibrary { get; set; }
         public ICollectionView LabourCollectionView { get; set; }
         public ObservableCollection<string> LabourCategory {  get; set; }
         private string _selectedLabourcategory;
@@ -62,7 +63,9 @@ namespace ADLMRateGen.ViewModel
         {
             _dataServices = new JsonDataServices(_filePath, _defaultFilePath);
 
-            bool useMongo = false;
+			AddNewCommand = new RelayCommand(_ => OpenNewLabourDialog());
+
+			bool useMongo = false;
             if (useMongo)
             {
                 var mongoDataSource = new LabourMongoDataSource(
@@ -224,6 +227,10 @@ namespace ADLMRateGen.ViewModel
             MessageBox.Show("Prices updated from ADLM Servers.");
 
 		}
+		private void OpenNewLabourDialog()
+	 => MessageBox.Show("TODO: open *Add Labour* dialog");
 
 	}
+
+
 }

@@ -1,6 +1,8 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
+using ADLMRateGen.View;
 using ADLMRateGen.ViewModel;
 using ADLMRateGen.ViewModel.BlockWork;
 using ADLMRateGen.ViewModel.ConcreteWork;
@@ -27,6 +29,7 @@ namespace ADLMRateGen
 			var libraryVM = new MaterialLibraryViewModel();
 			var labourVm = new LabourPriceViewModel();
 			var labourLibraryVM = new LabourLibraryViewModel();
+			var matlibShellVM = new LibraryShellViewModel(libraryVM, labourLibraryVM);
 			var groundworkVM = new GroundWorkViewModel(libraryVM, labourLibraryVM);
 			var concreteWorkVM = new ConcreteViewModel(libraryVM, labourLibraryVM);
 			var blockworkVM = new BlockworkViewModel(libraryVM, labourLibraryVM, concreteWorkVM);
@@ -61,6 +64,7 @@ namespace ADLMRateGen
 				windowAndDoorVM,
 				paintVM,
 				steelWorkVM,
+				matlibShellVM,
 				customViewVM,
 				customInputVM,
 				mongoDbService,
@@ -78,8 +82,20 @@ namespace ADLMRateGen
 				mainVM.SelectedViewModel = mainVM.MaterialLibraryViewModel;
 			}
 
+
+
 			// 5) Finally set the DataContext so the UI sees mainVM
 			this.DataContext = mainVM;
 		}
+
+		/// <summary>
+		/// Show the transparent overlay + host the given view in it.
+		/// </summary>
+		public void ShowPopup(UserControl content)
+		{
+			// this.Popup is your PopupHost field
+			this.PopupHost.Show(content);
+		}
+
 	}
 }

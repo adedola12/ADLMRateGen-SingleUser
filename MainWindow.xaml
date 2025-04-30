@@ -21,7 +21,7 @@
         xmlns:conv="clr-namespace:ADLMRateGen.Converters"
         mc:Ignorable="d"
         Title="ADLM Rate Gen"
-        Height="750"
+        Height="1020"
         Width="1180"
         WindowStyle="SingleBorderWindow"
         Background="#cdd6db">
@@ -147,6 +147,8 @@
                 </Setter>
             </Style>
 
+            <conv:FirstNameConverter x:Key="FirstNameConv" />
+
             <!-- ── VIEW  DATA-TEMPLATES  (unchanged) ── -->
             <DataTemplate DataType="{x:Type vm:SignInViewModel}">
                 <view:SignInUserControl />
@@ -197,6 +199,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type customInput:CustomRateListViewModel}">
                 <view:CustomRateListView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:LibraryShellViewModel}">
+                <view:LibraryShellView />
             </DataTemplate>
 
         </ResourceDictionary>
@@ -894,7 +899,7 @@
                     <Grid VerticalAlignment="Stretch" />
 
                     <!-- bottom actions -->
-                    <StackPanel Margin="0,160,0,-10">
+                    <StackPanel Margin="0,120,0,-10">
                         <Button  Padding="20,12"
                                  MinHeight="28"
                                  BorderThickness="0"
@@ -1139,7 +1144,7 @@
             <Grid Grid.Row="1"
                   Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="300" />
                     <!-- top-nav -->
                     <RowDefinition />
                     <!-- workspace -->
@@ -1148,12 +1153,12 @@
                 <!-- top nav -->
                 <!--────────  WELCOME BANNER  ─────────-->
                 <Border Grid.Row="0"
-                        Margin="24 0 24 20"
-                        Height="180"
+                        Margin="12 0 12 10"
+                        Height="250"
                         CornerRadius="18"
                         SnapsToDevicePixels="True">
 
-                    <!-- dark-blue → transparent gradient -->
+                    <!-- background gradient -->
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0"
                                              EndPoint="1,0">
@@ -1166,76 +1171,116 @@
                         </LinearGradientBrush>
                     </Border.Background>
 
-                    <!-- layer ①  house photo -->
-                    <Image Source="/Resources/banner_house.png"
-                           Stretch="Fill"
-                           HorizontalAlignment="Right"
-                           Width="520"
-                           Opacity="0.35" />
+                    <!-- *** SINGLE child *** -->
+                    <Grid>
 
-                    <!-- layer ②  big hexagon badge -->
-                    <Image Source="/Resources/hex_big.png"
-                           Width="220"
-                           HorizontalAlignment="Right"
-                           Margin="0 -30 28 0" />
+                        <!-- layer ①  house photo -->
+                        <Image Source="/Resources/banner_house.png"
+                               Stretch="Fill"
+                               HorizontalAlignment="Right"
+                               Width="520"
+                               Opacity="0.35" />
 
-                    <!-- layer ③  content -->
-                    <Grid Margin="36">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                        <!-- layer ②  big hexagon -->
+                        <Image Source="/Resources/hex_big.png"
+                               Width="220"
+                               HorizontalAlignment="Right"
+                               Margin="0 -100 5 0" />
 
-                        <!-- ADLM small badge -->
-                        <Image Source="/Resources/adlm_badge.png"
-                               Width="52"
-                               VerticalAlignment="Top" />
+                        <!-- ── layer 3 : SMALL hex badge ── -->
+                        <Image Source="/Resources/hex_big.png"
+                               Width="100"
+                               HorizontalAlignment="Right"
+                               Margin="0,125,250,0"
+                               RenderTransformOrigin="0.5,0.5">
+                            <!-- tiny perspective tilt for depth -->
+                            <Image.RenderTransform>
+                                <RotateTransform Angle="-8" />
+                            </Image.RenderTransform>
+                        </Image>
 
-                        <!-- text -->
-                        <StackPanel Grid.Column="2"
-                                    VerticalAlignment="Center">
+                        <!-- layer ③  content -->
+                        <Grid Margin="36">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                            <!-- date + time -->
-                            <TextBlock Text="{Binding Source={x:Static sys:DateTime.Now},
-                               StringFormat='{}{0:dddd, d MMMM yyyy | h:mm tt}'}"
-                                       FontFamily="Poppins"
-                                       FontSize="11"
-                                       Foreground="#C6D1E7"
-                                       Margin="0 0 0 6" />
+                            <!-- badge -->
+                            <Image Source="/Resources/adlm_badge.png"
+                                   Width="52"
+                                   Margin="0 90 28 0"
+                                   VerticalAlignment="Top" />
 
-                            <!-- headline -->
-                            <TextBlock FontFamily="Poppins"
-                                       FontSize="28"
-                                       Foreground="White"
-                                       FontWeight="SemiBold">
-                <Run Text="Welcome Back, " />
-                <Run Text="{Binding CurrentUser.Username,
-                                    Converter={StaticResource FirstNameConv}}"
-                                FontWeight="Bold" />
-                <Run Text="!" />
-                            </TextBlock>
+                            <!-- text block -->
+                            <!-- text / CTA block  (replace the old StackPanel with this) -->
+                            <Grid Grid.Column="2"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Top"
+                                  Margin="0,12,0,0">
 
-                            <!-- sub-line -->
-                            <TextBlock Text="Extracting your quantities just got a lot easier. Try out our Revit and Planswift plugins today!"
-                                       FontFamily="Poppins"
-                                       FontSize="12"
-                                       Foreground="#D8E0F4"
-                                       Width="440"
-                                       TextWrapping="Wrap"
-                                       Margin="0 6 0 14" />
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    
+                                </Grid.RowDefinitions>
 
-                            <!-- CTA -->
-                            <Button Content="Try now  ➜"
-                                    FontFamily="Poppins"
-                                    FontSize="13"
-                                    Padding="16 6"
-                                    Foreground="#F46A27"
-                                    Background="Transparent"
-                                    BorderBrush="#F46A27"
-                                    BorderThickness="1"
-                                    Cursor="Hand" />
-                        </StackPanel>
+                                <TextBlock Grid.Row="0"
+                                           FontFamily="Poppins"
+                                           FontSize="11"
+                                           Foreground="#C6D1E7"
+                                           Text="{Binding Source={x:Static sys:DateTime.Now},
+                              StringFormat='{}{0:dddd, d MMMM yyyy | h:mm tt}'}" />
+
+                                <!-- ⬆ headline in its own row -->
+                                <TextBlock Grid.Row="1"
+                                           TextAlignment="Left"
+                                           FontFamily="Poppins"
+                                           FontSize="28"
+                                           Foreground="White"
+                                           FontWeight="SemiBold">
+
+        <Run Text="Welcome Back, " />
+        <Run Text="{Binding CurrentUser.Username,
+                            Converter={StaticResource FirstNameConv}}"
+                                    FontWeight="Bold" />
+        <Run Text="!" />
+                                </TextBlock>
+
+                                <!-- ⬇ body copy & CTA share the 2nd row -->
+                                <StackPanel Grid.Row="2"
+                                            Orientation="Vertical"
+                                            HorizontalAlignment="Left">
+
+                                    <TextBlock Text="Extracting your quantities just got a lot easier. Try out our Revit and Planswift plugins today!"
+                                               MaxWidth="380"
+                                               TextAlignment="Left"
+                                               TextWrapping="Wrap"
+                                               FontFamily="Poppins"
+                                               Margin="0,10,0,0"
+                                               FontSize="12"
+                                               Foreground="#D8E0F4" />
+
+                                    <!-- little breathing room -->
+                                    <Button Content="Try now  ➜"
+                                            Command="{Binding OpenYoutubeCommand}"
+                                            Margin="0,20,150,0"
+                                            Padding="16 6"
+                                            FontFamily="Poppins"
+                                            FontSize="13"
+                                            Foreground="#F46A27"
+                                            Background="#F46A27"
+                                            BorderBrush="#F46A27"
+                                            BorderThickness="1"
+                                            Cursor="Hand"
+                                            Width="192"
+                                            Height="31" />
+                                </StackPanel>
+                            </Grid>
+
+                        </Grid>
                     </Grid>
                 </Border>
 
@@ -1246,9 +1291,14 @@
                                 Content="{Binding SelectedViewModel}" />
             </Grid>
 
-            <!--────────  FOOTER  ─────────-->
-            <!--<controls:Footer Grid.Row="2"
-                             Grid.Column="1" />-->
+
         </Grid>
+        <view:PopupHost x:Name="PopupHost"
+                        Visibility="Collapsed"
+                        Panel.ZIndex="99" />
+
+
     </Grid>
+
+ 
 </Window>

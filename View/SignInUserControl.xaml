@@ -4,28 +4,31 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignWidth="1024" d:DesignHeight="664">
+             d:DesignWidth="1024"
+             d:DesignHeight="1000">
 
     <!-- Watermark style -->
     <UserControl.Resources>
-        <Style x:Key="WatermarkedTextBox" TargetType="TextBox">
+        <Style x:Key="WatermarkedTextBox"
+               TargetType="TextBox">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
                         <Grid>
-                            <ScrollViewer x:Name="PART_ContentHost"/>
+                            <ScrollViewer x:Name="PART_ContentHost" />
                             <TextBlock x:Name="Watermark"
                                        Text="{TemplateBinding Tag}"
                                        Foreground="#808080"
                                        Margin="18,0"
                                        IsHitTestVisible="False"
-                                       Visibility="Collapsed"/>
+                                       Visibility="Collapsed" />
                         </Grid>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="Text" Value="">
+                            <Trigger Property="Text"
+                                     Value="">
                                 <Setter TargetName="Watermark"
                                         Property="Visibility"
-                                        Value="Visible"/>
+                                        Value="Visible" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -38,109 +41,140 @@
         <!-- outer frame if needed:  <Image Source="/Resources/bg_frame.png" Stretch="Fill"/> -->
 
         <!-- Card -->
-        <Border Width="900" Height="600"
-                HorizontalAlignment="Center" VerticalAlignment="Center"
+        <Border Width="1000"
+                Height="800"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 CornerRadius="20"
-                BorderBrush="#1637FF" BorderThickness="2">
+                BorderBrush="#1637FF"
+                BorderThickness="2">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="20" Color="#1637FF"
-                                  ShadowDepth="0" Opacity="0.55"/>
+                <DropShadowEffect BlurRadius="20"
+                                  Color="#1637FF"
+                                  ShadowDepth="0"
+                                  Opacity="0.55" />
             </Border.Effect>
             <Border.Background>
                 <ImageBrush ImageSource="/Resources/panel_blueprint.png"
-                            Stretch="UniformToFill"/>
+                            Stretch="UniformToFill" />
             </Border.Background>
 
             <!-- Content grid -->
             <Grid Margin="60">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <!-- Logos -->
                 <Image Source="/Resources/adlm_studio_logo_small.png"
-                       Height="60" HorizontalAlignment="Center"/>
+                       Height="60"
+                       HorizontalAlignment="Center" />
                 <Image Grid.Row="1"
                        Source="/Resources/adlm_rate_generator_logo.png"
                        Height="165"
                        Margin="0,20,0,35"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center" />
 
                 <!-- Form -->
-                <StackPanel Grid.Row="2" Width="520" HorizontalAlignment="Center">
+                <StackPanel Grid.Row="2"
+                            Width="520"
+                            HorizontalAlignment="Center">
 
                     <!-- E-mail -->
-                    <TextBlock Text="Email" FontSize="12"
-                               Foreground="White" Margin="4,0"/>
-                    <Border CornerRadius="6" Background="White"
-                            Height="44" Margin="0,0,0,14">
+                    <TextBlock Text="Username"
+                               FontSize="12"
+                               Foreground="White"
+                               Margin="4,0" />
+                    <Border CornerRadius="6"
+                            Background="White"
+                            Height="44"
+                            Margin="0,0,0,14">
                         <!--  E-mail  -->
                         <TextBox Style="{StaticResource WatermarkedTextBox}"
-         Tag="example@gmail.com"
-         Padding="18,0"
-         BorderThickness="0"
-         Background="Transparent"
-         FontSize="14"
-         VerticalContentAlignment="Center"
-         Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"/>
+                                 Tag="example"
+                                 Padding="18,0"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 FontSize="14"
+                                 VerticalContentAlignment="Center"
+                                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
 
                     </Border>
 
                     <!-- Password -->
-                    <TextBlock Text="Password" FontSize="12"
-                               Foreground="White" Margin="4,0"/>
-                    <Grid Height="44" Margin="0,0,0,14">
-                        <Border CornerRadius="6" Background="White"/>
+                    <TextBlock Text="Password"
+                               FontSize="12"
+                               Foreground="White"
+                               Margin="4,0" />
+                    <Grid Height="44"
+                          Margin="0,0,0,14">
+                        <Border CornerRadius="6"
+                                Background="White" />
                         <PasswordBox x:Name="PasswordBox"
                                      Padding="18,0"
                                      BorderThickness="0"
                                      Background="Transparent"
                                      FontSize="14"
                                      VerticalAlignment="Center"
-                                     PasswordChanged="PasswordBox_PasswordChanged"/>
-                        <Button Width="24" Height="24"
-                                HorizontalAlignment="Right" Margin="0,0,12,0"
+                                     PasswordChanged="PasswordBox_PasswordChanged" />
+                        <Button Width="24"
+                                Height="24"
+                                HorizontalAlignment="Right"
+                                Margin="0,0,12,0"
                                 VerticalAlignment="Center"
-                                Background="Transparent" BorderThickness="0"
+                                Background="Transparent"
+                                BorderThickness="0"
                                 Click="TogglePwd_Click">
-                         
+
                         </Button>
                     </Grid>
                 </StackPanel>
 
                 <!-- Login button (no Content attr duplicated) -->
-                <Button Grid.Row="4" Margin="0,8,0,0"
-         Width="520" Height="54"
-         FontSize="18" FontWeight="SemiBold"
-         Foreground="White" BorderThickness="0"
-         Command="{Binding LoginCommand}">
+                <Button Grid.Row="4"
+                        Margin="0,8,0,0"
+                        Width="520"
+                        Height="54"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Command="{Binding LoginCommand}">
                     <Button.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                            <GradientStop Color="#0061FF" Offset="0"/>
-                            <GradientStop Color="#0048FF" Offset="1"/>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="0,1">
+                            <GradientStop Color="#0061FF"
+                                          Offset="0" />
+                            <GradientStop Color="#0048FF"
+                                          Offset="1" />
                         </LinearGradientBrush>
                     </Button.Background>
-                    <TextBlock Text="Log in" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Log in"
+                               HorizontalAlignment="Center" />
                 </Button>
 
-                
+
             </Grid>
         </Border>
 
         <!-- Decorative corner badges   (replace source as needed) -->
         <Image Source="/Resources/bg_frame.png"
-               Width="160" Height="160"
-               HorizontalAlignment="Right" VerticalAlignment="Top"
-               Margin="0,42,42,0"/>
+               Width="160"
+               Height="160"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Top"
+               Margin="0,10,0,0" />
         <Image Source="/Resources/bg_frame.png"
-               Width="160" Height="160"
-               HorizontalAlignment="Left" VerticalAlignment="Bottom"
-               Margin="42,0,0,42"/>
+               Width="177"
+               Height="194"
+               HorizontalAlignment="Left"
+               VerticalAlignment="Bottom"
+               Margin="12,0,0,10" />
     </Grid>
 </UserControl>

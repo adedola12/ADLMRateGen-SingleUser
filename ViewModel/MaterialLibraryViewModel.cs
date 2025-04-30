@@ -18,7 +18,8 @@ namespace ADLMRateGen.ViewModel
 
         public ObservableCollection<MaterialModel> MaterialLibrary { get; set; }
         public ICollectionView MaterialCollectionView { get; set; }
-        public ObservableCollection<string> MaterialCategory { get; set; }
+		public ICommand AddNewCommand { get; }
+		public ObservableCollection<string> MaterialCategory { get; set; }
         private string _selectedMaterialCategory;
         public string SelectedMaterialCategory
         {
@@ -66,7 +67,9 @@ namespace ADLMRateGen.ViewModel
             //_dataServices = new JsonDataServices("materials.json", "Data\\defaultMaterials.json");
             _dataServices = new JsonDataServices(_filePath, _defaultFilePath);
 
-            bool useMongo = false; //true to upload to DB
+			AddNewCommand = new RelayCommand(_ => OpenNewMaterialDialog());
+
+			bool useMongo = false; //true to upload to DB
             if (useMongo)
             {
                 var mongoDataSource = new MaterialMongoDataSource(
@@ -244,6 +247,10 @@ namespace ADLMRateGen.ViewModel
 
 
 		}
+
+		/* stub you can later replace with the real dialog */
+		private void OpenNewMaterialDialog()
+			=> MessageBox.Show("TODO: open *Add Material* dialog");
 
 	}
 }

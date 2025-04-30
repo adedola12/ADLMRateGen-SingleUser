@@ -15,6 +15,7 @@
     <None Remove="Images\logoBlack.png" />
     <None Remove="Images\logoBlue.png" />
     <None Remove="Images\logoWhite.png" />
+    <None Remove="Resources\adlm_badge.png" />
     <None Remove="Resources\adlm_rate_generator_logo.png" />
     <None Remove="Resources\adlm_rate_generator_logo_small.png" />
     <None Remove="Resources\adlm_studio_logo_small.png" />
@@ -44,6 +45,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\ADLMRate.ico" />
+    <Resource Include="Resources\adlm_badge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\adlm_rate_generator_logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

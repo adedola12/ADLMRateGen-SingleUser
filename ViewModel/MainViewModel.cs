@@ -1,26 +1,29 @@
 ﻿using ADLMRateGen.Command;
-using ADLMRateGen.ViewModel.Groundwork;
-using ADLMRateGen.ViewModel.ConcreteWork;
-using ADLMRateGen.ViewModel.Model;
-using ADLMRateGen.ViewModel.BlockWork;
-using ADLMRateGen.ViewModel.Finishes;
-using ADLMRateGen.ViewModel.CustomRate;
-using ADLMRateGen.ViewModel.RoofWork;
-using ADLMRateGen.ViewModel.WindowAndDoor;
-using ADLMRateGen.ViewModel.Painting;
-using ADLMRateGen.ViewModel.SteelWork;
+using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
+using ADLMRateGen.ViewModel.BlockWork;
+using ADLMRateGen.ViewModel.ConcreteWork;
+using ADLMRateGen.ViewModel.CustomRate;
+using ADLMRateGen.ViewModel.Finishes;
+using ADLMRateGen.ViewModel.Groundwork;
+using ADLMRateGen.ViewModel.Model;
+using ADLMRateGen.ViewModel.Painting;
+using ADLMRateGen.ViewModel.RoofWork;
+using ADLMRateGen.ViewModel.SteelWork;
+using ADLMRateGen.ViewModel.WindowAndDoor;
+using System.Diagnostics;
 using System.Net;
 using System.Windows;
 using System.Windows.Input;
-using System.Threading.Tasks;
-using ADLMRateGen.Helpers;
 
 namespace ADLMRateGen.ViewModel
 {
 	public class MainViewModel : ViewModelBase
 	{
+		/* ───────── injected services ───────── */
 		private readonly MongoDbService _mongoDbService;
+
+		/* ───────── current user / auth ───────── */
 		private UserModel _currentUser;
 		public UserModel CurrentUser
 		{
@@ -28,31 +31,120 @@ namespace ADLMRateGen.ViewModel
 			set { _currentUser = value; RaisePropertyChanged(); }
 		}
 
+		/* ───────── login state ───────── */
 		private bool _isLoggedIn;
+		public bool IsLoggedIn
+		{
+			get => _isLoggedIn;
+			set { _isLoggedIn = value; RaisePropertyChanged(); }
+		}
 
-		public DelegateCommand SelectedMaterialInputViewCommand { get; }
-		public DelegateCommand SelectedMaterialLibraryViewCommand { get; }
-		public DelegateCommand SelectedLabourInputViewCommand { get; }
-		public DelegateCommand SelectedLabourLibraryViewCommand { get; }
-		public DelegateCommand SelectedGroundworkViewCommand { get; }
-		public DelegateCommand SelectedConcreteWorkViewCommand { get; }
-		public DelegateCommand SelectedBlockworkViewCommand { get; }
-		public DelegateCommand SelectedFinishesViewCommand { get; }
-		public DelegateCommand SelectedRoofworkViewCommand { get; }
-		public DelegateCommand SelectedWindowAndDoorViewCommand { get; }
-		public DelegateCommand SelectedPaintworkViewCommand { get; }
-		public DelegateCommand SelectedSteelworkViewCommand { get; }
-		public DelegateCommand SelectedCustomRateInputViewCommand { get; }
-		public DelegateCommand SelectedCustomRateViewCommand { get; }
+		/* ───────── sidebar “active” flags ───────── */
+		private bool _isLibraryShellActive;
+		public bool IsLibraryShellActive
+		{
+			get => _isLibraryShellActive;
+			set { _isLibraryShellActive = value; RaisePropertyChanged(); }
+		}
 
-		public ICommand LogoutCommand { get; }
+		private bool _isMaterialInputActive;
+		public bool IsMaterialInputActive
+		{
+			get => _isMaterialInputActive;
+			set { _isMaterialInputActive = value; RaisePropertyChanged(); }
+		}
 
+		private bool _isMaterialLibraryActive;
+		public bool IsMaterialLibraryActive
+		{
+			get => _isMaterialLibraryActive;
+			set { _isMaterialLibraryActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isLabourInputActive;
+		public bool IsLabourInputActive
+		{
+			get => _isLabourInputActive;
+			set { _isLabourInputActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isLabourLibraryActive;
+		public bool IsLabourLibraryActive
+		{
+			get => _isLabourLibraryActive;
+			set { _isLabourLibraryActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isGroundworkActive;
+		public bool IsGroundworkActive
+		{
+			get => _isGroundworkActive;
+			set { _isGroundworkActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isConcreteViewActive;
+		public bool IsConcreteViewActive
+		{
+			get => _isConcreteViewActive;
+			set { _isConcreteViewActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isBlockworkActive;
+		public bool IsBlockworkActive
+		{
+			get => _isBlockworkActive;
+			set { _isBlockworkActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isFinishesActive;
+		public bool IsFinishesActive
+		{
+			get => _isFinishesActive;
+			set { _isFinishesActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isRoofworkActive;
+		public bool IsRoofworkActive
+		{
+			get => _isRoofworkActive;
+			set { _isRoofworkActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isWindowAndDoorActive;
+		public bool IsWindowAndDoorActive
+		{
+			get => _isWindowAndDoorActive;
+			set { _isWindowAndDoorActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isPaintingActive;
+		public bool IsPaintingActive
+		{
+			get => _isPaintingActive;
+			set { _isPaintingActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isSteelworkActive;
+		public bool IsSteelworkActive
+		{
+			get => _isSteelworkActive;
+			set { _isSteelworkActive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isCustomRateInputActive;
+		public bool IsCustomRateInputActive
+		{
+			get => _isCustomRateInputActive;
+			set { _isCustomRateInputActive = value; RaisePropertyChanged(); }
+		}
+
+		/* ───────── child view-models (public for binding) ───────── */
 		public SignInViewModel SignInViewModel { get; }
-
 		public MaterialPriceViewModel MaterialPriceViewModel { get; }
 		public MaterialLibraryViewModel MaterialLibraryViewModel { get; }
 		public LabourPriceViewModel LabourPriceViewModel { get; }
 		public LabourLibraryViewModel LabourLibraryViewModel { get; }
+		public LibraryShellViewModel LibraryShellViewModel { get; }
 		public GroundWorkViewModel GroundWorkViewModel { get; }
 		public ConcreteViewModel ConcreteViewModel { get; }
 		public BlockworkViewModel BlockworkViewModel { get; }
@@ -64,12 +156,7 @@ namespace ADLMRateGen.ViewModel
 		public CustomRateEntryViewModel CustomRateEntryViewModel { get; }
 		public CustomRateListViewModel CustomRateListViewModel { get; }
 
-		public bool IsLoggedIn
-		{
-			get => _isLoggedIn;
-			set { _isLoggedIn = value; RaisePropertyChanged(); }
-		}
-
+		/* ───────── View switching ───────── */
 		private ViewModelBase _selectedViewModel;
 		public ViewModelBase SelectedViewModel
 		{
@@ -77,6 +164,9 @@ namespace ADLMRateGen.ViewModel
 			set
 			{
 				_selectedViewModel = value;
+
+				/* update all “active” flags */
+				IsLibraryShellActive = value == LibraryShellViewModel;
 				IsMaterialInputActive = value == MaterialPriceViewModel;
 				IsMaterialLibraryActive = value == MaterialLibraryViewModel;
 				IsLabourInputActive = value == LabourPriceViewModel;
@@ -90,227 +180,181 @@ namespace ADLMRateGen.ViewModel
 				IsPaintingActive = value == PaintWorkViewModel;
 				IsSteelworkActive = value == SteelWorkViewModel;
 				IsCustomRateInputActive = value == CustomRateListViewModel;
+
 				RaisePropertyChanged();
 			}
 		}
 
-		private bool _isMaterialInputActive;
-		public bool IsMaterialInputActive { get => _isMaterialInputActive; set { _isMaterialInputActive = value; RaisePropertyChanged(); } }
+		/* ───────── commands exposed to XAML ───────── */
+		public ICommand SelectedMaterialInputViewCommand { get; }
+		public ICommand SelectedMaterialLibraryViewCommand { get; }
+		public ICommand SelectedLabourInputViewCommand { get; }
+		public ICommand SelectedLabourLibraryViewCommand { get; }
+		public ICommand SelectedGroundworkViewCommand { get; }
+		public ICommand SelectedConcreteWorkViewCommand { get; }
+		public ICommand SelectedBlockworkViewCommand { get; }
+		public ICommand SelectedFinishesViewCommand { get; }
+		public ICommand SelectedRoofworkViewCommand { get; }
+		public ICommand SelectedWindowAndDoorViewCommand { get; }
+		public ICommand SelectedPaintworkViewCommand { get; }
+		public ICommand SelectedSteelworkViewCommand { get; }
+		public ICommand SelectedCustomRateInputViewCommand { get; }
+		public ICommand SelectedCustomRateViewCommand { get; }
+		public ICommand LogoutCommand { get; }
+		public ICommand OpenYoutubeCommand { get; }
 
-		private bool _isMaterialLibraryActive;
-		public bool IsMaterialLibraryActive { get => _isMaterialLibraryActive; set { _isMaterialLibraryActive = value; RaisePropertyChanged(); } }
-
-		private bool _isLabourInputActive;
-		public bool IsLabourInputActive { get => _isLabourInputActive; set { _isLabourInputActive = value; RaisePropertyChanged(); } }
-
-		private bool _isLabourLibraryActive;
-		public bool IsLabourLibraryActive { get => _isLabourLibraryActive; set { _isLabourLibraryActive = value; RaisePropertyChanged(); } }
-
-		private bool _isGroundworkActive;
-		public bool IsGroundworkActive { get => _isGroundworkActive; set { _isGroundworkActive = value; RaisePropertyChanged(); } }
-
-		private bool _isConcreteViewActive;
-		public bool IsConcreteViewActive { get => _isConcreteViewActive; set { _isConcreteViewActive = value; RaisePropertyChanged(); } }
-
-		private bool _isBlockworkActive;
-		public bool IsBlockworkActive { get => _isBlockworkActive; set { _isBlockworkActive = value; RaisePropertyChanged(); } }
-
-		private bool _isFinishesActive;
-		public bool IsFinishesActive { get => _isFinishesActive; set { _isFinishesActive = value; RaisePropertyChanged(); } }
-
-		private bool _isRoofworkActive;
-		public bool IsRoofworkActive { get => _isRoofworkActive; set { _isRoofworkActive = value; RaisePropertyChanged(); } }
-
-		private bool _isWindowAndDoorActive;
-		public bool IsWindowAndDoorActive { get => _isWindowAndDoorActive; set { _isWindowAndDoorActive = value; RaisePropertyChanged(); } }
-
-		private bool _isPaintingActive;
-		public bool IsPaintingActive { get => _isPaintingActive; set { _isPaintingActive = value; RaisePropertyChanged(); } }
-
-		private bool _isSteelworkActive;
-		public bool IsSteelworkActive { get => _isSteelworkActive; set { _isSteelworkActive = value; RaisePropertyChanged(); } }
-
-		private bool _isCustomRateInputActive;
-		public bool IsCustomRateInputActive { get => _isCustomRateInputActive; set { _isCustomRateInputActive = value; RaisePropertyChanged(); } }
-
-		public MainViewModel(MaterialPriceViewModel priceVM, MaterialLibraryViewModel libraryVM, LabourPriceViewModel labourVM,
-			LabourLibraryViewModel labourLibraryVM, GroundWorkViewModel groundworkVM, ConcreteViewModel concreteWorkViewModel,
-			BlockworkViewModel blockworkViewModel, FinishesViewModel finishesViewModel, RoofWorkViewModel roofworkVM,
-			WindowAndDoorViewModel windowAndDoorVM, PaintWorkViewModel paintWorkViewModel, SteelWorkViewModel steelWorkViewModel,
-			CustomRateListViewModel customRateListViewModel, CustomRateEntryViewModel customRateEntryViewModel, MongoDbService mongoDbService,
-			SignInViewModel signinVM)
+		/* ───────── ctor ───────── */
+		public MainViewModel(
+			MaterialPriceViewModel priceVM,
+			MaterialLibraryViewModel libraryVM,
+			LabourPriceViewModel labourVM,
+			LabourLibraryViewModel labourLibVM,
+			GroundWorkViewModel groundworkVM,
+			ConcreteViewModel concreteVM,
+			BlockworkViewModel blockworkVM,
+			FinishesViewModel finishesVM,
+			RoofWorkViewModel roofVM,
+			WindowAndDoorViewModel winDoorVM,
+			PaintWorkViewModel paintVM,
+			SteelWorkViewModel steelVM,
+			LibraryShellViewModel libraryShellVM,
+			CustomRateListViewModel customListVM,
+			CustomRateEntryViewModel customEntryVM,
+			MongoDbService mongoDbService,
+			SignInViewModel signInVM)
 		{
-			IsLoggedIn = false;
+			/* store deps */
 			_mongoDbService = mongoDbService;
 
-			SignInViewModel = signinVM;
-
+			/* assign child VMs */
 			MaterialPriceViewModel = priceVM;
 			MaterialLibraryViewModel = libraryVM;
 			LabourPriceViewModel = labourVM;
-			LabourLibraryViewModel = labourLibraryVM;
+			LabourLibraryViewModel = labourLibVM;
+			LibraryShellViewModel = libraryShellVM;
 			GroundWorkViewModel = groundworkVM;
-			ConcreteViewModel = concreteWorkViewModel;
-			BlockworkViewModel = blockworkViewModel;
-			FinishesViewModel = finishesViewModel;
-			RoofWorkViewModel = roofworkVM;
-			WindowAndDoorViewModel = windowAndDoorVM;
-			PaintWorkViewModel = paintWorkViewModel;
-			SteelWorkViewModel = steelWorkViewModel;
-			CustomRateListViewModel = customRateListViewModel;
-			CustomRateEntryViewModel = customRateEntryViewModel;
+			ConcreteViewModel = concreteVM;
+			BlockworkViewModel = blockworkVM;
+			FinishesViewModel = finishesVM;
+			RoofWorkViewModel = roofVM;
+			WindowAndDoorViewModel = winDoorVM;
+			PaintWorkViewModel = paintVM;
+			SteelWorkViewModel = steelVM;
+			CustomRateListViewModel = customListVM;
+			CustomRateEntryViewModel = customEntryVM;
+			SignInViewModel = signInVM;
 
-			CustomRateListViewModel.OnViewRequested += (rate) =>
+			/* wire events (material / labour edit-flow etc.) */
+			priceVM.MaterialSaved += m => libraryVM.AddOrUpdateMaterial(m);
+			libraryVM.EditMaterialRequested += OnEditMaterialRequested;
+			labourVM.LabourSaved += l => labourLibVM.AddOrUpdateLabour(l);
+			labourLibVM.EditLabourRequested += OnEditLabourRequested;
+			customListVM.OnViewRequested += rate =>
 			{
-				CustomRateEntryViewModel.LoadRate(rate);
-				SelectedViewModel = CustomRateEntryViewModel;
+				customEntryVM.LoadRate(rate);
+				SelectedViewModel = customEntryVM;
 			};
+			signInVM.LoginSucceeded += OnLoginSucceeded;
 
-			MaterialPriceViewModel.MaterialSaved += OnMaterialSaved;
-			MaterialLibraryViewModel.EditMaterialRequested += OnEditMaterialRequested;
-
-			LabourPriceViewModel.LabourSaved += OnLabourSaved;
-			LabourLibraryViewModel.EditLabourRequested += OnEditLabourRequested;
-
+			/* default screen */
 			SelectedViewModel = SignInViewModel;
-			SignInViewModel.LoginSucceeded += OnLoginSucceeded;
 
-			SelectedMaterialInputViewCommand = new DelegateCommand(param => SelectViewModel(MaterialPriceViewModel));
-			SelectedMaterialLibraryViewCommand = new DelegateCommand(param => SelectViewModel(MaterialLibraryViewModel));
-			SelectedLabourInputViewCommand = new DelegateCommand(param => SelectViewModel(LabourPriceViewModel));
-			SelectedLabourLibraryViewCommand = new DelegateCommand(param => SelectViewModel(LabourLibraryViewModel));
-			SelectedGroundworkViewCommand = new DelegateCommand(param => SelectViewModel(GroundWorkViewModel));
-			SelectedConcreteWorkViewCommand = new DelegateCommand(param => SelectViewModel(ConcreteViewModel));
-			SelectedBlockworkViewCommand = new DelegateCommand(param => SelectViewModel(BlockworkViewModel));
-			SelectedFinishesViewCommand = new DelegateCommand(param => SelectViewModel(FinishesViewModel));
-			SelectedRoofworkViewCommand = new DelegateCommand(param => SelectViewModel(RoofWorkViewModel));
-			SelectedWindowAndDoorViewCommand = new DelegateCommand(param => SelectViewModel(WindowAndDoorViewModel));
-			SelectedPaintworkViewCommand = new DelegateCommand(param => SelectViewModel(PaintWorkViewModel));
-			SelectedSteelworkViewCommand = new DelegateCommand(param => SelectViewModel(SteelWorkViewModel));
-			SelectedCustomRateInputViewCommand = new DelegateCommand(param => SelectViewModel(CustomRateListViewModel));
-			SelectedCustomRateViewCommand = new DelegateCommand(param => SelectViewModel(CustomRateEntryViewModel));
+			/* command implementations */
+			SelectedMaterialInputViewCommand = new RelayCommand(_ => SelectedViewModel = priceVM);
+			SelectedMaterialLibraryViewCommand = new RelayCommand(_ => SelectedViewModel = LibraryShellViewModel);
+			SelectedLabourInputViewCommand = new RelayCommand(_ => SelectedViewModel = labourVM);
+			SelectedLabourLibraryViewCommand = new RelayCommand(_ => SelectedViewModel = labourLibVM);
+			SelectedGroundworkViewCommand = new RelayCommand(_ => SelectedViewModel = groundworkVM);
+			SelectedConcreteWorkViewCommand = new RelayCommand(_ => SelectedViewModel = concreteVM);
+			SelectedBlockworkViewCommand = new RelayCommand(_ => SelectedViewModel = blockworkVM);
+			SelectedFinishesViewCommand = new RelayCommand(_ => SelectedViewModel = finishesVM);
+			SelectedRoofworkViewCommand = new RelayCommand(_ => SelectedViewModel = roofVM);
+			SelectedWindowAndDoorViewCommand = new RelayCommand(_ => SelectedViewModel = winDoorVM);
+			SelectedPaintworkViewCommand = new RelayCommand(_ => SelectedViewModel = paintVM);
+			SelectedSteelworkViewCommand = new RelayCommand(_ => SelectedViewModel = steelVM);
+			SelectedCustomRateInputViewCommand = new RelayCommand(_ => SelectedViewModel = customListVM);
+			SelectedCustomRateViewCommand = new RelayCommand(_ => SelectedViewModel = customEntryVM);
 			LogoutCommand = new RelayCommand(_ => Logout());
+			OpenYoutubeCommand = new RelayCommand(_ => OpenYoutube());
 		}
 
-		private void OnMaterialSaved(MaterialModel material)
+
+
+		/* ───────── edit helpers ───────── */
+		private void OnEditMaterialRequested(MaterialModel m)
 		{
-			MaterialLibraryViewModel.AddOrUpdateMaterial(material);
+			//MaterialPriceViewModel.LoadForEdit(m);
+			//SelectedViewModel = MaterialPriceViewModel;
 		}
 
-		private void OnLabourSaved(LabourModel labour)
+		private void OnEditLabourRequested(LabourModel l)
 		{
-			LabourLibraryViewModel.AddOrUpdateLabour(labour);
+			//LabourPriceViewModel.LoadForEdit(l);
+			//SelectedViewModel = LabourPriceViewModel;
 		}
 
-		private void OnEditMaterialRequested(MaterialModel material)
+		/* ───────── sign-in result ───────── */
+		private async void OnLoginSucceeded(object? s, SignInViewModel.LoginEventArgs e)
 		{
-			MaterialPriceViewModel.EditingMaterial = material;
-			MaterialPriceViewModel.MaterialName = material.MaterialName;
-			MaterialPriceViewModel.MaterialUnit = material.MaterialUnit;
-			MaterialPriceViewModel.MaterialPrice = material.MaterialPrice;
-			MaterialPriceViewModel.NewMaterialCategory = material.MaterialCategory;
-			SelectedViewModel = MaterialPriceViewModel;
-		}
+			if (e.LoggedInUser == null) return;
 
-		private void OnEditLabourRequested(LabourModel labour)
-		{
-			LabourPriceViewModel.EditingLabour = labour;
-			LabourPriceViewModel.LabourName = labour.LabourName;
-			LabourPriceViewModel.LabourUnit = labour.LabourUnit;
-			LabourPriceViewModel.LabourPrice = labour.LabourPrice;
-			LabourPriceViewModel.NewLabourCategory = labour.LabourCategory;
-			SelectedViewModel = LabourPriceViewModel;
-		}
+			IsLoggedIn = true;
+			_currentUser = e.LoggedInUser;
 
-		private void SelectViewModel(object parameter)
-		{
-			SelectedViewModel = parameter as ViewModelBase;
-		}
+			var ip = GetUserIpAddress();
+			_currentUser.IpAddress = ip;
+			await _mongoDbService.UpdateUserIpAddressAsync(_currentUser.Id, ip);
 
-		private async void OnLoginSucceeded(object sender, SignInViewModel.LoginEventArgs e)
-		{
-			if (e.LoggedInUser != null)
+			var authTok = new AuthTok();
+			ConfigManager.SaveConfig(new AppConfig
 			{
-				IsLoggedIn = true;
-				string deviceIpAddress = GetUserIpAddress();
+				AuthToken = authTok.GenerateAuthToken(_currentUser),
+				AuthExpiry = DateTime.Now.AddDays(15)
+			});
 
-				var existingUserIp = await _mongoDbService.GetUserIpAddressByUserIdAsync(e.LoggedInUser.Id);
-				if (existingUserIp != null && existingUserIp != deviceIpAddress)
-				{
-					MessageBox.Show("Error: User already logged in from another device.");
-					return;
-				}
-
-				_currentUser = e.LoggedInUser;
-				_currentUser.IpAddress = deviceIpAddress;
-
-				try
-				{
-					await _mongoDbService.UpdateUserIpAddressAsync(_currentUser.Id, deviceIpAddress);
-				}
-				catch (Exception ex)
-				{
-					MessageBox.Show($"Error Updating IP address: {ex.Message}");
-				}
-
-				var authTok = new AuthTok();
-				var config = new AppConfig { AuthToken = authTok.GenerateAuthToken(_currentUser), AuthExpiry = DateTime.Now.AddDays(15) };
-				ConfigManager.SaveConfig(config);
-
-				SelectedViewModel = MaterialLibraryViewModel;
-				MessageBox.Show($"Welcome, {_currentUser.Username}! Your Account Secured");
-			}
-			else
-			{
-				MessageBox.Show("Unexpected login error.");
-			}
+			SelectedViewModel = LibraryShellViewModel;   // land on library tabs
 		}
 
-		private string GetUserIpAddress()
+		/* ───────── misc helpers ───────── */
+		private static string GetUserIpAddress()
 		{
-			try
-			{
-				using (var webClient = new WebClient())
-				{
-					string ip = webClient.DownloadString("https://api.ipify.org/");
-					return ip.Trim();
-				}
-			}
-			catch
-			{
-				return "IP Unavailable";
-			}
+			try { return new WebClient().DownloadString("https://api.ipify.org/").Trim(); }
+			catch { return "IP-Unavailable"; }
 		}
 
-		// -------- LOG-OUT IMPLEMENTATION --------
 		private async void Logout()
 		{
 			try
 			{
-				// 1) clear the IP lock on this user (optional but polite)
 				if (_currentUser != null)
-				{
 					await _mongoDbService.UpdateUserIpAddressAsync(_currentUser.Id, "");
-				}
 
-				// 2) wipe any persisted token / cached config
-				ConfigManager.ClearConfig();          // implement as needed
-
-				// 3) reset local state
+				ConfigManager.ClearConfig();
 				_currentUser = null;
-				IsLoggedIn = false;                 // hides the main shell
-				SelectedViewModel = SignInViewModel;  // shows the sign-in screen
 
-				// 4) optionally clear the textboxes
-				if (SignInViewModel is { } vm)
-				{
-					vm.Username = string.Empty;
-					vm.Password = string.Empty;
-				}
+				IsLoggedIn = false;
+				SelectedViewModel = SignInViewModel;
+				//SignInViewModel.ClearFields();
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show($"Error while logging out: {ex.Message}");
+				MessageBox.Show($"Log-out failed\n{ex.Message}");
+			}
+		}
+
+		private static void OpenYoutube()
+		{
+			try
+			{
+				Process.Start(new ProcessStartInfo
+				{
+					FileName = "https://youtube.com/playlist?list=PLk1KkUNE9ZrO5IPh7p3-5zxfDFs1Dl9b-&si=xi4dt-Fmy17_2KsM",
+					UseShellExecute = true
+				});
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Unable to open browser.\n{ex.Message}");
 			}
 		}
 	}
