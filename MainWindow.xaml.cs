@@ -9,6 +9,7 @@ using ADLMRateGen.ViewModel.ConcreteWork;
 using ADLMRateGen.ViewModel.CustomRate;
 using ADLMRateGen.ViewModel.Finishes;
 using ADLMRateGen.ViewModel.Groundwork;
+using ADLMRateGen.ViewModel.Model;
 using ADLMRateGen.ViewModel.Painting;
 using ADLMRateGen.ViewModel.RoofWork;
 using ADLMRateGen.ViewModel.SteelWork;
@@ -86,6 +87,40 @@ namespace ADLMRateGen
 
 			// 5) Finally set the DataContext so the UI sees mainVM
 			this.DataContext = mainVM;
+		}
+
+		private void OnRequestAddMaterial() => ShowMaterialPopup(null);
+
+		private void OnRequestEditMaterial(MaterialModel toEdit) => ShowMaterialPopup(toEdit);
+
+		private void ShowMaterialPopup(MaterialModel existing)
+		{
+			var vm = new MaterialPriceViewModel();
+			if (existing != null)
+			{
+				vm.MaterialName = existing.MaterialName;
+				vm.MaterialUnit = existing.MaterialUnit;
+				vm.MaterialPrice = existing.MaterialPrice;
+				vm.NewMaterialCategory = existing.MaterialCategory;
+				vm.EditingMaterial = existing;
+			}
+
+			vm.MaterialSaved += mat =>
+			{
+				var shell = ((MainViewModel)DataContext).LibraryShellViewModel;
+				shell.MaterialLibraryViewModel.AddOrUpdateMaterial(mat);
+				PopupHost.Hide();
+			};
+
+			// now SHOW via PopupHost
+			var view = new MaterialPriceView { DataContext = vm };
+			PopupHost.Show(view);
+		}
+
+		// if you still wired up a close button inside PopupHost to call this...
+		private void OnPopupClose(object sender, RoutedEventArgs e)
+		{
+			PopupHost.Hide();
 		}
 
 		/// <summary>

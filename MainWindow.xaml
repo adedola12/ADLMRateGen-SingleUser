@@ -22,7 +22,7 @@
         mc:Ignorable="d"
         Title="ADLM Rate Gen"
         Height="1020"
-        Width="1180"
+        Width="1720"
         WindowStyle="SingleBorderWindow"
         Background="#cdd6db">
 

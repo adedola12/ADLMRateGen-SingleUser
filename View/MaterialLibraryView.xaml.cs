@@ -16,11 +16,11 @@ using ADLMRateGen.ViewModel;
 
 namespace ADLMRateGen.View
 {
-    /// <summary>
-    /// Interaction logic for MaterialLibraryView.xaml
-    /// </summary>
-    public partial class MaterialLibraryView : UserControl
-    {
+	/// <summary>
+	/// Interaction logic for MaterialLibraryView.xaml
+	/// </summary>
+	public partial class MaterialLibraryView : UserControl
+	{
 		public MaterialLibraryView()
 		{
 			InitializeComponent();
@@ -49,9 +49,9 @@ namespace ADLMRateGen.View
 			// when the price VM saves or updates, push it back into the library
 			editVm.MaterialSaved += saved =>
    {
-				var win = Application.Current.MainWindow as MainWindow;
-				win?.PopupHost.Hide();
-				   }
+	   var win = Application.Current.MainWindow as MainWindow;
+	   win?.PopupHost.Hide();
+   }
 			;
 
 			var editView = new MaterialPriceView

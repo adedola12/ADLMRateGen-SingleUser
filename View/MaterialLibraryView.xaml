@@ -63,6 +63,110 @@
             </Setter>
         </Style>
 
+        <!-- ───── Toolbar ComboBox ───── -->
+        <Style x:Key="TopNavComboBoxStyle"
+               TargetType="ComboBox">
+            <Setter Property="Background"
+                    Value="White" />
+            <Setter Property="BorderBrush"
+                    Value="{StaticResource BorderBrushLight}" />
+            <Setter Property="BorderThickness"
+                    Value="1" />
+            <Setter Property="Padding"
+                    Value="12,4" />
+            <Setter Property="FontFamily"
+                    Value="{StaticResource PoppinsFont}" />
+            <Setter Property="FontWeight"
+                    Value="SemiBold" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center" />
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Left" />
+            <Setter Property="SnapsToDevicePixels"
+                    Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <!-- the closed‐state border + selected‐item -->
+                            <Border x:Name="Bd"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="6">
+                                <Grid>
+                                    <!-- content -->
+                                    <ContentPresenter x:Name="ContentSite"
+                                                      Margin="8,0,28,0"
+                                                      VerticalAlignment="Center"
+                                                      Content="{TemplateBinding SelectionBoxItem}"
+                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
+
+                                    <!-- down arrow -->
+                                    <TextBlock Text="⌄"
+                                               FontFamily="Segoe MDL2 Assets"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right"
+                                               Margin="0,0,12,0"
+                                               Foreground="{TemplateBinding Foreground}" />
+
+                                    <!-- toggle button to open/close -->
+                                    <ToggleButton x:Name="DropDownToggle"
+                                                  Focusable="False"
+                                                  IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  HorizontalAlignment="Right"
+                                                  Width="28"
+                                                  Background="Transparent"
+                                                  BorderBrush="Transparent" />
+                                </Grid>
+                            </Border>
+
+                            <!-- the drop-down list -->
+                            <Popup x:Name="PART_Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Fade">
+                                <Border x:Name="PopupBorder"
+                                        Background="White"
+                                        BorderBrush="{StaticResource BorderBrushLight}"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Margin="0,4,0,0">
+                                    <ScrollViewer>
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter TargetName="Bd"
+                                        Property="Background"
+                                        Value="{StaticResource LightGrayBrush}" />
+                            </Trigger>
+                            <Trigger Property="HasItems"
+                                     Value="False">
+                                <Setter TargetName="PopupBorder"
+                                        Property="MinHeight"
+                                        Value="95" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled"
+                                     Value="False">
+                                <Setter Property="Foreground"
+                                        Value="#888" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Toolbar Button (white) -->
         <Style x:Key="TopNavButtonStyle"
                TargetType="Button">
@@ -297,11 +401,13 @@
                     </Grid>
 
                     <!-- Filter -->
-                    <Button Grid.Column="1"
-                            Style="{StaticResource TopNavButtonStyle}"
-                            Command="{Binding SearchMaterialCommand}"
-                            Content="Filter"
-                            Margin="12,0" />
+                    <ComboBox Grid.Column="1"
+                              ItemsSource="{Binding MaterialCategory}"
+                              SelectedItem="{Binding SelectedMaterialCategory, Mode=TwoWay}"
+                              Style="{StaticResource TopNavComboBoxStyle}"
+                              Width="250"
+                              Height="30"
+                              Margin="12,0" />
 
                     <!-- Sort by -->
                     <Button Grid.Column="2"

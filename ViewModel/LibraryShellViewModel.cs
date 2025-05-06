@@ -1,48 +1,27 @@
-﻿using System.Windows;
+﻿using ADLMRateGen.Command;
+using ADLMRateGen.View;
+using ADLMRateGen.ViewModel.Model;
+using ADLMRateGen.ViewModel;
 using System.Windows.Controls;
 using System.Windows.Input;
-using ADLMRateGen.Command;
 
 namespace ADLMRateGen.ViewModel
 {
 	public sealed class LibraryShellViewModel : ViewModelBase
 	{
-		public MaterialLibraryViewModel MaterialVM { get; }
-		public LabourLibraryViewModel LabourVM { get; }
+		// rename these so ShowMaterialPopup can find them:
+		public MaterialLibraryViewModel MaterialLibraryViewModel { get; }
+		public LabourLibraryViewModel LabourLibraryViewModel { get; }
 
-		private readonly UserControl _materialView = new View.MaterialLibraryView();
-		private readonly UserControl _labourView = new View.LabourLibraryView();
+		public ICommand AddCommand { get; }
+		public event Action RequestAddMaterial;
+		public event Action<MaterialModel> RequestEditMaterial;
+		// …and similarly for labour if you like…
 
-		public LibraryShellViewModel()
-			: this(new MaterialLibraryViewModel(),
-				   new LabourLibraryViewModel())
-		{ }
+		private readonly UserControl _materialView = new MaterialLibraryView();
+		private readonly UserControl _labourView = new LabourLibraryView();
 
-		public LibraryShellViewModel(MaterialLibraryViewModel mvm,
-									 LabourLibraryViewModel lvm)
-		{
-			MaterialVM = mvm;
-			LabourVM = lvm;
-
-			_materialView.DataContext = MaterialVM;
-			_labourView.DataContext = LabourVM;
-
-			_currentContent = _materialView;
-			_isMaterialTab = true;
-
-			AddCommand = new RelayCommand(_ =>
-			{
-				// find our PopupHost in MainWindow and show the correct form
-				var wnd = Application.Current.MainWindow as MainWindow;
-				if (IsMaterialTab)
-					wnd!.ShowPopup(new View.MaterialPriceView { DataContext = MaterialVM });
-				else
-					wnd!.ShowPopup(new View.LabourPriceView { DataContext = LabourVM });
-			});
-		}
-
-		/*── TAB STATE ──*/
-		private bool _isMaterialTab;
+		private bool _isMaterialTab = true;
 		public bool IsMaterialTab
 		{
 			get => _isMaterialTab;
@@ -78,7 +57,6 @@ namespace ADLMRateGen.ViewModel
 			}
 		}
 
-		/*── HOSTED CONTENT ──*/
 		private UserControl _currentContent;
 		public UserControl CurrentContent
 		{
@@ -86,8 +64,29 @@ namespace ADLMRateGen.ViewModel
 			private set { _currentContent = value; RaisePropertyChanged(); }
 		}
 
-		/*── ADD BUTTON ──*/
 		public string AddButtonText => IsMaterialTab ? "Add Material  +" : "Add Labour  +";
-		public ICommand AddCommand { get; }
+
+		public LibraryShellViewModel(
+			MaterialLibraryViewModel materialLibraryVm,
+			LabourLibraryViewModel labourLibraryVm)
+		{
+			MaterialLibraryViewModel = materialLibraryVm;
+			LabourLibraryViewModel = labourLibraryVm;
+
+			// set the views’ data contexts
+			_materialView.DataContext = MaterialLibraryViewModel;
+			_labourView.DataContext = LabourLibraryViewModel;
+			_currentContent = _materialView;
+
+			AddCommand = new RelayCommand(_ =>
+			{
+				if (IsMaterialTab) RequestAddMaterial?.Invoke();
+				else                 /* RequestAddLabour?.Invoke() */;
+			});
+
+			// bubble up the library’s “edit” request
+			MaterialLibraryViewModel.EditMaterialRequested += m =>
+				RequestEditMaterial?.Invoke(m);
+		}
 	}
 }
