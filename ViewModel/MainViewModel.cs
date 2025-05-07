@@ -12,6 +12,7 @@ using ADLMRateGen.ViewModel.RoofWork;
 using ADLMRateGen.ViewModel.SteelWork;
 using ADLMRateGen.ViewModel.WindowAndDoor;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Net;
 using System.Windows;
 using System.Windows.Input;
@@ -24,12 +25,21 @@ namespace ADLMRateGen.ViewModel
 		private readonly MongoDbService _mongoDbService;
 
 		/* ───────── current user / auth ───────── */
-		private UserModel _currentUser;
-		public UserModel CurrentUser
+
+private UserModel? _currentUser;
+		public UserModel? CurrentUser
 		{
 			get => _currentUser;
-			set { _currentUser = value; RaisePropertyChanged(); }
+			set
+			{
+				_currentUser = value;
+				RaisePropertyChanged();             // ↺ notifies <Run …>
+				RaisePropertyChanged(nameof(CurrentUsername));
+			}
 		}
+
+		/* used directly by the banner if you prefer */
+		public string CurrentUsername => _currentUser?.Username ?? string.Empty;
 
 		/* ───────── login state ───────── */
 		private bool _isLoggedIn;
@@ -245,7 +255,7 @@ namespace ADLMRateGen.ViewModel
 			SignInViewModel = signInVM;
 
 			/* wire events (material / labour edit-flow etc.) */
-			priceVM.MaterialSaved += m => libraryVM.AddOrUpdateMaterial(m);
+			MaterialPriceViewModel.MaterialSaved += m => libraryVM.AddOrUpdateMaterial(m);
 			libraryVM.EditMaterialRequested += OnEditMaterialRequested;
 			labourVM.LabourSaved += l => labourLibVM.AddOrUpdateLabour(l);
 			labourLibVM.EditLabourRequested += OnEditLabourRequested;
@@ -299,7 +309,7 @@ namespace ADLMRateGen.ViewModel
 			if (e.LoggedInUser == null) return;
 
 			IsLoggedIn = true;
-			_currentUser = e.LoggedInUser;
+			CurrentUser = e.LoggedInUser;
 
 			var ip = GetUserIpAddress();
 			_currentUser.IpAddress = ip;

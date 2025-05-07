@@ -21,6 +21,9 @@ namespace ADLMRateGen
     public partial class MainWindow : Window
     {
 
+		private readonly LibraryShellViewModel _shellVm;
+		private readonly PopupHost _popup;
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -30,7 +33,7 @@ namespace ADLMRateGen
 			var libraryVM = new MaterialLibraryViewModel();
 			var labourVm = new LabourPriceViewModel();
 			var labourLibraryVM = new LabourLibraryViewModel();
-			var matlibShellVM = new LibraryShellViewModel(libraryVM, labourLibraryVM);
+			_shellVm = new LibraryShellViewModel(libraryVM, labourLibraryVM);
 			var groundworkVM = new GroundWorkViewModel(libraryVM, labourLibraryVM);
 			var concreteWorkVM = new ConcreteViewModel(libraryVM, labourLibraryVM);
 			var blockworkVM = new BlockworkViewModel(libraryVM, labourLibraryVM, concreteWorkVM);
@@ -51,6 +54,13 @@ namespace ADLMRateGen
 			var mongoDbService = new MongoDbService(connectionString, databaseName, collectionName);
 			var signInVM = new SignInViewModel(mongoDbService);
 
+			// ───────── event wiring ─────────
+			_shellVm.RequestAddMaterial += OnRequestAddMaterial;
+			_shellVm.RequestEditMaterial += OnRequestEditMaterial;
+			_shellVm.RequestAddLabour += OnRequestAddLabour;
+			_popup = PopupHost;
+
+
 			// 3) Create the MainViewModel
 			var mainVM = new MainViewModel(
 				priceVM,
@@ -65,7 +75,7 @@ namespace ADLMRateGen
 				windowAndDoorVM,
 				paintVM,
 				steelWorkVM,
-				matlibShellVM,
+				_shellVm,
 				customViewVM,
 				customInputVM,
 				mongoDbService,
@@ -73,15 +83,44 @@ namespace ADLMRateGen
 
 			// 4) Check if we have a valid Auth token => skip sign in
 			var config = ConfigManager.LoadConfig();
+			//if (config.AuthToken != null
+			//	&& config.AuthExpiry.HasValue
+			//	&& config.AuthExpiry > DateTime.Now)
+			//{
+			//	// user is already "authenticated"
+			//	mainVM.IsLoggedIn = true;
+			//	// default to e.g. Material Library or GroundWork
+			//	mainVM.SelectedViewModel = mainVM.MaterialLibraryViewModel;
+
+			//	/* NEW: pull user‑id from the token and fetch his document */
+			//	var userId = JwtHelper.GetUserId(config.AuthToken);
+			//	if (!string.IsNullOrEmpty(userId))
+			//	{
+			//		var user = mongoDbService.GetUserByIdAsync(userId)
+			//								 .GetAwaiter()
+			//								 .GetResult();   // sync wait – window ctor
+			//		if (user != null)
+			//			mainVM.CurrentUser = user;           // ⭐ notifies the banner
+			//	}
+			//}
+
+			// 4) check persisted token … (unchanged lines omitted for brevity)
 			if (config.AuthToken != null
-				&& config.AuthExpiry.HasValue
-				&& config.AuthExpiry > DateTime.Now)
+				&& config.AuthExpiry is { } exp && exp > DateTime.Now)
 			{
-				// user is already "authenticated"
 				mainVM.IsLoggedIn = true;
-				// default to e.g. Material Library or GroundWork
 				mainVM.SelectedViewModel = mainVM.MaterialLibraryViewModel;
+
+				/* fetch user synchronously – NO async‑await on UI thread */
+				var userId = JwtHelper.GetUserId(config.AuthToken);
+				if (!string.IsNullOrEmpty(userId))
+				{
+					var user = mongoDbService.GetUserById(userId);   // ← new sync helper
+					if (user != null)
+						mainVM.CurrentUser = user;                   // updates banner
+				}
 			}
+
 
 
 
@@ -89,32 +128,81 @@ namespace ADLMRateGen
 			this.DataContext = mainVM;
 		}
 
-		private void OnRequestAddMaterial() => ShowMaterialPopup(null);
+		//private void OnRequestAddMaterial() => ShowMaterialPopup(null);
 
-		private void OnRequestEditMaterial(MaterialModel toEdit) => ShowMaterialPopup(toEdit);
+		//private void OnRequestEditMaterial(MaterialModel toEdit) => ShowMaterialPopup(toEdit);
+
+		//private void ShowMaterialPopup(MaterialModel existing)
+		//{
+		//	var vm = new MaterialPriceViewModel();
+		//	if (existing != null)
+		//	{
+		//		vm.MaterialName = existing.MaterialName;
+		//		vm.MaterialUnit = existing.MaterialUnit;
+		//		vm.MaterialPrice = existing.MaterialPrice;
+		//		vm.NewMaterialCategory = existing.MaterialCategory;
+		//		vm.EditingMaterial = existing;
+		//	}
+
+		//	vm.MaterialSaved += mat =>
+		//	{
+		//		var shell = ((MainViewModel)DataContext).LibraryShellViewModel;
+		//		shell.MaterialLibraryViewModel.AddOrUpdateMaterial(mat);
+		//		PopupHost.Hide();
+		//	};
+
+		//	// now SHOW via PopupHost
+		//	var view = new MaterialPriceView { DataContext = vm };
+		//	PopupHost.Show(view);
+		//}
+
+		// ========== MATERIAL POPUP ==========
+		private void OnRequestAddMaterial() => ShowMaterialPopup(null);
+		private void OnRequestEditMaterial(MaterialModel m) => ShowMaterialPopup(m);
 
 		private void ShowMaterialPopup(MaterialModel existing)
 		{
 			var vm = new MaterialPriceViewModel();
 			if (existing != null)
 			{
+				vm.EditingMaterial = existing;
 				vm.MaterialName = existing.MaterialName;
 				vm.MaterialUnit = existing.MaterialUnit;
 				vm.MaterialPrice = existing.MaterialPrice;
 				vm.NewMaterialCategory = existing.MaterialCategory;
-				vm.EditingMaterial = existing;
 			}
 
-			vm.MaterialSaved += mat =>
+			MaterialPriceViewModel.MaterialSaved += mat =>
 			{
-				var shell = ((MainViewModel)DataContext).LibraryShellViewModel;
-				shell.MaterialLibraryViewModel.AddOrUpdateMaterial(mat);
-				PopupHost.Hide();
+				_shellVm.MaterialLibraryViewModel.AddOrUpdateMaterial(mat);
+				_popup.Hide();
 			};
 
-			// now SHOW via PopupHost
-			var view = new MaterialPriceView { DataContext = vm };
-			PopupHost.Show(view);
+			_popup.Show(new MaterialPriceView { DataContext = vm });
+		}
+
+		// ========== LABOUR POPUP ==========
+		private void OnRequestAddLabour() => ShowLabourPopup(null);
+
+		private void ShowLabourPopup(LabourModel existing)
+		{
+			var vm = new LabourPriceViewModel();
+			if (existing != null)
+			{
+				vm.EditingLabour = existing;
+				vm.LabourName = existing.LabourName;
+				vm.LabourUnit = existing.LabourUnit;
+				vm.LabourPrice = existing.LabourPrice;
+				vm.NewLabourCategory = existing.LabourCategory;
+			}
+
+			vm.LabourSaved += lab =>
+			{
+				_shellVm.LabourLibraryViewModel.AddOrUpdateLabour(lab);
+				_popup.Hide();
+			};
+
+			_popup.Show(new LabourPriceView { DataContext = vm });
 		}
 
 		// if you still wired up a close button inside PopupHost to call this...

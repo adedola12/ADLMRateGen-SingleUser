@@ -1,49 +1,44 @@
-﻿using System.IO;
-using System.Reflection;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Text.Json;
-using ADLMRateGen.ViewModel.Model;
 
 namespace ADLMRateGen.Services
 {
-	public class JsonDataServices
-    {
-        private readonly string _filePath;
-        private readonly string _defaultFilePath;
+	/// <summary>
+	/// Tiny helper that serialises any POCO collection to JSON.
+	/// </summary>
+	/// <typeparam name="T">Model type stored inside the file</typeparam>
+	public sealed class JsonDataServices<T> where T : class
+	{
+		private readonly string _file;          // absolute path – avoids surprises
 
-        public JsonDataServices(string filePath, string defaultFilePath)
-        {
-            _filePath = filePath;
-            _defaultFilePath = defaultFilePath;
-        }
+		public JsonDataServices(string file, string defaultFile)
+		{
+			_file = Path.GetFullPath(file);
 
-        public T? LoadData<T>()
-        {
-            // If the working file doesn't exist, copy the default file.
-            if (!File.Exists(_filePath))
-            {
-                if (File.Exists(_defaultFilePath))
-                {
-                    File.Copy(_defaultFilePath, _filePath);
-                }
-            }
+			// first‑run bootstrap – copy the bundled defaults if the working file is missing
+			if (!File.Exists(_file) && File.Exists(defaultFile))
+				File.Copy(defaultFile, _file);
+		}
 
-            string json = File.ReadAllText(_filePath);
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                if (File.Exists(_defaultFilePath))
-                {
-                    json = File.ReadAllText(_defaultFilePath);
-                    File.WriteAllText(_filePath, json);
-                }
-            }
-            return JsonSerializer.Deserialize<T>(json);
-        }
+		public ObservableCollection<T> LoadData()
+		{
+			if (!File.Exists(_file))
+				return new ObservableCollection<T>();
 
-        public void SaveData<T>(T data)
-        {
-            string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(_filePath, json);
-        }
-    }
+			var json = File.ReadAllText(_file);
+			return JsonSerializer.Deserialize<ObservableCollection<T>>(json)!
+				   ?? new ObservableCollection<T>();
+		}
+
+		public void SaveData(IEnumerable<T> list)
+		{
+			var json = JsonSerializer.Serialize(
+				list,
+				new JsonSerializerOptions { WriteIndented = true });
+
+			File.WriteAllText(_file, json);
+		}
+	}
 }

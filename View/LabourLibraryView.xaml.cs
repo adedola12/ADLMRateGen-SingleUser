@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ADLMRateGen.ViewModel;
+using ADLMRateGen.ViewModel.Model;
 
 namespace ADLMRateGen.View
 {
@@ -25,40 +26,74 @@ namespace ADLMRateGen.View
         {
             InitializeComponent();
 
-			// once DataContext is set, hook the edit request
-			this.Loaded += (s, e) =>
+			//// once DataContext is set, hook the edit request
+			//this.Loaded += (s, e) =>
+			//{
+			//	if (this.DataContext is LabourLibraryViewModel vm)
+			//	{
+			//		vm.EditLabourRequested += OnEditLabourRequested;
+			//	}
+			//};
+
+			/* hook when DataContext becomes available */
+			Loaded += (s, e) =>
 			{
-				if (this.DataContext is LabourLibraryViewModel vm)
-				{
+				if (DataContext is LabourLibraryViewModel vm)
 					vm.EditLabourRequested += OnEditLabourRequested;
-				}
 			};
 		}
 
-		private void OnEditLabourRequested(ADLMRateGen.ViewModel.Model.LabourModel labour)
+		//private void OnEditLabourRequested(LabourModel labour)
+		//{
+		//	var editVm = new LabourPriceViewModel
+		//	{
+		//		EditingLabour = labour,
+		//		LabourName = labour.LabourName,
+		//		LabourPrice = labour.LabourPrice,
+		//		LabourUnit = labour.LabourUnit,
+		//		NewLabourCategory = labour.LabourCategory,
+		//	};
+
+		//	editVm.LabourSaved += saved =>
+		//	{
+		//		var win = Application.Current.MainWindow as MainWindow;
+		//		win?.PopupHost.Hide();
+		//	};
+
+		//	var editView = new LabourPriceView
+		//	{
+		//		DataContext = editVm,
+		//	};
+
+		//	var main = Application.Current.MainWindow as MainWindow;
+		//	main?.ShowPopup(editView);
+		//}
+
+		/* open the popup for editing */
+		private void OnEditLabourRequested(LabourModel labour)
 		{
 			var editVm = new LabourPriceViewModel
 			{
+				EditingLabour = labour,          // tells the VM it’s an edit
 				LabourName = labour.LabourName,
-				LabourPrice = labour.LabourPrice,
 				LabourUnit = labour.LabourUnit,
-				NewLabourCategory = labour.LabourCategory,
-				EditingLabour = labour
+				LabourPrice = labour.LabourPrice,
+				NewLabourCategory = labour.LabourCategory
 			};
 
+			/* ❶ – ► PERSIST the change when the user clicks *Update Library* */
 			editVm.LabourSaved += saved =>
 			{
-				var win = Application.Current.MainWindow as MainWindow;
-				win?.PopupHost.Hide();
+				/* push the change back into the library → also writes JSON */
+				((LabourLibraryViewModel)DataContext!).AddOrUpdateLabour(saved);
+
+				/* close the popup */
+				((MainWindow)Application.Current.MainWindow).PopupHost.Hide();
 			};
 
-			var editView = new LabourPriceView
-			{
-				DataContext = editVm,
-			};
-
-			var main = Application.Current.MainWindow as MainWindow;
-			main?.ShowPopup(editView);
+			/* show the popup */
+			((MainWindow)Application.Current.MainWindow)
+				.ShowPopup(new LabourPriceView { DataContext = editVm });
 		}
 
 	}

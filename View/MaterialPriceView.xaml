@@ -155,9 +155,26 @@
                                        FontSize="14"
                                        FontWeight="SemiBold"
                                        Foreground="#2D3748" />
-                            <TextBox Style="{StaticResource RoundedTextBox}"
-                                     Text="{Binding MaterialName}"
-                                     Height="48" />
+                            <!-- inside your form – Name textbox -->
+                            <TextBox Text="{Binding MaterialName}">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox"
+                                           BasedOn="{StaticResource RoundedTextBox}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEditing}"
+                                                         Value="True">
+                                                <Setter Property="IsReadOnly"
+                                                        Value="True" />
+                                                <Setter Property="Foreground"
+                                                        Value="#888" />
+                                                <Setter Property="Background"
+                                                        Value="#F4F4F4" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+
                         </StackPanel>
 
                         <!-- Unit -->
@@ -168,9 +185,28 @@
                                        FontSize="14"
                                        FontWeight="SemiBold"
                                        Foreground="#2D3748" />
-                            <TextBox Style="{StaticResource RoundedTextBox}"
-                                     Text="{Binding MaterialUnit}"
-                                     Height="48" />
+                            <!--<TextBox Style="{StaticResource RoundedTextBox}"
+                                     Text="{Binding MaterialUnit, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="48" />-->
+
+                            <TextBox Text="{Binding MaterialUnit}">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox"
+                                           BasedOn="{StaticResource RoundedTextBox}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEditing}"
+                                                         Value="True">
+                                                <Setter Property="IsReadOnly"
+                                                        Value="True" />
+                                                <Setter Property="Foreground"
+                                                        Value="#888" />
+                                                <Setter Property="Background"
+                                                        Value="#F4F4F4" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
                         </StackPanel>
 
                         <!-- Price -->
@@ -182,7 +218,7 @@
                                        FontWeight="SemiBold"
                                        Foreground="#2D3748" />
                             <TextBox Style="{StaticResource RoundedTextBox}"
-                                     Text="{Binding MaterialPrice}"
+                                     Text="{Binding MaterialPrice, UpdateSourceTrigger=PropertyChanged}"
                                      Height="48" />
                         </StackPanel>
 
@@ -195,23 +231,63 @@
                                        FontSize="14"
                                        FontWeight="SemiBold"
                                        Foreground="#2D3748" />
-                            <TextBox Style="{StaticResource RoundedTextBox}"
-                                     Text="{Binding NewMaterialCategory}"
-                                     Height="48" />
+                            <!--<TextBox Style="{StaticResource RoundedTextBox}"
+                                     Text="{Binding NewMaterialCategory, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="48" />-->
+
+                            <TextBox Text="{Binding NewMaterialCategory}">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox"
+                                           BasedOn="{StaticResource RoundedTextBox}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEditing}"
+                                                         Value="True">
+                                                <Setter Property="IsReadOnly"
+                                                        Value="True" />
+                                                <Setter Property="Foreground"
+                                                        Value="#888" />
+                                                <Setter Property="Background"
+                                                        Value="#F4F4F4" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
                         </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- 4) Save/Update Button -->
+
+                <!-- 4) Save / Update Button -->
+                <!-- 4) Save / Update Button -->
                 <Button Grid.Row="5"
-                        Style="{StaticResource RoundedButton}"
+                        Foreground="White"
                         Content="{Binding IsEditing,
                   Converter={StaticResource BoolToStringConverter},
                   ConverterParameter='Update Library|Save to Database'}"
-                        Command="{Binding IsEditing,
-                  Converter={StaticResource BoolToCommandConverter},
-                  ConverterParameter='UpdateMaterial|SaveMaterial'}"
-                        HorizontalAlignment="Stretch" />
+                        HorizontalAlignment="Stretch">
+
+                    <!-- base look + trigger that switches command -->
+                    <Button.Style>
+                        <Style TargetType="Button"
+                               BasedOn="{StaticResource RoundedButton}">
+                            <!-- default: add -->
+                            <Setter Property="Command"
+                                    Value="{Binding SaveMaterialCommand}" />
+                            <!-- when editing: switch to update -->
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsEditing}"
+                                             Value="True">
+                                    <Setter Property="Command"
+                                            Value="{Binding UpdateMaterialCommand}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+
+
             </Grid>
         </Border>
     </Grid>

@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;           // ← Add this
 using System.Windows.Data;
 
 namespace ADLMRateGen.Converters
 {
-	public class BoolToCommandConverter : IValueConverter
+	/// <summary>
+	///   ConverterParameter =  "UpdateMaterial|SaveMaterial"
+	///   – returns ICommand on DataContext that matches the
+	///     first or second pipe‑separated token.
+	/// </summary>
+	public sealed class BoolToCommandConverter : IValueConverter
 	{
-		public object Convert(object v, Type t, object param, CultureInfo _)
+		public object Convert(object value, Type targetType,
+							  object parameter, CultureInfo culture)
 		{
-			var parts = (param as string)?.Split('|');
-			// Now Application.Current is recognized:
-			var vm = Application.Current.MainWindow.DataContext;
-			var propName = (v is bool b && b) ? parts[0] : parts[1];
-			return vm?.GetType().GetProperty(propName)
-					  ?.GetValue(vm);
-		}
-		//public object ConvertBack(...) => throw new NotImplementedException();
+			var tokens = (parameter as string)?.Split('|');
+			if (tokens?.Length != 2) return null;
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException();
+			var isEditing = value is bool b && b;
+			var propName = isEditing ? tokens[0] : tokens[1];
+			var dc = ConverterHelper.TryGetFrameworkElement()?.DataContext;
+			return dc?.GetType().GetProperty(propName)?.GetValue(dc);
 		}
+
+		public object ConvertBack(object value, Type t, object p, CultureInfo c) =>
+			throw new NotSupportedException();
 	}
 }

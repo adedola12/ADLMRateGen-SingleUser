@@ -12,13 +12,37 @@ namespace ADLMRateGen.ViewModel
 {
     public class MaterialLibraryViewModel : ViewModelBase
     {
-        private readonly JsonDataServices _dataServices;
-        private readonly string _filePath = "materials.json";
-        private readonly string _defaultFilePath = "Data\\defaultMaterials.json";
+		//      private const string JsonPath = "materials.json";
+		//      private const string DefaultJson = @"Data\defaultMaterials.json";
+		//private readonly JsonDataServices _json = new(JsonPath, DefaultJson);
 
-        public ObservableCollection<MaterialModel> MaterialLibrary { get; set; }
-        public ICollectionView MaterialCollectionView { get; set; }
+		/* ---------- data source ---------------------------------------------------------- */
+
+		private const string JsonPath = "materials.json";
+		private const string DefaultJson = @"Data\defaultMaterials.json";
+
+		// generic helper specialises on <MaterialModel>
+		private readonly JsonDataServices<MaterialModel> _json =
+			new(JsonPath, DefaultJson);
+
+		// ───────── collection bound to the grid ─────────
+		public ObservableCollection<MaterialModel> MaterialLibrary { get; }
+			= new();       // ←‑‑ instanced immediately
+
+		public ICollectionView MaterialCollectionView { get; set; }
+
+		public ICommand SearchMaterialCommand { get; }
+		public ICommand ClearDatabaseCommand { get; }
+		public ICommand DeleteMaterialCommand { get; }
+		public ICommand EditMaterialCommand { get; }
+		public ICommand UpdatePricesCommand { get; }
+
+		public event Action<MaterialModel> EditMaterialRequested;
+		public event Action LibraryChanged;
+
 		public ICommand AddNewCommand { get; }
+
+
 		public ObservableCollection<string> MaterialCategory { get; set; }
         private string _selectedMaterialCategory;
         public string SelectedMaterialCategory
@@ -51,23 +75,26 @@ namespace ADLMRateGen.ViewModel
 			}
 		}
 
+		public void RequestEdit(MaterialModel toEdit) => EditMaterialRequested?.Invoke(toEdit);
 
-		public ICommand SearchMaterialCommand { get; }
-        public ICommand ClearDatabaseCommand { get; }
-        public ICommand DeleteMaterialCommand { get; }
-        public ICommand EditMaterialCommand { get; }
-        public ICommand UpdatePricesCommand { get; }
-
-        // Raised when the user clicks Edit on an item.
-        public event Action<MaterialModel>? EditMaterialRequested;
-        public event Action LibraryChanged;
-
-        public MaterialLibraryViewModel()
+		public MaterialLibraryViewModel()
         {
-            //_dataServices = new JsonDataServices("materials.json", "Data\\defaultMaterials.json");
-            _dataServices = new JsonDataServices(_filePath, _defaultFilePath);
+			//_dataServices = new JsonDataServices("materials.json", "Data\\defaultMaterials.json");
+			//_json = new JsonDataServices(JsonPath, DefaultJson);
 
-			AddNewCommand = new RelayCommand(_ => OpenNewMaterialDialog());
+			//AddNewCommand = new RelayCommand(_ => OpenNewMaterialDialog());
+
+			//var stored = _json.LoadData<ObservableCollection<MaterialModel>>() ??
+			//			new ObservableCollection<MaterialModel>();
+			foreach (var m in _json.LoadData()) MaterialLibrary.Add(m);
+
+			MaterialCollectionView = CollectionViewSource.GetDefaultView(MaterialLibrary);
+			ApplyFilter();
+
+			MaterialPriceViewModel.MaterialSaved += AddOrUpdateMaterial;
+
+
+			MaterialCollectionView.Filter = _ => true;
 
 			bool useMongo = false; //true to upload to DB
             if (useMongo)
@@ -93,39 +120,39 @@ namespace ADLMRateGen.ViewModel
 				}
 			} else
             {
-				MaterialLibraryService.Initialize(new MaterialJsonDataSource(_filePath));
+				MaterialLibraryService.Initialize(new MaterialJsonDataSource(JsonPath));
 			}
-
 
 			MaterialLibrary = new ObservableCollection<MaterialModel>(MaterialLibraryService.GetAllMaterials());
 			MaterialCollectionView = CollectionViewSource.GetDefaultView(MaterialLibrary);
 
 
-            MaterialCategory = new ObservableCollection<string> { "All", "Cement Based Products", "Earthwork And Filling Materials", "Crushed Rock Products", "Terrazzo Products", 
-                "Mild Steel Bar Reinforcement", "High Tensile Steel Bar Reinforcement", "Mesh Reinforcement to B.S. 4483", "Timber - Softwood", "Timber - Hardwood", 
-                "Plywood - White", "Plywood - Brown", "Particle Board", "Plywood - Veneer", "Timber Others", "Glasswork - Louver Blade-Plain", "Glasswork - Louver Blade-Obscured", 
-                "Glasswork - Nacco Louver Carrier", "Glasswork - Sheet Glass 3mm", "Glasswork - Sheet Glass 4mm", "Glasswork - Sheet Glass 5mm", "Finishes - Ceramic Floor Tiles", 
-                "Finishes - Ceramic Wall Tiles", "Bituminous Products", "Fuels", "Structural Steel Plates", "Structural Steel", "Asa Ceilings Limited - Ceiling Boards", 
-                "Luxalon Ceilings", "Efisol Mineral Ceilings", "Nigerite Limited - Ceilings", "PVC Floor Tiles", "Longspan Aluminium Roofing Sheet", "Nigerite Products - SLW Asbestos",
-                "Nigerite Products - Super Seven Asbestos", "Nails And Screws And Other Accessories", "Roof Felting", "Zinc Roofing Sheet", 
-                "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)", "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)", 
-                "Aluminium Doors And Windows - Bullet Proof Glazing", "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)", 
-                "Aluminium Doors And Windows - Entrance Doors (Bullet Proof)", "Aluminium Doors And Windows - Entrance Doors (Georgian Wired)", 
-                "Aluminium Doors And Windows - Entrance Doors (Georgian Wired, Mylar)", "Aluminium Doors And Windows - Composite (Clear Glazing)", 
-                "Aluminium Doors And Windows - Steel Doors (Vandal Proof)", "Aluminium Doors And Windows - Steel Doors (Bullet Proof)", "Insulated Wall Panels", "Curtain Wall", 
-                "Timber Doors", "Casement Window", "Paints - Emulsion", "Paints - Gloss Oil", "Paints - Chlorinated", "Paints - Peacock", "Paints - Road", "Paints - Wood", 
-                "AMERON PAINTS", "AMERON PAINTS - Finish Coating", "AMERON PAINTS - Anti-Fouling", "AMERON PAINTS - Degreaser", "AMERON PAINTS - Etching", "AMERON PAINTS - Cleaners", 
-                "AMERON PAINTS - Thinners", "AMERON PAINTS - Starter Liquid", "AMERON PAINTS - Solvent Free Epoxy", "CARBOLINE PAINTS", "PORTLAND PAINTS"
-            };
+            
             _selectedMaterialCategory = "All";
 
+            EditMaterialCommand = new DelegateCommand(o => EditMaterial(o));
+            DeleteMaterialCommand = new DelegateCommand(o => DeleteMaterial(o));
             SearchMaterialCommand = new DelegateCommand(o => ApplyFilter());
             ClearDatabaseCommand = new DelegateCommand(o => ClearDatabase());
-            DeleteMaterialCommand = new DelegateCommand(o => DeleteMaterial(o));
-            EditMaterialCommand = new DelegateCommand(o => EditMaterial(o));
-
             UpdatePricesCommand = new DelegateCommand(_ => UpdatePricesFromMongo());
-        }
+
+			MaterialCategory = new ObservableCollection<string> { "All", "Cement Based Products", "Earthwork And Filling Materials", "Crushed Rock Products", "Terrazzo Products",
+				"Mild Steel Bar Reinforcement", "High Tensile Steel Bar Reinforcement", "Mesh Reinforcement to B.S. 4483", "Timber - Softwood", "Timber - Hardwood",
+				"Plywood - White", "Plywood - Brown", "Particle Board", "Plywood - Veneer", "Timber Others", "Glasswork - Louver Blade-Plain", "Glasswork - Louver Blade-Obscured",
+				"Glasswork - Nacco Louver Carrier", "Glasswork - Sheet Glass 3mm", "Glasswork - Sheet Glass 4mm", "Glasswork - Sheet Glass 5mm", "Finishes - Ceramic Floor Tiles",
+				"Finishes - Ceramic Wall Tiles", "Bituminous Products", "Fuels", "Structural Steel Plates", "Structural Steel", "Asa Ceilings Limited - Ceiling Boards",
+				"Luxalon Ceilings", "Efisol Mineral Ceilings", "Nigerite Limited - Ceilings", "PVC Floor Tiles", "Longspan Aluminium Roofing Sheet", "Nigerite Products - SLW Asbestos",
+				"Nigerite Products - Super Seven Asbestos", "Nails And Screws And Other Accessories", "Roof Felting", "Zinc Roofing Sheet",
+				"Aluminium Doors And Windows - Natural Anodised (Plain Glazing)", "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)",
+				"Aluminium Doors And Windows - Bullet Proof Glazing", "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)",
+				"Aluminium Doors And Windows - Entrance Doors (Bullet Proof)", "Aluminium Doors And Windows - Entrance Doors (Georgian Wired)",
+				"Aluminium Doors And Windows - Entrance Doors (Georgian Wired, Mylar)", "Aluminium Doors And Windows - Composite (Clear Glazing)",
+				"Aluminium Doors And Windows - Steel Doors (Vandal Proof)", "Aluminium Doors And Windows - Steel Doors (Bullet Proof)", "Insulated Wall Panels", "Curtain Wall",
+				"Timber Doors", "Casement Window", "Paints - Emulsion", "Paints - Gloss Oil", "Paints - Chlorinated", "Paints - Peacock", "Paints - Road", "Paints - Wood",
+				"AMERON PAINTS", "AMERON PAINTS - Finish Coating", "AMERON PAINTS - Anti-Fouling", "AMERON PAINTS - Degreaser", "AMERON PAINTS - Etching", "AMERON PAINTS - Cleaners",
+				"AMERON PAINTS - Thinners", "AMERON PAINTS - Starter Liquid", "AMERON PAINTS - Solvent Free Epoxy", "CARBOLINE PAINTS", "PORTLAND PAINTS"
+			};
+		}
 
 
         private void ApplyFilter()
@@ -156,7 +183,7 @@ namespace ADLMRateGen.ViewModel
         private void ClearDatabase()
         {
             MaterialLibrary.Clear();
-            _dataServices.SaveData(MaterialLibrary);
+            _json.SaveData(MaterialLibrary);
             ApplyFilter();
         }
 
@@ -166,7 +193,7 @@ namespace ADLMRateGen.ViewModel
             {
                 MaterialLibrary.Remove(material);
                 ReassignSerialNumbers();
-                _dataServices.SaveData(MaterialLibrary);
+                _json.SaveData(MaterialLibrary);
                 LibraryChanged?.Invoke();
                 ApplyFilter();
             }
@@ -190,22 +217,57 @@ namespace ADLMRateGen.ViewModel
             }
         }
 
-        // Called when a new material is added or an update is made.
-        public void AddOrUpdateMaterial(MaterialModel material)
-        {
-            if (material.SerialNumber == 0)
-            {
-                int newSerial = MaterialLibrary.Count > 0 ? MaterialLibrary[^1].SerialNumber + 1 : 1;
-                material.SerialNumber = newSerial;
-                MaterialLibrary.Add(material);
-            }
-            // For updates, the item is already in the collection (its properties have been updated).
-            _dataServices.SaveData(MaterialLibrary);
-            LibraryChanged?.Invoke();
-            ApplyFilter();
-        }
 
-        private void UpdatePricesFromMongo()
+
+		/// <summary>Add new OR update existing material.</summary>
+		//public void AddOrUpdateMaterial(MaterialModel mat)
+		//{
+		//	if (mat.SerialNumber == 0)
+		//		mat.SerialNumber = MaterialLibrary.Count == 0
+		//						 ? 1
+		//						 : MaterialLibrary.Max(m => m.SerialNumber) + 1;
+
+		//	var existing = MaterialLibrary.FirstOrDefault(m => m.SerialNumber == mat.SerialNumber);
+		//	if (existing == null)
+		//		MaterialLibrary.Add(mat);
+		//	else
+		//	{
+		//		var idx = MaterialLibrary.IndexOf(existing);
+		//		MaterialLibrary[idx] = mat;                       // refresh row
+		//	}
+
+		//	PersistAndRefresh();
+		//}
+
+		public void AddOrUpdateMaterial(MaterialModel mat)
+		{
+			var existing = MaterialLibrary.FirstOrDefault(m => m.SerialNumber == mat.SerialNumber);
+
+			if (existing == null)
+			{
+				mat.SerialNumber = MaterialLibrary.Count == 0
+					? 1
+					: MaterialLibrary.Max(m => m.SerialNumber) + 1;
+				MaterialLibrary.Add(mat);
+			}
+			else
+			{
+				existing.MaterialPrice = mat.MaterialPrice;   // price is the only editable field
+			}
+
+			Persist();
+		}
+
+
+
+		private void Persist()
+		{
+			_json.SaveData(MaterialLibrary);   // 💾
+			LibraryChanged?.Invoke();
+			ApplyFilter();
+		}
+
+		private void UpdatePricesFromMongo()
         {
 			// Prompt the user for confirmation.
 			var result = MessageBox.Show(
@@ -238,7 +300,7 @@ namespace ADLMRateGen.ViewModel
 				}
 			}
 
-            _dataServices.SaveData(MaterialLibrary);
+            _json.SaveData(MaterialLibrary);
 
 			LibraryChanged?.Invoke();
 			ApplyFilter();

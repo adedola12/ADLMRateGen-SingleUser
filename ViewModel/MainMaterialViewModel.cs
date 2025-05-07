@@ -13,7 +13,7 @@ namespace ADLMRateGen.ViewModel
             LibraryViewModel = libraryViewModel;
 
             // When a new material is saved or updated, update the library.
-            PriceViewModel.MaterialSaved += OnMaterialSaved;
+            MaterialPriceViewModel.MaterialSaved += OnMaterialSaved;
             // When an edit is requested from the library, load that item into the price view.
             LibraryViewModel.EditMaterialRequested += OnEditMaterialRequested;
         }

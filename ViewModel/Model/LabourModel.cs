@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -80,7 +81,10 @@ namespace ADLMRateGen.ViewModel.Model
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string propName) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
-    }
+		//protected void OnPropertyChanged(string propName) =>
+		//    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+
+		private void OnPropertyChanged([CallerMemberName] string p = null) =>
+	   PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(p));
+	}
 }

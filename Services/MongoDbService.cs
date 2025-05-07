@@ -16,6 +16,12 @@ namespace ADLMRateGen.Services
 			_userCollection = database.GetCollection<UserModel>(collectionName);
 		}
 
+		// ADD to your MongoDbService (or whatever class already wraps the user collection)
+		// add right next to GetUserByIdAsync
+		public UserModel? GetUserById(string id) =>
+				_userCollection.Find(u => u.Id == id).FirstOrDefault();
+
+
 		public async Task<UserModel> GetUserAsync(string username, string password)
 		{
 			var filter = Builders<UserModel>.Filter.Eq(u => u.Username, username) &
@@ -64,5 +70,8 @@ namespace ADLMRateGen.Services
 
 			await _userCollection.UpdateOneAsync(filter, update);
 		}
+
+		
+
 	}
 }

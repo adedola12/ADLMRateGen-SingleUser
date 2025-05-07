@@ -13,13 +13,21 @@ namespace ADLMRateGen.ViewModel
 {
 	public class LabourLibraryViewModel : ViewModelBase
 	{
-		private readonly JsonDataServices _dataServices;
+		//private readonly JsonDataServices _dataServices;
 		private const string FilePath = "labour.json";
-		private const string DefaultFilePath = "Data\\defaultLabours.json";
+		private const string DefaultFile = @"Data\defaultLabours.json";
+
+		private readonly JsonDataServices<LabourModel> _json =
+	new(FilePath, DefaultFile);
+
 
 		public ObservableCollection<LabourModel> LabourLibrary { get; }
 		public ICollectionView LabourCollectionView { get; }
+
+
 		public ObservableCollection<string> LabourCategory { get; }
+
+
 
 		private string _selectedLabourCategory = "All";
 		public string SelectedLabourCategory
@@ -36,6 +44,7 @@ namespace ADLMRateGen.ViewModel
 			}
 		}
 
+
 		private string _searchTerm = string.Empty;
 		public string SearchTerm
 		{
@@ -51,6 +60,8 @@ namespace ADLMRateGen.ViewModel
 			}
 		}
 
+
+
 		public ICommand SearchLabourCommand { get; }
 		public ICommand ClearDatabaseCommand { get; }
 		public ICommand DeleteLabourCommand { get; }
@@ -63,13 +74,17 @@ namespace ADLMRateGen.ViewModel
 
 		public LabourLibraryViewModel()
 		{
-			_dataServices = new JsonDataServices(FilePath, DefaultFilePath);
 
-			// initialize data source (JSON or Mongo)...
-			LabourLibraryService.Initialize(new LabourJsonDataSource(FilePath));
+			LabourLibrary = new ObservableCollection<LabourModel>(_json.LoadData());
+			ReassignSerialNumbers();   // keep S/N tidy
 
-			LabourLibrary = new ObservableCollection<LabourModel>(LabourLibraryService.GetAllLabours());
+			/* 2. CollectionView for DataGrid + filter */
 			LabourCollectionView = CollectionViewSource.GetDefaultView(LabourLibrary);
+			LabourCollectionView.Filter = _ => true;
+			ApplyFilter();
+
+
+			//LabourLibrary = new ObservableCollection<LabourModel>(LabourLibraryService.GetAllLabours());
 			LabourCategory = new ObservableCollection<string> { "All", "Labour", "Plant", "Small Plant" };
 
 			SearchLabourCommand = new DelegateCommand(_ => ApplyFilter());
@@ -79,22 +94,42 @@ namespace ADLMRateGen.ViewModel
 			UpdatePricesCommand = new DelegateCommand(_ => UpdatePricesFromMongo());
 		}
 
+		//private void ApplyFilter()
+		//{
+		//	LabourCollectionView.Filter = o =>
+		//	{
+		//		if (o is LabourModel labour)
+		//		{
+		//			bool matchesCategory = SelectedLabourCategory == "All"
+		//				|| string.IsNullOrEmpty(SelectedLabourCategory)
+		//				|| labour.LabourCategory == SelectedLabourCategory;
+
+		//			bool matchesText = string.IsNullOrEmpty(SearchTerm)
+		//				|| (labour.LabourName?.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
+
+		//			return matchesCategory && matchesText;
+		//		}
+		//		return false;
+		//	};
+		//	LabourCollectionView.Refresh();
+		//}
+
+		/* ───────── filtering helper ───────── */
 		private void ApplyFilter()
 		{
 			LabourCollectionView.Filter = o =>
 			{
-				if (o is LabourModel labour)
-				{
-					bool matchesCategory = SelectedLabourCategory == "All"
-						|| string.IsNullOrEmpty(SelectedLabourCategory)
-						|| labour.LabourCategory == SelectedLabourCategory;
+				if (o is not LabourModel lb) return false;
 
-					bool matchesText = string.IsNullOrEmpty(SearchTerm)
-						|| (labour.LabourName?.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
+				var okCategory = SelectedLabourCategory == "All" ||
+								 string.IsNullOrEmpty(SelectedLabourCategory) ||
+								 lb.LabourCategory == SelectedLabourCategory;
 
-					return matchesCategory && matchesText;
-				}
-				return false;
+				var okSearch = string.IsNullOrWhiteSpace(SearchTerm) ||
+								 (lb.LabourName?.IndexOf(SearchTerm,
+									StringComparison.OrdinalIgnoreCase) >= 0);
+
+				return okCategory && okSearch;
 			};
 			LabourCollectionView.Refresh();
 		}
@@ -102,7 +137,7 @@ namespace ADLMRateGen.ViewModel
 		private void ClearDatabase()
 		{
 			LabourLibrary.Clear();
-			_dataServices.SaveData(LabourLibrary);
+			_json.SaveData(LabourLibrary);
 			ApplyFilter();
 		}
 
@@ -112,7 +147,7 @@ namespace ADLMRateGen.ViewModel
 			{
 				LabourLibrary.Remove(labour);
 				ReassignSerialNumbers();
-				_dataServices.SaveData(LabourLibrary);
+				_json.SaveData(LabourLibrary);
 				LibraryChanged?.Invoke();
 				ApplyFilter();
 			}
@@ -130,16 +165,63 @@ namespace ADLMRateGen.ViewModel
 				EditLabourRequested?.Invoke(labour);
 		}
 
-		public void AddOrUpdateLabour(LabourModel labour)
+		//public void AddOrUpdateLabour(LabourModel labour)
+		//{
+		//	if (labour.SerialNumber == 0)
+		//	{
+		//		labour.SerialNumber = LabourLibrary.Count + 1;
+		//		LabourLibrary.Add(labour);
+		//	}
+		//	_dataServices.SaveData(LabourLibrary);
+		//	LibraryChanged?.Invoke();
+		//	ApplyFilter();
+		//}
+		public ObservableCollection<LabourModel> Labours { get; }
+			= new ObservableCollection<LabourModel>();
+
+		//public void AddOrUpdateLabour(LabourModel lab)
+		//{
+		//	if (lab.SerialNumber == 0)
+		//		lab.SerialNumber = Labours.Count == 0
+		//			? 1
+		//			: Labours.Max(l => l.SerialNumber) + 1;
+
+		//	var existing = Labours.FirstOrDefault(l => l.SerialNumber == lab.SerialNumber);
+		//	if (existing == null)
+		//		Labours.Add(lab);
+		//	else
+		//	{
+		//		var idx = Labours.IndexOf(existing);
+		//		Labours[idx] = lab;
+		//	}
+		//}
+
+		/* ───────── CRUD helpers ───────── */
+		public void AddOrUpdateLabour(LabourModel lab)
 		{
-			if (labour.SerialNumber == 0)
+			/* give a new serial if it comes in fresh */
+			if (lab.SerialNumber == 0)
+				lab.SerialNumber = LabourLibrary.Count == 0
+								   ? 1
+								   : LabourLibrary.Max(l => l.SerialNumber) + 1;
+
+			var existing = LabourLibrary.FirstOrDefault(l => l.SerialNumber == lab.SerialNumber);
+
+			if (existing == null)                     // *** ADD ***
 			{
-				labour.SerialNumber = LabourLibrary.Count + 1;
-				LabourLibrary.Add(labour);
+				LabourLibrary.Add(lab);
 			}
-			_dataServices.SaveData(LabourLibrary);
+			else                                      // *** UPDATE ***
+			{
+				existing.LabourUnit = lab.LabourUnit;
+				existing.LabourPrice = lab.LabourPrice;
+				existing.LabourCategory = lab.LabourCategory;
+			}
+
+			/* persist + refresh the grid */
+			_json.SaveData(LabourLibrary);
+			LabourCollectionView.Refresh();
 			LibraryChanged?.Invoke();
-			ApplyFilter();
 		}
 
 		private void UpdatePricesFromMongo()
@@ -167,7 +249,7 @@ namespace ADLMRateGen.ViewModel
 					local.LabourPrice = found.LabourPrice;
 			}
 
-			_dataServices.SaveData(LabourLibrary);
+			_json.SaveData(LabourLibrary);
 			LibraryChanged?.Invoke();
 			ApplyFilter();
 			MessageBox.Show("Updated from server.");

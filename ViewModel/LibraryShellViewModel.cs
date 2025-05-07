@@ -13,10 +13,15 @@ namespace ADLMRateGen.ViewModel
 		public MaterialLibraryViewModel MaterialLibraryViewModel { get; }
 		public LabourLibraryViewModel LabourLibraryViewModel { get; }
 
-		public ICommand AddCommand { get; }
+		
+
+		// events bubble up to MainWindow so it can show the popup
 		public event Action RequestAddMaterial;
+		public event Action RequestAddLabour;
 		public event Action<MaterialModel> RequestEditMaterial;
-		// …and similarly for labour if you like…
+		public event Action<LabourModel> RequestEditLabour;
+		public ICommand AddCommand { get; }
+	
 
 		private readonly UserControl _materialView = new MaterialLibraryView();
 		private readonly UserControl _labourView = new LabourLibraryView();
@@ -81,12 +86,12 @@ namespace ADLMRateGen.ViewModel
 			AddCommand = new RelayCommand(_ =>
 			{
 				if (IsMaterialTab) RequestAddMaterial?.Invoke();
-				else                 /* RequestAddLabour?.Invoke() */;
+				else RequestAddLabour?.Invoke();     // ← **fixed**
 			});
 
-			// bubble up the library’s “edit” request
-			MaterialLibraryViewModel.EditMaterialRequested += m =>
-				RequestEditMaterial?.Invoke(m);
+			MaterialLibraryViewModel.EditMaterialRequested += m => RequestEditMaterial?.Invoke(m);
+			LabourLibraryViewModel.EditLabourRequested += l => RequestEditLabour?.Invoke(l);   // ← added
+
 		}
 	}
 }
