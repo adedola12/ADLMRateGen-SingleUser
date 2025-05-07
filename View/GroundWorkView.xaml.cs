@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ADLMRateGen.View;            // ← class PopupHost is here
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ADLMRateGen.ViewModel.Groundwork;
 
 namespace ADLMRateGen.View
@@ -33,6 +22,10 @@ namespace ADLMRateGen.View
 
 		/* ───────────────── helpers ───────────────── */
 
+
+		private PopupHost GlobalPopup =>
+			((MainWindow)Application.Current.MainWindow).PopupHost;
+
 		private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 			if (e.OldValue is INotifyPropertyChanged oldVm)
@@ -48,16 +41,17 @@ namespace ADLMRateGen.View
 		/// </summary>
 		private void Vm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName != nameof(GroundWorkViewModel.SelectedDetail)) return;
+			if (e.PropertyName != nameof(ViewModel.Groundwork.GroundWorkViewModel.SelectedDetail))
+				return;
 
 			Dispatcher.Invoke(() =>
 			{
-				var vm = (GroundWorkViewModel)sender!;
+				var vm = (ViewModel.Groundwork.GroundWorkViewModel)sender!;
 
 				if (vm.SelectedDetail is UserControl detailView)
-					Popup.Show(detailView);   // display in the overlay
+					GlobalPopup.Show(detailView);   // ⬅ show in window‑level host
 				else
-					Popup.Hide();             // nothing selected – hide
+					GlobalPopup.Hide();             // ⬅ hide when null
 			});
 		}
 	}

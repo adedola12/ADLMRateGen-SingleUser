@@ -369,7 +369,7 @@
 
                     </Grid.RowDefinitions>
                     <!-- ② Toolbar -->
-                   
+
                     <Grid Grid.Row="0"
                           Margin="0,12,0,24">
 
@@ -393,17 +393,17 @@
                             <!-- textbox -->
                             <TextBox Style="{StaticResource HollowBox}"
                                      Background="#F5F5F5"
-                                     Padding="14,0,34,0"    
-                                Text="{Binding OverheadPercent,
-                                UpdateSourceTrigger=PropertyChanged}"/>
+                                     Padding="14,0,34,0"
+                                     Text="{Binding OverheadPercent,
+                                UpdateSourceTrigger=PropertyChanged}" />
 
-                                <!-- % sign -->
-                                <TextBlock Text="%"
-                                           FontWeight="SemiBold"
-                                           Foreground="#5F6D7E"
-                                           HorizontalAlignment="Right"
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,12,0" />
+                            <!-- % sign -->
+                            <TextBlock Text="%"
+                                       FontWeight="SemiBold"
+                                       Foreground="#5F6D7E"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,12,0" />
                         </Grid>
 
 
@@ -446,12 +446,10 @@
                         <Button Grid.Column="6"
                                 Content="Filter ⌄"
                                 Command="{Binding FilterCommand}"
-                                Style="{StaticResource RectButton}"
-                                 />
+                                Style="{StaticResource RectButton}" />
 
                         <Button Grid.Column="8"
                                 Content="Sort by ⌄"
-
                                 Style="{StaticResource RectButton}"
                                 Command="{Binding SortCommand}" />
 
@@ -462,8 +460,8 @@
                     <DataGrid Grid.Row="1"
                               ItemsSource="{Binding GroundworkItems}"
                               Style="{StaticResource DataGridStyle}">
-                        
-                        
+
+
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="S/N"
                                                 Binding="{Binding ItemNo}"
@@ -485,9 +483,9 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            
-                            
-                            
+
+
+
                             <DataGridTextColumn Header="Unit"
                                                 Binding="{Binding Unit}"
                                                 Width="90" />
@@ -510,17 +508,20 @@
 
             <!-- ③ Popup overlay (initially Collapsed) -->
             <!-- ③ Popup overlay – covers both rows but doesn’t affect their height -->
-            <local:PopupHost  x:Name="Popup"
-                              Grid.Row="1"
-                              Grid.RowSpan="2"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Panel.ZIndex="100" />
+            <!-- remove Grid.Row="1", span both rows, pull up with a negative margin -->
+            <!--<local:PopupHost x:Name="Popup"
+                             Grid.Row="0"
+                             Grid.RowSpan="2"
+                             VerticalAlignment="Top"
+                             Margin="0,-240,0,0"
+                             HorizontalAlignment="Stretch"
+                             Panel.ZIndex="100" />-->
+
 
 
 
         </Grid>
-        
-        
+
+
     </Border>
 </UserControl>
