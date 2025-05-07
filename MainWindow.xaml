@@ -822,8 +822,8 @@
                                  MinHeight="48"
                                  BorderThickness="0"
                                  Cursor="Hand"
-                                 Command="{Binding SelectedCustomRateViewCommand}"
-                                 helpers:ButtonHelper.IsActive="{Binding IsCustomRateInputActive}"
+                                 Command="{Binding SelectedCustomRateInputViewCommand}"
+                                
                                  Margin="0,4">
 
                             <!-- style placed locally for clarity; move to Resources if you prefer -->
