@@ -19,6 +19,9 @@
             <!-- ••• value-converters you were using ••• -->
             <conv:BoolToVis        x:Key="BoolVis" />
             <conv:InverseBoolToVis x:Key="InvBoolVis" />
+            <conv:CurrencyDisplayConverter x:Key="CurrencyFmt" />
+            <conv:CurrencyDisplayConverter x:Key="MoneyConv" />
+
 
             <!--────────  NEW LOCAL STYLES  ────────-->
 

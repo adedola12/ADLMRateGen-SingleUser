@@ -5,6 +5,7 @@
              xmlns:conv="clr-namespace:ADLMRateGen.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:services="clr-namespace:ADLMRateGen.Services"
              mc:Ignorable="d"
              Height="64">
 
@@ -148,8 +149,7 @@
                 <Popup IsOpen="{Binding Suggestions.Count,
                         Converter={StaticResource CountToBool},
                         Mode=OneWay}"          
-                    PlacementTarget="{Binding ElementName=SearchBox}"
-       StaysOpen="False">
+                    PlacementTarget="{Binding ElementName=SearchBox}" StaysOpen="False">
                     <Border Background="White"
                             BorderBrush="#C7CED9"
                             BorderThickness="1"
@@ -191,17 +191,15 @@
                     CornerRadius="6"
                     Padding="8,4"
                     Margin="0,0,16,0">
-                <ComboBox Width="80"
-                          SelectedIndex="0"
-                          BorderThickness="0"
-                          Background="Transparent"
-                          FontFamily="Poppins"
-                          FontSize="12"
-                          Foreground="{StaticResource Navy}">
-                    <ComboBoxItem Content="🇳🇬 NGN" />
-                    <ComboBoxItem Content="🇺🇸 USD" />
-                    <ComboBoxItem Content="€ EUR" />
-                </ComboBox>
+                <!-- header.xaml  only the ComboBox changed -->
+                <ComboBox  Width="80"
+                           ItemsSource="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Supported}"
+                           SelectedItem="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Selected}"
+                           BorderThickness="0"
+                           Background="Transparent"
+                           FontFamily="Poppins"
+                           FontSize="12" />
+
             </Border>
 
             <!-- icons -->

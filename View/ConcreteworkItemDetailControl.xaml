@@ -172,42 +172,17 @@
                                             Width="100" />
 
                         <DataGridTextColumn Header="Unit Price"
-                                            Binding="{Binding UnitPrice, StringFormat=N2}"
+                                            Binding="{Binding UnitPrice, 
+                            Converter={StaticResource MoneyConv}, StringFormat=N2}"
                                             Width="120" />
 
                         <DataGridTextColumn Header="Total Cost"
-                                            Binding="{Binding TotalPrice, StringFormat=N2}"
+                                            Binding="{Binding TotalPrice,  Converter={StaticResource MoneyConv}, StringFormat=N2}"
                                             Width="120" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
         </Border>
 
-
-        <!-- DataGrid: Display breakdown lines -->
-        <!--
-        <DataGrid Grid.Row="1" ItemsSource="{Binding ConcreteBreakdownLine}" 
-               AutoGenerateColumns="False" CanUserAddRows="False">
-            <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
-                    <Style.Triggers>
-                        -->
-        <!-- If IsTotalLine is true, make the row bold -->
-        <!--
-                        <DataTrigger Binding="{Binding IsTotalLine}" Value="True">
-                            <Setter Property="FontWeight" Value="Bold"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.RowStyle>
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Component" Binding="{Binding ComponentName}" 
-                                 IsReadOnly="True" Width="*" />
-                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="Auto"/>
-                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="Auto"/>
-                <DataGridTextColumn Header="Unit Price" Binding="{Binding UnitPrice, StringFormat={}{0:N2}}" Width="Auto"/>
-                <DataGridTextColumn Header="Total Cost" Binding="{Binding TotalPrice, StringFormat={}{0:N2}}" Width="Auto"/>
-            </DataGrid.Columns>
-        </DataGrid>-->
     </Grid>
 </UserControl>

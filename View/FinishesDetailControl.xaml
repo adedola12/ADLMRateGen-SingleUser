@@ -172,11 +172,11 @@
                                             Width="100" />
 
                         <DataGridTextColumn Header="Unit Price"
-                                            Binding="{Binding UnitPrice, StringFormat=N2}"
+                                            Binding="{Binding UnitPrice,  Converter={StaticResource MoneyConv}, StringFormat=N2}"
                                             Width="120" />
 
                         <DataGridTextColumn Header="Total Cost"
-                                            Binding="{Binding TotalPrice, StringFormat=N2}"
+                                            Binding="{Binding TotalPrice,  Converter={StaticResource MoneyConv}, StringFormat=N2}"
                                             Width="120" />
                     </DataGrid.Columns>
                 </DataGrid>

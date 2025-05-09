@@ -91,6 +91,14 @@ namespace ADLMRateGen.ViewModel
 		public event Action<LabourModel> EditLabourRequested;
 		public event Action LibraryChanged;
 
+		
+
+		/* --------  convert NGN → currently‑selected currency  -------- */
+		public double PriceNgnToCurrent(double baseNgn) =>
+			baseNgn * CurrencyService.Instance.Rate;
+
+
+
 		public LabourLibraryViewModel()
 		{
 
@@ -111,27 +119,16 @@ namespace ADLMRateGen.ViewModel
 			DeleteLabourCommand = new DelegateCommand(o => DeleteLabour(o));
 			EditLabourCommand = new DelegateCommand(o => EditLabour(o));
 			UpdatePricesCommand = new DelegateCommand(_ => UpdatePricesFromMongo());
+
+			/* when currency changes → redraw the grid */
+			CurrencyService.Instance.PropertyChanged += (_, e) =>
+			{
+				if (e.PropertyName == nameof(CurrencyService.Rate))
+					LabourCollectionView.Refresh();
+			};
 		}
 
-		//private void ApplyFilter()
-		//{
-		//	LabourCollectionView.Filter = o =>
-		//	{
-		//		if (o is LabourModel labour)
-		//		{
-		//			bool matchesCategory = SelectedLabourCategory == "All"
-		//				|| string.IsNullOrEmpty(SelectedLabourCategory)
-		//				|| labour.LabourCategory == SelectedLabourCategory;
 
-		//			bool matchesText = string.IsNullOrEmpty(SearchTerm)
-		//				|| (labour.LabourName?.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
-
-		//			return matchesCategory && matchesText;
-		//		}
-		//		return false;
-		//	};
-		//	LabourCollectionView.Refresh();
-		//}
 
 		/* ───────── filtering helper ───────── */
 		private void ApplyFilter()
@@ -184,36 +181,9 @@ namespace ADLMRateGen.ViewModel
 				EditLabourRequested?.Invoke(labour);
 		}
 
-		//public void AddOrUpdateLabour(LabourModel labour)
-		//{
-		//	if (labour.SerialNumber == 0)
-		//	{
-		//		labour.SerialNumber = LabourLibrary.Count + 1;
-		//		LabourLibrary.Add(labour);
-		//	}
-		//	_dataServices.SaveData(LabourLibrary);
-		//	LibraryChanged?.Invoke();
-		//	ApplyFilter();
-		//}
+
 		public ObservableCollection<LabourModel> Labours { get; }
 			= new ObservableCollection<LabourModel>();
-
-		//public void AddOrUpdateLabour(LabourModel lab)
-		//{
-		//	if (lab.SerialNumber == 0)
-		//		lab.SerialNumber = Labours.Count == 0
-		//			? 1
-		//			: Labours.Max(l => l.SerialNumber) + 1;
-
-		//	var existing = Labours.FirstOrDefault(l => l.SerialNumber == lab.SerialNumber);
-		//	if (existing == null)
-		//		Labours.Add(lab);
-		//	else
-		//	{
-		//		var idx = Labours.IndexOf(existing);
-		//		Labours[idx] = lab;
-		//	}
-		//}
 
 		/* ───────── CRUD helpers ───────── */
 		public void AddOrUpdateLabour(LabourModel lab)

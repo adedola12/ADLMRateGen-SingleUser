@@ -40,6 +40,24 @@ namespace ADLMRateGen.ViewModel
 		public event Action<MaterialModel> EditMaterialRequested;
 		public event Action LibraryChanged;
 
+		public double PriceNgnToCurrent(double baseNgn) =>
+		baseNgn * CurrencyService.Instance.Rate;
+
+
+		/* --------  price lookup the rest of the app can call  -------- */
+		public double GetMaterialPrice(string name)
+		{
+			var mat = MaterialLibraryService
+						.GetAllMaterials()
+						.FirstOrDefault(m => m.MaterialName == name);
+
+			return mat == null
+	? 0
+	: (double)mat.MaterialPrice * CurrencyService.Instance.Rate;
+
+		}
+
+
 		public ICommand AddNewCommand { get; }
 
 
@@ -79,13 +97,7 @@ namespace ADLMRateGen.ViewModel
 
 		public MaterialLibraryViewModel()
         {
-			//_dataServices = new JsonDataServices("materials.json", "Data\\defaultMaterials.json");
-			//_json = new JsonDataServices(JsonPath, DefaultJson);
 
-			//AddNewCommand = new RelayCommand(_ => OpenNewMaterialDialog());
-
-			//var stored = _json.LoadData<ObservableCollection<MaterialModel>>() ??
-			//			new ObservableCollection<MaterialModel>();
 			foreach (var m in _json.LoadData()) MaterialLibrary.Add(m);
 
 			MaterialCollectionView = CollectionViewSource.GetDefaultView(MaterialLibrary);
@@ -151,6 +163,13 @@ namespace ADLMRateGen.ViewModel
 				"Timber Doors", "Casement Window", "Paints - Emulsion", "Paints - Gloss Oil", "Paints - Chlorinated", "Paints - Peacock", "Paints - Road", "Paints - Wood",
 				"AMERON PAINTS", "AMERON PAINTS - Finish Coating", "AMERON PAINTS - Anti-Fouling", "AMERON PAINTS - Degreaser", "AMERON PAINTS - Etching", "AMERON PAINTS - Cleaners",
 				"AMERON PAINTS - Thinners", "AMERON PAINTS - Starter Liquid", "AMERON PAINTS - Solvent Free Epoxy", "CARBOLINE PAINTS", "PORTLAND PAINTS"
+			};
+
+			/* when currency changes → redraw the grid */
+			CurrencyService.Instance.PropertyChanged += (_, e) =>
+			{
+				if (e.PropertyName == nameof(CurrencyService.Rate))
+					MaterialCollectionView.Refresh();
 			};
 		}
 
@@ -219,25 +238,6 @@ namespace ADLMRateGen.ViewModel
 
 
 
-		/// <summary>Add new OR update existing material.</summary>
-		//public void AddOrUpdateMaterial(MaterialModel mat)
-		//{
-		//	if (mat.SerialNumber == 0)
-		//		mat.SerialNumber = MaterialLibrary.Count == 0
-		//						 ? 1
-		//						 : MaterialLibrary.Max(m => m.SerialNumber) + 1;
-
-		//	var existing = MaterialLibrary.FirstOrDefault(m => m.SerialNumber == mat.SerialNumber);
-		//	if (existing == null)
-		//		MaterialLibrary.Add(mat);
-		//	else
-		//	{
-		//		var idx = MaterialLibrary.IndexOf(existing);
-		//		MaterialLibrary[idx] = mat;                       // refresh row
-		//	}
-
-		//	PersistAndRefresh();
-		//}
 
 		public void AddOrUpdateMaterial(MaterialModel mat)
 		{

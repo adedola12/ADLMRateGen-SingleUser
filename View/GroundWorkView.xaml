@@ -496,37 +496,23 @@
                                                 Binding="{Binding Unit}"
                                                 Width="90" />
                             <DataGridTextColumn Header="Net Cost"
-                                                Binding="{Binding NetCost,     StringFormat=N2}"
+                                                Binding="{Binding NetCost,   Converter={StaticResource MoneyConv},   StringFormat=N2}"
                                                 Width="110" />
                             <DataGridTextColumn Header="Profit"
-                                                Binding="{Binding ProfitValue, StringFormat=N2}"
+                                                Binding="{Binding ProfitValue, Converter={StaticResource MoneyConv}, StringFormat=N2}"
                                                 Width="110" />
                             <DataGridTextColumn Header="Overhead"
-                                                Binding="{Binding OverheadValue,StringFormat=N2}"
+                                                Binding="{Binding OverheadValue, Converter={StaticResource MoneyConv},StringFormat=N2}"
                                                 Width="110" />
                             <DataGridTextColumn Header="Total Cost"
-                                                Binding="{Binding TotalCost,   StringFormat=N2}"
+                                                Binding="{Binding TotalCost,  Converter={StaticResource MoneyConv},  StringFormat=N2}"
                                                 Width="120" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    
-                    
+
+
                 </Grid>
             </Border>
-
-            <!-- ③ Popup overlay (initially Collapsed) -->
-            <!-- ③ Popup overlay – covers both rows but doesn’t affect their height -->
-            <!-- remove Grid.Row="1", span both rows, pull up with a negative margin -->
-            <!--<local:PopupHost x:Name="Popup"
-                             Grid.Row="0"
-                             Grid.RowSpan="2"
-                             VerticalAlignment="Top"
-                             Margin="0,-240,0,0"
-                             HorizontalAlignment="Stretch"
-                             Panel.ZIndex="100" />-->
-
-
-
 
         </Grid>
 

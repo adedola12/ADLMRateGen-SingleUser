@@ -450,8 +450,10 @@
                                         Binding="{Binding LabourUnit}"
                                         Width="120" />
 
-                    <DataGridTextColumn Header="Price (NGN)"
-                                        Binding="{Binding LabourPrice, StringFormat=N0}"
+                    <DataGridTextColumn Header="Price"
+                                        Binding="{Binding DisplayPrice, Converter={StaticResource MoneyConv},
+                                      Mode=OneWay,
+                                      StringFormat={}{0:N2}}"
                                         Width="100">
                         <DataGridTextColumn.CellStyle>
                             <Style TargetType="DataGridCell">

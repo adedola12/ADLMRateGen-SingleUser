@@ -455,8 +455,10 @@
                                                 Binding="{Binding ProfitPercent}"
                                                 Width="110" />
                             <DataGridTextColumn Header="Grand Total"
-                                                Binding="{Binding GrandTotal, StringFormat=N2}"
-                                                Width="110" />
+                                                Width="140"
+                                                Binding="{Binding GrandTotal,
+                                      Converter={StaticResource MoneyConv}}" />
+
                             <DataGridTextColumn Header="Created Date"
                                                 Binding="{Binding CreatedDate}"
                                                 Width="110" />

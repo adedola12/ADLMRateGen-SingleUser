@@ -464,7 +464,7 @@
                                         Width="120" />
 
                     <DataGridTextColumn Header="Price (NGN)"
-                                        Binding="{Binding MaterialPrice, StringFormat=N0}"
+                                        Binding="{Binding MaterialPrice, Converter={StaticResource MoneyConv},Mode=OneWay, StringFormat=N0}"
                                         Width="100">
                         <DataGridTextColumn.CellStyle>
                             <Style TargetType="DataGridCell">

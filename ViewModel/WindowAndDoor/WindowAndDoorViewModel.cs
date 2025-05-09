@@ -4,6 +4,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
+using ADLMRateGen.Services;
 using ADLMRateGen.View;
 using ADLMRateGen.ViewModel.CustomRate;
 using ADLMRateGen.ViewModel.Groundwork;
@@ -106,6 +107,12 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
 			SortCommand = new DelegateCommand(_ => CycleSort());
 
 			AddCustomRateCommand = new DelegateCommand(_ => OpenCustomRateEntry());
+
+			CurrencyService.Instance.PropertyChanged += (_, e) =>
+			{
+				if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
+					RecomputeAll();                 // already clears & rebuilds everything
+			};
 		}
 
 		#region Function Method

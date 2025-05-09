@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using ADLMRateGen.Services;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -80,7 +81,10 @@ namespace ADLMRateGen.ViewModel.Model
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+		public decimal DisplayPrice =>
+		decimal.Round(LabourPrice * (decimal)CurrencyService.Instance.Rate, 2);
+
+		public event PropertyChangedEventHandler? PropertyChanged;
 		//protected void OnPropertyChanged(string propName) =>
 		//    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
 

@@ -61,6 +61,14 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
 		public decimal GrandTotal => OverallTotal * (1 + (OverheadPercent + ProfitPercent) / 100);
 
+		private void RecomputeAll()
+		{
+			RaisePropertyChanged(nameof(TotalMaterialCost));
+			RaisePropertyChanged(nameof(TotalLabourCost));
+			RaisePropertyChanged(nameof(OverallTotal));
+			RaisePropertyChanged(nameof(GrandTotal));
+		}
+
 		private decimal _overheadPercent = 10;
 		public decimal OverheadPercent
 		{
@@ -115,9 +123,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			MaterialItems.CollectionChanged += OnMaterialCollectionChanged;
 			LabourItems.CollectionChanged += OnLabourCollectionChanged;
 
-			//AddMaterialItemCommand = new RelayCommand(AddMaterialItem);
-			//AddLabourItemCommand = new RelayCommand(AddLabourItem);
-			//SaveCustomRateCommand = new RelayCommand(SaveCustomRate);
+
 
 			AddMaterialItemCommand = new RelayCommand(
 		_ => AddMaterialItem()
@@ -128,6 +134,12 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			SaveCustomRateCommand = new RelayCommand(
 				_ => SaveCustomRate()
 			);
+
+			CurrencyService.Instance.PropertyChanged += (_, e) =>
+			{
+				if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
+					RecomputeAll();                 // already clears & rebuilds everything
+			};
 
 		}
 		private void OnMaterialCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

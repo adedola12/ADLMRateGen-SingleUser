@@ -1,21 +1,40 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
 using ADLMRateGen.Services;
 
 namespace ADLMRateGen.ViewModel.CustomRate
 {
-	public enum RateItemType
-	{
-		Material,Labour
-	}
+	public enum RateItemType { Material, Labour }
+
+	/// <summary>
+	/// One line inside a Custom‑Rate: keeps prices in NGN internally and
+	/// exposes converted “Display” properties that track
+	/// <see cref="CurrencyService.Rate"/> automatically.
+	/// </summary>
 	public class RateEntryItem : INotifyPropertyChanged
 	{
+		/* ────────── backing fields ────────── */
 		private RateItemType _rateType;
 		private string? _description;
 		private decimal _quantity;
 		private string? _unit;
-		private decimal _unitPrice;
+		private decimal _unitPriceNgn;      // always stored in ₦
+
+		public RateEntryItem()
+		{
+			// when the global rate changes -> refresh the derived props
+			CurrencyService.Instance.PropertyChanged += (_, e) =>
+			{
+				if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
+				{
+					OnPropertyChanged(nameof(DisplayUnitPrice));
+					OnPropertyChanged(nameof(TotalCostDisplay));
+				}
+			};
+		}
+
+		/* ────────── editable fields ────────── */
 
 		public RateItemType RateType
 		{
@@ -26,10 +45,12 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				{
 					_rateType = value;
 					OnPropertyChanged();
+					ResolveUnitPrice();          // re‑query the right library
 				}
 			}
 		}
-		public string Description
+
+		public string? Description
 		{
 			get => _description;
 			set
@@ -37,19 +58,12 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				if (_description != value)
 				{
 					_description = value;
-					OnPropertyChanged(nameof(Description));
-					// Decide which library to use based on RateType:
-					if (RateType == RateItemType.Material)
-					{
-						UnitPrice = MaterialLibraryService.GetPrice(_description);
-					}
-					else // RateType == RateItemType.Labour
-					{
-						UnitPrice = LabourLibraryService.GetPrice(_description);
-					}
+					OnPropertyChanged();
+					ResolveUnitPrice();
 				}
 			}
 		}
+
 		public decimal Quantity
 		{
 			get => _quantity;
@@ -58,12 +72,14 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				if (_quantity != value)
 				{
 					_quantity = value;
-					OnPropertyChanged(nameof(Quantity));
-					OnPropertyChanged(nameof(TotalCost)); 
+					OnPropertyChanged();
+					OnPropertyChanged(nameof(TotalCost));
+					OnPropertyChanged(nameof(TotalCostDisplay));
 				}
 			}
 		}
-		public string Unit
+
+		public string? Unit
 		{
 			get => _unit;
 			set
@@ -71,31 +87,54 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				if (_unit != value)
 				{
 					_unit = value;
-					OnPropertyChanged(nameof(Unit));
+					OnPropertyChanged();
 				}
 			}
 		}
+
+		/// <summary>Unit price **stored in NGN**.</summary>
 		public decimal UnitPrice
 		{
-			get => _unitPrice;
+			get => _unitPriceNgn;
 			set
 			{
-				if (_unitPrice != value)
+				if (_unitPriceNgn != value)
 				{
-					_unitPrice = value;
-					OnPropertyChanged(nameof(UnitPrice));
+					_unitPriceNgn = value;
+					OnPropertyChanged();
+					OnPropertyChanged(nameof(DisplayUnitPrice));
 					OnPropertyChanged(nameof(TotalCost));
+					OnPropertyChanged(nameof(TotalCostDisplay));
 				}
 			}
 		}
 
-		public decimal TotalCost => Quantity * UnitPrice;
+		/* ────────── derived, live‑converted props ────────── */
+
+		public decimal DisplayUnitPrice => UnitPrice * CurrentRate;
+		public decimal TotalCost => Quantity * UnitPrice;          // ₦
+		public decimal TotalCostDisplay => TotalCost * CurrentRate;        // chosen currency
+
+		private static decimal CurrentRate => (decimal)CurrencyService.Instance.Rate;
+
+		/* ────────── helpers ────────── */
+
+		private void ResolveUnitPrice()
+		{
+			if (string.IsNullOrWhiteSpace(_description)) return;
+
+			UnitPrice = RateType switch
+			{
+				RateItemType.Material => MaterialLibraryService.GetPrice(_description),
+				RateItemType.Labour => LabourLibraryService.GetPrice(_description),
+				_ => 0m
+			};
+		}
+
+		/* ────────── INotifyPropertyChanged boilerplate ────────── */
 
 		public event PropertyChangedEventHandler? PropertyChanged;
-		protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
+		private void OnPropertyChanged([CallerMemberName] string? name = null) =>
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 	}
-
-	
 }
