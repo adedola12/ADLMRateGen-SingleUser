@@ -152,7 +152,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
 			if (_isNetCostFilterOn)
 				ConcreteworkCollectionView.SortDescriptions.Add(
-					new SortDescription(nameof(GroundworkItem.NetCost),
+					new SortDescription(nameof(ConcreteworkItem.NetCost),
 										ListSortDirection.Ascending));
 		}
 
@@ -174,13 +174,13 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 			{
 				case SortState.Overhead:
 					ConcreteworkCollectionView.SortDescriptions.Add(
-						new SortDescription(nameof(GroundworkItem.OverheadValue),
+						new SortDescription(nameof(ConcreteworkItem.OverheadValue),
 											ListSortDirection.Ascending));
 					break;
 
 				case SortState.TotalCost:
 					ConcreteworkCollectionView.SortDescriptions.Add(
-						new SortDescription(nameof(GroundworkItem.TotalCost),
+						new SortDescription(nameof(ConcreteworkItem.TotalCost),
 											ListSortDirection.Ascending));
 					break;
 
