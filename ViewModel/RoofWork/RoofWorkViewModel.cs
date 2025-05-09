@@ -5,6 +5,8 @@ using System.Windows.Input;
 using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.View;
+using ADLMRateGen.ViewModel.CustomRate;
+using ADLMRateGen.ViewModel.Groundwork;
 
 
 namespace ADLMRateGen.ViewModel.RoofWork
@@ -17,8 +19,13 @@ namespace ADLMRateGen.ViewModel.RoofWork
         private double _profitPercent = 25.0;
         private string _searchTerm = string.Empty;
         private object _selectedDetail;
+		// ─── Sorting / filtering helpers ──────────────────────────────────────────────
+		private bool _isNetCostFilterOn = false;          // toggled by “Filter ⌄”
+		private SortState _currentSort = SortState.None;  // cycles in “Sort by ⌄”
 
-        public double OverheadPercent
+		private enum SortState { None, Overhead, TotalCost }
+
+		public double OverheadPercent
         {
             get => _overheadPercent;
             set
@@ -76,7 +83,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
 		}
 		public ICommand RecomputeCommand { get; }
 		public ICommand ShowDetailsCommand { get; }
-        public RoofWorkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourLib)
+		public ICommand FilterCommand { get; }   // NEW
+		public ICommand SortCommand { get; }   // NEW
+		public ICommand AddCustomRateCommand { get; }           // ❶ NEW
+
+		public RoofWorkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourLib)
         {
             _helper = new GetItemsFromDB(matLib, labourLib);
             matLib.LibraryChanged += OnLibraryChange;
@@ -89,7 +100,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
 
 			RecomputeCommand = new DelegateCommand(o => RecomputeAll());
             ShowDetailsCommand = new DelegateCommand(o => ShowDetails(o));
-        }
+			FilterCommand = new DelegateCommand(_ => ToggleNetCostFilter());
+			SortCommand = new DelegateCommand(_ => CycleSort());
+
+			AddCustomRateCommand = new DelegateCommand(_ => OpenCustomRateEntry());
+		}
 
 		#region Function Method
 		private void ShowDetails(object o)
@@ -127,6 +142,68 @@ namespace ADLMRateGen.ViewModel.RoofWork
 			}
 
 			return false;
+		}
+
+		// ────── FILTER – order by Net Cost (low → high) ──────
+		private void ToggleNetCostFilter()
+		{
+			_isNetCostFilterOn = !_isNetCostFilterOn;
+
+			RoofworkCollectionView.SortDescriptions.Clear();
+
+			if (_isNetCostFilterOn)
+				RoofworkCollectionView.SortDescriptions.Add(
+					new SortDescription(nameof(RoofWorkItem.NetCost),
+										ListSortDirection.Ascending));
+		}
+
+		// ────── SORT – cycle → None ▪ Overhead ▪ Total Cost ──────
+		private void CycleSort()
+		{
+			// next state
+			_currentSort = _currentSort switch
+			{
+				SortState.None => SortState.Overhead,
+				SortState.Overhead => SortState.TotalCost,
+				SortState.TotalCost => SortState.None,
+				_ => SortState.None
+			};
+
+			RoofworkCollectionView.SortDescriptions.Clear();
+
+			switch (_currentSort)
+			{
+				case SortState.Overhead:
+					RoofworkCollectionView.SortDescriptions.Add(
+						new SortDescription(nameof(RoofWorkItem.OverheadValue),
+											ListSortDirection.Ascending));
+					break;
+
+				case SortState.TotalCost:
+					RoofworkCollectionView.SortDescriptions.Add(
+						new SortDescription(nameof(RoofWorkItem.TotalCost),
+											ListSortDirection.Ascending));
+					break;
+
+				case SortState.None:
+				default:
+					// back to the order in the underlying ObservableCollection
+					break;
+			}
+		}
+
+		private void OpenCustomRateEntry()
+		{
+			// create the entry view + its view‑model (DI / service‑locator would
+			// be nicer, but a direct new‑up works fine here)
+			var view = new CustomRateEntryView();
+			view.DataContext = new CustomRateEntryViewModel();
+
+			/* optional: close the popup when the entry VM tells us it's done
+			   (expose bool IsSaved / event Saved in the entry‑VM if you like) */
+			// ((CustomRateEntryViewModel)view.DataContext).Saved += () => SelectedDetail = null;
+
+			SelectedDetail = view;         // GroundWorkView listens to this
 		}
 
 		private void BuildRoofworkItem()
