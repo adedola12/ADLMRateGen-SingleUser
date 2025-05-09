@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows.Controls;
+using ADLMRateGen.ViewModel.Model;
+using ADLMRateGen.ViewModel;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ADLMCivilPlugin.Controls
 {
@@ -24,5 +14,14 @@ namespace ADLMCivilPlugin.Controls
         {
             InitializeComponent();
         }
-    }
+
+		private void SuggestionList_Click(object sender, MouseButtonEventArgs e)
+		{
+			if (DataContext is MainViewModel vm &&
+				((ListBox)sender).SelectedItem is SearchHit hit)
+			{
+				vm.GlobalSearch.Accept(hit);   // jump & clear list
+			}
+		}
+	}
 }

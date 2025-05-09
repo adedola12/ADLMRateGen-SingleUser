@@ -89,6 +89,8 @@
             </Setter>
         </Style>
 
+        <conv:CountToBoolConverter x:Key="CountToBool" />
+
     </UserControl.Resources>
 
     <UserControl.DataContext>
@@ -112,7 +114,9 @@
                 Height="36"
                 VerticalAlignment="Center"
                 Margin="24,0">
-            <Grid>
+            
+            
+            <Grid DataContext="{Binding GlobalSearch}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="32" />
                     <ColumnDefinition Width="*" />
@@ -127,29 +131,50 @@
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center" />
 
-                <!-- textbox w/ watermark -->
-                <TextBox Grid.Column="1"
-                         Style="{StaticResource WatermarkTextBox}"
-                         Tag="Search here…"
+                <!-- editable search box -->
+                <TextBox x:Name="SearchBox"
+                         Grid.Column="1"
                          BorderThickness="0"
                          Background="Transparent"
                          FontFamily="Poppins"
                          FontSize="13"
                          Foreground="{StaticResource Navy}"
-                         VerticalContentAlignment="Center" />
+                         VerticalContentAlignment="Center"
+                         Style="{StaticResource WatermarkTextBox}"
+                         Tag="Search everywhere…"
+                         Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" />
 
-                <!-- shortcut hint -->
-                <Border Grid.Column="2"
-                        VerticalAlignment="Center"
-                        Margin="4,0"
-                        Background="#E5E7EB"
-                        CornerRadius="4"
-                        Padding="4,2">
-                    <TextBlock Text="⌘ F"
-                               FontFamily="Consolas"
-                               FontSize="11"
-                               Foreground="#374151" />
-                </Border>
+                <!-- suggestions -->
+                <Popup IsOpen="{Binding Suggestions.Count,
+                        Converter={StaticResource CountToBool},
+                        Mode=OneWay}"          
+                    PlacementTarget="{Binding ElementName=SearchBox}"
+       StaysOpen="False">
+                    <Border Background="White"
+                            BorderBrush="#C7CED9"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            MinWidth="{Binding ElementName=SearchBox, Path=ActualWidth}">
+                        <ListBox x:Name="SuggestionList"
+                                 ItemsSource="{Binding Suggestions}"
+                                 MouseLeftButtonUp="SuggestionList_Click">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal"
+                                                Margin="6,2">
+                                        <TextBlock Text="{Binding Display}"
+                                                   FontWeight="SemiBold" />
+                                        <TextBlock Text="  –  "
+                                                   Foreground="#808080" />
+                                        <TextBlock Text="{Binding Category}"
+                                                   Foreground="#606060" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+                </Popup>
+ 
             </Grid>
         </Border>
 

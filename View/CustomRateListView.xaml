@@ -1,95 +1,474 @@
 ﻿<UserControl x:Class="ADLMRateGen.View.CustomRateListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ADLMRateGen.View"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="10" Background="White">
-        <Grid.RowDefinitions>
+             mc:Ignorable="d"
+             d:DesignHeight="720"
+             d:DesignWidth="1280">
+
+    <!-- ───────── RESOURCES ───────── -->
+    <UserControl.Resources>
+
+        <!-- local Font:   add  Fonts/Mont.ttf   (Build Action = Resource) -->
+        <FontFamily x:Key="Mont">pack://application:,,,/Fonts/#Mont</FontFamily>
+        <FontFamily x:Key="PoppinsFont">Poppins</FontFamily>
+
+
+        <!-- colours -->
+        <Color x:Key="Blue900">#091E39</Color>
+        <SolidColorBrush x:Key="Blue900Brush"
+                         Color="{StaticResource Blue900}" />
+        <SolidColorBrush x:Key="Grey700"
+                         Color="#5F6D7E" />
+        <SolidColorBrush x:Key="RowAlt"
+                         Color="#F7F9FF" />
+        <SolidColorBrush x:Key="RowHover"
+                         Color="#EEF3FF" />
+
+        <SolidColorBrush x:Key="DataPrimaryBrush"
+                         Color="#F7FAFC" />
+        <SolidColorBrush x:Key="PrimaryBrush2"
+                         Color="Black" />
+        <SolidColorBrush x:Key="LightGrayBrush"
+                         Color="#F7FAFC" />
+        <SolidColorBrush x:Key="BorderBrushLight"
+                         Color="#CBD5E0" />
+        <SolidColorBrush x:Key="AltRowBrush"
+                         Color="#EDF2F7" />
+        <SolidColorBrush x:Key="BackgroundBrush"
+                         Color="White" />
+        <SolidColorBrush x:Key="HeaderBgBrush"
+                         Color="#F2F6FF" />
+        <SolidColorBrush x:Key="HeaderTextBrush"
+                         Color="#2D3748" />
+        <SolidColorBrush x:Key="CellTextBrush"
+                         Color="#2D3748" />
+
+        <!-- hollow textbox -->
+        <Style x:Key="HollowBox"
+               TargetType="TextBox">
+            <Setter Property="Height"
+                    Value="46" />
+            <Setter Property="Padding"
+                    Value="14,0" />
+            <Setter Property="BorderBrush"
+                    Value="#CBD5E0" />
+            <Setter Property="BorderThickness"
+                    Value="1.2" />
+            <Setter Property="Background"
+                    Value="White" />
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center" />
+            <Setter Property="FontFamily"
+                    Value="{StaticResource Mont}" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border CornerRadius="6"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- small rectangle buttons (Filter / Sort) -->
+        <Style x:Key="RectButton"
+               TargetType="Button">
+            <Setter Property="Height"
+                    Value="46" />
+            <Setter Property="MinWidth"
+                    Value="100" />
+            <Setter Property="Padding"
+                    Value="18,0" />
+            <Setter Property="FontFamily"
+                    Value="{StaticResource Mont}" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="BorderBrush"
+                    Value="#CBD5E0" />
+            <Setter Property="BorderThickness"
+                    Value="1.2" />
+            <Setter Property="Background"
+                    Value="White" />
+            <Setter Property="Cursor"
+                    Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="6"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver"
+                         Value="True">
+                    <Setter Property="Background"
+                            Value="#F5F8FF" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- dark primary -->
+        <!-- Add‑custom‑rate dark‑blue button -->
+        <Style x:Key="PrimaryButton"
+               TargetType="Button"
+               BasedOn="{StaticResource RectButton}">
+
+            <!-- colours -->
+            <Setter Property="Background"
+                    Value="{StaticResource Blue900Brush}" />
+            <Setter Property="BorderBrush"
+                    Value="{StaticResource Blue900Brush}" />
+            <Setter Property="Foreground"
+                    Value="White" />
+            <Setter Property="MinWidth"
+                    Value="200" />
+
+            <!-- control template -->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+
+                        <!-- local resource – only applies inside this template -->
+                        <ControlTemplate.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground"
+                                        Value="White" />
+                            </Style>
+                        </ControlTemplate.Resources>
+
+                        <Border x:Name="brd"
+                                CornerRadius="6"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter TargetName="brd"
+                                        Property="Background"
+                                        Value="#07244F" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled"
+                                     Value="False">
+                                <Setter TargetName="brd"
+                                        Property="Opacity"
+                                        Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- sleek DataGrid -->
+        <Style x:Key="DataGridStyle"
+               TargetType="DataGrid">
+            <Setter Property="Background"
+                    Value="White" />
+            <Setter Property="BorderBrush"
+                    Value="{StaticResource BorderBrushLight}" />
+            <Setter Property="BorderThickness"
+                    Value="1" />
+            <Setter Property="RowBackground"
+                    Value="White" />
+            <Setter Property="AlternatingRowBackground"
+                    Value="{StaticResource AltRowBrush}" />
+            <Setter Property="GridLinesVisibility"
+                    Value="None" />
+            <Setter Property="HeadersVisibility"
+                    Value="Column" />
+            <Setter Property="AutoGenerateColumns"
+                    Value="False" />
+            <Setter Property="CanUserAddRows"
+                    Value="False" />
+            <Setter Property="CanUserDeleteRows"
+                    Value="False" />
+            <Setter Property="RowHeaderWidth"
+                    Value="0" />
+            <Setter Property="ColumnHeaderHeight"
+                    Value="48" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="FontFamily"
+                    Value="{StaticResource PoppinsFont}" />
+            <Setter Property="RowHeight"
+                    Value="42" />
+            <!-- enable scrolling -->
+            <Setter Property="ScrollViewer.CanContentScroll"
+                    Value="True" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
+                    Value="Auto" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
+                    Value="Auto" />
+
+
+            <!-- Cell Style -->
+            <Setter Property="CellStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Padding"
+                                Value="8,0" />
+                        <Setter Property="VerticalContentAlignment"
+                                Value="Center" />
+                        <Setter Property="FontWeight"
+                                Value="SemiBold" />
+                        <Setter Property="Foreground"
+                                Value="{StaticResource CellTextBrush}" />
+                        <Setter Property="FontFamily"
+                                Value="{StaticResource PoppinsFont}" />
+                    </Style>
+                </Setter.Value>
+            </Setter>
+
+            <!-- Column Header Style -->
+            <Setter Property="ColumnHeaderStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background"
+                                Value="{StaticResource HeaderBgBrush}" />
+                        <Setter Property="Foreground"
+                                Value="{StaticResource HeaderTextBrush}" />
+                        <Setter Property="FontWeight"
+                                Value="SemiBold" />
+                        <Setter Property="FontFamily"
+                                Value="{StaticResource PoppinsFont}" />
+                        <Setter Property="HorizontalContentAlignment"
+                                Value="Center" />
+                        <Setter Property="VerticalContentAlignment"
+                                Value="Center" />
+                        <Setter Property="BorderThickness"
+                                Value="0" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="DataGridColumnHeader">
+                                    <Border Background="{TemplateBinding Background}"
+                                            CornerRadius="6,6,0,0">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+
+            <!-- Row Style -->
+            <Setter Property="RowStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="BorderThickness"
+                                Value="0" />
+                        <Setter Property="Margin"
+                                Value="0,2" />
+                        <Setter Property="Cursor"
+                                Value="Hand" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="DataGridRow">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <DataGridCellsPresenter />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter Property="Background"
+                                        Value="{StaticResource AltRowBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected"
+                                     Value="True">
+                                <Setter Property="Background"
+                                        Value="{StaticResource DataPrimaryBrush}" />
+                                <Setter Property="Foreground"
+                                        Value="White" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <!-- ───────── LAYOUT ───────── -->
+    <Border BorderThickness="2"
+            BorderBrush="Transparent"
+            CornerRadius="6"
+            Padding="20,0"
+            SnapsToDevicePixels="True">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+
+            </Grid.RowDefinitions>
+
             <!-- 1. Header -->
-            <RowDefinition Height="Auto"/>
-            <!-- 2. Search Row -->
-            <RowDefinition Height="Auto"/>
-            <!-- 3. DataGrid -->
-            <RowDefinition Height="*"/>
-            <!-- 4. Delete Button -->
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+            <DockPanel>
+                <StackPanel>
+                    <TextBlock Text="Saved Custom Rates"
+                               FontFamily="{StaticResource Mont}"
+                               FontSize="52"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource Blue900Brush}" />
+                    <TextBlock Text="View, search or delete your custom rates."
+                               FontFamily="{StaticResource Mont}"
+                               FontSize="18"
+                               Foreground="{StaticResource Grey700}" />
+                </StackPanel>
 
-        <!-- 1. Header -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,10">
-            <TextBlock Text="Saved Custom Rates" FontSize="30" FontWeight="Bold"/>
-            <TextBlock Text="View, search or delete your custom rates." FontSize="15"/>
-        </StackPanel>
+                <!-- Add‑custom‑rate button -->
+                <Button DockPanel.Dock="Right"
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding DeleteRateCommand}"
+                        Width="276"
+                        Margin="380,0,0,0"
+                        Height="60">
 
-        <!-- 2. Search Row -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,10">
-            <TextBlock Text="Search:" FontSize="15" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <TextBox Width="300" Height="30"
-                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
-                     ToolTip="Search by Title or Description"/>
-        </StackPanel>
+                    <!-- Explicit caption → always white -->
+                    <TextBlock Text="Delete Selected  Rate "
+                               Foreground="White" />
+                </Button>
+            </DockPanel>
 
-        <!-- 3. DataGrid of Rates -->
-        <DataGrid Grid.Row="2" 
-                  ItemsSource="{Binding RatesView}" 
-                  SelectedItem="{Binding SelectedRate, Mode=TwoWay}"
-                  AutoGenerateColumns="False" 
-                  Margin="0,10,0,10"
-                  IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Title" Width="Auto" 
-                                    Binding="{Binding Title}"/>
-               
-                <DataGridTemplateColumn Header="Description" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Description}"
-                        TextWrapping="Wrap"
-                        Padding="5,2,5,2"
-                        Foreground="DarkBlue"
-                        Cursor="Hand"
-                        >
-                                <TextBlock.InputBindings>
-                                    <MouseBinding MouseAction="LeftClick"
-                                 Command="{Binding DataContext.ViewRateCommand,
-                                        RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                 CommandParameter="{Binding}"/>
-                                </TextBlock.InputBindings>
-                            </TextBlock>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Overhead (%)" Width="Auto" 
-                                    Binding="{Binding OverheadPercent}"/>
-                <DataGridTextColumn Header="Profit (%)" Width="Auto" 
-                                    Binding="{Binding ProfitPercent}"/>
-                <DataGridTextColumn Header="Grand Total" Width="Auto" 
-                                    Binding="{Binding GrandTotal, StringFormat={}{0:N2}}"/>
-                <DataGridTextColumn Header="Date" Width="Auto" 
-                                    Binding="{Binding CreatedDate}"/>
-                <!--<DataGridTemplateColumn Header="Actions" Width="80">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="View"
-                                Command="{Binding DataContext.ViewRateCommand,
-                                RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                CommandParameter="{Binding}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>-->
+            <Border Background="White"
+                    CornerRadius="16"
+                    Padding="24"
+                    SnapsToDevicePixels="True"
+                    Grid.Row="1"
+                    Margin="0,22,0,-22">
+                <Grid>
 
-            </DataGrid.Columns>
-        </DataGrid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
 
-        <!-- 4. Delete Button -->
-        <Button Grid.Row="3" Content="Delete Selected Rate"
-                Command="{Binding DeleteRateCommand}" 
-                Margin="0,10,0,0"
-                Width="200" Height="40" 
-                FontSize="15" FontWeight="Bold"
-                HorizontalAlignment="Left"/>
-    </Grid>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0"
+                          Margin="0,12,0,24">
+
+                        <!--  ▸ columns: 160 | 16 | 160 | 16 | * | 16 | 110 | 16 | 110  -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="110" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ────── Search ────── -->
+                        <Grid Grid.Column="4"
+                              Height="46">
+                            <TextBox Style="{StaticResource HollowBox}"
+                                     Tag="Search description…"
+                                     Padding="44,0,12,0"
+                                     ToolTip="Search by Title or Description"
+                                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <!-- search icon -->
+                            <TextBlock Text=""
+                                       FontFamily="Segoe MDL2 Assets"
+                                       VerticalAlignment="Center"
+                                       Margin="16,0,0,0"
+                                       Foreground="#9AA6B4" />
+                        </Grid>
+
+
+
+
+                        <!-- ────── Buttons ────── -->
+                        <Button Grid.Column="6"
+                                Content="Filter ⌄"
+                                Command="{Binding FilterCommand}"
+                                Style="{StaticResource RectButton}" />
+
+                        <Button Grid.Column="8"
+                                Content="Sort by ⌄"
+                                Style="{StaticResource RectButton}"
+                                Command="{Binding SortCommand}" />
+
+                    </Grid>
+
+                    <!-- 3. DataGrid of Rates -->
+
+                    <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding RatesView}"
+                              SelectedItem="{Binding SelectedRate}"
+                              Style="{StaticResource DataGridStyle}">
+
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Title"
+                                                Binding="{Binding Title}"
+                                                Width="*" />
+                            <DataGridTemplateColumn Header="Description"
+                                                    Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Description}"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Foreground="{StaticResource Blue900Brush}">
+                                            <TextBlock.InputBindings>
+                                                <MouseBinding MouseAction="LeftClick"
+                                                              Command="{Binding DataContext.ViewRateCommand,RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                              CommandParameter="{Binding}" />
+                                            </TextBlock.InputBindings>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+
+
+                            <DataGridTextColumn Header="Overhead (%)"
+                                                Binding="{Binding OverheadPercent}"
+                                                Width="90" />
+                            <DataGridTextColumn Header="Profit (%)"
+                                                Binding="{Binding ProfitPercent}"
+                                                Width="110" />
+                            <DataGridTextColumn Header="Grand Total"
+                                                Binding="{Binding GrandTotal, StringFormat=N2}"
+                                                Width="110" />
+                            <DataGridTextColumn Header="Created Date"
+                                                Binding="{Binding CreatedDate}"
+                                                Width="110" />
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+
+                </Grid>
+
+            </Border>
+
+        </Grid>
+    </Border>
 </UserControl>

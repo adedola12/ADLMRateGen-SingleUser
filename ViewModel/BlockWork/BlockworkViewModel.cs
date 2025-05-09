@@ -7,7 +7,7 @@ using ADLMRateGen.Helpers;
 using ADLMRateGen.View;
 using ADLMRateGen.ViewModel.ConcreteWork;
 using ADLMRateGen.ViewModel.CustomRate;
-using ADLMRateGen.ViewModel.Groundwork;
+
 
 
 namespace ADLMRateGen.ViewModel.BlockWork

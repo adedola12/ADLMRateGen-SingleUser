@@ -312,6 +312,9 @@
 
     </UserControl.Resources>
 
+    
+    
+    
     <!-- ───────── LAYOUT ───────── -->
     <Border BorderThickness="2"
             BorderBrush="Transparent"
@@ -395,6 +398,7 @@
                             <TextBox Style="{StaticResource HollowBox}"
                                      Background="#F5F5F5"
                                      Padding="14,0,34,0"
+                                     ToolTip="Overhead"
                                      Text="{Binding OverheadPercent,
                                 UpdateSourceTrigger=PropertyChanged}" />
 
@@ -414,6 +418,7 @@
                             <TextBox Style="{StaticResource HollowBox}"
                                      Background="#F5F5F5"
                                      Padding="14,0,34,0"
+                                     ToolTip="Profit"
                                      Text="{Binding ProfitPercent,
                                 UpdateSourceTrigger=PropertyChanged}" />
 

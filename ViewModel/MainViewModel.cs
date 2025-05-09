@@ -165,6 +165,10 @@ private UserModel? _currentUser;
 		public SteelWorkViewModel SteelWorkViewModel { get; }
 		public CustomRateEntryViewModel CustomRateEntryViewModel { get; }
 		public CustomRateListViewModel CustomRateListViewModel { get; }
+		public SearchBoxViewModel GlobalSearch { get; }
+
+
+		private readonly SearchIndex _index = new();
 
 		/* ───────── View switching ───────── */
 		private ViewModelBase _selectedViewModel;
@@ -200,6 +204,7 @@ private UserModel? _currentUser;
 		public ICommand SelectedMaterialLibraryViewCommand { get; }
 		public ICommand SelectedLabourInputViewCommand { get; }
 		public ICommand SelectedLabourLibraryViewCommand { get; }
+		public ICommand SelectedLibraryShellViewCommand { get; }
 		public ICommand SelectedGroundworkViewCommand { get; }
 		public ICommand SelectedConcreteWorkViewCommand { get; }
 		public ICommand SelectedBlockworkViewCommand { get; }
@@ -236,6 +241,11 @@ private UserModel? _currentUser;
 			/* store deps */
 			_mongoDbService = mongoDbService;
 
+			/* ---------- create empty index & search VM ---------- */
+			_index = new SearchIndex();          // stays empty for now
+			GlobalSearch = new SearchBoxViewModel(_index);
+
+
 			/* assign child VMs */
 			MaterialPriceViewModel = priceVM;
 			MaterialLibraryViewModel = libraryVM;
@@ -254,6 +264,12 @@ private UserModel? _currentUser;
 			CustomRateEntryViewModel = customEntryVM;
 			SignInViewModel = signInVM;
 
+			MaterialLibraryViewModel.LibraryChanged += () => _index.Rebuild(this);
+			LabourLibraryViewModel.LibraryChanged += () => _index.Rebuild(this);
+			CustomRateListViewModel.LibraryChanged += () => _index.Rebuild(this);
+
+
+
 			/* wire events (material / labour edit-flow etc.) */
 			MaterialPriceViewModel.MaterialSaved += m => libraryVM.AddOrUpdateMaterial(m);
 			libraryVM.EditMaterialRequested += OnEditMaterialRequested;
@@ -262,7 +278,6 @@ private UserModel? _currentUser;
 			customListVM.OnViewRequested += rate =>
 			{
 				customEntryVM.LoadRate(rate);
-				SelectedViewModel = customEntryVM;
 			};
 			signInVM.LoginSucceeded += OnLoginSucceeded;
 
@@ -271,7 +286,15 @@ private UserModel? _currentUser;
 
 			/* command implementations */
 			SelectedMaterialInputViewCommand = new RelayCommand(_ => SelectedViewModel = priceVM);
-			SelectedMaterialLibraryViewCommand = new RelayCommand(_ => SelectedViewModel = LibraryShellViewModel);
+
+			//SelectedMaterialLibraryViewCommand = new RelayCommand(_ => SelectedViewModel = LibraryShellViewModel);
+			//SelectedLibraryShellViewCommand = new RelayCommand(_ => SelectedViewModel = LibraryShellViewModel);      // new command
+
+			SelectedMaterialLibraryViewCommand = new RelayCommand(_ => SelectedViewModel = LibraryShellViewModel);  // ★ correct target
+			SelectedLibraryShellViewCommand = new RelayCommand(_ => SelectedViewModel = LibraryShellViewModel);
+
+
+
 			SelectedLabourInputViewCommand = new RelayCommand(_ => SelectedViewModel = labourVM);
 			SelectedLabourLibraryViewCommand = new RelayCommand(_ => SelectedViewModel = labourLibVM);
 			SelectedGroundworkViewCommand = new RelayCommand(_ => SelectedViewModel = groundworkVM);
@@ -286,6 +309,46 @@ private UserModel? _currentUser;
 			SelectedCustomRateViewCommand = new RelayCommand(_ => SelectedViewModel = customEntryVM);
 			LogoutCommand = new RelayCommand(_ => Logout());
 			OpenYoutubeCommand = new RelayCommand(_ => OpenYoutube());
+
+
+			_index.Rebuild(this);
+
+			/* whenever a library changes, rebuild */
+
+
+			GroundWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+			ConcreteViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+			BlockworkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+			FinishesViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+			RoofWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+			WindowAndDoorViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+			PaintWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+			SteelWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+
+		}
+
+		/* ───────── auto‑login helper ───────── */
+		private bool TryAutoLogin(out UserModel? user)
+		{
+			user = null;
+
+			// read cached config
+			var cfg = ConfigManager.LoadConfig();
+			if (cfg == null || string.IsNullOrWhiteSpace(cfg.AuthToken))
+				return false;
+
+			// basic expiry check
+			if (cfg.AuthExpiry < DateTime.Now)
+				return false;
+
+			// validate / decode the token
+			var authTok = new AuthTok();
+			var decoded = authTok.ValidateToken(cfg.AuthToken);
+			if (decoded == null)          // invalid signature etc.
+				return false;
+
+			user = decoded;               // you may want to map to UserModel
+			return true;
 		}
 
 
@@ -321,6 +384,15 @@ private UserModel? _currentUser;
 				AuthToken = authTok.GenerateAuthToken(_currentUser),
 				AuthExpiry = DateTime.Now.AddDays(15)
 			});
+
+			// somewhere in the constructor or in your auto‑login helper
+			if (TryAutoLogin(out var loggedInUser))
+			{
+				IsLoggedIn = true;
+				CurrentUser = loggedInUser;
+				SelectedViewModel = LibraryShellViewModel;   // land on shell, not material library
+			}
+
 
 			SelectedViewModel = LibraryShellViewModel;   // land on library tabs
 		}

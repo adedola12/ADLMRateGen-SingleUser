@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using ADLMRateGen.ViewModel.Model;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.Sockets;
 
 namespace ADLMRateGen.Helpers
 {
@@ -46,6 +47,43 @@ namespace ADLMRateGen.Helpers
 				signingCredentials: credentials);
 
 			return new JwtSecurityTokenHandler().WriteToken(token);
+		}
+
+
+		/* ───────── validate & decode ───────── */
+		public UserModel? ValidateToken(string jwt)
+		{
+			if (string.IsNullOrWhiteSpace(jwt))
+				return null;
+
+			var handler = new JwtSecurityTokenHandler();
+			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+
+			var parms = new TokenValidationParameters
+			{
+				ValidateIssuer = false,
+				ValidateAudience = false,
+				ValidateIssuerSigningKey = true,
+				IssuerSigningKey = key,
+				ClockSkew = TimeSpan.Zero
+			};
+
+			try
+			{
+				var principal = handler.ValidateToken(jwt, parms, out _);
+
+				return new UserModel
+				{
+					Id = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "",
+					Username = principal.FindFirst(ClaimTypes.Name)?.Value ?? "",
+					Email = principal.FindFirst(ClaimTypes.Email)?.Value ?? ""
+				};
+			}
+			catch
+			{
+				// invalid signature, expired, etc.
+				return null;
+			}
 		}
 	}
 }

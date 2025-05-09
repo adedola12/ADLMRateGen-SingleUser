@@ -9,6 +9,9 @@ namespace ADLMRateGen.ViewModel.CustomRate
 {
     public class CustomRateListViewModel: ViewModelBase
     {
+		// CustomRateListViewModel.cs  ❯  add at the top of the class
+		public event Action LibraryChanged;
+
 		public ObservableCollection<CustomRate> CustomRates { get; set; } = new ObservableCollection<CustomRate>();
 
 		private string _searchTerm;
@@ -52,6 +55,11 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			RatesView = CollectionViewSource.GetDefaultView(CustomRates);
 			RatesView.Filter = RateFilter;
 
+			CustomRates.CollectionChanged += (_, __) => LibraryChanged?.Invoke();
+
+			/* ----------  fire ONCE for the initial load  ---------- */       // ② NEW
+			LibraryChanged?.Invoke();
+
 			// Command
 			ViewRateCommand = new RelayCommand(
 				param => ViewRateExecute(param),        // We'll pass the row item
@@ -86,6 +94,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			{
 				CustomRates.Add(newRate);
 				RatesView.Refresh();
+				LibraryChanged?.Invoke();
 			});
 		}
 
@@ -105,6 +114,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 					CustomRates.Add(updatedRate);
 				}
 				RatesView.Refresh();
+				LibraryChanged?.Invoke();
 			});
 		}
 
@@ -143,6 +153,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
 			// Refresh the view
 			RatesView.Refresh();
+			LibraryChanged?.Invoke();
 		}
 	}
 }

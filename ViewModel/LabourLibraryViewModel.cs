@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -17,12 +18,30 @@ namespace ADLMRateGen.ViewModel
 		private const string FilePath = "labour.json";
 		private const string DefaultFile = @"Data\defaultLabours.json";
 
-		private readonly JsonDataServices<LabourModel> _json =
+		private static readonly JsonDataServices<LabourModel> _json =
 	new(FilePath, DefaultFile);
 
 
 		public ObservableCollection<LabourModel> LabourLibrary { get; }
 		public ICollectionView LabourCollectionView { get; }
+
+		/* --------  names for ComboBoxes  -------- */
+		public static IEnumerable<string> GetAllLabourNames()
+		{
+			return _json.LoadData()                       // read the file
+						.Select(l => l.LabourName)        // grab the name
+						.Where(n => !string.IsNullOrWhiteSpace(n))
+						.Distinct()
+						.OrderBy(n => n);
+		}
+
+		/* --------  price lookup for RateEntryItem  -------- */
+		public static decimal GetPrice(string labourName)
+		{
+			var labour = _json.LoadData()
+							  .FirstOrDefault(l => l.LabourName == labourName);
+			return labour?.LabourPrice ?? 0m;
+		}
 
 
 		public ObservableCollection<string> LabourCategory { get; }

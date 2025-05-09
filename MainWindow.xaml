@@ -898,7 +898,6 @@
                                  BorderThickness="0"
                                  Cursor="Hand"
                                  Command="{Binding SelectedCustomRateInputViewCommand}"
-                                
                                  Margin="0,4">
 
                             <!-- style placed locally for clarity; move to Resources if you prefer -->
@@ -974,7 +973,12 @@
                     <Grid VerticalAlignment="Stretch" />
 
                     <!-- bottom actions -->
-                    <StackPanel Margin="0,120,0,-10">
+
+                    <!-- subtle divider -->
+                    <Rectangle Height="1"
+                               Margin="0,20,0,0"
+                               Fill="#D1D5DB" />
+                    <StackPanel Margin="0,40">
                         <Button  Padding="20,12"
                                  MinHeight="28"
                                  BorderThickness="0"
@@ -985,7 +989,7 @@
 
                             <!-- style placed locally for clarity; move to Resources if you prefer -->
                             <Button.Style>
-                                <Style TargetType="Button">
+                                <Style TargetType="{x:Type Button}">
 
                                     <!-- default (idle) look -->
                                     <Setter Property="Background"
@@ -996,7 +1000,7 @@
                                     <!-- very simple template – just a rounded border + the content -->
                                     <Setter Property="Template">
                                         <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
+                                            <ControlTemplate TargetType="{x:Type Button}">
                                                 <Border Background="{TemplateBinding Background}"
                                                         CornerRadius="8">
                                                     <ContentPresenter HorizontalAlignment="Left"
@@ -1033,7 +1037,7 @@
                                         VerticalAlignment="Center">
 
                                 <!-- icon -->
-                                <TextBlock Text=""
+                                <TextBlock Text="&#xE115;"
                                            FontFamily="Segoe MDL2 Assets"
                                            FontSize="20"
                                            Foreground="#091E39" />
@@ -1060,7 +1064,7 @@
 
                             <!-- style placed locally for clarity; move to Resources if you prefer -->
                             <Button.Style>
-                                <Style TargetType="Button">
+                                <Style TargetType="{x:Type Button}">
 
                                     <!-- default (idle) look -->
                                     <Setter Property="Background"
@@ -1071,7 +1075,7 @@
                                     <!-- very simple template – just a rounded border + the content -->
                                     <Setter Property="Template">
                                         <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
+                                            <ControlTemplate TargetType="{x:Type Button}">
                                                 <Border Background="{TemplateBinding Background}"
                                                         CornerRadius="8">
                                                     <ContentPresenter HorizontalAlignment="Left"
@@ -1108,7 +1112,7 @@
                                         VerticalAlignment="Center">
 
                                 <!-- icon -->
-                                <TextBlock Text=""
+                                <TextBlock Text="&#xE720;"
                                            FontFamily="Segoe MDL2 Assets"
                                            FontSize="20"
                                            Foreground="#091E39" />
@@ -1136,7 +1140,7 @@
 
                             <!-- style placed locally for clarity; move to Resources if you prefer -->
                             <Button.Style>
-                                <Style TargetType="Button">
+                                <Style TargetType="{x:Type Button}">
 
                                     <!-- default (idle) look -->
                                     <Setter Property="Background"
@@ -1147,7 +1151,7 @@
                                     <!-- very simple template – just a rounded border + the content -->
                                     <Setter Property="Template">
                                         <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
+                                            <ControlTemplate TargetType="{x:Type Button}">
                                                 <Border Background="{TemplateBinding Background}"
                                                         CornerRadius="8">
                                                     <ContentPresenter HorizontalAlignment="Left"
@@ -1184,7 +1188,7 @@
                                         VerticalAlignment="Center">
 
                                 <!-- icon -->
-                                <TextBlock Text=""
+                                <TextBlock Text="&#xE8AC;"
                                            FontFamily="Segoe MDL2 Assets"
                                            FontSize="20"
                                            Foreground="#091E39" />
@@ -1202,11 +1206,6 @@
                         </Button>
 
                     </StackPanel>
-
-                    <!-- subtle divider -->
-                    <Rectangle Height="1"
-                               Margin="0,20,0,0"
-                               Fill="#D1D5DB" />
                 </StackPanel>
             </Border>
 
@@ -1296,10 +1295,10 @@
                                   Margin="0,12,0,0">
 
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Row="0"
@@ -1375,5 +1374,5 @@
 
     </Grid>
 
- 
+
 </Window>

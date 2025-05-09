@@ -135,7 +135,7 @@
                                 <ComboBox Width="200"
                                           IsEditable="True"
                                           Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
-                                          ItemsSource="{Binding DataContext.AvailableLabourItems, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                          ItemsSource="{Binding AvailableLabourItems, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                 <TextBox Width="100"
                                          Margin="10,0,0,0"
                                          Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
