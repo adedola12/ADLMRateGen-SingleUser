@@ -822,6 +822,81 @@
                                  MinHeight="48"
                                  BorderThickness="0"
                                  Cursor="Hand"
+                                 Command="{Binding SelectedWindowAndDoorViewCommand}"
+                                 helpers:ButtonHelper.IsActive="{Binding IsWindowAndDoorActive}"
+                                 Margin="0,4">
+
+                            <!-- style placed locally for clarity; move to Resources if you prefer -->
+                            <Button.Style>
+                                <Style TargetType="Button">
+
+                                    <!-- default (idle) look -->
+                                    <Setter Property="Background"
+                                            Value="White" />
+                                    <Setter Property="Foreground"
+                                            Value="#091E39" />
+
+                                    <!-- very simple template – just a rounded border + the content -->
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="8">
+                                                    <ContentPresenter HorizontalAlignment="Left"
+                                                                      VerticalAlignment="Center" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+
+                                    <Style.Triggers>
+                                        <!-- hover highlight -->
+                                        <Trigger Property="IsMouseOver"
+                                                 Value="True">
+                                            <Setter Property="Background"
+                                                    Value="#F3F4F6" />
+                                        </Trigger>
+
+                                        <!-- ACTIVE / CURRENT page  -->
+                                        <Trigger Property="helpers:ButtonHelper.IsActive"
+                                                 Value="True">
+                                            <!-- very-light transparent blue -->
+                                            <Setter Property="Background"
+                                                    Value="#E8F0FF" />
+                                            <!-- make icon + text white -->
+                                            <Setter Property="Foreground"
+                                                    Value="White" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+
+                            <!-- button content -->
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center">
+
+                                <!-- icon -->
+                                <TextBlock Text=""
+                                           FontFamily="Segoe MDL2 Assets"
+                                           FontSize="20"
+                                           Foreground="#091E39" />
+
+                                <Rectangle Width="14"
+                                           Fill="Transparent" />
+
+                                <!-- label -->
+                                <TextBlock Text="Window and Door"
+                                           FontFamily="Poppins"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="#091E39" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button  Padding="20,12"
+                                 MinHeight="48"
+                                 BorderThickness="0"
+                                 Cursor="Hand"
                                  Command="{Binding SelectedCustomRateInputViewCommand}"
                                 
                                  Margin="0,4">

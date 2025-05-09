@@ -4,52 +4,187 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ADLMRateGen.View"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib" 
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="10" Background="White"    >
+             d:DesignHeight="650" d:DesignWidth="760">
+
+    <!--──────── RESOURCES ────────-->
+    <UserControl.Resources>
+
+        <!-- local Mont font -->
+        <FontFamily x:Key="Mont">pack://application:,,,/Fonts/#Mont</FontFamily>
+
+        <!-- colour palette -->
+        <Color x:Key="Blue900">#091E39</Color>
+        <SolidColorBrush x:Key="BlueBrush"
+                         Color="{StaticResource Blue900}" />
+        <SolidColorBrush x:Key="AltRowBrush"
+                         Color="#fafafa" />
+
+        <!-- back arrow button -->
+        <Style x:Key="IconButton"
+               TargetType="Button">
+            <Setter Property="Width"
+                    Value="34" />
+            <Setter Property="Height"
+                    Value="34" />
+            <Setter Property="FontFamily"
+                    Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize"
+                    Value="18" />
+            <Setter Property="Content"
+                    Value="" />
+            <!-- chevron‑left -->
+            <Setter Property="Foreground"
+                    Value="{StaticResource BlueBrush}" />
+            <Setter Property="Background"
+                    Value="Transparent" />
+            <Setter Property="BorderBrush"
+                    Value="Transparent" />
+            <Setter Property="Cursor"
+                    Value="Hand" />
+        </Style>
+
+        <!-- headline / body -->
+        <Style x:Key="Headline"
+               TargetType="TextBlock">
+            <Setter Property="FontFamily"
+                    Value="{StaticResource Mont}" />
+            <Setter Property="FontSize"
+                    Value="32" />
+            <Setter Property="FontWeight"
+                    Value="Bold" />
+            <Setter Property="Foreground"
+                    Value="{StaticResource BlueBrush}" />
+        </Style>
+
+        <Style x:Key="Body"
+               TargetType="TextBlock"
+               BasedOn="{StaticResource Headline}">
+            <Setter Property="FontSize"
+                    Value="16" />
+            <Setter Property="FontWeight"
+                    Value="Normal" />
+        </Style>
+
+        <!-- slim DataGrid style -->
+        <Style x:Key="DetailGrid"
+               TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns"
+                    Value="False" />
+            <Setter Property="HeadersVisibility"
+                    Value="Column" />
+            <Setter Property="RowBackground"
+                    Value="White" />
+            <Setter Property="AlternatingRowBackground"
+                    Value="{StaticResource AltRowBrush}" />
+            <Setter Property="GridLinesVisibility"
+                    Value="None" />
+            <Setter Property="BorderThickness"
+                    Value="0" />
+            <Setter Property="FontFamily"
+                    Value="{StaticResource Mont}" />
+            <Setter Property="FontSize"
+                    Value="14" />
+
+        </Style>
+
+        <!-- put this next to your other resources -->
+        <Style x:Key="WrapCellText"
+               TargetType="TextBlock">
+            <Setter Property="TextWrapping"
+                    Value="Wrap" />
+            <Setter Property="TextTrimming"
+                    Value="CharacterEllipsis" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+        </Style>
+
+
+    </UserControl.Resources>
+
+
+
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- Top row: Back button + heading text -->
-        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Stretch">
-            <Button Content="Back" 
-         Width="80" 
-         Margin="0,0,10,0"
-         Click="BackButton_Click" />
-
-            <TextBlock Text="{Binding Description}" 
-            TextWrapping="Wrap"
-            FontSize="18" 
-            FontWeight="Bold" 
-            Background="LightGray"
-            Padding="5" 
-            VerticalAlignment="Center"
-            Width="681" />
-        </StackPanel>
+        <!-- 2️⃣  HEADER  (row 0) -->
+        <DockPanel Margin="0 0 0 18"
+                   Grid.Row="0">
+            <!-- ✨ add Grid.Row -->
+            <Button DockPanel.Dock="Left"
+                    Style="{StaticResource IconButton}"
+                    Click="BackButton_Click" />
+            <StackPanel>
+                <TextBlock Text="Rate Composition"
+                           Style="{StaticResource Headline}" />
+                <TextBlock Text="{Binding Description}"
+                           Style="{StaticResource Body}"
+                           Width="660"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </DockPanel>
 
         <!-- DataGrid: Display breakdown lines -->
-        <DataGrid Grid.Row="1" ItemsSource="{Binding PaintingBreakdownLines}" 
-       AutoGenerateColumns="False" CanUserAddRows="False">
-            <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
-                    <Style.Triggers>
-                        <!-- If IsTotalLine is true, make the row bold -->
-                        <DataTrigger Binding="{Binding IsTotalLine}" Value="True">
-                            <Setter Property="FontWeight" Value="Bold"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.RowStyle>
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Component" Binding="{Binding ComponentName}" 
-                         IsReadOnly="True" Width="*" />
-                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="Auto"/>
-                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="Auto"/>
-                <DataGridTextColumn Header="Unit Price" Binding="{Binding UnitPrice, StringFormat={}{0:N2}}" Width="Auto"/>
-                <DataGridTextColumn Header="Total Cost" Binding="{Binding TotalPrice, StringFormat={}{0:N2}}" Width="Auto"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <Border Grid.Row="1"
+                BorderThickness="0">
+            <Grid>
+                <!-- dotted outline -->
+                <Rectangle Stroke="{StaticResource BlueBrush}"
+                           StrokeThickness="1"
+                           StrokeDashArray="2 2" />
+
+                <!-- table -->
+                <DataGrid ItemsSource="{Binding PaintingBreakdownLines}"
+                          Margin="1"
+                          RowHeight="{x:Static sys:Double.NaN}"
+                          Style="{StaticResource DetailGrid}">
+
+                    <!-- bold total lines -->
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="FontWeight"
+                                    Value="Normal" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsTotalLine}"
+                                             Value="True">
+                                    <Setter Property="FontWeight"
+                                            Value="Bold" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Component"
+                                            Binding="{Binding ComponentName}"
+                                            Width="*"
+                                            ElementStyle="{StaticResource WrapCellText}" />
+
+                        <DataGridTextColumn Header="Quantity"
+                                            Binding="{Binding Quantity}"
+                                            Width="110" />
+
+                        <DataGridTextColumn Header="Unit"
+                                            Binding="{Binding Unit}"
+                                            Width="100" />
+
+                        <DataGridTextColumn Header="Unit Price"
+                                            Binding="{Binding UnitPrice, StringFormat=N2}"
+                                            Width="120" />
+
+                        <DataGridTextColumn Header="Total Cost"
+                                            Binding="{Binding TotalPrice, StringFormat=N2}"
+                                            Width="120" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+      
     </Grid>
 </UserControl>

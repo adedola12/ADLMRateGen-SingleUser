@@ -6,6 +6,8 @@ using System.Windows.Media;
 using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.View;
+using ADLMRateGen.ViewModel.CustomRate;
+using ADLMRateGen.ViewModel.Groundwork;
 using ADLMRateGen.ViewModel.Painting;
 
 namespace ADLMRateGen.ViewModel.SteelWork
@@ -18,6 +20,12 @@ namespace ADLMRateGen.ViewModel.SteelWork
 		private double _profitPercent = 25.0;
 		private string _searchTerm = string.Empty;
 		private object _selectedDetail;
+		// ─── Sorting / filtering helpers ──────────────────────────────────────────────
+		private bool _isNetCostFilterOn = false;          // toggled by “Filter ⌄”
+		private SortState _currentSort = SortState.None;  // cycles in “Sort by ⌄”
+
+		private enum SortState { None, Overhead, TotalCost }
+
 
 
 		public double OverheadPercent
@@ -78,6 +86,9 @@ namespace ADLMRateGen.ViewModel.SteelWork
 	
 		public ICommand RecomputeCommand { get; }
 		public ICommand ShowDetailsCommand { get; }
+		public ICommand FilterCommand { get; }   // NEW
+		public ICommand SortCommand { get; }   // NEW
+		public ICommand AddCustomRateCommand { get; }           // ❶ NEW
 
 		public SteelWorkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourLib)
 		{
@@ -92,7 +103,13 @@ namespace ADLMRateGen.ViewModel.SteelWork
 
 			RecomputeCommand = new DelegateCommand(o => RecomputeAll());
 			ShowDetailsCommand = new DelegateCommand(o => ShowDetails(o));
+			FilterCommand = new DelegateCommand(_ => ToggleNetCostFilter());
+			SortCommand = new DelegateCommand(_ => CycleSort());
+
+			AddCustomRateCommand = new DelegateCommand(_ => OpenCustomRateEntry());
 		}
+
+
 		#region Functions
 		private void OnLibraryChange()
 		{
@@ -130,6 +147,68 @@ namespace ADLMRateGen.ViewModel.SteelWork
 				};
 				SelectedDetail = detailedControl;
 			}
+		}
+
+		// ────── FILTER – order by Net Cost (low → high) ──────
+		private void ToggleNetCostFilter()
+		{
+			_isNetCostFilterOn = !_isNetCostFilterOn;
+
+			SteelWorkCollectionView.SortDescriptions.Clear();
+
+			if (_isNetCostFilterOn)
+				SteelWorkCollectionView.SortDescriptions.Add(
+					new SortDescription(nameof(SteelworkItem.NetCost),
+										ListSortDirection.Ascending));
+		}
+
+		// ────── SORT – cycle → None ▪ Overhead ▪ Total Cost ──────
+		private void CycleSort()
+		{
+			// next state
+			_currentSort = _currentSort switch
+			{
+				SortState.None => SortState.Overhead,
+				SortState.Overhead => SortState.TotalCost,
+				SortState.TotalCost => SortState.None,
+				_ => SortState.None
+			};
+
+			SteelWorkCollectionView.SortDescriptions.Clear();
+
+			switch (_currentSort)
+			{
+				case SortState.Overhead:
+					SteelWorkCollectionView.SortDescriptions.Add(
+						new SortDescription(nameof(SteelworkItem.OverheadValue),
+											ListSortDirection.Ascending));
+					break;
+
+				case SortState.TotalCost:
+					SteelWorkCollectionView.SortDescriptions.Add(
+						new SortDescription(nameof(SteelworkItem.TotalCost),
+											ListSortDirection.Ascending));
+					break;
+
+				case SortState.None:
+				default:
+					// back to the order in the underlying ObservableCollection
+					break;
+			}
+		}
+
+		private void OpenCustomRateEntry()
+		{
+			// create the entry view + its view‑model (DI / service‑locator would
+			// be nicer, but a direct new‑up works fine here)
+			var view = new CustomRateEntryView();
+			view.DataContext = new CustomRateEntryViewModel();
+
+			/* optional: close the popup when the entry VM tells us it's done
+			   (expose bool IsSaved / event Saved in the entry‑VM if you like) */
+			// ((CustomRateEntryViewModel)view.DataContext).Saved += () => SelectedDetail = null;
+
+			SelectedDetail = view;         // GroundWorkView listens to this
 		}
 		private (double overheadVal, double profitVal, double total) ApplyOHP(double netCost)
 		{
