@@ -344,7 +344,7 @@
                         Style="{StaticResource PrimaryButton}"
                         Command="{Binding AddCustomRateCommand}"
                         Width="276"
-                        Margin="180,0,0,0"
+                        Margin="380,0,0,0"
                         Height="60">
 
                     <!-- Explicit caption → always white -->

@@ -21,8 +21,6 @@
         xmlns:conv="clr-namespace:ADLMRateGen.Converters"
         mc:Ignorable="d"
         Title="ADLM Rate Gen"
-        Height="1020"
-        Width="1720"
         WindowStyle="SingleBorderWindow"
         Background="#cdd6db">
 
@@ -208,9 +206,12 @@
     </Window.Resources>
 
     <!-- ───────── MAIN LAYOUT ───────── -->
-    <Grid>
+    <Viewbox Stretch="Uniform"
+             StretchDirection="DownOnly">
+        <Grid Width="1900"
+              Height="1000">
 
-        <!-- Sign-in overlay -->
+            <!-- Sign-in overlay -->
         <ContentControl Content="{Binding SignInViewModel}"
                         Visibility="{Binding DataContext.IsLoggedIn,
                                              ElementName=Root,
@@ -1373,6 +1374,6 @@
 
 
     </Grid>
-
+    </Viewbox>
 
 </Window>

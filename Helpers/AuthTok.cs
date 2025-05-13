@@ -14,12 +14,12 @@ namespace ADLMRateGen.Helpers
 		public AuthTok()
 		{
 			//var secrets = SecretManager.GetSecrets<AppSecrets>();
-			//_secretKey = secrets.JWTTokenSecretKey;
+			_secretKey = "[REDACTED-JWT-KEY]";
 
-			//if (string.IsNullOrEmpty(_secretKey) || _secretKey.Length < 32)
-			//{
-			//    throw new Exception("JWTTokenSecretKey not found or invalid in secrets.json. Key must be at least 32 characters.");
-			//}
+			if (string.IsNullOrEmpty(_secretKey) || _secretKey.Length < 32)
+			{
+				throw new Exception("JWTTokenSecretKey not found or invalid in secrets.json. Key must be at least 32 characters.");
+			}
 		}
 
 		public string GenerateAuthToken(UserModel user)

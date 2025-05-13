@@ -183,9 +183,6 @@
                 </DataGrid>
             </Grid>
         </Border>
-        
-        
-        
-  
+
     </Grid>
 </UserControl>

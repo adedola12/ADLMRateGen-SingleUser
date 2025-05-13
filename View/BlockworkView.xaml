@@ -346,7 +346,8 @@
                         Style="{StaticResource PrimaryButton}"
                         Command="{Binding AddCustomRateCommand}"
                         Width="276"
-                        Margin="280,0,0,0">
+                        Margin="580,0,0,0"
+                        Height="60">
 
                     <!-- Explicit caption → always white -->
                     <TextBlock Text="Add Custom Rate  ＋"

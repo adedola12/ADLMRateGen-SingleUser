@@ -345,7 +345,7 @@
                         Style="{StaticResource PrimaryButton}"
                         Command="{Binding DeleteRateCommand}"
                         Width="276"
-                        Margin="380,0,0,0"
+                        Margin="680,0,0,0"
                         Height="60">
 
                     <!-- Explicit caption → always white -->
