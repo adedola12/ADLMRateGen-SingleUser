@@ -38,4 +38,20 @@ namespace ADLMRateGen.Converters
             throw new NotImplementedException();
         }
     }
+
+	public class PercentConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			if (!(value is double size) || !(parameter is string p) || !double.TryParse(p, out var pct))
+				return Binding.DoNothing;
+			return size * pct;
+		}
+
+		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
 }

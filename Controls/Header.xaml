@@ -6,92 +6,13 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:services="clr-namespace:ADLMRateGen.Services"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
              mc:Ignorable="d"
              Height="64">
 
     <!-- ───────── RESOURCES ───────── -->
     <UserControl.Resources>
-
-        <!-- basic colours -->
-        <SolidColorBrush x:Key="Navy"
-                         Color="#091E39" />
-        <SolidColorBrush x:Key="HintGrey"
-                         Color="#8A94A6" />
-        <SolidColorBrush x:Key="VeryLight"
-                         Color="#F6F9FF" />
-
-        <!-- simple watermark style -->
-        <Style x:Key="WatermarkTextBox"
-               TargetType="TextBox">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Grid>
-                            <ScrollViewer x:Name="PART_ContentHost" />
-                            <TextBlock x:Name="water"
-                                       Margin="2,0,0,0"
-                                       Foreground="{StaticResource HintGrey}"
-                                       Text="{TemplateBinding Tag}"
-                                       VerticalAlignment="Center"
-                                       IsHitTestVisible="False" />
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="Text"
-                                     Value="">
-                                <Setter TargetName="water"
-                                        Property="Visibility"
-                                        Value="Visible" />
-                            </Trigger>
-                            <Trigger Property="Text"
-                                     Value="{x:Null}">
-                                <Setter TargetName="water"
-                                        Property="Visibility"
-                                        Value="Visible" />
-                            </Trigger>
-                            <Trigger Property="IsKeyboardFocused"
-                                     Value="True">
-                                <Setter TargetName="water"
-                                        Property="Visibility"
-                                        Value="Collapsed" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- icon-only button -->
-        <Style x:Key="IconButton"
-               TargetType="Button">
-            <Setter Property="Foreground"
-                    Value="#5A6273" />
-            <Setter Property="FontFamily"
-                    Value="Segoe MDL2 Assets" />
-            <Setter Property="FontSize"
-                    Value="18" />
-            <Setter Property="Padding"
-                    Value="6" />
-            <Setter Property="BorderThickness"
-                    Value="0" />
-            <Setter Property="Background"
-                    Value="Transparent" />
-            <Setter Property="Cursor"
-                    Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
         <conv:CountToBoolConverter x:Key="CountToBool" />
-
     </UserControl.Resources>
 
     <UserControl.DataContext>
@@ -105,51 +26,45 @@
         <!-- columns   0 search | 1 spacer | 2 right-area -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="32" />
+            <ColumnDefinition Width="200" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <!-- ═══ SEARCH ═══ -->
         <Border Background="{StaticResource VeryLight}"
                 CornerRadius="10"
-                Height="36"
                 VerticalAlignment="Center"
                 Margin="24,0">
-            
-            
+
+
             <Grid DataContext="{Binding GlobalSearch}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="32" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="40" />
-                </Grid.ColumnDefinitions>
 
-                <!-- magnifier -->
-                <TextBlock Grid.Column="0"
-                           Text="&#xE721;"
-                           FontFamily="Segoe MDL2 Assets"
-                           Foreground="{StaticResource HintGrey}"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center" />
-
-                <!-- editable search box -->
-                <TextBox x:Name="SearchBox"
-                         Grid.Column="1"
-                         BorderThickness="0"
-                         Background="Transparent"
-                         FontFamily="Poppins"
-                         FontSize="13"
-                         Foreground="{StaticResource Navy}"
-                         VerticalContentAlignment="Center"
-                         Style="{StaticResource WatermarkTextBox}"
-                         Tag="Search everywhere…"
-                         Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" />
+                <Grid Grid.Column="0">
+                    <TextBox x:Name="SearchBox"
+                             Style="{StaticResource HollowBox}"
+                             Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                             Padding="32,0,48,0"
+                             VerticalContentAlignment="Center" />
+                    <TextBlock Text=""
+                               FontFamily="Segoe MDL2 Assets"
+                               FontSize="14"
+                               VerticalAlignment="Center"
+                               Margin="8,0,0,0"
+                               Foreground="{StaticResource BorderBrushLight}" />
+                    <TextBlock Text="⌘F"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"
+                               Tag="Search everywhere…"
+                               Margin="0,0,8,0"
+                               Foreground="{StaticResource BorderBrushLight}" />
+                </Grid>
 
                 <!-- suggestions -->
                 <Popup IsOpen="{Binding Suggestions.Count,
                         Converter={StaticResource CountToBool},
-                        Mode=OneWay}"          
-                    PlacementTarget="{Binding ElementName=SearchBox}" StaysOpen="False">
+                        Mode=OneWay}"
+                       PlacementTarget="{Binding ElementName=SearchBox}"
+                       StaysOpen="False">
                     <Border Background="White"
                             BorderBrush="#C7CED9"
                             BorderThickness="1"
@@ -174,15 +89,17 @@
                         </ListBox>
                     </Border>
                 </Popup>
- 
+
             </Grid>
         </Border>
+
+
 
         <!-- ═══ RIGHT GROUP ═══ -->
         <StackPanel Grid.Column="2"
                     Orientation="Horizontal"
                     VerticalAlignment="Center"
-                    Margin="0,0,24,0">
+                    HorizontalAlignment="Right">
 
             <!-- currency -->
             <Border Background="#F8FAFF"
@@ -190,22 +107,42 @@
                     BorderThickness="1"
                     CornerRadius="6"
                     Padding="8,4"
-                    Margin="0,0,16,0">
-                <!-- header.xaml  only the ComboBox changed -->
-                <ComboBox  Width="80"
-                           ItemsSource="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Supported}"
-                           SelectedItem="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Selected}"
-                           BorderThickness="0"
-                           Background="Transparent"
-                           FontFamily="Poppins"
-                           FontSize="12" />
-
+                    Margin="0,0,16,0"
+                    VerticalAlignment="Center">
+                <ComboBox Width="80"
+                          ItemsSource="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Supported}"
+                          SelectedItem="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Selected}"
+                          BorderThickness="0"
+                          Background="Transparent"
+                          FontFamily="Poppins"
+                          FontSize="12"
+                          VerticalContentAlignment="Center">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center">
+                                <Image Width="16"
+                                       Height="11"
+                                       Source="{Binding Converter={StaticResource CurrencyToFlagConverter}}"
+                                       Margin="0,0,4,0" />
+                                <TextBlock Text="{Binding}"
+                                           FontFamily="Poppins"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
             </Border>
 
-            <!-- icons -->
+            <!-- search icon -->
             <Button Style="{StaticResource IconButton}"
                     Content="&#xE706;"
-                    Margin="0,0,16,0" />
+                    Margin="0,0,16,0"
+                    VerticalAlignment="Center" />
+
+            <!-- date picker -->
+            <!--
             <DatePicker SelectedDate="{x:Static sys:DateTime.Now}"
                         DisplayDateStart="2024-01-01"
                         DisplayDateEnd="2050-12-31"
@@ -213,33 +150,58 @@
                         FontSize="12"
                         BorderThickness="0"
                         Background="Transparent"
-                        Margin="0,0,16,0" />
+                        Margin="0,0,16,0"
+                        VerticalAlignment="Center" />-->
+
+            <!-- update icon -->
+            
+            <!--TODO UPATE FUNCTIONALITY-->
             <Button Style="{StaticResource IconButton}"
-                    Content="&#xE814;"
-                    Margin="0,0,24,0" />
+                    Margin="0,0,16,0"
+                    VerticalAlignment="Center">
+                <fa:IconBlock Icon="bell"
+                              Width="24"
+                              Height="24"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center" />
+            </Button>
 
-            <!-- user -->
+            <!-- user info + logout -->
             <StackPanel Orientation="Horizontal"
-                        Margin="0,0,8,0">
+                        VerticalAlignment="Center"
+                        Margin="0,0,0,0">
 
-                <StackPanel>
+                <!-- user details -->
+                <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="{Binding CurrentUser.Username}"
                                FontFamily="Poppins"
                                FontWeight="SemiBold"
                                FontSize="13"
-                               Foreground="{StaticResource Navy}" />
-
+                               Foreground="{StaticResource Navy}"
+                               VerticalAlignment="Center" />
                     <TextBlock Text="{Binding CurrentUser.Email}"
                                FontFamily="Poppins"
                                FontSize="11"
-                               Foreground="#5A6273" />
+                               Foreground="#5A6273"
+                               VerticalAlignment="Center" />
                 </StackPanel>
 
+                <!-- logout icon -->
                 <Button Style="{StaticResource IconButton}"
-                        Content="&#xE8BB;"
                         Command="{Binding LogoutCommand}"
-                        Margin="10,0,0,0" />
+                        Margin="16,0,0,0"
+                        VerticalAlignment="Center">
+
+                    <fa:IconBlock Icon="RightFromBracket"
+                                  Width="24"
+                                  Height="24"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+
+                </Button>
+
             </StackPanel>
         </StackPanel>
+
     </Grid>
 </UserControl>

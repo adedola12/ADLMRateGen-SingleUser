@@ -1,7 +1,14 @@
 ﻿<UserControl x:Class="ADLMRateGen.View.PopupHost"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:ADLMRateGen.Converters"
              Visibility="Collapsed">
+
+
+    <UserControl.Resources>
+        <conv:PercentConverter x:Key="PercentConverter" />
+    </UserControl.Resources>
+
     <Grid>
         <!-- dim background -->
         <Rectangle Fill="#88000000" />
@@ -9,27 +16,39 @@
         <!-- popup card -->
         <Border x:Name="Card"
                 Width="600"
-                MaxHeight="650"
+                Height="650"
+                MaxWidth="{Binding ActualWidth, 
+                           RelativeSource={RelativeSource AncestorType=UserControl},
+                           Converter={StaticResource PercentConverter}, 
+                           ConverterParameter=0.8}"
+                MaxHeight="{Binding ActualHeight, 
+                            RelativeSource={RelativeSource AncestorType=UserControl},
+                            Converter={StaticResource PercentConverter}, 
+                            ConverterParameter=0.8}"
                 Padding="24"
                 Background="White"
                 CornerRadius="14"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
-            <Grid>
-                <!-- close button -->
-                <Button Content="✕"
-                        Width="30"
-                        Height="30"
-                        FontSize="16"
-                        Background="Transparent"
-                        BorderBrush="Transparent"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Top"
-                        Cursor="Hand"
-                        Click="OnClose" />
-                <!-- here we inject the view -->
-                <ContentPresenter Margin="0,40,0,0" />
-            </Grid>
+
+            <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto">-->
+                <Grid>
+                    <!-- close button -->
+                    <Button Content="✕"
+                            Width="30"
+                            Height="30"
+                            FontSize="16"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Cursor="Hand"
+                            Click="OnClose" />
+                    <!-- here we inject the view -->
+                    <ContentPresenter Margin="0,40,0,0" />
+                </Grid>
+            <!--</ScrollViewer>-->
         </Border>
     </Grid>
 </UserControl>

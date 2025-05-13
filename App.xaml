@@ -12,7 +12,8 @@
             <!-- other dictionaries that already existed -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Brushes.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Resources/Styles.xaml" />
+                <!--<ResourceDictionary Source="pack://application:,,,/Resources/Styles.xaml" />-->
+                <ResourceDictionary Source="/Resources/ADLMStylesTheme.xaml" />
                 <ResourceDictionary Source="/Resources/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
@@ -21,67 +22,8 @@
             <conv:InverseBoolToVis x:Key="InvBoolVis" />
             <conv:CurrencyDisplayConverter x:Key="CurrencyFmt" />
             <conv:CurrencyDisplayConverter x:Key="MoneyConv" />
+            <conv:CurrencyToFlagConverter x:Key="CurrencyToFlagConverter" />
 
-
-            <!--────────  NEW LOCAL STYLES  ────────-->
-
-            <!-- flat toggle used as “tab” -->
-            <Style x:Key="FlatTabButton"
-                   TargetType="ToggleButton">
-                <Setter Property="FontFamily"
-                        Value="Poppins" />
-                <Setter Property="FontSize"
-                        Value="18" />
-                <Setter Property="FontWeight"
-                        Value="SemiBold" />
-                <Setter Property="Foreground"
-                        Value="#091E39" />
-                <Setter Property="BorderThickness"
-                        Value="0" />
-                <Setter Property="Background"
-                        Value="Transparent" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ToggleButton">
-                            <Border x:Name="root"
-                                    CornerRadius="10"
-                                    Background="{TemplateBinding Background}">
-                                <ContentPresenter HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center" />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsChecked"
-                                         Value="True">
-                                    <Setter TargetName="root"
-                                            Property="Background"
-                                            Value="#FFFFFF" />
-                                    <Setter Property="Foreground"
-                                            Value="#003087" />
-                                    <Setter TargetName="root"
-                                            Property="Effect">
-                                        <Setter.Value>
-                                            <DropShadowEffect BlurRadius="5"
-                                                              ShadowDepth="0"
-                                                              Color="#00000026" />
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <!-- blue “Add … +” button – builds on your NavPrimaryButton
-                 (defined in Styles.xaml) -->
-            <Style x:Key="PrimaryAccentButton"
-                   TargetType="Button"
-                   BasedOn="{StaticResource NavPrimaryButton}">
-                <Setter Property="Width"
-                        Value="200" />
-                <Setter Property="FontSize"
-                        Value="15" />
-            </Style>
 
         </ResourceDictionary>
     </Application.Resources>

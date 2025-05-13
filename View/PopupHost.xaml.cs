@@ -17,6 +17,21 @@ namespace ADLMRateGen.View
 			Visibility = Visibility.Visible;
 		}
 
+		//public void Show(UserControl view)
+		//{
+		//	// Card.Child is now a ScrollViewer
+		//	var scroller = (ScrollViewer)Card.Child;
+		//	// its Content is your Grid
+		//	var hostGrid = (Grid)scroller.Content;
+
+		//	// second child is the ContentPresenter
+		//	var presenter = (ContentPresenter)hostGrid.Children[1];
+		//	presenter.Content = view;
+
+		//	Visibility = Visibility.Visible;
+		//}
+
+
 		/// <summary>Hides the popup.</summary>
 		public void Hide() => Visibility = Visibility.Collapsed;
 

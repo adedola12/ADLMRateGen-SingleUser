@@ -19,131 +19,15 @@
         xmlns:helpers="clr-namespace:ADLMRateGen.Helpers"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:conv="clr-namespace:ADLMRateGen.Converters"
+        xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
         mc:Ignorable="d"
         Title="ADLM Rate Gen"
         WindowStyle="SingleBorderWindow"
-        Background="#cdd6db">
+        Background="#FAFDFF">
 
     <!-- ───────── RESOURCES ───────── -->
     <Window.Resources>
         <ResourceDictionary>
-
-            <!-- ── SIMPLE STYLES & EFFECTS ── -->
-            <DropShadowEffect x:Key="SoftShadow"
-                              Color="#000000"
-                              BlurRadius="10"
-                              ShadowDepth="0"
-                              Opacity="0.12" />
-
-            <!-- Primary (navy) button used for “Library” -->
-            <Style x:Key="NavPrimaryButton"
-                   TargetType="Button">
-                <Setter Property="Foreground"
-                        Value="White" />
-                <Setter Property="Background"
-                        Value="#001E44" />
-                <Setter Property="FontSize"
-                        Value="14" />
-                <Setter Property="FontWeight"
-                        Value="SemiBold" />
-                <Setter Property="BorderThickness"
-                        Value="0" />
-                <Setter Property="Cursor"
-                        Value="Hand" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}"
-                                    CornerRadius="6"
-                                    Padding="14,8">
-                                <ContentPresenter HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center" />
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <!-- Flat nav button (left column) -->
-            <Style x:Key="NavFlatButton"
-                   TargetType="Button">
-                <Setter Property="Background"
-                        Value="Transparent" />
-                <Setter Property="Foreground"
-                        Value="#374151" />
-                <Setter Property="BorderThickness"
-                        Value="0" />
-                <Setter Property="FontSize"
-                        Value="14" />
-                <Setter Property="Padding"
-                        Value="12,6" />
-                <Setter Property="HorizontalContentAlignment"
-                        Value="Left" />
-                <Setter Property="Cursor"
-                        Value="Hand" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="root"
-                                    Background="{TemplateBinding Background}"
-                                    CornerRadius="6">
-                                <TextBlock Text="{TemplateBinding Content}"
-                                           Foreground="{TemplateBinding Foreground}"
-                                           FontFamily="{TemplateBinding FontFamily}"
-                                           FontSize="{TemplateBinding FontSize}" />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver"
-                                         Value="True">
-                                    <Setter TargetName="root"
-                                            Property="Background"
-                                            Value="#F3F4F6" />
-                                </Trigger>
-                                <Trigger Property="helpers:ButtonHelper.IsActive"
-                                         Value="True">
-                                    <Setter TargetName="root"
-                                            Property="Background"
-                                            Value="#E8F0FF" />
-                                    <Setter Property="Foreground"
-                                            Value="#003087" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <!-- Simple top-navigation style (blue outline) -->
-            <Style x:Key="TopNavButtonStyle"
-                   TargetType="Button">
-                <Setter Property="Margin"
-                        Value="4" />
-                <Setter Property="Padding"
-                        Value="10,6" />
-                <Setter Property="FontSize"
-                        Value="13" />
-                <Setter Property="BorderBrush"
-                        Value="#0078D4" />
-                <Setter Property="BorderThickness"
-                        Value="1.2" />
-                <Setter Property="Background"
-                        Value="White" />
-                <Setter Property="Cursor"
-                        Value="Hand" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="4">
-                                <ContentPresenter HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center" />
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
 
             <conv:FirstNameConverter x:Key="FirstNameConv" />
 
@@ -212,1168 +96,621 @@
               Height="1000">
 
             <!-- Sign-in overlay -->
-        <ContentControl Content="{Binding SignInViewModel}"
-                        Visibility="{Binding DataContext.IsLoggedIn,
+            <ContentControl Content="{Binding SignInViewModel}"
+                            Visibility="{Binding DataContext.IsLoggedIn,
                                              ElementName=Root,
                                              Converter={StaticResource InvBoolVis}}" />
 
-        <!-- Logged-in shell -->
-        <Grid x:Name="MainLayout"
-              Visibility="{Binding DataContext.IsLoggedIn,
+            <!-- Logged-in shell -->
+            <Grid x:Name="MainLayout"
+                  Visibility="{Binding DataContext.IsLoggedIn,
                                    ElementName=Root,
                                    Converter={StaticResource BoolVis}}">
 
-            <!-- ROWS  0-Header | 1-Body | 2-Footer -->
-            <Grid.RowDefinitions>
-                <RowDefinition Height="60" />
-                <RowDefinition />
-
-            </Grid.RowDefinitions>
-
-            <!-- COLUMNS  0-Sidebar | 1-Main -->
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="220" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <!--────────  SIDEBAR – spans ALL rows  ────────-->
-            <Border Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.RowSpan="3"
-                    Background="White"
-                    CornerRadius="0,0,16,0"
-                    Effect="{StaticResource SoftShadow}">
-
-                <!-- inner content with generous margin -->
-                <StackPanel Margin="24,32,24,24"
-                            VerticalAlignment="Stretch">
-
-                    <!-- ───── logo ───── -->
-                    <Image Source="/Resources/adlm_rate_generator_logo_small.png"
-                           Width="120"
-                           Margin="0,0,0,32"
-                           HorizontalAlignment="Center" />
-
-                    <!-- ───── Library (primary) ───── -->
-                    <!-- ───── Library  (icon + white bold Poppins text) ───── -->
-                    <Button Style="{StaticResource NavPrimaryButton}"
-                            Command="{Binding SelectedMaterialLibraryViewCommand}"
-                            helpers:ButtonHelper.IsActive="{Binding IsMaterialLibraryActive}">
-
-                        <!-- centred horizontal layout -->
-                        <StackPanel Orientation="Horizontal"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center">
-
-                            <!-- ①  icon – replace Source with whatever you put in /Resources -->
-                            <TextBlock Text=""
-                                       FontFamily="Segoe MDL2 Assets"
-                                       Foreground="White"
-                                       Margin="0,0,10,0"
-                                       FontSize="18" />
-
-
-                            <!-- ②  label -->
-                            <TextBlock Text="Library"
-                                       Foreground="White"
-                                       FontFamily="Poppins"
-                                       FontWeight="Bold"
-                                       FontSize="16" />
-                        </StackPanel>
-                    </Button>
-
-
-                    <!-- section label -->
-                    <TextBlock Text="Item of works"
-                               FontFamily="Poppins"
-                               Margin="0,24,0,12"
-                               FontSize="13"
-                               FontWeight="SemiBold"
-                               Foreground="#091E39" />
-
-                    <!-- work-item buttons -->
-                    <StackPanel>
-                        <!-- ─── Ground nav-button ─────────────────────────────────────────────── -->
-                        <Button  Padding="20,12"
-                                 MinHeight="48"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Command="{Binding SelectedGroundworkViewCommand}"
-                                 helpers:ButtonHelper.IsActive="{Binding IsGroundworkActive}"
-                                 Margin="0,4">
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="Button">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text="&#xE74E;"
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Ground"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                        <Button  Padding="20,12"
-                                 MinHeight="48"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Command="{Binding SelectedConcreteWorkViewCommand}"
-                                 helpers:ButtonHelper.IsActive="{Binding IsConcreteViewActive}"
-                                 Margin="0,4">
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="Button">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text=""
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Concrete"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                        <Button  Padding="20,12"
-                                 MinHeight="48"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Command="{Binding SelectedBlockworkViewCommand}"
-                                 helpers:ButtonHelper.IsActive="{Binding IsBlockworkActive}"
-                                 Margin="0,4">
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="Button">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text=""
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Block Works"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                        <Button  Padding="20,12"
-                                 MinHeight="48"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Command="{Binding SelectedFinishesViewCommand}"
-                                 helpers:ButtonHelper.IsActive="{Binding IsFinishesActive}"
-                                 Margin="0,4">
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="Button">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text=""
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Finishes"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                        <Button  Padding="20,12"
-                                 MinHeight="48"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Command="{Binding SelectedRoofworkViewCommand}"
-                                 helpers:ButtonHelper.IsActive="{Binding IsRoofworkActive}"
-                                 Margin="0,4">
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="Button">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text=""
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Roofs"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                        <Button  Padding="20,12"
-                                 MinHeight="48"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Command="{Binding SelectedPaintworkViewCommand}"
-                                 helpers:ButtonHelper.IsActive="{Binding IsPaintingActive}"
-                                 Margin="0,4">
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="Button">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text=""
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Painting"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                        <Button  Padding="20,12"
-                                 MinHeight="48"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Command="{Binding SelectedSteelworkViewCommand}"
-                                 helpers:ButtonHelper.IsActive="{Binding IsSteelworkActive}"
-                                 Margin="0,4">
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="Button">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text=""
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Steel"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                        <Button  Padding="20,12"
-                                 MinHeight="48"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Command="{Binding SelectedWindowAndDoorViewCommand}"
-                                 helpers:ButtonHelper.IsActive="{Binding IsWindowAndDoorActive}"
-                                 Margin="0,4">
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="Button">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text=""
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Window and Door"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                        <Button  Padding="20,12"
-                                 MinHeight="48"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Command="{Binding SelectedCustomRateInputViewCommand}"
-                                 Margin="0,4">
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="Button">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text=""
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Saved Rates"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                    </StackPanel>
-
-                    <!-- pushes bottom actions down -->
-                    <Grid VerticalAlignment="Stretch" />
-
-                    <!-- bottom actions -->
-
-                    <!-- subtle divider -->
-                    <Rectangle Height="1"
-                               Margin="0,20,0,0"
-                               Fill="#D1D5DB" />
-                    <StackPanel Margin="0,40">
-                        <Button  Padding="20,12"
-                                 MinHeight="28"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Margin="0,4">
-                            <!--Command="{Binding SelectedCustomRateViewCommand}"
-                                 helpers:ButtonHelper.IsActive="{Binding IsCustomRateInputActive}"-->
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="{x:Type Button}">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text="&#xE115;"
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Settings"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                        <Button  Padding="20,12"
-                                 MinHeight="28"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Margin="0,4">
-                            <!--Command="{Binding SelectedCustomRateViewCommand}"
-         helpers:ButtonHelper.IsActive="{Binding IsCustomRateInputActive}"-->
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="{x:Type Button}">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text="&#xE720;"
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Help"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                        <Button  Padding="20,12"
-                                 MinHeight="28"
-                                 BorderThickness="0"
-                                 Cursor="Hand"
-                                 Command="{Binding LogoutCommand}"
-                                 Margin="0,4">
-
-                            <!--helpers:ButtonHelper.IsActive="{Binding IsCustomRateInputActive}"-->
-
-                            <!-- style placed locally for clarity; move to Resources if you prefer -->
-                            <Button.Style>
-                                <Style TargetType="{x:Type Button}">
-
-                                    <!-- default (idle) look -->
-                                    <Setter Property="Background"
-                                            Value="White" />
-                                    <Setter Property="Foreground"
-                                            Value="#091E39" />
-
-                                    <!-- very simple template – just a rounded border + the content -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="8">
-                                                    <ContentPresenter HorizontalAlignment="Left"
-                                                                      VerticalAlignment="Center" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-
-                                    <Style.Triggers>
-                                        <!-- hover highlight -->
-                                        <Trigger Property="IsMouseOver"
-                                                 Value="True">
-                                            <Setter Property="Background"
-                                                    Value="#F3F4F6" />
-                                        </Trigger>
-
-                                        <!-- ACTIVE / CURRENT page  -->
-                                        <Trigger Property="helpers:ButtonHelper.IsActive"
-                                                 Value="True">
-                                            <!-- very-light transparent blue -->
-                                            <Setter Property="Background"
-                                                    Value="#E8F0FF" />
-                                            <!-- make icon + text white -->
-                                            <Setter Property="Foreground"
-                                                    Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <!-- button content -->
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Center">
-
-                                <!-- icon -->
-                                <TextBlock Text="&#xE8AC;"
-                                           FontFamily="Segoe MDL2 Assets"
-                                           FontSize="20"
-                                           Foreground="#091E39" />
-
-                                <Rectangle Width="14"
-                                           Fill="Transparent" />
-
-                                <!-- label -->
-                                <TextBlock Text="Log out"
-                                           FontFamily="Poppins"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#091E39" />
-                            </StackPanel>
-                        </Button>
-
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-
-            <!--────────  HEADER  ─────────-->
-            <controls:Header Grid.Row="0"
-                             Grid.Column="1" />
-
-            <!--────────  BODY  ─────────-->
-            <Grid Grid.Row="1"
-                  Grid.Column="1">
+                <!-- ROWS  0-Header | 1-Body | 2-Footer -->
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="300" />
-                    <!-- top-nav -->
+                    <RowDefinition Height="60" />
                     <RowDefinition />
-                    <!-- workspace -->
+
                 </Grid.RowDefinitions>
 
-                <!-- top nav -->
-                <!--────────  WELCOME BANNER  ─────────-->
+                <!-- COLUMNS  0-Sidebar | 1-Main -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!--────────  SIDEBAR – spans ALL rows  ────────-->
                 <Border Grid.Row="0"
-                        Margin="12 0 12 10"
-                        Height="250"
-                        CornerRadius="18"
-                        SnapsToDevicePixels="True">
+                        Grid.Column="0"
+                        Grid.RowSpan="3"
+                        Background="White"
+                        CornerRadius="0,0,16,0"
+                        Effect="{StaticResource SoftShadow}">
 
-                    <!-- background gradient -->
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0"
-                                             EndPoint="1,0">
-                            <GradientStop Color="#001533"
-                                          Offset="0" />
-                            <GradientStop Color="#001533"
-                                          Offset="0.45" />
-                            <GradientStop Color="#00153300"
-                                          Offset="1" />
-                        </LinearGradientBrush>
-                    </Border.Background>
+                    <!-- inner content with generous margin -->
+                    <StackPanel Margin="24,32,24,24"
+                                VerticalAlignment="Stretch">
 
-                    <!-- *** SINGLE child *** -->
-                    <Grid>
+                        <!-- ───── logo ───── -->
+                        <Image Source="/Resources/adlm_rate_generator_logo_small.png"
+                               Width="120"
+                               Margin="0,0,0,32"
+                               HorizontalAlignment="Center" />
 
-                        <!-- layer ①  house photo -->
-                        <Image Source="/Resources/banner_house.png"
-                               Stretch="Fill"
-                               HorizontalAlignment="Right"
-                               Width="520"
-                               Opacity="0.35" />
+                        <!-- ───── Library (primary) ───── -->
+                        <!-- ───── Library  (icon + white bold Poppins text) ───── -->
+                        <Button Style="{StaticResource NavPrimaryButton}"
+                                Command="{Binding SelectedMaterialLibraryViewCommand}"
+                                helpers:ButtonHelper.IsActive="{Binding IsMaterialLibraryActive}"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center">
 
-                        <!-- layer ②  big hexagon -->
-                        <Image Source="/Resources/hex_big.png"
-                               Width="220"
-                               HorizontalAlignment="Right"
-                               Margin="0 -100 5 0" />
+                            <!-- centred horizontal layout -->
+                            <Grid HorizontalAlignment="Center"
+                                  VerticalAlignment="Center">
 
-                        <!-- ── layer 3 : SMALL hex badge ── -->
-                        <Image Source="/Resources/hex_big.png"
-                               Width="100"
-                               HorizontalAlignment="Right"
-                               Margin="0,125,250,0"
-                               RenderTransformOrigin="0.5,0.5">
-                            <!-- tiny perspective tilt for depth -->
-                            <Image.RenderTransform>
-                                <RotateTransform Angle="-8" />
-                            </Image.RenderTransform>
-                        </Image>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                        <!-- layer ③  content -->
-                        <Grid Margin="36">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="20" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                                <!-- ①  icon – replace Source with whatever you put in /Resources -->
 
-                            <!-- badge -->
-                            <Image Source="/Resources/adlm_badge.png"
-                                   Width="52"
-                                   Margin="0 90 28 0"
-                                   VerticalAlignment="Top" />
+                                <fa:IconBlock Icon="ThLarge"
+                                              Width="24"
+                                              Height="20"
+                                              Margin="0,0,8,0"
+                                              Foreground="White" />
 
-                            <!-- text block -->
-                            <!-- text / CTA block  (replace the old StackPanel with this) -->
-                            <Grid Grid.Column="2"
-                                  HorizontalAlignment="Left"
-                                  VerticalAlignment="Top"
-                                  Margin="0,12,0,0">
 
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Row="0"
+                                <!-- ②  label -->
+                                <TextBlock Text="Library"
+                                           Grid.Column="1"
+                                           Foreground="White"
                                            FontFamily="Poppins"
-                                           FontSize="11"
-                                           Foreground="#C6D1E7"
-                                           Text="{Binding Source={x:Static sys:DateTime.Now},
+                                           FontWeight="Bold"
+                                           FontSize="20" />
+                            </Grid>
+                        </Button>
+
+
+                        <!-- section label -->
+                        <TextBlock Text="Item of works"
+                                   FontFamily="Poppins"
+                                   Margin="0,24,0,12"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"
+                                   Foreground="#091E39" />
+
+                        <!-- subtle divider -->
+                        <Rectangle Height="1"
+                                   Margin="0,20,0,0"
+                                   Fill="#D1D5DB" />
+
+                        <!-- work-item buttons -->
+                        <StackPanel>
+                            <!-- ─── Ground nav-button ─────────────────────────────────────────────── -->
+                            <Button  Style="{StaticResource SidebarSubButton}"
+                                     Padding="20,12"
+                                     MinHeight="48"
+                                     BorderThickness="0"
+                                     Cursor="Hand"
+                                     Command="{Binding SelectedGroundworkViewCommand}"
+                                     helpers:ButtonHelper.IsActive="{Binding IsGroundworkActive}"
+                                     Margin="0,4">
+
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="TruckPickup"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0"
+                                                  />
+
+
+                                    <Rectangle Width="14"
+                                               Fill="Transparent"
+                                                />
+
+                                    <!-- label -->
+                                    <TextBlock Text="Ground"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button  Style="{StaticResource SidebarSubButton}"
+                                     Padding="20,12"
+                                     MinHeight="48"
+                                     BorderThickness="0"
+                                     Cursor="Hand"
+                                     Command="{Binding SelectedConcreteWorkViewCommand}"
+                                     helpers:ButtonHelper.IsActive="{Binding IsConcreteViewActive}"
+                                     Margin="0,4">
+
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="Mixer"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0" />
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+
+                                    <!-- label -->
+                                    <TextBlock Text="Concrete"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button  Style="{StaticResource SidebarSubButton}"
+                                     Padding="20,12"
+                                     MinHeight="48"
+                                     BorderThickness="0"
+                                     Cursor="Hand"
+                                     Command="{Binding SelectedBlockworkViewCommand}"
+                                     helpers:ButtonHelper.IsActive="{Binding IsBlockworkActive}"
+                                     Margin="0,4">
+
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="TrowelBricks"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0" />
+
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+
+                                    <!-- label -->
+                                    <TextBlock Text="Block Works"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button  Style="{StaticResource SidebarSubButton}"
+                                     Padding="20,12"
+                                     MinHeight="48"
+                                     BorderThickness="0"
+                                     Cursor="Hand"
+                                     Command="{Binding SelectedFinishesViewCommand}"
+                                     helpers:ButtonHelper.IsActive="{Binding IsFinishesActive}"
+                                     Margin="0,4">
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="SheetPlastic"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0" />
+
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+
+                                    <!-- label -->
+                                    <TextBlock Text="Finishes"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button  Style="{StaticResource SidebarSubButton}"
+                                     Padding="20,12"
+                                     MinHeight="48"
+                                     BorderThickness="0"
+                                     Cursor="Hand"
+                                     Command="{Binding SelectedRoofworkViewCommand}"
+                                     helpers:ButtonHelper.IsActive="{Binding IsRoofworkActive}"
+                                     Margin="0,4">
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="PeopleRoof"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0" />
+
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+
+                                    <!-- label -->
+                                    <TextBlock Text="Roofs"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button  Style="{StaticResource SidebarSubButton}"
+                                     Padding="20,12"
+                                     MinHeight="48"
+                                     BorderThickness="0"
+                                     Cursor="Hand"
+                                     Command="{Binding SelectedPaintworkViewCommand}"
+                                     helpers:ButtonHelper.IsActive="{Binding IsPaintingActive}"
+                                     Margin="0,4">
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="PaintRoller"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0" />
+
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+
+                                    <!-- label -->
+                                    <TextBlock Text="Painting"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button  Style="{StaticResource SidebarSubButton}"
+                                     Padding="20,12"
+                                     MinHeight="48"
+                                     BorderThickness="0"
+                                     Cursor="Hand"
+                                     Command="{Binding SelectedSteelworkViewCommand}"
+                                     helpers:ButtonHelper.IsActive="{Binding IsSteelworkActive}"
+                                     Margin="0,4">
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="DrumSteelpan"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0" />
+
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+
+                                    <!-- label -->
+                                    <TextBlock Text="Steel"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button  Style="{StaticResource SidebarSubButton}"
+                                     Command="{Binding SelectedWindowAndDoorViewCommand}"
+                                     helpers:ButtonHelper.IsActive="{Binding IsWindowAndDoorActive}"
+                                     Margin="0,4">
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="DoorOpen"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0" />
+
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+
+
+                                    <!-- label -->
+                                    <TextBlock Text="Window and Door"
+                                               TextWrapping="Wrap"
+                                               MaxWidth="120"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39"
+                                               VerticalAlignment="Center" />
+
+                                </StackPanel>
+                            </Button>
+
+                            <Button  Style="{StaticResource SidebarSubButton}"
+                                     Command="{Binding SelectedCustomRateInputViewCommand}"
+                                     Margin="0,4">
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="Save"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0" />
+
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+
+                                    <!-- label -->
+                                    <TextBlock Text="Saved Rates"
+                                               TextWrapping="Wrap"
+                                               MaxWidth="120"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39" />
+                                </StackPanel>
+                            </Button>
+
+                        </StackPanel>
+
+                        <!-- pushes bottom actions down -->
+                        <Grid VerticalAlignment="Stretch" />
+
+                        <!-- bottom actions -->
+
+                        <!-- subtle divider -->
+                        <Rectangle Height="1"
+                                   Margin="0,20,0,0"
+                                   Fill="#D1D5DB" />
+
+
+                        <StackPanel Margin="0,40">
+
+
+                            <Button  Style="{StaticResource SidebarSubButton}"
+                                     Padding="20,12"
+                                     MinHeight="28"
+                                     BorderThickness="0"
+                                     Cursor="Hand"
+                                     Margin="0,4">
+
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="HandsHelping"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0" />
+
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+
+                                    <!-- label -->
+                                    <TextBlock Text="Help"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource SidebarSubButton}"
+                                    Padding="20,12"
+                                    MinHeight="28"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Command="{Binding LogoutCommand}"
+                                    Margin="0,4">
+
+                                <!-- button content -->
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+
+                                
+                                    <!-- icon -->
+                                    <fa:IconBlock Icon="RightFromBracket"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Margin="0" />
+
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+
+                                    <!-- label -->
+                                    <TextBlock Text="Log out"
+                                               FontFamily="Poppins"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#091E39" />
+                                </StackPanel>
+                            </Button>
+
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+
+                <!--────────  HEADER  ─────────-->
+                <controls:Header Grid.Row="0"
+                                 Grid.Column="1" />
+
+                <!--────────  BODY  ─────────-->
+                <Grid Grid.Row="1"
+                      Grid.Column="1"
+                      Margin="30,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="300" />
+                        <!-- top-nav -->
+                        <RowDefinition />
+                        <!-- workspace -->
+                    </Grid.RowDefinitions>
+
+                    <!-- top nav -->
+                    <!--────────  WELCOME BANNER  ─────────-->
+                    <Border Grid.Row="0"
+                            Margin="12 0 12 10"
+                            Height="250"
+                            CornerRadius="18"
+                            SnapsToDevicePixels="True">
+
+                        <!-- background gradient -->
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0"
+                                                 EndPoint="1,0">
+                                <GradientStop Color="#001533"
+                                              Offset="0" />
+                                <GradientStop Color="#001533"
+                                              Offset="0.45" />
+                                <GradientStop Color="#00153300"
+                                              Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+
+                        <!-- *** SINGLE child *** -->
+                        <Grid>
+
+                            <!-- layer ①  house photo -->
+                            <Image Source="/Resources/banner_house.png"
+                                   Stretch="Fill"
+                                   HorizontalAlignment="Right"
+                                   Width="520"
+                                   Opacity="0.35" />
+
+                            <!-- layer ②  big hexagon -->
+                            <Image Source="/Resources/hex_big.png"
+                                   Width="220"
+                                   HorizontalAlignment="Right"
+                                   Margin="0 -100 5 0" />
+
+                            <!-- ── layer 3 : SMALL hex badge ── -->
+                            <Image Source="/Resources/hex_big.png"
+                                   Width="100"
+                                   HorizontalAlignment="Right"
+                                   Margin="0,125,250,0"
+                                   RenderTransformOrigin="0.5,0.5">
+                                <!-- tiny perspective tilt for depth -->
+                                <Image.RenderTransform>
+                                    <RotateTransform Angle="-8" />
+                                </Image.RenderTransform>
+                            </Image>
+
+                            <!-- layer ③  content -->
+                            <Grid Margin="36">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- badge -->
+                                <Image Source="/Resources/adlm_badge.png"
+                                       Width="52"
+                                       Margin="0 90 28 0"
+                                       VerticalAlignment="Top" />
+
+                                <!-- text block -->
+                                <!-- text / CTA block  (replace the old StackPanel with this) -->
+                                <Grid Grid.Column="2"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Top"
+                                      Margin="0,12,0,0">
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0"
+                                               FontFamily="Poppins"
+                                               FontSize="11"
+                                               Foreground="#C6D1E7"
+                                               Text="{Binding Source={x:Static sys:DateTime.Now},
                               StringFormat='{}{0:dddd, d MMMM yyyy | h:mm tt}'}" />
 
-                                <!-- ⬆ headline in its own row -->
-                                <TextBlock Grid.Row="1"
-                                           TextAlignment="Left"
-                                           FontFamily="Poppins"
-                                           FontSize="28"
-                                           Foreground="White"
-                                           FontWeight="SemiBold">
+                                    <!-- ⬆ headline in its own row -->
+                                    <TextBlock Grid.Row="1"
+                                               TextAlignment="Left"
+                                               FontFamily="Poppins"
+                                               FontSize="28"
+                                               Foreground="White"
+                                               FontWeight="SemiBold">
 
         <Run Text="Welcome Back, " />
         <Run Text="{Binding CurrentUser.Username,
                             Converter={StaticResource FirstNameConv}}"
-                                    FontWeight="Bold" />
+                                        FontWeight="Bold" />
         <Run Text="!" />
-                                </TextBlock>
+                                    </TextBlock>
 
-                                <!-- ⬇ body copy & CTA share the 2nd row -->
-                                <StackPanel Grid.Row="2"
-                                            Orientation="Vertical"
-                                            HorizontalAlignment="Left">
+                                    <!-- ⬇ body copy & CTA share the 2nd row -->
+                                    <StackPanel Grid.Row="2"
+                                                Orientation="Vertical"
+                                                HorizontalAlignment="Left">
 
-                                    <TextBlock Text="Extracting your quantities just got a lot easier. Try out our Revit and Planswift plugins today!"
-                                               MaxWidth="380"
-                                               TextAlignment="Left"
-                                               TextWrapping="Wrap"
-                                               FontFamily="Poppins"
-                                               Margin="0,10,0,0"
-                                               FontSize="12"
-                                               Foreground="#D8E0F4" />
+                                        <TextBlock Text="Extracting your quantities just got a lot easier. Try out our Revit and Planswift plugins today!"
+                                                   MaxWidth="380"
+                                                   TextAlignment="Left"
+                                                   TextWrapping="Wrap"
+                                                   FontFamily="Poppins"
+                                                   Margin="0,10,0,0"
+                                                   FontSize="12"
+                                                   Foreground="#D8E0F4" />
 
-                                    <!-- little breathing room -->
-                                    <Button Content="Try now  ➜"
-                                            Command="{Binding OpenYoutubeCommand}"
-                                            Margin="0,20,150,0"
-                                            Padding="16 6"
-                                            FontFamily="Poppins"
-                                            FontSize="13"
-                                            Foreground="#F46A27"
-                                            Background="#F46A27"
-                                            BorderBrush="#F46A27"
-                                            BorderThickness="1"
-                                            Cursor="Hand"
-                                            Width="192"
-                                            Height="31" />
-                                </StackPanel>
+                                        <!-- little breathing room -->
+                                        <Button Content="Try now  ➜"
+                                                Command="{Binding OpenYoutubeCommand}"
+                                                Margin="0,20,150,0"
+                                                Padding="16 6"
+                                                FontFamily="Poppins"
+                                                FontSize="13"
+                                                Foreground="#F46A27"
+                                                Background="#F46A27"
+                                                BorderBrush="#F46A27"
+                                                BorderThickness="1"
+                                                Cursor="Hand"
+                                                Width="192"
+                                                Height="31" />
+                                    </StackPanel>
+                                </Grid>
+
                             </Grid>
-
                         </Grid>
-                    </Grid>
-                </Border>
+                    </Border>
 
 
 
-                <!-- workspace -->
-                <ContentControl Grid.Row="1"
-                                Content="{Binding SelectedViewModel}" />
+                    <!-- workspace -->
+                    <ContentControl Grid.Row="1"
+                                    Content="{Binding SelectedViewModel}" />
+                </Grid>
+
+
             </Grid>
+            <view:PopupHost x:Name="PopupHost"
+                            Visibility="Collapsed"
+                            Panel.ZIndex="99" />
 
 
         </Grid>
-        <view:PopupHost x:Name="PopupHost"
-                        Visibility="Collapsed"
-                        Panel.ZIndex="99" />
-
-
-    </Grid>
     </Viewbox>
 
 </Window>

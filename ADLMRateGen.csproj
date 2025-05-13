@@ -20,9 +20,14 @@
     <None Remove="Resources\adlm_rate_generator_logo_small.png" />
     <None Remove="Resources\adlm_studio_logo_small.png" />
     <None Remove="Resources\bg_frame.png" />
+    <None Remove="Resources\EUR.png" />
+    <None Remove="Resources\GHS.png" />
     <None Remove="Resources\hex_big.png" />
+    <None Remove="Resources\NGN.png" />
     <None Remove="Resources\panel_blueprint.png" />
+    <None Remove="Resources\QAR.png" />
     <None Remove="Resources\user_avatar.jpg" />
+    <None Remove="Resources\ZAR.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,18 +68,37 @@
     <Resource Include="Resources\bg_frame.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\eur.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ghs.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\hex_big.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ngn.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\panel_blueprint.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\qar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\usd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\user_avatar.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\zar.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.PixelartIcons" Version="5.1.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.RadixIcons" Version="5.1.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.SimpleIcons" Version="5.1.0" />

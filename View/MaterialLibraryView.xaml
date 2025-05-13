@@ -3,365 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="1000">
 
-    <!-- ─────────────── Resources ─────────────── -->
-    <UserControl.Resources>
-        <!-- Brushes -->
-        <SolidColorBrush x:Key="PrimaryBrush"
-                         Color="#F7FAFC" />
-        <SolidColorBrush x:Key="PrimaryBrush2"
-                         Color="Black" />
-        <SolidColorBrush x:Key="LightGrayBrush"
-                         Color="#F7FAFC" />
-        <SolidColorBrush x:Key="BorderBrushLight"
-                         Color="#CBD5E0" />
-        <SolidColorBrush x:Key="AltRowBrush"
-                         Color="#EDF2F7" />
-        <SolidColorBrush x:Key="BackgroundBrush"
-                         Color="White" />
-        <SolidColorBrush x:Key="HeaderBgBrush"
-                         Color="#F2F6FF" />
-        <SolidColorBrush x:Key="HeaderTextBrush"
-                         Color="#2D3748" />
-        <SolidColorBrush x:Key="CellTextBrush"
-                         Color="#2D3748" />
-
-        <!-- FontFamily -->
-        <FontFamily x:Key="PoppinsFont">Poppins</FontFamily>
-
-        <!-- TextBox Style -->
-        <Style x:Key="TextBoxStyle"
-               TargetType="TextBox">
-            <Setter Property="Background"
-                    Value="White" />
-            <Setter Property="BorderBrush"
-                    Value="{StaticResource BorderBrushLight}" />
-            <Setter Property="BorderThickness"
-                    Value="1" />
-            <Setter Property="Padding"
-                    Value="8,0" />
-            <Setter Property="FontSize"
-                    Value="14" />
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center" />
-            <Setter Property="FontFamily"
-                    Value="{StaticResource PoppinsFont}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="6">
-                            <ScrollViewer x:Name="PART_ContentHost" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- ───── Toolbar ComboBox ───── -->
-        <Style x:Key="TopNavComboBoxStyle"
-               TargetType="ComboBox">
-            <Setter Property="Background"
-                    Value="White" />
-            <Setter Property="BorderBrush"
-                    Value="{StaticResource BorderBrushLight}" />
-            <Setter Property="BorderThickness"
-                    Value="1" />
-            <Setter Property="Padding"
-                    Value="12,4" />
-            <Setter Property="FontFamily"
-                    Value="{StaticResource PoppinsFont}" />
-            <Setter Property="FontWeight"
-                    Value="SemiBold" />
-            <Setter Property="FontSize"
-                    Value="14" />
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center" />
-            <Setter Property="HorizontalContentAlignment"
-                    Value="Left" />
-            <Setter Property="SnapsToDevicePixels"
-                    Value="True" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ComboBox">
-                        <Grid>
-                            <!-- the closed‐state border + selected‐item -->
-                            <Border x:Name="Bd"
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="6">
-                                <Grid>
-                                    <!-- content -->
-                                    <ContentPresenter x:Name="ContentSite"
-                                                      Margin="8,0,28,0"
-                                                      VerticalAlignment="Center"
-                                                      Content="{TemplateBinding SelectionBoxItem}"
-                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
-
-                                    <!-- down arrow -->
-                                    <TextBlock Text="⌄"
-                                               FontFamily="Segoe MDL2 Assets"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Right"
-                                               Margin="0,0,12,0"
-                                               Foreground="{TemplateBinding Foreground}" />
-
-                                    <!-- toggle button to open/close -->
-                                    <ToggleButton x:Name="DropDownToggle"
-                                                  Focusable="False"
-                                                  IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                                  HorizontalAlignment="Right"
-                                                  Width="28"
-                                                  Background="Transparent"
-                                                  BorderBrush="Transparent" />
-                                </Grid>
-                            </Border>
-
-                            <!-- the drop-down list -->
-                            <Popup x:Name="PART_Popup"
-                                   Placement="Bottom"
-                                   IsOpen="{TemplateBinding IsDropDownOpen}"
-                                   AllowsTransparency="True"
-                                   Focusable="False"
-                                   PopupAnimation="Fade">
-                                <Border x:Name="PopupBorder"
-                                        Background="White"
-                                        BorderBrush="{StaticResource BorderBrushLight}"
-                                        BorderThickness="1"
-                                        CornerRadius="6"
-                                        Margin="0,4,0,0">
-                                    <ScrollViewer>
-                                        <ItemsPresenter />
-                                    </ScrollViewer>
-                                </Border>
-                            </Popup>
-                        </Grid>
-
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
-                                <Setter TargetName="Bd"
-                                        Property="Background"
-                                        Value="{StaticResource LightGrayBrush}" />
-                            </Trigger>
-                            <Trigger Property="HasItems"
-                                     Value="False">
-                                <Setter TargetName="PopupBorder"
-                                        Property="MinHeight"
-                                        Value="95" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled"
-                                     Value="False">
-                                <Setter Property="Foreground"
-                                        Value="#888" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Toolbar Button (white) -->
-        <Style x:Key="TopNavButtonStyle"
-               TargetType="Button">
-            <Setter Property="Background"
-                    Value="White" />
-            <Setter Property="BorderBrush"
-                    Value="{StaticResource BorderBrushLight}" />
-            <Setter Property="BorderThickness"
-                    Value="1" />
-            <Setter Property="Padding"
-                    Value="12,4" />
-            <Setter Property="FontSize"
-                    Value="14" />
-            <Setter Property="FontFamily"
-                    Value="{StaticResource PoppinsFont}" />
-            <Setter Property="FontWeight"
-                    Value="SemiBold" />
-            <Setter Property="Cursor"
-                    Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="6">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver"
-                         Value="True">
-                    <Setter Property="Background"
-                            Value="{StaticResource LightGrayBrush}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Primary CTA Button -->
-        <Style x:Key="PrimaryButtonStyle"
-               TargetType="Button"
-               BasedOn="{StaticResource TopNavButtonStyle}">
-            <Setter Property="Background"
-                    Value="{StaticResource PrimaryBrush}" />
-            <Setter Property="BorderBrush"
-                    Value="{StaticResource PrimaryBrush}" />
-            <Setter Property="Foreground"
-                    Value="White" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver"
-                         Value="True">
-                    <Setter Property="Background"
-                            Value="#2C6FB8" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- DataGrid Style -->
-        <Style x:Key="DataGridStyle"
-               TargetType="DataGrid">
-            <Setter Property="Background"
-                    Value="White" />
-            <Setter Property="BorderBrush"
-                    Value="{StaticResource BorderBrushLight}" />
-            <Setter Property="BorderThickness"
-                    Value="1" />
-            <Setter Property="RowBackground"
-                    Value="White" />
-            <Setter Property="AlternatingRowBackground"
-                    Value="{StaticResource AltRowBrush}" />
-            <Setter Property="GridLinesVisibility"
-                    Value="None" />
-            <Setter Property="HeadersVisibility"
-                    Value="Column" />
-            <Setter Property="AutoGenerateColumns"
-                    Value="False" />
-            <Setter Property="CanUserAddRows"
-                    Value="False" />
-            <Setter Property="CanUserDeleteRows"
-                    Value="False" />
-            <Setter Property="RowHeaderWidth"
-                    Value="0" />
-            <Setter Property="ColumnHeaderHeight"
-                    Value="48" />
-            <Setter Property="FontSize"
-                    Value="14" />
-            <Setter Property="FontFamily"
-                    Value="{StaticResource PoppinsFont}" />
-            <Setter Property="RowHeight"
-                    Value="42" />
-
-            <!-- Cell Style -->
-            <Setter Property="CellStyle">
-                <Setter.Value>
-                    <Style TargetType="DataGridCell">
-                        <Setter Property="Padding"
-                                Value="8,0" />
-                        <Setter Property="VerticalContentAlignment"
-                                Value="Center" />
-                        <Setter Property="FontWeight"
-                                Value="SemiBold" />
-                        <Setter Property="Foreground"
-                                Value="{StaticResource CellTextBrush}" />
-                        <Setter Property="FontFamily"
-                                Value="{StaticResource PoppinsFont}" />
-                    </Style>
-                </Setter.Value>
-            </Setter>
-
-            <!-- Column Header Style -->
-            <Setter Property="ColumnHeaderStyle">
-                <Setter.Value>
-                    <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background"
-                                Value="{StaticResource HeaderBgBrush}" />
-                        <Setter Property="Foreground"
-                                Value="{StaticResource HeaderTextBrush}" />
-                        <Setter Property="FontWeight"
-                                Value="SemiBold" />
-                        <Setter Property="FontFamily"
-                                Value="{StaticResource PoppinsFont}" />
-                        <Setter Property="HorizontalContentAlignment"
-                                Value="Center" />
-                        <Setter Property="VerticalContentAlignment"
-                                Value="Center" />
-                        <Setter Property="BorderThickness"
-                                Value="0" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="DataGridColumnHeader">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="6,6,0,0">
-                                        <ContentPresenter HorizontalAlignment="Center"
-                                                          VerticalAlignment="Center" />
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Setter.Value>
-            </Setter>
-
-            <!-- Row Style -->
-            <Setter Property="RowStyle">
-                <Setter.Value>
-                    <Style TargetType="DataGridRow">
-                        <Setter Property="BorderThickness"
-                                Value="0" />
-                        <Setter Property="Margin"
-                                Value="0,2" />
-                        <Setter Property="Cursor"
-                                Value="Hand" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="DataGridRow">
-                                    <Border Background="{TemplateBinding Background}">
-                                        <DataGridCellsPresenter />
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
-                                <Setter Property="Background"
-                                        Value="{StaticResource AltRowBrush}" />
-                            </Trigger>
-                            <Trigger Property="IsSelected"
-                                     Value="True">
-                                <Setter Property="Background"
-                                        Value="{StaticResource PrimaryBrush}" />
-                                <Setter Property="Foreground"
-                                        Value="White" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
-
 
     <!-- ───────── Layout ───────── -->
     <Border BorderBrush="{StaticResource PrimaryBrush}"
-            Margin="12 6 12 10"
             BorderThickness="1"
             CornerRadius="12"
             Padding="12"
             Background="{StaticResource BackgroundBrush}">
-        <Grid>
+
+        <Grid Margin="10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -372,7 +28,9 @@
                     CornerRadius="6"
                     Padding="8"
                     Margin="0,0,0,16">
-                <Grid VerticalAlignment="Center">
+
+                <Grid VerticalAlignment="Center"
+                      Margin="10,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2.5*" />
                         <ColumnDefinition Width="Auto" />
@@ -382,17 +40,20 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Search -->
-                    <Grid Grid.Column="0"
-                          Height="32">
-                        <TextBox Style="{StaticResource TextBoxStyle}"
+                    <Grid Grid.Column="0">
+                        <TextBox Style="{StaticResource HollowBox}"
                                  Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
                                  Padding="32,0,48,0" />
-                        <TextBlock Text=""
-                                   FontFamily="Segoe MDL2 Assets"
-                                   FontSize="14"
-                                   VerticalAlignment="Center"
-                                   Margin="8,0,0,0"
-                                   Foreground="{StaticResource BorderBrushLight}" />
+                        <!-- icon -->
+                        <fa:IconBlock Icon="Search"
+                                      Width="24"
+                                      Height="24"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Left"
+                                      Margin="8,8,0,0"
+                                      Foreground="{StaticResource BorderBrushLight}"
+                                      Panel.ZIndex="1" />
+
                         <TextBlock Text="⌘F"
                                    VerticalAlignment="Center"
                                    HorizontalAlignment="Right"
@@ -405,14 +66,14 @@
                               ItemsSource="{Binding MaterialCategory}"
                               SelectedItem="{Binding SelectedMaterialCategory, Mode=TwoWay}"
                               Style="{StaticResource TopNavComboBoxStyle}"
-                              Width="250"
-                              Height="30"
+                              Width="100"
                               Margin="12,0" />
 
                     <!-- Sort by -->
                     <Button Grid.Column="2"
-                            Style="{StaticResource TopNavButtonStyle}"
+                            Style="{StaticResource PrimaryButtonStyle}"
                             Content="Sort by ▼"
+                            Width="100"
                             Margin="0,0,12,0" />
 
                     <!-- Spacer -->
@@ -423,60 +84,90 @@
                     <Button Grid.Column="4"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{Binding UpdatePricesCommand}"
-                            Content="Update Prices" />
+                            Content="Update Prices"
+                            Width="150"/>
                 </Grid>
             </Border>
 
             <!-- DataGrid -->
-            <DataGrid Grid.Row="2"
+            <DataGrid Grid.Row="1"
                       ItemsSource="{Binding MaterialCollectionView}"
                       Style="{StaticResource DataGridStyle}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="S/N"
                                         Binding="{Binding SerialNumber}"
-                                        Width="60" />
+                                        Width="60">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment"
+                                        Value="Center" />
+                                <Setter Property="VerticalAlignment"
+                                        Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
 
                     <DataGridTemplateColumn Header="Material Name"
                                             Width="*">
+
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <!-- A button that looks like plain text -->
-                                <Button Background="Transparent"
-                                        BorderThickness="0"
-                                        Padding="0"
-                                        Cursor="Hand"
-                                        Command="{Binding DataContext.EditMaterialCommand,
+                                <TextBlock Text="{Binding MaterialName}"
+                                           TextTrimming="CharacterEllipsis"
+                                           FontFamily="{StaticResource PoppinsFont}"
+                                           Foreground="{StaticResource Blue900Brush}">
+                                    <TextBlock.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick"
+                                                      Command="{Binding DataContext.EditMaterialCommand,
                   RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}">
-                                    <TextBlock Text="{Binding MaterialName}"
-                                               Foreground="{StaticResource PrimaryBrush2}"
-                                               FontFamily="{StaticResource PoppinsFont}"
-                                               FontWeight="SemiBold"
-                                               TextTrimming="CharacterEllipsis" />
-                                </Button>
+                                                      CommandParameter="{Binding}" />
+                                    </TextBlock.InputBindings>
+                                </TextBlock>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
+
                     </DataGridTemplateColumn>
 
 
                     <DataGridTextColumn Header="Material Unit"
                                         Binding="{Binding MaterialUnit}"
-                                        Width="120" />
-
-                    <DataGridTextColumn Header="Price (NGN)"
-                                        Binding="{Binding MaterialPrice, Converter={StaticResource MoneyConv},Mode=OneWay, StringFormat=N0}"
-                                        Width="100">
-                        <DataGridTextColumn.CellStyle>
-                            <Style TargetType="DataGridCell">
-                                <Setter Property="TextBlock.TextAlignment"
-                                        Value="Right" />
+                                        Width="120">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment"
+                                        Value="Center" />
+                                <Setter Property="VerticalAlignment"
+                                        Value="Center" />
                             </Style>
-                        </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="Price"
+                                        Binding="{Binding MaterialPrice, Converter={StaticResource MoneyConv},Mode=OneWay, StringFormat=N0}"
+                                        Width="150">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment"
+                                        Value="Left" />
+                                <Setter Property="VerticalAlignment"
+                                        Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
                     <DataGridTextColumn Header="Category"
                                         Binding="{Binding MaterialCategory}"
-                                        Width="2*" />
+                                        Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment"
+                                        Value="Center" />
+                                <Setter Property="VerticalAlignment"
+                                        Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

@@ -11,39 +11,66 @@
 
         <!--──────── TOP TAB BAR ─────────-->
         <Grid Height="60"
-              VerticalAlignment="Top"
-              Background="#F5F6F7">
+              VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="220" />
             </Grid.ColumnDefinitions>
 
-            <!-- Material tab -->
-            <ToggleButton Grid.Column="0"
-                          IsChecked="{Binding IsMaterialTab, Mode=TwoWay}"
-                          Style="{StaticResource FlatTabButton}">
-                Material
-            </ToggleButton>
+            <Border CornerRadius="16"
+                    SnapsToDevicePixels="True"
+                    Background="White">
 
-            <!-- Labour tab -->
-            <ToggleButton Grid.Column="1"
-                          IsChecked="{Binding IsLabourTab, Mode=TwoWay}"
-                          Style="{StaticResource FlatTabButton}">
-                Labour
-            </ToggleButton>
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+
+                    </Grid.ColumnDefinitions>
+                    <!-- Material tab -->
+                    <RadioButton Grid.Column="0"
+                                 IsChecked="{Binding IsMaterialTab, Mode=TwoWay}"
+                                 Style="{StaticResource FlatTabButton}">
+                        Material
+                    </RadioButton>
+
+                    <!-- Labour tab -->
+                    <RadioButton Grid.Column="1"
+                                 IsChecked="{Binding IsLabourTab, Mode=TwoWay}"
+                                 Style="{StaticResource FlatTabButton}">
+                        Labour
+                    </RadioButton>
+                </Grid>
+            </Border>
+
+
 
             <!-- Add button -->
+
+          
             <Button Grid.Column="2"
-                    Content="{Binding AddButtonText}"
+                  
                     Command="{Binding AddCommand}"
-                    Style="{StaticResource PrimaryAccentButton}"
+                    Style="{DynamicResource PrimaryButton}"
                     HorizontalAlignment="Right"
-                    Margin="0,0,12,0" />
+                    Foreground="White"
+                    Margin="0,0,12,0">
+                <TextBlock Text="{Binding AddButtonText}"
+                           Foreground="White"
+                           FontWeight="SemiBold"
+                           FontSize="19"
+                           TextAlignment="Center" />
+            </Button>
         </Grid>
 
         <!--──────── BODY (fills remaining space) ─────────-->
         <ContentControl Content="{Binding CurrentContent}"
-                        Margin="0,68,0,0" />
+                        Margin="0,88,0,0" />
+
     </Grid>
+
+
+
 </UserControl>
