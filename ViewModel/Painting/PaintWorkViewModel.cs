@@ -324,7 +324,7 @@ namespace ADLMRateGen.ViewModel.Painting
                 Description = "Prepare and apply one undercoat anti-fungal paint and " +
                 "one finish coat white texcote (peacock) paint to wall not exceeding " +
                 "4.00m from ground level, on blockwork or concrete externally.",
-                Unit = "M2",
+                Unit = "m2",
                 NetCost = Math.Round(netCostPerSqm, 2),
                 OverheadValue = Math.Round(ohp.overheadVal, 2),
                 ProfitValue = Math.Round(ohp.profitVal, 2),
@@ -401,7 +401,7 @@ namespace ADLMRateGen.ViewModel.Painting
                 ItemNo = 2,
                 Description = "Prepare and apply white texcote (peacock) paint to wall " +
                 "not exceeding 4.00m from ground level internally.",
-                Unit = "M2",
+                Unit = "m2",
                 NetCost = Math.Round(netCostPerSqm, 2),
                 OverheadValue = Math.Round(ohp.overheadVal, 2),
                 ProfitValue = Math.Round(ohp.profitVal, 2),
@@ -477,7 +477,7 @@ namespace ADLMRateGen.ViewModel.Painting
             {
                 ItemNo = 3,
                 Description = "Prepare and apply one undercoat and two finish coats quality, white emulsion  paint, to wall not exceeding 4.00m from ground level internally.",
-                Unit = "M2",
+                Unit = "m2",
                 NetCost = Math.Round(netCostPerSqm, 2),
                 OverheadValue = Math.Round(ohp.overheadVal, 2),
                 ProfitValue = Math.Round(ohp.profitVal, 2),
@@ -654,7 +654,7 @@ namespace ADLMRateGen.ViewModel.Painting
 			{
 				ItemNo = 4,
 				Description = "Prepare  steel surface  to Mobil SP10, cleaning surface of grease, sand-blasting and applying high build epoxy priming coat and Mobil beige finish coat -(Ameron Paints)",
-				Unit = "M2",
+				Unit = "m2",
 				NetCost = Math.Round(netCostPerSqm, 2),
 				OverheadValue = Math.Round(ohp.overheadVal, 2),
 				ProfitValue = Math.Round(ohp.profitVal, 2),
@@ -859,7 +859,7 @@ namespace ADLMRateGen.ViewModel.Painting
 				ItemNo = 5,
 				Description = "Prepare surface of steel to SP10, apply zinc silicate as base coat, thinned high build epoxy as first coat, " +
                 "high build epoxy as second coat and urethane enamel as top coat, all works completed as specified. (Mobil EPG 35-B-70 Rev Oct 1996)",
-				Unit = "M2",
+				Unit = "m2",
 				NetCost = Math.Round(netCostPerSqm, 2),
 				OverheadValue = Math.Round(ohp.overheadVal, 2),
 				ProfitValue = Math.Round(ohp.profitVal, 2),
@@ -1054,7 +1054,7 @@ namespace ADLMRateGen.ViewModel.Painting
 				ItemNo = 6,
 				Description = "Prepare surface of steel to SP5, coal tar epoxy as base coat, and coal tar epoxy as top coat, all works completed as specified. " +
 				"(Mobil EPG 35-B-81 Rev Jan 1993)",
-				Unit = "M2",
+				Unit = "m2",
 				NetCost = Math.Round(netCostPerSqm, 2),
 				OverheadValue = Math.Round(ohp.overheadVal, 2),
 				ProfitValue = Math.Round(ohp.profitVal, 2),
@@ -1232,7 +1232,7 @@ namespace ADLMRateGen.ViewModel.Painting
 				ItemNo = 7,
 				Description = "Prepare  steel surface  to Mobil SP10, cleaning surface of grease, sand-blasting and applying high build epoxy priming coat and Mobil beige " +
 				"finish coat -(Ameron Paints)",
-				Unit = "M2",
+				Unit = "m2",
 				NetCost = Math.Round(netCostPerSqm, 2),
 				OverheadValue = Math.Round(ohp.overheadVal, 2),
 				ProfitValue = Math.Round(ohp.profitVal, 2),
@@ -1303,7 +1303,7 @@ namespace ADLMRateGen.ViewModel.Painting
 			{
 				ItemNo = 8,
 				Description = "Prepare and apply exterior acrylic latex as prime coat and finish coat on concrete surface.",
-				Unit = "M2",
+				Unit = "m2",
 				NetCost = Math.Round(netCostPerSqm, 2),
 				OverheadValue = Math.Round(ohp.overheadVal, 2),
 				ProfitValue = Math.Round(ohp.profitVal, 2),
@@ -1398,7 +1398,7 @@ namespace ADLMRateGen.ViewModel.Painting
 			{
 				ItemNo = 9,
 				Description = "Remove existing paint through wire brushing, and prepare and apply aluminium epoxy primer as base and Mobil blue polyurethane as topcoat. (Ameron)",
-				Unit = "M2",
+				Unit = "m2",
 				NetCost = Math.Round(netCostPerSqm, 2),
 				OverheadValue = Math.Round(ohp.overheadVal, 2),
 				ProfitValue = Math.Round(ohp.profitVal, 2),

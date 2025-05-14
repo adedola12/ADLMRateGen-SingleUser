@@ -217,6 +217,7 @@ private UserModel? _currentUser;
 		public ICommand SelectedCustomRateViewCommand { get; }
 		public ICommand LogoutCommand { get; }
 		public ICommand OpenYoutubeCommand { get; }
+		public ICommand HelpCommand { get; }
 
 		/* ───────── ctor ───────── */
 		public MainViewModel(
@@ -309,6 +310,7 @@ private UserModel? _currentUser;
 			SelectedCustomRateViewCommand = new RelayCommand(_ => SelectedViewModel = customEntryVM);
 			LogoutCommand = new RelayCommand(_ => Logout());
 			OpenYoutubeCommand = new RelayCommand(_ => OpenYoutube());
+			HelpCommand = new RelayCommand(_ => SendHelpEmail());
 
 
 			_index.Rebuild(this);
@@ -403,6 +405,20 @@ private UserModel? _currentUser;
 			try { return new WebClient().DownloadString("https://api.ipify.org/").Trim(); }
 			catch { return "IP-Unavailable"; }
 		}
+
+		private void SendHelpEmail()
+		{
+			if (CurrentUser?.Email == null) return;
+
+			var to = "admin@adlmstudio.net";
+			var subject = Uri.EscapeDataString("Need help with ADLM Rate Gen");
+			var body = Uri.EscapeDataString(
+				$"Hello ADLM, my name is {CurrentUser.Email} and I need help with the ADLM Rate Gen.");
+			var mailto = $"mailto:{to}?subject={subject}&body={body}";
+
+			Process.Start(new ProcessStartInfo(mailto) { UseShellExecute = true });
+		}
+
 
 		private async void Logout()
 		{

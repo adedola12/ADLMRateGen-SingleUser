@@ -24,35 +24,29 @@
             <DockPanel>
                 <StackPanel>
                     <TextBlock Text="Finishes Computation"
-                               FontFamily="{StaticResource Mont}"
-                               FontSize="52"
-                               FontWeight="Bold"
-                               Foreground="{StaticResource Blue900Brush}" />
+                               Style="{StaticResource EstHeader}" />
                     <TextBlock Text="Using Material and Labour Prices from the Library"
-                               FontFamily="{StaticResource Mont}"
-                               FontSize="18"
-                               Foreground="{StaticResource Grey700}" />
+                               Style="{StaticResource EstSubheader}" />
                 </StackPanel>
 
                 <!-- Add‑custom‑rate button -->
                 <Button DockPanel.Dock="Right"
-                        Style="{StaticResource PrimaryButton}"
+                        Style="{StaticResource PrimaryButtonCus}"
                         Command="{Binding AddCustomRateCommand}"
                         Width="276"
-                        Margin="680,0,0,0"
-                        Height="60">
+                        Margin="580,0,0,0"
+                        >
 
                     <TextBlock Text="Add Custom Rate  ＋"
-                               Foreground="White"
-                               FontWeight="SemiBold"
-                               FontSize="19"
-                               TextAlignment="Center" />
+                               Style="{StaticResource BtnText}" />
                 </Button>
             </DockPanel>
 
 
-            <Border Background="White"
+            <Border Background="{StaticResource VeryLight}"
                     CornerRadius="16"
+                    BorderThickness="1"
+                    BorderBrush="{StaticResource LightGrayBrush}"
                     Padding="24"
                     SnapsToDevicePixels="True"
                     Grid.Row="1"
@@ -67,7 +61,7 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0"
-                          Margin="0,12,0,24">
+                          Margin="0,10,0,10">
 
 
                         <Grid.ColumnDefinitions>
@@ -86,52 +80,32 @@
                         <Grid Grid.Column="0"
                               Height="46">
                             <!-- textbox -->
-                            <TextBox Style="{StaticResource HollowBox}"
-                                     Background="#F5F5F5"
-                                     Padding="14,0,34,0"
+                            <TextBox Style="{StaticResource OPTextBox}"
                                      Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}" />
 
                             <!-- % sign -->
-                            <TextBlock Text="%"
-                                       FontWeight="SemiBold"
-                                       Foreground="#5F6D7E"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,12,0" />
+                            <TextBlock Style="{StaticResource OPText}" />
                         </Grid>
 
 
                         <!-- ────── Profit ────── -->
                         <Grid Grid.Column="2"
                               Height="46">
-                            <TextBox Style="{StaticResource HollowBox}"
-                                     Background="#F5F5F5"
-                                     Padding="14,0,34,0"
+                            <TextBox Style="{StaticResource OPTextBox}"
                                      Text="{Binding ProfitPercent,UpdateSourceTrigger=PropertyChanged}" />
 
-                            <TextBlock Text="%"
-                                       FontWeight="SemiBold"
-                                       Foreground="#5F6D7E"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,12,0" />
+                            <TextBlock Style="{StaticResource OPText}" />
                         </Grid>
 
 
                         <!-- ────── Search ────── -->
                         <Grid Grid.Column="4"
                               Height="46">
-                            <TextBox Style="{StaticResource HollowBox}"
+                            <TextBox Style="{StaticResource SearchBoxWithIcon}"
                                      Tag="Search description…"
-                                     Padding="44,0,12,0"
-                                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" />
+                                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                                     VerticalContentAlignment="Center" />
 
-                            <!-- search icon -->
-                            <TextBlock Text=""
-                                       FontFamily="Segoe MDL2 Assets"
-                                       VerticalAlignment="Center"
-                                       Margin="16,0,0,0"
-                                       Foreground="#9AA6B4" />
                         </Grid>
 
                         <!-- ────── Buttons ────── -->
@@ -158,7 +132,10 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="S/N"
                                                 Binding="{Binding ItemNo}"
-                                                Width="60" />
+                                                Width="60"
+                                                ElementStyle="{StaticResource CenterCellNr}" />
+                            
+                            
                             <DataGridTemplateColumn Header="Description"
                                                     Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -181,77 +158,30 @@
 
                             <DataGridTextColumn Header="Unit"
                                                 Binding="{Binding Unit}"
-                                                Width="90" />
+                                                Width="90"
+                                                ElementStyle="{StaticResource CenterCellNr}" />
                             <DataGridTextColumn Header="Net Cost"
-                                                Binding="{Binding NetCost,   Converter={StaticResource MoneyConv},   StringFormat=N2}"
-                                                Width="110" />
+                                                Binding="{Binding NetCost,   
+                                Converter={StaticResource MoneyConv},   StringFormat=N2}"
+                                                Width="110"
+                                                ElementStyle="{StaticResource CenterCellText}" />
                             <DataGridTextColumn Header="Profit"
                                                 Binding="{Binding ProfitValue,  Converter={StaticResource MoneyConv}, StringFormat=N2}"
-                                                Width="110" />
+                                                Width="110"
+                                                ElementStyle="{StaticResource CenterCellText}" />
                             <DataGridTextColumn Header="Overhead"
                                                 Binding="{Binding OverheadValue,  Converter={StaticResource MoneyConv},StringFormat=N2}"
-                                                Width="110" />
+                                                Width="110"
+                                                ElementStyle="{StaticResource CenterCellText}" />
                             <DataGridTextColumn Header="Total Cost"
                                                 Binding="{Binding TotalCost,  Converter={StaticResource MoneyConv},  StringFormat=N2}"
-                                                Width="120" />
+                                                Width="120"
+                                                ElementStyle="{StaticResource CenterCellText}" />
                         </DataGrid.Columns>
                     </DataGrid>
                     
                     
-                    <!--<Grid Grid.Row="2"
-                          Margin="0,10,0,10">
-                        <DataGrid ItemsSource="{Binding FinishesCollectionView}"
-                                  AutoGenerateColumns="False">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Item No."
-                                                    Binding="{Binding ItemNo}"
-                                                    Width="Auto" />
-                                <DataGridTemplateColumn Header="Description"
-                                                        Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Description}"
-                                                       TextWrapping="Wrap"
-                                                       Padding="5,2,5,2"
-                                                       Foreground="DarkBlue"
-                                                       Cursor="Hand">
-                                                <TextBlock.InputBindings>
-                                                    <MouseBinding MouseAction="LeftClick"
-                                                                  Command="{Binding DataContext.ShowDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                  CommandParameter="{Binding}" />
-                                                </TextBlock.InputBindings>
-                                            </TextBlock>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <DataGridTextColumn Header="Unit"
-                                                    Binding="{Binding Unit}"
-                                                    Width="Auto"
-                                                    IsReadOnly="True" />
-                                <DataGridTextColumn Header="Net Cost"
-                                                    Binding="{Binding NetCost, StringFormat={}{0:N2}}"
-                                                    Width="Auto"
-                                                    IsReadOnly="True" />
-                                <DataGridTextColumn Header="Overhead"
-                                                    Binding="{Binding OverheadValue, StringFormat={}{0:N2}}"
-                                                    Width="Auto" />
-                                <DataGridTextColumn Header="Profit"
-                                                    Binding="{Binding ProfitValue, StringFormat={}{0:N2}}"
-                                                    Width="Auto" />
-                                <DataGridTextColumn Header="Total Cost"
-                                                    Binding="{Binding TotalCost, StringFormat={}{0:N2}}"
-                                                    Width="Auto" />
-
-
-                            </DataGrid.Columns>
-                        </DataGrid>
-
-                        <ContentControl Grid.Row="3"
-                                        Content="{Binding SelectedDetail}"
-                                        Margin="0,10,0,0" />
-
-                    </Grid>-->
+                   
                 </Grid>
 
             </Border>

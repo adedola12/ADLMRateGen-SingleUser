@@ -36,7 +36,7 @@
                 BorderThickness="0">
             <Grid>
                 <!-- dotted outline -->
-                <Rectangle Stroke="{StaticResource BlueBrush}"
+                <Rectangle Stroke="{StaticResource Blue900Brush}"
                            StrokeThickness="1"
                            StrokeDashArray="2 2" />
 

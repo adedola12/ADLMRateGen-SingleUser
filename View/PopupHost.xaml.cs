@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ADLMRateGen.View
 {
@@ -31,6 +32,18 @@ namespace ADLMRateGen.View
 		//	Visibility = Visibility.Visible;
 		//}
 
+		private void OnBackgroundClicked(object sender, MouseButtonEventArgs e)
+		{
+			// Hide yourself
+			this.Visibility = Visibility.Collapsed;
+			e.Handled = true;
+		}
+
+		private void OnCardMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			// Prevent clicks inside the card from bubbling up
+			e.Handled = true;
+		}
 
 		/// <summary>Hides the popup.</summary>
 		public void Hide() => Visibility = Visibility.Collapsed;

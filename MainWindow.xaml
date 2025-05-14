@@ -23,7 +23,7 @@
         mc:Ignorable="d"
         Title="ADLM Rate Gen"
         WindowStyle="SingleBorderWindow"
-        Background="#FAFDFF">
+        Background="{StaticResource MainBg}">
 
     <!-- ───────── RESOURCES ───────── -->
     <Window.Resources>
@@ -134,7 +134,7 @@
 
                         <!-- ───── logo ───── -->
                         <Image Source="/Resources/adlm_rate_generator_logo_small.png"
-                               Width="120"
+                               Width="100"
                                Margin="0,0,0,32"
                                HorizontalAlignment="Center" />
 
@@ -161,13 +161,13 @@
                                               Width="24"
                                               Height="20"
                                               Margin="0,0,8,0"
-                                              Foreground="White" />
+                                              Foreground="{StaticResource BackgroundBrush}" />
 
 
                                 <!-- ②  label -->
                                 <TextBlock Text="Library"
                                            Grid.Column="1"
-                                           Foreground="White"
+                                           Foreground="{StaticResource BackgroundBrush}"
                                            FontFamily="Poppins"
                                            FontWeight="Bold"
                                            FontSize="20" />
@@ -181,21 +181,17 @@
                                    Margin="0,24,0,12"
                                    FontSize="20"
                                    FontWeight="SemiBold"
-                                   Foreground="#091E39" />
+                                   Foreground="{StaticResource Blue900Brush}" />
 
                         <!-- subtle divider -->
                         <Rectangle Height="1"
                                    Margin="0,20,0,0"
-                                   Fill="#D1D5DB" />
+                                   Fill="{StaticResource divBrush}" />
 
                         <!-- work-item buttons -->
                         <StackPanel>
                             <!-- ─── Ground nav-button ─────────────────────────────────────────────── -->
                             <Button  Style="{StaticResource SidebarSubButton}"
-                                     Padding="20,12"
-                                     MinHeight="48"
-                                     BorderThickness="0"
-                                     Cursor="Hand"
                                      Command="{Binding SelectedGroundworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsGroundworkActive}"
                                      Margin="0,4">
@@ -208,28 +204,19 @@
                                     <fa:IconBlock Icon="TruckPickup"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0"
-                                                  />
+                                                  Foreground="{StaticResource Blue900Brush}" />
 
 
                                     <Rectangle Width="14"
-                                               Fill="Transparent"
-                                                />
+                                               Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Ground"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39" />
+                                               Style="{StaticResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
                             <Button  Style="{StaticResource SidebarSubButton}"
-                                     Padding="20,12"
-                                     MinHeight="48"
-                                     BorderThickness="0"
-                                     Cursor="Hand"
                                      Command="{Binding SelectedConcreteWorkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsConcreteViewActive}"
                                      Margin="0,4">
@@ -242,24 +229,18 @@
                                     <fa:IconBlock Icon="Mixer"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0" />
+                                                  Foreground="{StaticResource Blue900Brush}" />
+
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Concrete"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39" />
+                                               Style="{StaticResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
                             <Button  Style="{StaticResource SidebarSubButton}"
-                                     Padding="20,12"
-                                     MinHeight="48"
-                                     BorderThickness="0"
-                                     Cursor="Hand"
                                      Command="{Binding SelectedBlockworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsBlockworkActive}"
                                      Margin="0,4">
@@ -272,25 +253,18 @@
                                     <fa:IconBlock Icon="TrowelBricks"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0" />
+                                                  Foreground="{StaticResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Block Works"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39" />
+                                               Style="{StaticResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
                             <Button  Style="{StaticResource SidebarSubButton}"
-                                     Padding="20,12"
-                                     MinHeight="48"
-                                     BorderThickness="0"
-                                     Cursor="Hand"
                                      Command="{Binding SelectedFinishesViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsFinishesActive}"
                                      Margin="0,4">
@@ -302,25 +276,18 @@
                                     <fa:IconBlock Icon="SheetPlastic"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0" />
+                                                  Foreground="{StaticResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Finishes"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39" />
+                                               Style="{StaticResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
                             <Button  Style="{StaticResource SidebarSubButton}"
-                                     Padding="20,12"
-                                     MinHeight="48"
-                                     BorderThickness="0"
-                                     Cursor="Hand"
                                      Command="{Binding SelectedRoofworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsRoofworkActive}"
                                      Margin="0,4">
@@ -332,25 +299,18 @@
                                     <fa:IconBlock Icon="PeopleRoof"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0" />
+                                                  Foreground="{StaticResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Roofs"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39" />
+                                               Style="{StaticResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
                             <Button  Style="{StaticResource SidebarSubButton}"
-                                     Padding="20,12"
-                                     MinHeight="48"
-                                     BorderThickness="0"
-                                     Cursor="Hand"
                                      Command="{Binding SelectedPaintworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsPaintingActive}"
                                      Margin="0,4">
@@ -362,25 +322,18 @@
                                     <fa:IconBlock Icon="PaintRoller"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0" />
+                                                  Foreground="{StaticResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Painting"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39" />
+                                               Style="{StaticResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
                             <Button  Style="{StaticResource SidebarSubButton}"
-                                     Padding="20,12"
-                                     MinHeight="48"
-                                     BorderThickness="0"
-                                     Cursor="Hand"
                                      Command="{Binding SelectedSteelworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsSteelworkActive}"
                                      Margin="0,4">
@@ -392,17 +345,14 @@
                                     <fa:IconBlock Icon="DrumSteelpan"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0" />
+                                                  Foreground="{StaticResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Steel"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39" />
+                                               Style="{StaticResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
@@ -419,7 +369,7 @@
                                     <fa:IconBlock Icon="DoorOpen"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0" />
+                                                  Foreground="{StaticResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
@@ -427,13 +377,7 @@
 
                                     <!-- label -->
                                     <TextBlock Text="Window and Door"
-                                               TextWrapping="Wrap"
-                                               MaxWidth="120"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39"
-                                               VerticalAlignment="Center" />
+                                               Style="{StaticResource BtnSidebarText}" />
 
                                 </StackPanel>
                             </Button>
@@ -450,19 +394,14 @@
                                     <fa:IconBlock Icon="Save"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0" />
+                                                  Foreground="{StaticResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Saved Rates"
-                                               TextWrapping="Wrap"
-                                               MaxWidth="120"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39" />
+                                               Style="{StaticResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
@@ -476,17 +415,14 @@
                         <!-- subtle divider -->
                         <Rectangle Height="1"
                                    Margin="0,20,0,0"
-                                   Fill="#D1D5DB" />
+                                   Fill="{StaticResource divBrush}" />
 
 
                         <StackPanel Margin="0,40">
 
 
                             <Button  Style="{StaticResource SidebarSubButton}"
-                                     Padding="20,12"
-                                     MinHeight="28"
-                                     BorderThickness="0"
-                                     Cursor="Hand"
+                                     Command="{Binding HelpCommand}"
                                      Margin="0,4">
 
                                 <!-- button content -->
@@ -497,25 +433,18 @@
                                     <fa:IconBlock Icon="HandsHelping"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0" />
+                                                  Foreground="{StaticResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Help"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39" />
+                                               Style="{StaticResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
                             <Button Style="{StaticResource SidebarSubButton}"
-                                    Padding="20,12"
-                                    MinHeight="28"
-                                    BorderThickness="0"
-                                    Cursor="Hand"
                                     Command="{Binding LogoutCommand}"
                                     Margin="0,4">
 
@@ -523,22 +452,19 @@
                                 <StackPanel Orientation="Horizontal"
                                             VerticalAlignment="Center">
 
-                                
+
                                     <!-- icon -->
                                     <fa:IconBlock Icon="RightFromBracket"
                                                   Width="24"
                                                   Height="24"
-                                                  Margin="0" />
+                                                  Foreground="{StaticResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Log out"
-                                               FontFamily="Poppins"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#091E39" />
+                                               Style="{StaticResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 

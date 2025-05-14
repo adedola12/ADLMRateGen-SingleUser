@@ -1,6 +1,7 @@
 ﻿<Application x:Class="ADLMRateGen.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
              xmlns:conv="clr-namespace:ADLMRateGen.Converters"
              StartupUri="MainWindow.xaml">
 

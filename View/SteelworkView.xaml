@@ -8,310 +8,6 @@
              d:DesignHeight="720"
              d:DesignWidth="1280">
 
-    <!-- ───────── RESOURCES ───────── -->
-    <UserControl.Resources>
-
-        <!-- local Font:   add  Fonts/Mont.ttf   (Build Action = Resource) -->
-        <FontFamily x:Key="Mont">pack://application:,,,/Fonts/#Mont</FontFamily>
-        <FontFamily x:Key="PoppinsFont">Poppins</FontFamily>
-
-
-        <!-- colours -->
-        <Color x:Key="Blue900">#091E39</Color>
-        <SolidColorBrush x:Key="Blue900Brush"
-                         Color="{StaticResource Blue900}" />
-        <SolidColorBrush x:Key="Grey700"
-                         Color="#5F6D7E" />
-        <SolidColorBrush x:Key="RowAlt"
-                         Color="#F7F9FF" />
-        <SolidColorBrush x:Key="RowHover"
-                         Color="#EEF3FF" />
-
-        <SolidColorBrush x:Key="DataPrimaryBrush"
-                         Color="#F7FAFC" />
-        <SolidColorBrush x:Key="PrimaryBrush2"
-                         Color="Black" />
-        <SolidColorBrush x:Key="LightGrayBrush"
-                         Color="#F7FAFC" />
-        <SolidColorBrush x:Key="BorderBrushLight"
-                         Color="#CBD5E0" />
-        <SolidColorBrush x:Key="AltRowBrush"
-                         Color="#EDF2F7" />
-        <SolidColorBrush x:Key="BackgroundBrush"
-                         Color="White" />
-        <SolidColorBrush x:Key="HeaderBgBrush"
-                         Color="#F2F6FF" />
-        <SolidColorBrush x:Key="HeaderTextBrush"
-                         Color="#2D3748" />
-        <SolidColorBrush x:Key="CellTextBrush"
-                         Color="#2D3748" />
-
-        <!-- hollow textbox -->
-        <Style x:Key="HollowBox"
-               TargetType="TextBox">
-            <Setter Property="Height"
-                    Value="46" />
-            <Setter Property="Padding"
-                    Value="14,0" />
-            <Setter Property="BorderBrush"
-                    Value="#CBD5E0" />
-            <Setter Property="BorderThickness"
-                    Value="1.2" />
-            <Setter Property="Background"
-                    Value="White" />
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center" />
-            <Setter Property="FontFamily"
-                    Value="{StaticResource Mont}" />
-            <Setter Property="FontSize"
-                    Value="14" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border CornerRadius="6"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <ScrollViewer x:Name="PART_ContentHost" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- small rectangle buttons (Filter / Sort) -->
-        <Style x:Key="RectButton"
-               TargetType="Button">
-            <Setter Property="Height"
-                    Value="46" />
-            <Setter Property="MinWidth"
-                    Value="100" />
-            <Setter Property="Padding"
-                    Value="18,0" />
-            <Setter Property="FontFamily"
-                    Value="{StaticResource Mont}" />
-            <Setter Property="FontSize"
-                    Value="14" />
-            <Setter Property="BorderBrush"
-                    Value="#CBD5E0" />
-            <Setter Property="BorderThickness"
-                    Value="1.2" />
-            <Setter Property="Background"
-                    Value="White" />
-            <Setter Property="Cursor"
-                    Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border CornerRadius="6"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver"
-                         Value="True">
-                    <Setter Property="Background"
-                            Value="#F5F8FF" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- dark primary -->
-        <!-- Add‑custom‑rate dark‑blue button -->
-        <Style x:Key="PrimaryButton"
-               TargetType="Button"
-               BasedOn="{StaticResource RectButton}">
-
-            <!-- colours -->
-            <Setter Property="Background"
-                    Value="{StaticResource Blue900Brush}" />
-            <Setter Property="BorderBrush"
-                    Value="{StaticResource Blue900Brush}" />
-            <Setter Property="Foreground"
-                    Value="White" />
-            <Setter Property="MinWidth"
-                    Value="200" />
-
-            <!-- control template -->
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-
-                        <!-- local resource – only applies inside this template -->
-                        <ControlTemplate.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Foreground"
-                                        Value="White" />
-                            </Style>
-                        </ControlTemplate.Resources>
-
-                        <Border x:Name="brd"
-                                CornerRadius="6"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
-                        </Border>
-
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
-                                <Setter TargetName="brd"
-                                        Property="Background"
-                                        Value="#07244F" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled"
-                                     Value="False">
-                                <Setter TargetName="brd"
-                                        Property="Opacity"
-                                        Value="0.45" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- sleek DataGrid -->
-        <Style x:Key="DataGridStyle"
-               TargetType="DataGrid">
-            <Setter Property="Background"
-                    Value="White" />
-            <Setter Property="BorderBrush"
-                    Value="{StaticResource BorderBrushLight}" />
-            <Setter Property="BorderThickness"
-                    Value="1" />
-            <Setter Property="RowBackground"
-                    Value="White" />
-            <Setter Property="AlternatingRowBackground"
-                    Value="{StaticResource AltRowBrush}" />
-            <Setter Property="GridLinesVisibility"
-                    Value="None" />
-            <Setter Property="HeadersVisibility"
-                    Value="Column" />
-            <Setter Property="AutoGenerateColumns"
-                    Value="False" />
-            <Setter Property="CanUserAddRows"
-                    Value="False" />
-            <Setter Property="CanUserDeleteRows"
-                    Value="False" />
-            <Setter Property="RowHeaderWidth"
-                    Value="0" />
-            <Setter Property="ColumnHeaderHeight"
-                    Value="48" />
-            <Setter Property="FontSize"
-                    Value="14" />
-            <Setter Property="FontFamily"
-                    Value="{StaticResource PoppinsFont}" />
-            <Setter Property="RowHeight"
-                    Value="42" />
-            <!-- enable scrolling -->
-            <Setter Property="ScrollViewer.CanContentScroll"
-                    Value="True" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
-                    Value="Auto" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
-                    Value="Auto" />
-
-
-            <!-- Cell Style -->
-            <Setter Property="CellStyle">
-                <Setter.Value>
-                    <Style TargetType="DataGridCell">
-                        <Setter Property="Padding"
-                                Value="8,0" />
-                        <Setter Property="VerticalContentAlignment"
-                                Value="Center" />
-                        <Setter Property="FontWeight"
-                                Value="SemiBold" />
-                        <Setter Property="Foreground"
-                                Value="{StaticResource CellTextBrush}" />
-                        <Setter Property="FontFamily"
-                                Value="{StaticResource PoppinsFont}" />
-                    </Style>
-                </Setter.Value>
-            </Setter>
-
-            <!-- Column Header Style -->
-            <Setter Property="ColumnHeaderStyle">
-                <Setter.Value>
-                    <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background"
-                                Value="{StaticResource HeaderBgBrush}" />
-                        <Setter Property="Foreground"
-                                Value="{StaticResource HeaderTextBrush}" />
-                        <Setter Property="FontWeight"
-                                Value="SemiBold" />
-                        <Setter Property="FontFamily"
-                                Value="{StaticResource PoppinsFont}" />
-                        <Setter Property="HorizontalContentAlignment"
-                                Value="Center" />
-                        <Setter Property="VerticalContentAlignment"
-                                Value="Center" />
-                        <Setter Property="BorderThickness"
-                                Value="0" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="DataGridColumnHeader">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="6,6,0,0">
-                                        <ContentPresenter HorizontalAlignment="Center"
-                                                          VerticalAlignment="Center" />
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Setter.Value>
-            </Setter>
-
-            <!-- Row Style -->
-            <Setter Property="RowStyle">
-                <Setter.Value>
-                    <Style TargetType="DataGridRow">
-                        <Setter Property="BorderThickness"
-                                Value="0" />
-                        <Setter Property="Margin"
-                                Value="0,2" />
-                        <Setter Property="Cursor"
-                                Value="Hand" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="DataGridRow">
-                                    <Border Background="{TemplateBinding Background}">
-                                        <DataGridCellsPresenter />
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver"
-                                     Value="True">
-                                <Setter Property="Background"
-                                        Value="{StaticResource AltRowBrush}" />
-                            </Trigger>
-                            <Trigger Property="IsSelected"
-                                     Value="True">
-                                <Setter Property="Background"
-                                        Value="{StaticResource DataPrimaryBrush}" />
-                                <Setter Property="Foreground"
-                                        Value="White" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-    </UserControl.Resources>
-
     <!-- ───────── LAYOUT ───────── -->
     <Border BorderThickness="2"
             BorderBrush="Transparent"
@@ -328,32 +24,31 @@
             <DockPanel>
                 <StackPanel>
                     <TextBlock Text="Steelwork Computation"
-                               FontFamily="{StaticResource Mont}"
-                               FontSize="52"
-                               FontWeight="Bold"
-                               Foreground="{StaticResource Blue900Brush}" />
+                               Style="{StaticResource EstHeader}"/>
+                    
+                    
                     <TextBlock Text="Using Material and Labour Prices from the Library"
-                               FontFamily="{StaticResource Mont}"
-                               FontSize="18"
-                               Foreground="{StaticResource Grey700}" />
+                               Style="{StaticResource EstSubheader}" />
                 </StackPanel>
 
                 <!-- Add‑custom‑rate button -->
                 <Button DockPanel.Dock="Right"
-                        Style="{StaticResource PrimaryButton}"
+                        Style="{StaticResource PrimaryButtonCus}"
                         Command="{Binding AddCustomRateCommand}"
                         Width="276"
                         Margin="600,0,0,0"
-                        Height="60">
+                        >
 
                     <!-- Explicit caption → always white -->
                     <TextBlock Text="Add Custom Rate  ＋"
-                               Foreground="White" />
+                               Style="{StaticResource BtnText}" />
                 </Button>
             </DockPanel>
 
-            <Border Background="White"
+            <Border Background="{StaticResource VeryLight}"
                     CornerRadius="16"
+                    BorderThickness="1"
+                    BorderBrush="{StaticResource LightGrayBrush}"
                     Padding="24"
                     SnapsToDevicePixels="True"
                     Grid.Row="1"
@@ -367,7 +62,7 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0"
-                          Margin="0,12,0,24">
+                          Margin="0,10,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="160" />
                             <ColumnDefinition Width="16" />
@@ -384,54 +79,33 @@
                         <Grid Grid.Column="0"
                               Height="46">
                             <!-- textbox -->
-                            <TextBox Style="{StaticResource HollowBox}"
-                                     Background="#F5F5F5"
-                                     Padding="14,0,34,0"
+                            <TextBox Style="{StaticResource OPTextBox}"
                                      Text="{Binding OverheadPercent,
-                                UpdateSourceTrigger=PropertyChanged}" />
+                              UpdateSourceTrigger=PropertyChanged}" />
 
                             <!-- % sign -->
-                            <TextBlock Text="%"
-                                       FontWeight="SemiBold"
-                                       Foreground="#5F6D7E"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,12,0" />
+                            <TextBlock Style="{StaticResource OPText}" />
                         </Grid>
 
 
                         <!-- ────── Profit ────── -->
                         <Grid Grid.Column="2"
                               Height="46">
-                            <TextBox Style="{StaticResource HollowBox}"
-                                     Background="#F5F5F5"
-                                     Padding="14,0,34,0"
+                            <TextBox Style="{StaticResource OPTextBox}"
                                      Text="{Binding ProfitPercent,
-                                UpdateSourceTrigger=PropertyChanged}" />
+                              UpdateSourceTrigger=PropertyChanged}" />
 
-                            <TextBlock Text="%"
-                                       FontWeight="SemiBold"
-                                       Foreground="#5F6D7E"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,12,0" />
+                            <TextBlock Style="{StaticResource OPText}" />
                         </Grid>
-
 
                         <!-- ────── Search ────── -->
                         <Grid Grid.Column="4"
                               Height="46">
-                            <TextBox Style="{StaticResource HollowBox}"
+                            <TextBox Style="{StaticResource SearchBoxWithIcon}"
                                      Tag="Search description…"
-                                     Padding="44,0,12,0"
-                                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" />
+                                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                                     VerticalContentAlignment="Center" />
 
-                            <!-- search icon -->
-                            <TextBlock Text=""
-                                       FontFamily="Segoe MDL2 Assets"
-                                       VerticalAlignment="Center"
-                                       Margin="16,0,0,0"
-                                       Foreground="#9AA6B4" />
                         </Grid>
 
 
@@ -457,7 +131,10 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="S/N"
                                                 Binding="{Binding ItemNo}"
-                                                Width="60" />
+                                                Width="60"
+                                                ElementStyle="{StaticResource CenterCellNr}" />
+                            
+                            
                             <DataGridTemplateColumn Header="Description"
                                                     Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -480,19 +157,24 @@
 
                             <DataGridTextColumn Header="Unit"
                                                 Binding="{Binding Unit}"
-                                                Width="90" />
+                                                Width="90"
+                                                ElementStyle="{StaticResource CenterCellNr}" /> 
                             <DataGridTextColumn Header="Net Cost"
                                                 Binding="{Binding NetCost,  Converter={StaticResource MoneyConv},    StringFormat=N2}"
-                                                Width="110" />
+                                                Width="110"
+                                                ElementStyle="{StaticResource CenterCellText}" />
                             <DataGridTextColumn Header="Profit"
                                                 Binding="{Binding ProfitValue, Converter={StaticResource MoneyConv}, StringFormat=N2}"
-                                                Width="110" />
+                                                Width="110"
+                                                ElementStyle="{StaticResource CenterCellText}" />
                             <DataGridTextColumn Header="Overhead"
                                                 Binding="{Binding OverheadValue, Converter={StaticResource MoneyConv},StringFormat=N2}"
-                                                Width="110" />
+                                                Width="110"
+                                                ElementStyle="{StaticResource CenterCellText}" />
                             <DataGridTextColumn Header="Total Cost"
                                                 Binding="{Binding TotalCost,  Converter={StaticResource MoneyConv},  StringFormat=N2}"
-                                                Width="120" />
+                                                Width="120"
+                                                ElementStyle="{StaticResource CenterCellText}" />
                         </DataGrid.Columns>
                     </DataGrid>
 

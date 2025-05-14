@@ -39,14 +39,14 @@
         <Border Grid.Row="1" BorderThickness="0">
             <Grid>
                 <!-- dotted outline -->
-                <Rectangle Stroke="{StaticResource BlueBrush}"
+                <Rectangle Stroke="{StaticResource Blue900Brush}"
                            StrokeThickness="1"
                            StrokeDashArray="2 2" />
 
                 <!-- table -->
                 <DataGrid ItemsSource="{Binding BreakdownLines}"
                           Margin="1"
-                          RowHeight="{x:Static sys:Double.NaN}"
+                         
                           Style="{StaticResource DetailGrid}">
 
                     <!-- bold total lines -->
@@ -68,23 +68,33 @@
                         <DataGridTextColumn Header="Component"
                                             Binding="{Binding ComponentName}"
                                             Width="*"
-                                            ElementStyle="{StaticResource WrapCellText}"/>
+                                            >
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock"
+                                       BasedOn="{StaticResource WrapCellText}" />
+                            </DataGridTextColumn.ElementStyle>
+                           
+                        </DataGridTextColumn>
 
                         <DataGridTextColumn Header="Quantity"
                                             Binding="{Binding Quantity}"
-                                            Width="110" />
+                                            Width="90"
+                                            />
 
                         <DataGridTextColumn Header="Unit"
                                             Binding="{Binding Unit}"
-                                            Width="100" />
+                                            Width="100"
+                                             />
 
                         <DataGridTextColumn Header="Unit Price"
                                             Binding="{Binding UnitPrice,  Converter={StaticResource MoneyConv}, StringFormat=N2}"
-                                            Width="120" />
+                                            Width="150"
+                                           />
 
                         <DataGridTextColumn Header="Total Cost"
                                             Binding="{Binding TotalPrice,  Converter={StaticResource MoneyConv},StringFormat=N2}"
-                                            Width="120" />
+                                            Width="150"
+                                            />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

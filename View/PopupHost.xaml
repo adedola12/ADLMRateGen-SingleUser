@@ -11,12 +11,14 @@
 
     <Grid>
         <!-- dim background -->
-        <Rectangle Fill="#88000000" />
+        <Rectangle Fill="#88000000"
+                   MouseDown="OnBackgroundClicked" />
 
         <!-- popup card -->
         <Border x:Name="Card"
-                Width="600"
-                Height="650"
+                Width="800"
+                Height="770"
+                MouseDown="OnCardMouseDown"
                 MaxWidth="{Binding ActualWidth, 
                            RelativeSource={RelativeSource AncestorType=UserControl},
                            Converter={StaticResource PercentConverter}, 

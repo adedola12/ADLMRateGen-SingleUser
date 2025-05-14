@@ -26,34 +26,30 @@
             <DockPanel>
                 <StackPanel>
                     <TextBlock Text="Saved Custom Rates"
-                               FontFamily="{StaticResource Mont}"
-                               FontSize="52"
-                               FontWeight="Bold"
-                               Foreground="{StaticResource Blue900Brush}" />
+                               Style="{StaticResource EstHeader}" />
+                    
+                    
                     <TextBlock Text="View, search or delete your custom rates."
-                               FontFamily="{StaticResource Mont}"
-                               FontSize="18"
-                               Foreground="{StaticResource Grey700}" />
+                               Style="{StaticResource EstSubheader}" />
                 </StackPanel>
 
                 <!-- Add‑custom‑rate button -->
                 <Button DockPanel.Dock="Right"
-                        Style="{StaticResource PrimaryButton}"
+                        Style="{StaticResource PrimaryButtonCus}"
                         Command="{Binding DeleteRateCommand}"
                         Width="276"
                         Margin="680,0,0,0"
-                        Height="60">
+                        >
 
                     <TextBlock Text="Delete Selected  Rate "
-                               Foreground="White"
-                               FontWeight="SemiBold"
-                               FontSize="19"
-                               TextAlignment="Center" />
+                               Style="{StaticResource BtnText}" />
                 </Button>
             </DockPanel>
 
-            <Border Background="White"
+            <Border Background="{StaticResource VeryLight}"
                     CornerRadius="16"
+                    BorderThickness="1"
+                    BorderBrush="{StaticResource LightGrayBrush}"
                     Padding="24"
                     SnapsToDevicePixels="True"
                     Grid.Row="1"
@@ -67,7 +63,7 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0"
-                          Margin="0,12,0,24">
+                          Margin="0,10,0,10">
 
                         <!--  ▸ columns: 160 | 16 | 160 | 16 | * | 16 | 110 | 16 | 110  -->
                         <Grid.ColumnDefinitions>
@@ -85,18 +81,13 @@
                         <!-- ────── Search ────── -->
                         <Grid Grid.Column="4"
                               Height="46">
-                            <TextBox Style="{StaticResource HollowBox}"
+                            <TextBox Style="{StaticResource SearchBoxWithIcon}"
                                      Tag="Search description…"
-                                     Padding="44,0,12,0"
-                                     ToolTip="Search by Title or Description"
-                                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" />
+                                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                                     VerticalContentAlignment="Center" />
 
-                            <!-- search icon -->
-                            <TextBlock Text=""
-                                       FontFamily="Segoe MDL2 Assets"
-                                       VerticalAlignment="Center"
-                                       Margin="16,0,0,0"
-                                       Foreground="#9AA6B4" />
+                            
+                                    
                         </Grid>
 
 
@@ -126,7 +117,8 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Title"
                                                 Binding="{Binding Title}"
-                                                Width="*" />
+                                                Width="*"
+                                                ElementStyle="{StaticResource CenterCellNr}" />
                             <DataGridTemplateColumn Header="Description"
                                                     Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -148,18 +140,22 @@
 
                             <DataGridTextColumn Header="Overhead (%)"
                                                 Binding="{Binding OverheadPercent}"
-                                                Width="90" />
+                                                Width="90"
+                                                ElementStyle="{StaticResource CenterCellNr}" />
                             <DataGridTextColumn Header="Profit (%)"
                                                 Binding="{Binding ProfitPercent}"
-                                                Width="110" />
+                                                Width="110"
+                                                ElementStyle="{StaticResource CenterCellNr}" />
                             <DataGridTextColumn Header="Grand Total"
                                                 Width="140"
                                                 Binding="{Binding GrandTotal,
-                                      Converter={StaticResource MoneyConv}}" />
+                                      Converter={StaticResource MoneyConv}}"
+                                                ElementStyle="{StaticResource CenterCellText}" />
 
                             <DataGridTextColumn Header="Created Date"
                                                 Binding="{Binding CreatedDate}"
-                                                Width="110" />
+                                                Width="150"
+                                                ElementStyle="{StaticResource CenterCellText}" />
 
                         </DataGrid.Columns>
                     </DataGrid>

@@ -5,8 +5,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignWidth="800"
-             d:DesignHeight="600"
+             Width="700"
+             Height="770"
              FontFamily="Poppins">
 
     <UserControl.Resources>
@@ -14,76 +14,13 @@
         <conv:BoolToStringConverter  x:Key="BoolToStringConverter" />
         <conv:BoolToCommandConverter x:Key="BoolToCommandConverter" />
 
-        <!-- Rounded TextBox -->
-        <Style x:Key="RoundedTextBox"
-               TargetType="TextBox">
-            <Setter Property="Background"
-                    Value="#EDF2F7" />
-            <Setter Property="BorderBrush"
-                    Value="#CBD5E0" />
-            <Setter Property="BorderThickness"
-                    Value="1" />
-            <Setter Property="Padding"
-                    Value="12" />
-            <Setter Property="FontSize"
-                    Value="14" />
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border CornerRadius="8"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <ScrollViewer x:Name="PART_ContentHost" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
 
-        <!-- Rounded Button -->
-        <Style x:Key="RoundedButton"
-               TargetType="Button">
-            <Setter Property="Background"
-                    Value="#1A202C" />
-            <Setter Property="Foreground"
-                    Value="White" />
-            <Setter Property="FontSize"
-                    Value="16" />
-            <Setter Property="FontWeight"
-                    Value="SemiBold" />
-            <Setter Property="Height"
-                    Value="48" />
-            <Setter Property="Cursor"
-                    Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border CornerRadius="8"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver"
-                         Value="True">
-                    <Setter Property="Background"
-                            Value="#111A2B" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
     </UserControl.Resources>
 
     <!-- outer margin -->
-    <Grid Margin="24"
+    <Grid Margin="10"
           Background="Transparent">
+
         <Border Background="White"
                 CornerRadius="16"
                 Padding="24"
@@ -112,20 +49,21 @@
                      ConverterParameter='Update Library|Add New Material'}"
                            FontSize="28"
                            FontWeight="Bold"
-                           Foreground="#1A202C"
+                           Foreground="{StaticResource Blue900Brush}"
                            HorizontalAlignment="Center" />
 
                 <!-- 2) Subtitle -->
                 <TextBlock Grid.Row="1"
                            Text="Can’t find your desired material in our library?"
-                           FontSize="14"
-                           Foreground="#4A5568"
+                           FontSize="16"
+                           FontWeight="DemiBold"
+                           Foreground="{StaticResource Grey700}"
                            HorizontalAlignment="Center"
                            Margin="0,8,0,0" />
 
                 <!-- 3) Form background -->
                 <Border Grid.Row="3"
-                        Background="#F2F6FF"
+                        Background="{StaticResource BgInput}"
                         CornerRadius="8"
                         Padding="16">
                     <Grid>
@@ -141,127 +79,99 @@
                             <RowDefinition Height="Auto" />
                             <!-- category -->
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="2*" />
-                        </Grid.ColumnDefinitions>
+
+
 
                         <!-- Name (full width) -->
                         <StackPanel Grid.Row="0"
                                     Grid.Column="0"
                                     Grid.ColumnSpan="2"
-                                    Margin="4,0">
+                                    Margin="4,10">
                             <TextBlock Text="Name of Material"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="#2D3748" />
+                                       Foreground="{StaticResource Grey700}"
+                                       Margin="0,10" />
                             <!-- inside your form – Name textbox -->
-                            <TextBox Text="{Binding MaterialName}">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox"
-                                           BasedOn="{StaticResource RoundedTextBox}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEditing}"
-                                                         Value="True">
-                                                <Setter Property="IsReadOnly"
-                                                        Value="True" />
-                                                <Setter Property="Foreground"
-                                                        Value="#888" />
-                                                <Setter Property="Background"
-                                                        Value="#F4F4F4" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
+                            <TextBox Text="{Binding MaterialName}"
+                                     Style="{StaticResource TBInput}" />
+
+
 
                         </StackPanel>
 
-                        <!-- Unit -->
-                        <StackPanel Grid.Row="2"
-                                    Grid.Column="0"
-                                    Margin="4,0">
-                            <TextBlock Text="Unit"
+                        <!-- wrap both fields in one grid -->
+                        <Grid Grid.Row="2"
+                              Margin="4,0,4,0">
+                            <!-- two equal columns -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Row 0: labels -->
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Unit label -->
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="0"
+                                       Text="Unit"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="#2D3748" />
-                            <!--<TextBox Style="{StaticResource RoundedTextBox}"
-                                     Text="{Binding MaterialUnit, UpdateSourceTrigger=PropertyChanged}"
-                                     Height="48" />-->
+                                       Foreground="{StaticResource Grey700}"
+                                       Margin="0,0,0,4" />
 
-                            <TextBox Text="{Binding MaterialUnit}">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox"
-                                           BasedOn="{StaticResource RoundedTextBox}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEditing}"
-                                                         Value="True">
-                                                <Setter Property="IsReadOnly"
-                                                        Value="True" />
-                                                <Setter Property="Foreground"
-                                                        Value="#888" />
-                                                <Setter Property="Background"
-                                                        Value="#F4F4F4" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
-                        </StackPanel>
-
-                        <!-- Price -->
-                        <StackPanel Grid.Row="2"
-                                    Grid.Column="1"
-                                    Margin="4,0">
-                            <TextBlock Text="Price"
+                            <!-- Price label -->
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="1"
+                                       Text="Price"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="#2D3748" />
-                            <TextBox Style="{StaticResource RoundedTextBox}"
+                                       Foreground="{StaticResource Grey700}"
+                                       Margin="20,0,0,4" />
+
+                            <!-- Unit textbox -->
+                            <TextBox Grid.Row="1"
+                                     Grid.Column="0"
+                                     Text="{Binding MaterialUnit}"
+                                     Style="{StaticResource TBInput}"
+                                     Margin="0,0,8,0" />
+
+                            <!-- Price textbox -->
+                            <TextBox Grid.Row="1"
+                                     Grid.Column="1"
                                      Text="{Binding MaterialPrice, UpdateSourceTrigger=PropertyChanged}"
-                                     Height="48" />
-                        </StackPanel>
+                                     Style="{StaticResource TBInput}"
+                                     Margin="18,0,8,0" />
+                        </Grid>
+
 
                         <!-- Category (full width) -->
                         <StackPanel Grid.Row="4"
                                     Grid.Column="0"
                                     Grid.ColumnSpan="2"
-                                    Margin="4,0">
+                                    Margin="4,10">
                             <TextBlock Text="Category"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="#2D3748" />
-                            <!--<TextBox Style="{StaticResource RoundedTextBox}"
-                                     Text="{Binding NewMaterialCategory, UpdateSourceTrigger=PropertyChanged}"
-                                     Height="48" />-->
+                                       Foreground="{StaticResource Grey700}"
+                                       Margin="0,10" />
 
-                            <TextBox Text="{Binding NewMaterialCategory}">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox"
-                                           BasedOn="{StaticResource RoundedTextBox}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEditing}"
-                                                         Value="True">
-                                                <Setter Property="IsReadOnly"
-                                                        Value="True" />
-                                                <Setter Property="Foreground"
-                                                        Value="#888" />
-                                                <Setter Property="Background"
-                                                        Value="#F4F4F4" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
+                            <TextBox Text="{Binding NewMaterialCategory}"
+                                     Style="{StaticResource TBInput}" />
+
+
                         </StackPanel>
                     </Grid>
                 </Border>
 
 
                 <!-- 4) Save / Update Button -->
-                <!-- 4) Save / Update Button -->
                 <Button Grid.Row="5"
-                        Foreground="White"
+                       
                         Content="{Binding IsEditing,
                   Converter={StaticResource BoolToStringConverter},
                   ConverterParameter='Update Library|Save to Database'}"
@@ -270,7 +180,7 @@
                     <!-- base look + trigger that switches command -->
                     <Button.Style>
                         <Style TargetType="Button"
-                               BasedOn="{StaticResource RoundedButton}">
+                               BasedOn="{StaticResource PrimaryButtonCus}">
                             <!-- default: add -->
                             <Setter Property="Command"
                                     Value="{Binding SaveMaterialCommand}" />
@@ -284,6 +194,16 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
+
+                    <Button.ContentTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}"
+                                       FontSize="19"
+                                       FontWeight="SemiBold"
+                                       Foreground="White"
+                                       TextAlignment="Center" />
+                        </DataTemplate>
+                    </Button.ContentTemplate>
                 </Button>
 
 

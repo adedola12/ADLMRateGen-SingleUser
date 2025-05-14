@@ -1,6 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:conv="clr-namespace:ADLMRateGen.Converters"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
                     xmlns:helpers="clr-namespace:ADLMRateGen.Helpers">
     
     <!-- ─── FONTS ─── -->
@@ -9,10 +11,14 @@
 
     <!-- ─── COLOURS & BRUSHES ─── -->
     <Color x:Key="Blue900">#091E39</Color>
+    <SolidColorBrush x:Key="MainBg"
+                     Color="#FAFDFF" />
     <SolidColorBrush x:Key="Blue900Brush"
                      Color="{StaticResource Blue900}" />
     <SolidColorBrush x:Key="Grey700"
                      Color="#5F6D7E" />
+    <SolidColorBrush x:Key="BgInput"
+                     Color="#F2F6FF" />
     <SolidColorBrush x:Key="RowAlt"
                      Color="#F7F9FF" />
     <SolidColorBrush x:Key="ButCol"
@@ -21,6 +27,8 @@
                      Color="#EEF3FF" />
     <SolidColorBrush x:Key="PrimaryBrush2"
                      Color="Black" />
+    <SolidColorBrush x:Key="divBrush"
+                     Color="#D1D5DB" />
     <SolidColorBrush x:Key="BackgroundBrush"
                      Color="White" />
     <SolidColorBrush x:Key="AltRowBrush"
@@ -43,6 +51,11 @@
                      Color="#8A94A6" />
     <SolidColorBrush x:Key="VeryLight"
                      Color="#F6F9FF" />
+    <Color x:Key="SignInCol"
+           >#0055FF</Color>
+    <SolidColorBrush x:Key="SignInBrush"
+                     Color="{StaticResource SignInCol}" />
+
 
 
     <!-- ─── CONVERTERS ─── -->
@@ -177,6 +190,60 @@
         </Setter>
     </Style>
 
+    <!-- ─── PRIMARY BUTTON OTHRS ─── -->
+    <Style x:Key="PrimaryButtonCus"
+           TargetType="Button"
+           BasedOn="{StaticResource RectButton}">
+        <Setter Property="Background"
+                Value="{StaticResource Blue900Brush}" />
+        <Setter Property="BorderBrush"
+                Value="{StaticResource Blue900Brush}" />
+        <Setter Property="FontSize"
+                Value="19" />
+        <Setter Property="FontWeight"
+                Value="Bold" />
+        <Setter Property="Foreground"
+                Value="White" />
+        <Setter Property="MinWidth"
+                Value="200" />
+        <Setter Property="Height"
+                Value="70" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="brd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6">
+
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}"
+                                          RecognizesAccessKey="True"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="brd"
+                                    Property="Background"
+                                    Value="#07244F" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter TargetName="brd"
+                                    Property="Opacity"
+                                    Value="0.45" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 
     <!-- ─── DATAGRID STYLE ─── -->
     <Style x:Key="DataGridStyle"
@@ -189,8 +256,7 @@
                 Value="1" />
         <Setter Property="RowBackground"
                 Value="White" />
-        <Setter Property="AlternatingRowBackground"
-                Value="{StaticResource AltRowBrush}" />
+        
         <Setter Property="GridLinesVisibility"
                 Value="None" />
         <Setter Property="HeadersVisibility"
@@ -206,12 +272,21 @@
         <Setter Property="ColumnHeaderHeight"
                 Value="48" />
         <Setter Property="FontSize"
-                Value="14" />
+                Value="16" />
         <Setter Property="FontFamily"
                 Value="{StaticResource PoppinsFont}" />
+        <Setter Property="Margin"
+                Value="10,30" />
         <Setter Property="RowHeight"
-                Value="42" />
-        
+                Value="30" />
+        <Setter Property="IsReadOnly"
+                Value="True" />
+        <Setter Property="GridLinesVisibility"
+                Value="Horizontal" />
+        <Setter Property="HorizontalGridLinesBrush"
+                Value="{StaticResource BorderBrushLight}" />
+
+
         <Setter Property="ScrollViewer.CanContentScroll"
                 Value="True" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
@@ -222,16 +297,36 @@
         <Setter Property="CellStyle">
             <Setter.Value>
                 <Style TargetType="DataGridCell">
+                    <Setter Property="FontSize"
+                            Value="16" />
                     <Setter Property="Padding"
-                            Value="8,0" />
+                            Value="10,8" />
                     <Setter Property="VerticalContentAlignment"
+                            Value="Center" />
+                    <Setter Property="HorizontalContentAlignment"
                             Value="Center" />
                     <Setter Property="FontWeight"
                             Value="SemiBold" />
+                    <Setter Property="BorderThickness"
+                            Value="0" />
+
                     <Setter Property="Foreground"
                             Value="{StaticResource CellTextBrush}" />
                     <Setter Property="FontFamily"
                             Value="{StaticResource PoppinsFont}" />
+
+                    <Style.Triggers>
+                        <!-- when a cell becomes selected… -->
+                        <Trigger Property="IsSelected"
+                                 Value="True">
+                            <!-- …use a very subtle selection color… -->
+                            <Setter Property="Background"
+                                    Value="{StaticResource AltRowBrush}" />
+                            <!-- …and override the text color if you like -->
+                            <Setter Property="Foreground"
+                                    Value="{StaticResource Blue900Brush}" />
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </Setter.Value>
         </Setter>
@@ -239,8 +334,11 @@
         <Setter Property="ColumnHeaderStyle">
             <Setter.Value>
                 <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="FontSize"
+                            Value="16" />
                     <Setter Property="Background"
                             Value="{StaticResource HeaderBgBrush}" />
+                    
                     <Setter Property="Foreground"
                             Value="{StaticResource HeaderTextBrush}" />
                     <Setter Property="FontWeight"
@@ -304,6 +402,73 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Key="OPText"
+           TargetType="TextBlock">
+        <!-- fixed percent sign -->
+        <Setter Property="Text"
+                Value="%" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="Foreground"
+                Value="#5F6D7E" />
+        <Setter Property="HorizontalAlignment"
+                Value="Right" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="Margin"
+                Value="0,0,12,0" />
+    </Style>
+
+    <Style x:Key="OPTextBox"
+           TargetType="TextBox"
+           BasedOn="{StaticResource HollowBox}">
+        <Setter Property="Background"
+                Value="#F5F5F5" />
+        <Setter Property="Padding"
+                Value="14,0,34,0" />
+    </Style>
+
+    <!-- Large header for estimates -->
+    <Style x:Key="EstHeader"
+           TargetType="TextBlock">
+        <Setter Property="FontFamily"
+                Value="{StaticResource Mont}" />
+        <Setter Property="FontSize"
+                Value="52" />
+        <Setter Property="FontWeight"
+                Value="Bold" />
+        <Setter Property="Foreground"
+                Value="{StaticResource Blue900Brush}" />
+    </Style>
+
+    <!-- Sub-header for estimates -->
+    <Style x:Key="EstSubheader"
+           TargetType="TextBlock">
+        <Setter Property="FontFamily"
+                Value="{StaticResource Mont}" />
+        <Setter Property="FontSize"
+                Value="18" />
+        <Setter Property="Foreground"
+                Value="{StaticResource Grey700}" />
+    </Style>
+
+    <!-- button label text -->
+    <Style x:Key="BtnText"
+           TargetType="TextBlock">
+        <Setter Property="Foreground"
+                Value="{StaticResource BackgroundBrush}" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="FontSize"
+                Value="19" />
+        <Setter Property="TextAlignment"
+                Value="Center" />
+    </Style>
+
+
+
+
 
     <!-- ── SIMPLE STYLES & EFFECTS ── -->
     <DropShadowEffect x:Key="SoftShadow"
@@ -499,26 +664,50 @@
         </Style.Triggers>
     </Style>
 
+    <!-- sidebar button text + icon pairing is always the same -->
+    <Style x:Key="BtnSidebarText"
+           TargetType="TextBlock">
+        <Setter Property="FontFamily"
+                Value="Poppins" />
+        <Setter Property="FontSize"
+                Value="16" />
+        <Setter Property="FontWeight"
+                Value="Bold" />
+        <Setter Property="MaxWidth"
+                Value="120" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="TextWrapping"
+                Value="Wrap" />
+        <Setter Property="Foreground"
+                Value="{StaticResource Blue900Brush}" />
+    </Style>
+
+
     <!-- ─── HEADLINE & BODY TEXTBLOCKS ─── -->
     <Style x:Key="Headline"
            TargetType="TextBlock">
         <Setter Property="FontFamily"
                 Value="{StaticResource Mont}" />
         <Setter Property="FontSize"
-                Value="32" />
+                Value="36" />
         <Setter Property="FontWeight"
                 Value="Bold" />
         <Setter Property="Foreground"
-                Value="{StaticResource Blue900Brush}" />
+                Value="{StaticResource HintGrey}" />
     </Style>
 
     <Style x:Key="Body"
            TargetType="TextBlock"
            BasedOn="{StaticResource Headline}">
+        <Setter Property="FontFamily"
+                Value="{StaticResource Mont}" />
         <Setter Property="FontSize"
-                Value="16" />
+                Value="20" />
         <Setter Property="FontWeight"
-                Value="Normal" />
+                Value="SemiBold" />
+        <Setter Property="Foreground"
+                Value="{StaticResource Blue900Brush}" />
     </Style>
 
     <!-- Main heading text -->
@@ -556,16 +745,103 @@
                 Value="Column" />
         <Setter Property="RowBackground"
                 Value="White" />
-        <Setter Property="AlternatingRowBackground"
-                Value="{StaticResource AltRowBrush}" />
         <Setter Property="GridLinesVisibility"
                 Value="None" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="FontFamily"
-                Value="{StaticResource Mont}" />
+                Value="{StaticResource PoppinsFont}" />
         <Setter Property="FontSize"
-                Value="14" />
+                Value="16" />
+        <Setter Property="FontWeight"
+                Value="DemiBold" />
+        <Setter Property="IsReadOnly"
+                Value="True" />
+        <Setter Property="Foreground"
+                Value="{StaticResource Blue900Brush}" />
+
+        <Setter Property="CellStyle">
+            <Setter.Value>
+                <Style TargetType="DataGridCell">
+                    <!-- padding inside each cell -->
+                    <Setter Property="Padding"
+                            Value="8,8" />
+                    <Setter Property="VerticalContentAlignment"
+                            Value="Center" />
+                    <Setter Property="Foreground"
+                            Value="{StaticResource CellTextBrush}" />
+                    <!-- bottom border to separate rows -->
+                    <Setter Property="BorderThickness"
+                            Value="0,0,0,1" />
+                    <Setter Property="Margin"
+                            Value="5,10" />
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource BorderBrushLight}" />
+
+                    <Style.Triggers>
+
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter Property="Background"
+                                    Value="#10003050" />
+                        </Trigger>
+                        <!-- when a cell becomes selected… -->
+                        <Trigger Property="IsSelected"
+                                 Value="True">
+                            <!-- …use a very subtle selection color… -->
+                            <Setter Property="Background"
+                                    Value="#20003050" />
+                            <!-- …and override the text color if you like -->
+                            <Setter Property="Foreground"
+                                    Value="{StaticResource Blue900Brush}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Setter.Value>
+        </Setter>
+
+        
+
+        <Setter Property="ColumnHeaderStyle">
+            <Setter.Value>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background"
+                            Value="{StaticResource HeaderBgBrush}" />
+                    <Setter Property="Foreground"
+                            Value="{StaticResource HeaderTextBrush}" />
+                    <Setter Property="FontWeight"
+                            Value="SemiBold" />
+                    <Setter Property="HorizontalContentAlignment"
+                            Value="Left" />
+                    <Setter Property="VerticalContentAlignment"
+                            Value="Center" />
+                    <Setter Property="Padding"
+                            Value="12,8" />
+                    <Setter Property="FontSize"
+                            Value="20" />
+                    <!-- bottom border under headers -->
+                    <Setter Property="BorderThickness"
+                            Value="0,0,0,1" />
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource BorderBrushLight}" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="RowStyle">
+            <Setter.Value>
+                <Style TargetType="DataGridRow">
+                   
+                    <Setter Property="BorderThickness"
+                            Value="0" />
+                    <Setter Property="Margin"
+                            Value="0" />
+                </Style>
+            </Setter.Value>
+            
+            
+        </Setter>
+
     </Style>
 
     <!-- ─── WRAP CELL TEXT ─── -->
@@ -577,7 +853,43 @@
                 Value="CharacterEllipsis" />
         <Setter Property="VerticalAlignment"
                 Value="Center" />
+        <Setter Property="Margin"
+                Value="0" />
     </Style>
+
+    <Style x:Key="CenterCellText"
+           TargetType="TextBlock">
+        <!-- this will make your Quantity/Unit/Price columns centered -->
+        <Setter Property="FontFamily"
+                Value="{StaticResource PoppinsFont}" />
+        <Setter Property="FontSize"
+                Value="14" />
+        <Setter Property="Foreground"
+                Value="{StaticResource CellTextBrush}" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+       
+        <Setter Property="TextTrimming"
+                Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="CenterCellNr"
+           TargetType="TextBlock">
+        <!-- this will make your Quantity/Unit/Price columns centered -->
+        <Setter Property="FontFamily"
+                Value="{StaticResource PoppinsFont}" />
+        <Setter Property="FontSize"
+                Value="14" />
+        <Setter Property="Foreground"
+                Value="{StaticResource CellTextBrush}" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="TextTrimming"
+                Value="CharacterEllipsis" />
+    </Style>
+
 
     <!-- ─── FLAT TAB BUTTON ─── -->
     <Style x:Key="FlatTabButton"
@@ -799,6 +1111,175 @@
 
 
 
+    <!-- Rounded TextBox -->
+    <Style x:Key="RoundedTextBox"
+           TargetType="TextBox">
+        <Setter Property="Background"
+                Value="#EDF2F7" />
+        <Setter Property="BorderBrush"
+                Value="#CBD5E0" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Padding"
+                Value="12" />
+        <Setter Property="FontSize"
+                Value="14" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border CornerRadius="8"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ScrollViewer x:Name="PART_ContentHost" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Rounded Button -->
+    <Style x:Key="RoundedButton"
+           TargetType="Button">
+        <Setter Property="Background"
+                Value="#1A202C" />
+        <Setter Property="Foreground"
+                Value="White" />
+        <Setter Property="FontSize"
+                Value="16" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="Height"
+                Value="48" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border CornerRadius="8"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#111A2B" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+
+    <Style x:Key="TBInput"
+           TargetType="TextBox"
+           BasedOn="{StaticResource RoundedTextBox}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsEditing}"
+                         Value="True">
+                <!-- when editing is on, make it read-only and “disabled” looking -->
+                <Setter Property="IsReadOnly"
+                        Value="True" />
+                <Setter Property="Foreground"
+                        Value="#888" />
+                <Setter Property="Background"
+                        Value="#F4F4F4" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+
+    <!-- 1) A Style for a “SearchBox” that builds on your HollowBox -->
+    <Style x:Key="SearchBoxWithIcon"
+           TargetType="TextBox"
+           BasedOn="{StaticResource HollowBox}">
+
+        <!-- we don’t need the Padding setter here because PART_ContentHost margin will handle it -->
+        <Setter Property="Padding"
+                Value="44,0,12,0" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid>
+                        <!-- the HollowBox border, via TemplateBinding -->
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <!-- where the text actually goes -->
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+
+                        <!-- the search icon, overlaid on the left -->
+                        <fa:IconBlock Icon="Search"
+                                      Width="24"
+                                      Height="24"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Left"
+                                      Margin="16,0,0,0"
+                                      Foreground="{StaticResource BorderBrushLight}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+    <!-- … inside your ResourceDictionary … -->
+    <Style x:Key="WatermarkedTextBox"
+           TargetType="TextBox"
+           BasedOn="{StaticResource TBInput}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid>
+                        <!-- real text host -->
+                        <ScrollViewer x:Name="PART_ContentHost"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Left" />
+
+                        <!-- watermark -->
+                        <TextBlock x:Name="Watermark"
+                                   Text="{TemplateBinding Tag}"
+                                   Foreground="#888"
+                                   Margin="{TemplateBinding Padding}"
+                                   VerticalAlignment="Center"
+                                   IsHitTestVisible="False"
+                                   Visibility="Collapsed" />
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <!-- when Text is empty or null, show Watermark -->
+                        <Trigger Property="Text"
+                                 Value="">
+                            <Setter TargetName="Watermark"
+                                    Property="Visibility"
+                                    Value="Visible" />
+                        </Trigger>
+                        
+                        <Trigger Property="Text"
+                                 Value="{x:Null}">
+                            <Setter TargetName="Watermark"
+                                    Property="Visibility"
+                                    Value="Visible" />
+                        </Trigger>
+                       
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
 
 

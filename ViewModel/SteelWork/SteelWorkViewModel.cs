@@ -286,6 +286,7 @@ namespace ADLMRateGen.ViewModel.SteelWork
 			{
 				ItemNo = 1,
 				Description = "Clean down steel surface to bare metal using power brush",
+				Unit="m",
 				NetCost = Math.Round(netCost, 2),
 				OverheadValue = Math.Round(ohp.overheadVal, 0),
 				ProfitValue = Math.Round(ohp.profitVal, 0),
@@ -368,6 +369,7 @@ namespace ADLMRateGen.ViewModel.SteelWork
 			{
 				ItemNo = 2,
 				Description = "Prepare surface of structure by grit blasting to SP10",
+				Unit = "m2",
 				NetCost = Math.Round(netCost, 2),
 				OverheadValue = Math.Round(ohp.overheadVal, 0),
 				ProfitValue = Math.Round(ohp.profitVal, 0),
@@ -450,6 +452,7 @@ namespace ADLMRateGen.ViewModel.SteelWork
 			{
 				ItemNo = 3,
 				Description = "Prepare surface of structure by sand blasting to SP10",
+				Unit = "m2",
 				NetCost = Math.Round(netCost, 2),
 				OverheadValue = Math.Round(ohp.overheadVal, 0),
 				ProfitValue = Math.Round(ohp.profitVal, 0),
