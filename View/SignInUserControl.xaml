@@ -12,16 +12,16 @@
         <!-- outer frame if needed:  <Image Source="/Resources/bg_frame.png" Stretch="Fill"/> -->
 
         <!-- Card -->
-        <Border Width="1000"
-                Height="800"
+        <Border Width="1600"
+                Height="850"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                CornerRadius="20"
-                BorderBrush="#1637FF"
+                CornerRadius="40"
+                BorderBrush="{DynamicResource BorColBrush}"
                 BorderThickness="2">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="20"
-                                  Color="#1637FF"
+                                  Color="{StaticResource SignInCol}"
                                   ShadowDepth="0"
                                   Opacity="0.55" />
             </Border.Effect>
@@ -31,7 +31,7 @@
             </Border.Background>
 
             <!-- Content grid -->
-            <Grid Margin="60">
+            <Grid Margin="0, 100, 0,-100">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -47,7 +47,7 @@
                 <Image Grid.Row="1"
                        Source="/Resources/adlm_rate_generator_logo.png"
                        Height="165"
-                       Margin="0,20,0,35"
+                       Margin="0,80,0,25"
                        HorizontalAlignment="Center" />
 
                 <!-- Form -->
@@ -60,9 +60,9 @@
                                Foreground="{StaticResource BackgroundBrush}"
                                Margin="4,10" />
 
-                    <Border CornerRadius="6"
-                            Background="{StaticResource BackgroundBrush}"
-                            Height="44"
+                    <Border CornerRadius="12.5"
+                            Background="{DynamicResource BackgroundBrush}"
+                            Height="48"
                             Margin="0,0,0,14">
                         <!--  E-mail  -->
                         <TextBox Style="{StaticResource HollowBox}"
@@ -80,10 +80,10 @@
                                Margin="4,10" />
 
 
-                    <Grid Height="44"
+                    <Grid Height="48"
                           Margin="0,0,0,14">
-                        <Border CornerRadius="6"
-                                Background="{StaticResource BackgroundBrush}" />
+                        <Border CornerRadius="12.5"
+                                Background="{DynamicResource BackgroundBrush}" />
                         <PasswordBox x:Name="PasswordBox"
                                      Padding="18,0"
                                      BorderThickness="0"
@@ -105,12 +105,18 @@
                     </Grid>
 
                     <!-- Login button (no Content attr duplicated) -->
-                    <Button Margin="0,8,0,0"
+                    <Button Style="{StaticResource LogBtnStyle}"
+                            Command="{Binding LoginCommand}"
+                            Margin="0,24,0,0" Height="56">
+                        <TextBlock Text="Log in"
+                                   Style="{StaticResource BtnText}" />
+
+                    </Button>
+                    
+                    
+                    <!--<Button Margin="0,24,0,0"
                             Width="520"
-                            Height="54"
-                            FontSize="20"
-                            FontWeight="SemiBold"
-                            Foreground="{StaticResource BackgroundBrush}"
+                            Height="56"
                             BorderThickness="0"
                             Command="{Binding LoginCommand}">
                         <Button.Background>
@@ -124,9 +130,8 @@
                         </Button.Background>
 
 
-                        <TextBlock Text="Log in"
-                                   Style="{StaticResource BtnText}" />
-                    </Button>
+                       
+                    </Button>-->
                 </StackPanel>
 
 

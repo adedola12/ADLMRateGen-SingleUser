@@ -23,7 +23,7 @@
         mc:Ignorable="d"
         Title="ADLM Rate Gen"
         WindowStyle="SingleBorderWindow"
-        Background="{StaticResource MainBg}">
+        Background="{DynamicResource MainBg}">
 
     <!-- ───────── RESOURCES ───────── -->
     <Window.Resources>
@@ -124,9 +124,9 @@
                 <Border Grid.Row="0"
                         Grid.Column="0"
                         Grid.RowSpan="3"
-                        Background="White"
+                        Background="{DynamicResource MainBg}"
                         CornerRadius="0,0,16,0"
-                        Effect="{StaticResource SoftShadow}">
+                        Effect="{DynamicResource SoftShadow}">
 
                     <!-- inner content with generous margin -->
                     <StackPanel Margin="24,32,24,24"
@@ -140,7 +140,7 @@
 
                         <!-- ───── Library (primary) ───── -->
                         <!-- ───── Library  (icon + white bold Poppins text) ───── -->
-                        <Button Style="{StaticResource NavPrimaryButton}"
+                        <Button Style="{DynamicResource NavPrimaryButton}"
                                 Command="{Binding SelectedMaterialLibraryViewCommand}"
                                 helpers:ButtonHelper.IsActive="{Binding IsMaterialLibraryActive}"
                                 HorizontalContentAlignment="Center"
@@ -161,13 +161,13 @@
                                               Width="24"
                                               Height="20"
                                               Margin="0,0,8,0"
-                                              Foreground="{StaticResource BackgroundBrush}" />
+                                              Foreground="{DynamicResource BackgroundBrush}" />
 
 
                                 <!-- ②  label -->
                                 <TextBlock Text="Library"
                                            Grid.Column="1"
-                                           Foreground="{StaticResource BackgroundBrush}"
+                                           Foreground="{DynamicResource BackgroundBrush}"
                                            FontFamily="Poppins"
                                            FontWeight="Bold"
                                            FontSize="20" />
@@ -181,17 +181,17 @@
                                    Margin="0,24,0,12"
                                    FontSize="20"
                                    FontWeight="SemiBold"
-                                   Foreground="{StaticResource Blue900Brush}" />
+                                   Foreground="{DynamicResource Blue900Brush}" />
 
                         <!-- subtle divider -->
                         <Rectangle Height="1"
                                    Margin="0,20,0,0"
-                                   Fill="{StaticResource divBrush}" />
+                                   Fill="{DynamicResource divBrush}" />
 
                         <!-- work-item buttons -->
                         <StackPanel>
                             <!-- ─── Ground nav-button ─────────────────────────────────────────────── -->
-                            <Button  Style="{StaticResource SidebarSubButton}"
+                            <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding SelectedGroundworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsGroundworkActive}"
                                      Margin="0,4">
@@ -204,7 +204,7 @@
                                     <fa:IconBlock Icon="TruckPickup"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
 
                                     <Rectangle Width="14"
@@ -212,11 +212,11 @@
 
                                     <!-- label -->
                                     <TextBlock Text="Ground"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
-                            <Button  Style="{StaticResource SidebarSubButton}"
+                            <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding SelectedConcreteWorkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsConcreteViewActive}"
                                      Margin="0,4">
@@ -229,18 +229,18 @@
                                     <fa:IconBlock Icon="Mixer"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Concrete"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
-                            <Button  Style="{StaticResource SidebarSubButton}"
+                            <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding SelectedBlockworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsBlockworkActive}"
                                      Margin="0,4">
@@ -253,18 +253,18 @@
                                     <fa:IconBlock Icon="TrowelBricks"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Block Works"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
-                            <Button  Style="{StaticResource SidebarSubButton}"
+                            <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding SelectedFinishesViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsFinishesActive}"
                                      Margin="0,4">
@@ -276,18 +276,18 @@
                                     <fa:IconBlock Icon="SheetPlastic"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Finishes"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
-                            <Button  Style="{StaticResource SidebarSubButton}"
+                            <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding SelectedRoofworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsRoofworkActive}"
                                      Margin="0,4">
@@ -299,18 +299,18 @@
                                     <fa:IconBlock Icon="PeopleRoof"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Roofs"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
-                            <Button  Style="{StaticResource SidebarSubButton}"
+                            <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding SelectedPaintworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsPaintingActive}"
                                      Margin="0,4">
@@ -322,18 +322,18 @@
                                     <fa:IconBlock Icon="PaintRoller"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Painting"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
-                            <Button  Style="{StaticResource SidebarSubButton}"
+                            <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding SelectedSteelworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsSteelworkActive}"
                                      Margin="0,4">
@@ -345,18 +345,18 @@
                                     <fa:IconBlock Icon="DrumSteelpan"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Steel"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
-                            <Button  Style="{StaticResource SidebarSubButton}"
+                            <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding SelectedWindowAndDoorViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsWindowAndDoorActive}"
                                      Margin="0,4">
@@ -369,7 +369,7 @@
                                     <fa:IconBlock Icon="DoorOpen"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
@@ -377,12 +377,12 @@
 
                                     <!-- label -->
                                     <TextBlock Text="Window and Door"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
 
                                 </StackPanel>
                             </Button>
 
-                            <Button  Style="{StaticResource SidebarSubButton}"
+                            <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding SelectedCustomRateInputViewCommand}"
                                      Margin="0,4">
                                 <!-- button content -->
@@ -394,14 +394,14 @@
                                     <fa:IconBlock Icon="Save"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Saved Rates"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
@@ -415,13 +415,13 @@
                         <!-- subtle divider -->
                         <Rectangle Height="1"
                                    Margin="0,20,0,0"
-                                   Fill="{StaticResource divBrush}" />
+                                   Fill="{DynamicResource divBrush}" />
 
 
                         <StackPanel Margin="0,40">
 
 
-                            <Button  Style="{StaticResource SidebarSubButton}"
+                            <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding HelpCommand}"
                                      Margin="0,4">
 
@@ -433,18 +433,18 @@
                                     <fa:IconBlock Icon="HandsHelping"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Help"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
-                            <Button Style="{StaticResource SidebarSubButton}"
+                            <Button Style="{DynamicResource SidebarSubButton}"
                                     Command="{Binding LogoutCommand}"
                                     Margin="0,4">
 
@@ -457,14 +457,14 @@
                                     <fa:IconBlock Icon="RightFromBracket"
                                                   Width="24"
                                                   Height="24"
-                                                  Foreground="{StaticResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource Blue900Brush}" />
 
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
 
                                     <!-- label -->
                                     <TextBlock Text="Log out"
-                                               Style="{StaticResource BtnSidebarText}" />
+                                               Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
 
@@ -608,7 +608,7 @@
                                                 Padding="16 6"
                                                 FontFamily="Poppins"
                                                 FontSize="13"
-                                                Foreground="#F46A27"
+                                                Foreground="#091E39"
                                                 Background="#F46A27"
                                                 BorderBrush="#F46A27"
                                                 BorderThickness="1"

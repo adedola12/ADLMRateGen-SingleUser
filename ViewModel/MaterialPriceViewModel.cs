@@ -94,26 +94,6 @@ namespace ADLMRateGen.ViewModel
             UpdateMaterialCommand = new DelegateCommand(o => UpdateMaterial(), o => IsEditing);
         }
 
-		//private void SaveMaterial()
-		//{
-		//    if (!string.IsNullOrEmpty(MaterialName))
-		//    {
-		//        // Use NewMaterialCategory if provided; otherwise, leave category empty.
-		//        string categoryToUse = !string.IsNullOrEmpty(NewMaterialCategory)
-		//            ? NewMaterialCategory : string.Empty;
-		//        // Create new material (serial number to be assigned by the library view model).
-		//        var newMaterial = new MaterialModel
-		//        {
-		//            SerialNumber = 0,
-		//            MaterialName = this.MaterialName,
-		//            MaterialUnit = this.MaterialUnit,
-		//            MaterialPrice = this.MaterialPrice,
-		//            MaterialCategory = categoryToUse
-		//        };
-		//        MaterialSaved?.Invoke(newMaterial);
-		//        ClearInputFields();
-		//    }
-		//}
 
 		/* ───────── add new ───────── */
 		private void SaveMaterial()
@@ -135,21 +115,7 @@ namespace ADLMRateGen.ViewModel
 			ClearInputs();
 		}
 
-		//private void UpdateMaterial()
-		//{
-		//    if (EditingMaterial != null)
-		//    {
-		//        EditingMaterial.MaterialName = MaterialName;
-		//        EditingMaterial.MaterialUnit = MaterialUnit;
-		//        EditingMaterial.MaterialPrice = MaterialPrice;
-		//        string categoryToUse = !string.IsNullOrEmpty(NewMaterialCategory)
-		//            ? NewMaterialCategory : EditingMaterial.MaterialCategory;
-		//        EditingMaterial.MaterialCategory = categoryToUse;
-		//        MaterialSaved?.Invoke(EditingMaterial);
-		//        ClearInputFields();
-		//        EditingMaterial = null;
-		//    }
-		//}
+
 
 		/* ───────── update price only ───────── */
 		private void UpdateMaterial()

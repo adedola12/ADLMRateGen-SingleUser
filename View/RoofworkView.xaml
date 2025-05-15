@@ -10,7 +10,7 @@
 
 
     <!-- ───────── LAYOUT ───────── -->
-    <Border BorderBrush="{StaticResource LightGrayBrush}"
+    <Border BorderBrush="{DynamicResource LightGrayBrush}"
             BorderThickness="2"
             Effect="{StaticResource SoftShadow}"
             CornerRadius="6"
@@ -49,7 +49,7 @@
             </DockPanel>
 
 
-            <Border Background="{StaticResource VeryLight}"
+            <Border Background="{DynamicResource MainBg}"
                     CornerRadius="16"
                     Padding="24"
                     SnapsToDevicePixels="True"

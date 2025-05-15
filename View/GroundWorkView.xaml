@@ -9,7 +9,7 @@
              d:DesignHeight="720">
     
     <!-- ───────── LAYOUT ───────── -->
-    <Border BorderBrush="{StaticResource LightGrayBrush}"
+    <Border BorderBrush="{DynamicResource LightGrayBrush}"
             BorderThickness="2"
             Effect="{StaticResource SoftShadow}"
             CornerRadius="6"
@@ -47,10 +47,10 @@
             </DockPanel>
 
 
-            <Border Background="{StaticResource VeryLight}"
+            <Border Background="{DynamicResource MainBg}"
                     CornerRadius="16"
                     BorderThickness="1"
-                    BorderBrush="{StaticResource LightGrayBrush}"
+                    BorderBrush="{DynamicResource LightGrayBrush}"
                     Padding="24"
                     SnapsToDevicePixels="True"
                     Grid.Row="1"

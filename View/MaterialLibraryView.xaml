@@ -10,11 +10,11 @@
 
 
     <!-- ───────── Layout ───────── -->
-    <Border BorderBrush="{StaticResource PrimaryBrush}"
+    <Border BorderBrush="{DynamicResource PrimaryBrush}"
             BorderThickness="1"
             CornerRadius="12"
             Padding="12"
-            Background="{StaticResource BackgroundBrush}">
+            Background="{DynamicResource MainBg}">
 
         <Grid Margin="10">
             <Grid.RowDefinitions>
@@ -24,7 +24,7 @@
 
             <!-- Toolbar -->
             <Border Grid.Row="0"
-                    Background="{StaticResource LightGrayBrush}"
+                    Background="{DynamicResource LightGrayBrush}"
                     CornerRadius="6"
                     Padding="8"
                     Margin="0,0,0,16">

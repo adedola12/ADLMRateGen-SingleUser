@@ -26,7 +26,7 @@
     <!-- 📝 TextBox Style -->
     <Style TargetType="TextBox">
         <Setter Property="Background" Value="White"/>
-        <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
         <Setter Property="BorderThickness" Value="1.2"/>
         <Setter Property="Padding" Value="5"/>
         <Setter Property="FontSize" Value="14"/>
@@ -48,7 +48,7 @@
 
     <!-- 🔘 Base Button Style -->
     <Style TargetType="Button">
-        <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Padding" Value="10,5"/>
@@ -70,11 +70,11 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource HoverBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBrush}"/>
                             <Setter Property="Foreground" Value="White"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource DarkBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource DarkBrush}"/>
                             <Setter Property="Foreground" Value="White"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -90,7 +90,7 @@
         <Setter Property="Height" Value="45"/>
         <Setter Property="Margin" Value="10,5"/>
         <Setter Property="FontSize" Value="13"/>
-        <Setter Property="BorderBrush" Value="{StaticResource DarkBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource DarkBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -109,14 +109,14 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource HoverBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBrush}"/>
                             <Setter Property="Foreground" Value="White"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource DarkBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource DarkBrush}"/>
                         </Trigger>
                         <Trigger Property="helpers:ButtonHelper.IsActive" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource SuccessBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource SuccessBrush}"/>
                             <Setter Property="FontWeight" Value="Bold"/>
                             <Setter Property="Foreground" Value="White"/>
                         </Trigger>
@@ -131,7 +131,7 @@
         <Setter Property="MinWidth" Value="90"/>
         <Setter Property="Height" Value="35"/>
         <Setter Property="Margin" Value="5"/>
-        <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -152,14 +152,14 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource HoverBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBrush}"/>
                             <Setter Property="Foreground" Value="White"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource DarkBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource DarkBrush}"/>
                         </Trigger>
                         <Trigger Property="helpers:ButtonHelper.IsActive" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource SuccessBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource SuccessBrush}"/>
                             <Setter Property="FontWeight" Value="Bold"/>
                             <Setter Property="Foreground" Value="White"/>
                         </Trigger>
@@ -172,7 +172,7 @@
     <!-- 🧩 ComboBox Style -->
     <Style TargetType="ComboBox">
         <Setter Property="Background" Value="White"/>
-        <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="5"/>
         <Setter Property="Height" Value="30"/>
@@ -188,10 +188,10 @@
     <!-- 📊 DataGrid -->
     <Style TargetType="DataGrid">
         <Setter Property="Background" Value="White"/>
-        <Setter Property="BorderBrush" Value="{StaticResource HoverBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="RowBackground" Value="White"/>
-        <Setter Property="AlternatingRowBackground" Value="{StaticResource AltRowBrush}"/>
+        <Setter Property="AlternatingRowBackground" Value="{DynamicResource AltRowBrush}"/>
         <Setter Property="GridLinesVisibility" Value="None"/>
         <Setter Property="HeadersVisibility" Value="All"/>
         <Setter Property="AutoGenerateColumns" Value="False"/>
@@ -215,7 +215,7 @@
         <Setter Property="ColumnHeaderStyle">
             <Setter.Value>
                 <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="Background" Value="{StaticResource HeaderBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource HeaderBrush}" />
                     <Setter Property="Foreground" Value="White" />
                     <Setter Property="FontSize" Value="14" />
                     <Setter Property="FontWeight" Value="Bold" />
@@ -268,7 +268,7 @@
                             <Setter Property="Background" Value="#e0f4ff"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
                             <Setter Property="Foreground" Value="White"/>
                             <Setter Property="FontWeight" Value="SemiBold"/>
                         </Trigger>

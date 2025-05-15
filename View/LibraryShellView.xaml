@@ -20,7 +20,7 @@
 
             <Border CornerRadius="16"
                     SnapsToDevicePixels="True"
-                    Background="{StaticResource BackgroundBrush }">
+                    Background="{DynamicResource MainBg}">
 
                 <Grid>
 

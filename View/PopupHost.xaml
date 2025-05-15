@@ -28,7 +28,7 @@
                             Converter={StaticResource PercentConverter}, 
                             ConverterParameter=0.8}"
                 Padding="24"
-                Background="White"
+                Background="{DynamicResource MainBg}"
                 CornerRadius="14"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">

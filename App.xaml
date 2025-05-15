@@ -5,20 +5,21 @@
              xmlns:conv="clr-namespace:ADLMRateGen.Converters"
              StartupUri="MainWindow.xaml">
 
-    <!-- ───────── APP-WIDE RESOURCES ───────── -->
+
     <Application.Resources>
 
         <ResourceDictionary>
 
-            <!-- other dictionaries that already existed -->
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resources/Brushes.xaml" />
-                <!--<ResourceDictionary Source="pack://application:,,,/Resources/Styles.xaml" />-->
+
+
+
                 <ResourceDictionary Source="/Resources/ADLMStylesTheme.xaml" />
-                <ResourceDictionary Source="/Resources/Theme.xaml" />
+                <!--<ResourceDictionary Source="/Resources/ADLMStylesDarkTheme.xaml" />-->
+
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- ••• value-converters you were using ••• -->
+
             <conv:BoolToVis        x:Key="BoolVis" />
             <conv:InverseBoolToVis x:Key="InvBoolVis" />
             <conv:CurrencyDisplayConverter x:Key="CurrencyFmt" />

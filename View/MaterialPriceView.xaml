@@ -21,7 +21,7 @@
     <Grid Margin="10"
           Background="Transparent">
 
-        <Border Background="White"
+        <Border Background="{DynamicResource MainBg}"
                 CornerRadius="16"
                 Padding="24"
                 SnapsToDevicePixels="True">
@@ -49,7 +49,7 @@
                      ConverterParameter='Update Library|Add New Material'}"
                            FontSize="28"
                            FontWeight="Bold"
-                           Foreground="{StaticResource Blue900Brush}"
+                           Foreground="{DynamicResource Blue900Brush}"
                            HorizontalAlignment="Center" />
 
                 <!-- 2) Subtitle -->
@@ -57,13 +57,13 @@
                            Text="Can’t find your desired material in our library?"
                            FontSize="16"
                            FontWeight="DemiBold"
-                           Foreground="{StaticResource Grey700}"
+                           Foreground="{DynamicResource Grey700}"
                            HorizontalAlignment="Center"
                            Margin="0,8,0,0" />
 
                 <!-- 3) Form background -->
                 <Border Grid.Row="3"
-                        Background="{StaticResource BgInput}"
+                        Background="{DynamicResource BgInput}"
                         CornerRadius="8"
                         Padding="16">
                     <Grid>
@@ -90,11 +90,11 @@
                             <TextBlock Text="Name of Material"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource Grey700}"
+                                       Foreground="{DynamicResource Grey700}"
                                        Margin="0,10" />
                             <!-- inside your form – Name textbox -->
                             <TextBox Text="{Binding MaterialName}"
-                                     Style="{StaticResource TBInput}" />
+                                     Style="{DynamicResource ReadOnlyOnEditTextBox}" />
 
 
 
@@ -121,7 +121,7 @@
                                        Text="Unit"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource Grey700}"
+                                       Foreground="{DynamicResource Grey700}"
                                        Margin="0,0,0,4" />
 
                             <!-- Price label -->
@@ -130,21 +130,21 @@
                                        Text="Price"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource Grey700}"
+                                       Foreground="{DynamicResource Grey700}"
                                        Margin="20,0,0,4" />
 
                             <!-- Unit textbox -->
                             <TextBox Grid.Row="1"
                                      Grid.Column="0"
                                      Text="{Binding MaterialUnit}"
-                                     Style="{StaticResource TBInput}"
+                                     Style="{DynamicResource ReadOnlyOnEditTextBox}"
                                      Margin="0,0,8,0" />
 
                             <!-- Price textbox -->
                             <TextBox Grid.Row="1"
                                      Grid.Column="1"
                                      Text="{Binding MaterialPrice, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource TBInput}"
+                                     Style="{DynamicResource TBInput}"
                                      Margin="18,0,8,0" />
                         </Grid>
 
@@ -157,11 +157,11 @@
                             <TextBlock Text="Category"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource Grey700}"
+                                       Foreground="{DynamicResource Grey700}"
                                        Margin="0,10" />
 
                             <TextBox Text="{Binding NewMaterialCategory}"
-                                     Style="{StaticResource TBInput}" />
+                                     Style="{DynamicResource ReadOnlyOnEditTextBox}" />
 
 
                         </StackPanel>

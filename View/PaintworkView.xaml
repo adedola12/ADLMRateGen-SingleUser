@@ -44,10 +44,10 @@
                 </Button>
             </DockPanel>
 
-            <Border Background="{StaticResource VeryLight}"
+            <Border Background="{DynamicResource MainBg}"
                     CornerRadius="16"
                     BorderThickness="1"
-                    BorderBrush="{StaticResource LightGrayBrush}"
+                    BorderBrush="{DynamicResource LightGrayBrush}"
                     Padding="24"
                     SnapsToDevicePixels="True"
                     Grid.Row="1"

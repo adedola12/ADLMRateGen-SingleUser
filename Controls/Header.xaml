@@ -21,7 +21,7 @@
     </UserControl.DataContext>
 
     <!-- ───────── LAYOUT ───────── -->
-    <Grid Background="White">
+    <Grid>
 
         <!-- columns   0 search | 1 spacer | 2 right-area -->
         <Grid.ColumnDefinitions>
@@ -31,7 +31,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- ═══ SEARCH ═══ -->
-        <Border Background="{StaticResource VeryLight}"
+        <Border Background="{DynamicResource BorderBrushLight}"
                 CornerRadius="10"
                 VerticalAlignment="Center"
                 Margin="24,0">
@@ -41,7 +41,7 @@
 
                 <Grid Grid.Column="0">
                     <TextBox x:Name="SearchBox"
-                             Style="{StaticResource HollowBox}"
+                             Style="{DynamicResource HollowBox}"
                              Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
                              Padding="32,0,48,0"
                              VerticalContentAlignment="Center" />
@@ -50,13 +50,13 @@
                                FontSize="14"
                                VerticalAlignment="Center"
                                Margin="8,0,0,0"
-                               Foreground="{StaticResource BorderBrushLight}" />
+                               Foreground="{DynamicResource BorderBrushLight}" />
                     <TextBlock Text="⌘F"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Right"
                                Tag="Search everywhere…"
                                Margin="0,0,8,0"
-                               Foreground="{StaticResource BorderBrushLight}" />
+                               Foreground="{DynamicResource BorderBrushLight}" />
                 </Grid>
 
                 <!-- suggestions -->
@@ -102,8 +102,8 @@
                     HorizontalAlignment="Right">
 
             <!-- currency -->
-            <Border Background="#F8FAFF"
-                    BorderBrush="#D1D5DB"
+            <Border Background="{DynamicResource BorderBrushLight}"
+                    BorderBrush="{DynamicResource BorderBrushLight}"
                     BorderThickness="1"
                     CornerRadius="6"
                     Padding="8,4"
@@ -113,7 +113,7 @@
                           ItemsSource="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Supported}"
                           SelectedItem="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Selected}"
                           BorderThickness="0"
-                          Background="Transparent"
+                          Background="{DynamicResource BorderBrushLight}"
                           FontFamily="Poppins"
                           FontSize="12"
                           VerticalContentAlignment="Center">
@@ -135,28 +135,23 @@
                 </ComboBox>
             </Border>
 
-            <!-- search icon -->
-            <Button Style="{StaticResource IconButton}"
-                    Content="&#xE706;"
+            <!-- colormode icon -->
+            <Button Style="{DynamicResource IconButton}"
+                    Click="ColorModeButton_Click"
                     Margin="0,0,16,0"
-                    VerticalAlignment="Center" />
-
-            <!-- date picker -->
-            <!--
-            <DatePicker SelectedDate="{x:Static sys:DateTime.Now}"
-                        DisplayDateStart="2024-01-01"
-                        DisplayDateEnd="2050-12-31"
-                        FontFamily="Poppins"
-                        FontSize="12"
-                        BorderThickness="0"
-                        Background="Transparent"
-                        Margin="0,0,16,0"
-                        VerticalAlignment="Center" />-->
+                    VerticalAlignment="Center">
+                <fa:IconBlock x:Name="ColorModeIcon"
+                              Icon="Moon"
+                              Width="24"
+                              Height="24"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center" />
+            </Button>
 
             <!-- update icon -->
-            
+
             <!--TODO UPATE FUNCTIONALITY-->
-            <Button Style="{StaticResource IconButton}"
+            <Button Style="{DynamicResource IconButton}"
                     Margin="0,0,16,0"
                     VerticalAlignment="Center">
                 <fa:IconBlock Icon="bell"
@@ -177,7 +172,7 @@
                                FontFamily="Poppins"
                                FontWeight="SemiBold"
                                FontSize="13"
-                               Foreground="{StaticResource Navy}"
+                               Foreground="{DynamicResource Navy}"
                                VerticalAlignment="Center" />
                     <TextBlock Text="{Binding CurrentUser.Email}"
                                FontFamily="Poppins"
@@ -187,7 +182,7 @@
                 </StackPanel>
 
                 <!-- logout icon -->
-                <Button Style="{StaticResource IconButton}"
+                <Button Style="{DynamicResource IconButton}"
                         Command="{Binding LogoutCommand}"
                         Margin="16,0,0,0"
                         VerticalAlignment="Center">
