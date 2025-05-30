@@ -13,6 +13,8 @@
     <!-- ───────── RESOURCES ───────── -->
     <UserControl.Resources>
         <conv:CountToBoolConverter x:Key="CountToBool" />
+        <conv:BoolToVis              x:Key="BoolToVisibility" />
+        <conv:EmptyCollectionToVisibility x:Key="EmptyCollectionToVisibility" />
     </UserControl.Resources>
 
     <UserControl.DataContext>
@@ -65,7 +67,7 @@
                         Mode=OneWay}"
                        PlacementTarget="{Binding ElementName=SearchBox}"
                        StaysOpen="False">
-                    <Border Background="White"
+                    <Border Background="{DynamicResource BorderBrushLight}"
                             BorderBrush="#C7CED9"
                             BorderThickness="1"
                             CornerRadius="4"
@@ -99,15 +101,17 @@
         <StackPanel Grid.Column="2"
                     Orientation="Horizontal"
                     VerticalAlignment="Center"
-                    HorizontalAlignment="Right">
+                    HorizontalAlignment="Right"
+                    Margin="0,0,10,0"
+                    x:Name="RightGroupPanel">
 
             <!-- currency -->
-            <Border Background="{DynamicResource BorderBrushLight}"
+            <Border Style="{StaticResource RightGroupItemMargin}"
+                    Background="{DynamicResource BorderBrushLight}"
                     BorderBrush="{DynamicResource BorderBrushLight}"
                     BorderThickness="1"
                     CornerRadius="6"
                     Padding="8,4"
-                    Margin="0,0,16,0"
                     VerticalAlignment="Center">
                 <ComboBox Width="80"
                           ItemsSource="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Supported}"
@@ -135,11 +139,11 @@
                 </ComboBox>
             </Border>
 
-            <!-- colormode icon -->
+            <!-- color mode icon -->
             <Button Style="{DynamicResource IconButton}"
                     Click="ColorModeButton_Click"
-                    Margin="0,0,16,0"
-                    VerticalAlignment="Center">
+                    VerticalAlignment="Center"
+                    Margin="0,0,16,0">
                 <fa:IconBlock x:Name="ColorModeIcon"
                               Icon="Moon"
                               Width="24"
@@ -148,55 +152,47 @@
                               VerticalAlignment="Center" />
             </Button>
 
-            <!-- update icon -->
-
-            <!--TODO UPATE FUNCTIONALITY-->
-            <Button Style="{DynamicResource IconButton}"
-                    Margin="0,0,16,0"
-                    VerticalAlignment="Center">
-                <fa:IconBlock Icon="bell"
-                              Width="24"
-                              Height="24"
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Center" />
+            <!-- bell icon -->
+            <Button x:Name="BellButton"
+                    Style="{DynamicResource IconButton}"
+                    Command="{Binding ToggleNotificationsCommand}"
+                    ToolTip="How price updates"
+                    Margin="0,0,16,0">
+                <Grid>
+                    <fa:IconBlock Icon="Bell"
+                                  Width="24"
+                                  Height="24"
+                                  Foreground="{DynamicResource Blue900Brush}"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+                    <Ellipse Width="8"
+                             Height="8"
+                             Fill="Tomato"
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Top"
+                             Margin="1"
+                             Visibility="{Binding HasPriceNotifications,
+                      Converter={StaticResource BoolToVisibility}}" />
+                </Grid>
             </Button>
 
-            <!-- user info + logout -->
+            <!-- user info -->
             <StackPanel Orientation="Horizontal"
-                        VerticalAlignment="Center"
-                        Margin="0,0,0,0">
-
-                <!-- user details -->
+                        VerticalAlignment="Center">
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="{Binding CurrentUser.Username}"
                                FontFamily="Poppins"
                                FontWeight="SemiBold"
                                FontSize="13"
-                               Foreground="{DynamicResource Navy}"
-                               VerticalAlignment="Center" />
+                               Foreground="{DynamicResource Navy}" />
                     <TextBlock Text="{Binding CurrentUser.Email}"
                                FontFamily="Poppins"
                                FontSize="11"
-                               Foreground="#5A6273"
-                               VerticalAlignment="Center" />
+                               Foreground="#5A6273" />
                 </StackPanel>
-
-                <!-- logout icon -->
-                <Button Style="{DynamicResource IconButton}"
-                        Command="{Binding LogoutCommand}"
-                        Margin="16,0,0,0"
-                        VerticalAlignment="Center">
-
-                    <fa:IconBlock Icon="RightFromBracket"
-                                  Width="24"
-                                  Height="24"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center" />
-
-                </Button>
-
             </StackPanel>
         </StackPanel>
+
 
     </Grid>
 </UserControl>

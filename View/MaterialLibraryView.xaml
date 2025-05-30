@@ -96,7 +96,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="S/N"
                                         Binding="{Binding SerialNumber}"
-                                        Width="60">
+                                        Width="60" >
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment"

@@ -28,6 +28,10 @@ namespace ADLMRateGen
 		{
 			InitializeComponent();
 
+			// 👇 ADD THIS BEFORE you construct your ViewModels
+			LabourLibraryService.Initialize(new LabourJsonDataSource("data/labour.json"));
+			MaterialLibraryService.Initialize(new MaterialJsonDataSource("data/materials.json"));
+
 			// 1) Create your sub-VMs
 			var priceVM = new MaterialPriceViewModel();
 			var libraryVM = new MaterialLibraryViewModel();
@@ -50,8 +54,10 @@ namespace ADLMRateGen
 			
 			var databaseName = "ADLMRateDB";
 			var collectionName = "Users";
+			var matColName = "Materials";
+			var labColName = "labours";
 
-			var mongoDbService = new MongoDbService(connectionString, databaseName, collectionName);
+			var mongoDbService = new MongoDbService(connectionString, databaseName, collectionName, matColName, labColName);
 			var signInVM = new SignInViewModel(mongoDbService);
 
 			// ───────── event wiring ─────────

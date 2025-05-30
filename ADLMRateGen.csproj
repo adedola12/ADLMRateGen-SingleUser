@@ -19,6 +19,7 @@
     <None Remove="Resources\adlm_rate_generator_logo.png" />
     <None Remove="Resources\adlm_rate_generator_logo_small.png" />
     <None Remove="Resources\adlm_studio_logo_small.png" />
+    <None Remove="Resources\Backdrop.png" />
     <None Remove="Resources\bg_frame.png" />
     <None Remove="Resources\EUR.png" />
     <None Remove="Resources\GHS.png" />
@@ -60,6 +61,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\adlm_studio_logo_small.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Backdrop.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\banner_house.png">

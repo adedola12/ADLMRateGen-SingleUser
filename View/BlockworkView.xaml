@@ -85,27 +85,91 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- ────── Overhead ────── -->
-                        <Grid Grid.Column="0"
-                              Height="46">
-                            <!-- textbox -->
-                            <TextBox Style="{StaticResource OPTextBox}"
-                                     Text="{Binding OverheadPercent,
-                                                    UpdateSourceTrigger=PropertyChanged}" />
+                        <Border Background="{DynamicResource DisabledBgBrush}"
+                                BorderBrush="{DynamicResource BorderBrushLight}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="14,0"
+                                Height="46">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <!-- Overhead -->
+                                    <ColumnDefinition Width="*" />
+                                    <!-- Text -->
+                                    <ColumnDefinition Width="Auto" />
+                                    <!-- % -->
+                                </Grid.ColumnDefinitions>
 
-                            <!-- % sign -->
-                            <TextBlock Style="{StaticResource OPText}" />
-                        </Grid>
+                                <!-- Overhead -->
+                                <TextBlock Grid.Column="0"
+                                           Style="{StaticResource OOText}"
+                                           Text="Overhead" />
 
+                                <!-- Centered Text Displaying the Value (Use a TextBlock Instead of TextBox if Non-editable) -->
+                                <TextBox Grid.Column="1"
+                                         Style="{StaticResource OPTextBox}"
+                                         Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         HorizontalContentAlignment="Center"
+                                         VerticalContentAlignment="Center"
+                                         Padding="0"
+                                         FontWeight="SemiBold"
+                                         FontFamily="{DynamicResource Mont}"
+                                         Foreground="{DynamicResource Grey700}" />
+
+
+                                <!-- Percentage sign -->
+                                <TextBlock Grid.Column="2"
+                                           Style="{StaticResource OPText}"
+                                           Text="%" />
+                            </Grid>
+                        </Border>
 
                         <!-- ────── Profit ────── -->
-                        <Grid Grid.Column="2"
-                              Height="46">
-                            <TextBox Style="{StaticResource OPTextBox}"
-                                     Text="{Binding ProfitPercent,
-                                                    UpdateSourceTrigger=PropertyChanged}" />
+                        <Border Background="{DynamicResource DisabledBgBrush}"
+                                BorderBrush="{DynamicResource BorderBrushLight}"
+                                BorderThickness="1"
+                                Grid.Column="2"
+                                CornerRadius="8"
+                                Padding="14,0"
+                                Height="46">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <!-- Profit -->
+                                    <ColumnDefinition Width="*" />
+                                    <!-- Text -->
+                                    <ColumnDefinition Width="Auto" />
+                                    <!-- % -->
+                                </Grid.ColumnDefinitions>
 
-                            <TextBlock Style="{StaticResource OPText}" />
-                        </Grid>
+                                <!-- Profit -->
+                                <TextBlock Grid.Column="0"
+                                           Style="{StaticResource OSPText}"
+                                           Text="Profit" />
+
+                                <!-- Centered Text Displaying the Value (Use a TextBlock Instead of TextBox if Non-editable) -->
+                                <TextBox Grid.Column="1"
+                                         Style="{StaticResource OPTextBox}"
+                                         Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         HorizontalContentAlignment="Center"
+                                         VerticalContentAlignment="Center"
+                                         Padding="0"
+                                         FontWeight="SemiBold"
+                                         FontFamily="{DynamicResource Mont}"
+                                         Foreground="{DynamicResource Grey700}" />
+
+
+                                <!-- Percentage sign -->
+                                <TextBlock Grid.Column="2"
+                                           Style="{StaticResource OPText}"
+                                           Text="%" />
+                            </Grid>
+                        </Border>
 
 
                         <!-- ────── Search ────── -->
@@ -149,7 +213,8 @@
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Description}"
                                                    TextTrimming="CharacterEllipsis"
-                                                   Foreground="{StaticResource Blue900Brush}">
+                                                   Foreground="{StaticResource Blue900Brush}"
+                                                   Style="{StaticResource CenterCellText}">
                                             <TextBlock.InputBindings>
                                                 <MouseBinding MouseAction="LeftClick"
                                                               Command="{Binding DataContext.ShowDetailsCommand,

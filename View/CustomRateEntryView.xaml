@@ -1,199 +1,450 @@
 ﻿<UserControl x:Class="ADLMRateGen.View.CustomRateEntryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ADLMRateGen.View"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="{DynamicResource MainBg}" Margin="10">
-        <Grid.RowDefinitions>
-            <!-- 1. Header -->
-            <RowDefinition Height="Auto"/>
-            <!-- 2. Top Input Row (Rate Name, Description, Overhead, Profit) -->
-            <RowDefinition Height="Auto"/>
-            <!-- 3. Materials and Labour items -->
-            <RowDefinition Height="*"/>
-            <!-- 4. Save Button -->
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
+    <Border Background="{DynamicResource BackgroundBrush}"
+            Margin="25,-20"
+            CornerRadius="20">
 
-        <!-- 1. Header -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,10">
-            <TextBlock Text="Build New Custom Rate" FontSize="30" FontWeight="Bold"/>
-            <TextBlock Text="Enter Rate Name, Overhead, Profit, and Items" FontSize="15"/>
-        </StackPanel>
-
-        <!-- 2. Top Input Row -->
-        <Grid Grid.Row="1" Margin="0,10,0,10">
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                
+                <!-- 1. Header -->
+                <RowDefinition Height="Auto" />
+                <!-- 2. Top Input Row (Rate Name, Description, Overhead, Profit) -->
+                <RowDefinition Height="Auto" />
+                <!-- 3. Materials and Labour items -->
+                <RowDefinition Height="*" />
+                <!-- 4. Save Button -->
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
-                   
-                </Grid.ColumnDefinitions>
+            <!-- Header -->
+            <StackPanel Grid.Row="0"
+                        Margin="0,30,0,20"
+                        HorizontalAlignment="Center">
+                <TextBlock Text="Build New Custom Rate"
+                           Style="{StaticResource EstHeader}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="Enter rate name, overhead, profit, and items"
+                           Style="{StaticResource SubheadingText}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
 
-                <!-- Rate Name -->
-                <StackPanel Grid.Column="0" Margin="5">
-                    <TextBlock Text="Rate Name" FontSize="15" FontWeight="DemiBold"/>
-                    <TextBox Text="{Binding RateName, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
+
+            <ScrollViewer  Grid.Row="2"
+                           Margin="20,20,20,10"
+                           VerticalScrollBarVisibility="Hidden"
+                           HorizontalScrollBarVisibility="Disabled"
+                           PanningMode="VerticalOnly"
+                           CanContentScroll="True">
+                <StackPanel>
+                    <!-- Top Inputs -->
+                    <StackPanel Grid.Row="1"
+                                Margin="20,0,20,0">
+                        
+                        <Grid Margin="0,10,0,10">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+                            <!-- Name of Rate -->
+                            <StackPanel>
+                                <TextBlock Text="Name of Rate"
+                                           FontSize="14"
+                                           FontFamily="{DynamicResource Mont}"
+                                           Margin="0,0,0,8" />
+                                <TextBox Style="{StaticResource OPTextBox}"
+                                         Text="{Binding RateName, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+
+                            <!-- Description -->
+                            <StackPanel Grid.Column="1"
+                                        Margin="10,0">
+                                <TextBlock Text="Description"
+                                           FontSize="14"
+                                           FontFamily="{DynamicResource Mont}"
+                                           Margin="0,0,0,8" />
+                                <TextBox Style="{StaticResource OPTextBox}"
+                                         Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         Height="50" />
+                            </StackPanel>
+                        </Grid>
+                        <!-- Overhead & Profit -->
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,10,0,10">
+                            <StackPanel Width="180">
+                                <TextBlock Text="Overhead"
+                                           FontSize="14"
+                                           FontFamily="{DynamicResource Mont}"
+                                           Margin="0,0,0,8" />
+                                <Grid>
+                                    <TextBox Style="{StaticResource HollowBox}"
+                                             Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Text="%"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right"
+                                               Margin="0,0,12,0"
+                                               FontFamily="{StaticResource Mont}"
+                                               Foreground="{DynamicResource Grey700}" />
+                                </Grid>
+                            </StackPanel>
+
+                            <StackPanel Width="180"
+                                        Margin="20,0,0,0">
+                                <TextBlock Text="Profit"
+                                           FontSize="14"
+                                           FontFamily="{DynamicResource Mont}"
+                                           Margin="0,0,0,8" />
+                                <Grid>
+                                    <TextBox Style="{StaticResource OPTextBox}"
+                                             Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Text="%"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right"
+                                               Margin="0,0,12,0"
+                                               FontFamily="{StaticResource Mont}"
+                                               Foreground="{DynamicResource Grey700}" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+
+
+                    </StackPanel>
+
+                    <!-- 3. Materials and Labour items -->
+
+
+                    <StackPanel>
+                        <!-- Materials Section Header with Button -->
+                        <Grid Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Materials"
+                                           Style="{StaticResource Body}" />
+                                <TextBlock Text="Click to add new material"
+                                           Margin="0,2,0,0"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource HintGrey}" />
+                            </StackPanel>
+
+                            <Button Grid.Column="1"
+                                    Content="Add Material"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Height="30"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Bottom"
+                                    Command="{Binding AddMaterialItemCommand}" />
+                        </Grid>
+
+                        <!-- Material Items -->
+                        <ItemsControl ItemsSource="{Binding MaterialItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="0,10"
+                                            Padding="8"
+                                            CornerRadius="12"
+                                            Background="{DynamicResource LightGrayBrush}">
+                                        <Grid VerticalAlignment="Center">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="3*" />
+                                                <ColumnDefinition Width="1.5*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="1.5*" />
+                                                <ColumnDefinition Width="2*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Name -->
+                                            <StackPanel Grid.Column="0"
+                                                        Margin="0,0,8,0">
+                                                <TextBlock Text="Name"
+                                                           FontSize="11"
+                                                           FontFamily="{DynamicResource Mont}"
+                                                           Foreground="{DynamicResource HintGrey}" />
+                                                <ComboBox IsEditable="True"
+                                                          Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                          ItemsSource="{Binding DataContext.AvailableMaterials, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                          Height="46"
+                                                          FontFamily="{DynamicResource Mont}"
+                                                          FontSize="14"
+                                                          BorderBrush="{DynamicResource BorderBrushLight}"
+                                                          BorderThickness="1"
+                                                          Padding="10,0"
+                                                          VerticalContentAlignment="Center"
+                                                          Background="White"
+                                                          HorizontalContentAlignment="Left"
+                                                          MinWidth="180" />
+                                            </StackPanel>
+
+                                            <!-- Rate -->
+                                            <StackPanel Grid.Column="1"
+                                                        Margin="8,0">
+                                                <TextBlock Text="Rate"
+                                                           FontSize="11"
+                                                           FontFamily="{DynamicResource Mont}"
+                                                           Foreground="{DynamicResource HintGrey}" />
+                                                <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                         Style="{StaticResource OPTextBox}" />
+                                            </StackPanel>
+
+                                            <!-- Unit -->
+                                            <StackPanel Grid.Column="2"
+                                                        Margin="8,0">
+                                                <TextBlock Text="Unit"
+                                                           FontSize="11"
+                                                           FontFamily="{DynamicResource Mont}"
+                                                           Foreground="{DynamicResource HintGrey}" />
+                                                <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                         Width="50"
+                                                         FontFamily="{DynamicResource Mont}"
+                                                         Style="{StaticResource OPTextBox}"
+                                                         FontSize="14"
+                                                         Padding="10,0"
+                                                         Background="White"
+                                                         BorderBrush="{DynamicResource BorderBrushLight}"
+                                                         BorderThickness="1"
+                                                         VerticalContentAlignment="Center"
+                                                         HorizontalContentAlignment="Center"
+                                                         Height="46" />
+                                            </StackPanel>
+
+                                            <!-- Quantity -->
+                                            <StackPanel Grid.Column="3"
+                                                        Margin="8,0">
+                                                <TextBlock Text="Quantity"
+                                                           FontSize="11"
+                                                           FontFamily="{DynamicResource Mont}"
+                                                           Foreground="{DynamicResource HintGrey}" />
+                                                <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                         Style="{StaticResource OPTextBox}" />
+                                            </StackPanel>
+
+                                            <!-- Amount -->
+                                            <StackPanel Grid.Column="4"
+                                                        Margin="8,0">
+                                                <TextBlock Text="Amount"
+                                                           FontSize="11"
+                                                           FontFamily="{DynamicResource Mont}"
+                                                           Foreground="{DynamicResource HintGrey}" />
+                                                <TextBlock Text="{Binding TotalCost, StringFormat=N2}"
+                                                           Style="{StaticResource CenterCellText}"
+                                                           Margin="0,12,0,0" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+
+
+
+                        <!-- Labour Section -->
+                       
+
+                        <Grid Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Labour"
+                                           Style="{StaticResource Body}" />
+                                <TextBlock Text="Click to add new labour"
+                                           Margin="10,0"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource HintGrey}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <Button Content="Add Labour"
+                                    Grid.Column="1"
+                                    Height="30"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Bottom"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Command="{Binding AddLabourItemCommand}" />
+
+
+                        </Grid>
+
+
+                        <ItemsControl ItemsSource="{Binding LabourItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="0,10"
+                                            Padding="8"
+                                            CornerRadius="12"
+                                            Background="{DynamicResource LightGrayBrush}">
+                                        <Grid VerticalAlignment="Center">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="3*" />
+                                                <ColumnDefinition Width="1.5*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="1.5*" />
+                                                <ColumnDefinition Width="2*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Name -->
+                                            <StackPanel Grid.Column="0"
+                                                        Margin="0,0,8,0">
+                                                <TextBlock Text="Name"
+                                                           FontSize="11"
+                                                           FontFamily="{DynamicResource Mont}"
+                                                           Foreground="{DynamicResource HintGrey}" />
+                                                <ComboBox IsEditable="True"
+                                                          IsTextSearchEnabled="True"
+                                                          StaysOpenOnEdit="True"
+                                                          Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                          ItemsSource="{Binding DataContext.AvailableLabourItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                          Height="46"
+                                                          FontFamily="{DynamicResource Mont}"
+                                                          FontSize="14"
+                                                          BorderBrush="{DynamicResource BorderBrushLight}"
+                                                          BorderThickness="1"
+                                                          Padding="10,0"
+                                                          VerticalContentAlignment="Center"
+                                                          Background="White"
+                                                          HorizontalContentAlignment="Left"
+                                                          MinWidth="180" />
+                                                <TextBlock Text="{Binding DataContext.AvailableLabourItems.Count, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+
+
+                                            </StackPanel>
+
+                                            <!-- Rate -->
+                                            <StackPanel Grid.Column="1"
+                                                        Margin="8,0">
+                                                <TextBlock Text="Rate"
+                                                           FontSize="11"
+                                                           FontFamily="{DynamicResource Mont}"
+                                                           Foreground="{DynamicResource HintGrey}" />
+                                                <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                         Style="{StaticResource OPTextBox}" />
+                                            </StackPanel>
+
+                                            <!-- Unit -->
+                                            <StackPanel Grid.Column="2"
+                                                        Margin="8,0">
+                                                <TextBlock Text="Unit"
+                                                           FontSize="11"
+                                                           FontFamily="{DynamicResource Mont}"
+                                                           Foreground="{DynamicResource HintGrey}" />
+                                                <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                         Width="50"
+                                                         FontFamily="{DynamicResource Mont}"
+                                                         Style="{StaticResource OPTextBox}"
+                                                         FontSize="14"
+                                                         Padding="10,0"
+                                                         Background="White"
+                                                         BorderBrush="{DynamicResource BorderBrushLight}"
+                                                         BorderThickness="1"
+                                                         VerticalContentAlignment="Center"
+                                                         HorizontalContentAlignment="Center"
+                                                         Height="46" />
+                                            </StackPanel>
+
+                                            <!-- Quantity -->
+                                            <StackPanel Grid.Column="3"
+                                                        Margin="8,0">
+                                                <TextBlock Text="Quantity"
+                                                           FontSize="11"
+                                                           FontFamily="{DynamicResource Mont}"
+                                                           Foreground="{DynamicResource HintGrey}" />
+                                                <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                         Style="{StaticResource OPTextBox}" />
+                                            </StackPanel>
+
+                                            <!-- Amount -->
+                                            <StackPanel Grid.Column="4"
+                                                        Margin="8,0">
+                                                <TextBlock Text="Amount"
+                                                           FontSize="11"
+                                                           FontFamily="{DynamicResource Mont}"
+                                                           Foreground="{DynamicResource HintGrey}" />
+                                                <TextBlock Text="{Binding TotalCost, StringFormat=N2}"
+                                                           Style="{StaticResource CenterCellText}"
+                                                           Margin="0,12,0,0" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                       
+                        <!-- Totals -->
+                        <TextBlock Text="{Binding TotalMaterialCost, StringFormat='Material Total: {0:N2}'}"
+                                   FontWeight="Bold"
+                                   Margin="0,20,0,0" />
+                        <TextBlock Text="{Binding TotalLabourCost, StringFormat='Labour Total: {0:N2}'}"
+                                   FontWeight="Bold" />
+                        <TextBlock Text="{Binding OverallTotal, StringFormat='Overall Total: {0:N2}'}"
+                                   FontWeight="Bold" />
+
+                    </StackPanel>
+
                 </StackPanel>
-
-                <!-- Description -->
-                <StackPanel Grid.Column="1" Margin="5">
-                    <TextBlock Text="Description" FontSize="15" FontWeight="DemiBold"/>
-                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
-                </StackPanel>
-            </Grid>
-
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
-
-                </Grid.ColumnDefinitions>
-
-                <!-- Overhead -->
-                <StackPanel Grid.Column="0" Margin="5">
-                    <TextBlock Text="Overhead (%)" FontSize="15" FontWeight="DemiBold"/>
-                    <TextBox Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
-                </StackPanel>
-
-                <!-- Profit -->
-                <StackPanel Grid.Column="1" Margin="5">
-                    <TextBlock Text="Profit (%)" FontSize="15" FontWeight="DemiBold"/>
-                    <TextBox Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}" Height="30"/>
-                </StackPanel>
-            </Grid>
+            </ScrollViewer>
             
+            
+            <!-- Save Button -->
+            <Button Grid.Row="3"
+                    Margin="0,20,0,0"
+                    Height="50"
+                    FontSize="16"
+                    FontFamily="{DynamicResource Mont}"
+                    Foreground="White"
+                    Background="#061E3D"
+                    Command="{Binding SaveCustomRateCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    BorderThickness="0"
+                    Padding="0"
+                    Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            CornerRadius="10"
+                                            SnapsToDevicePixels="True">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"
+                                                          RecognizesAccessKey="True" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                        <Setter Property="Content"
+                                Value="Save" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsEditing}"
+                                         Value="True">
+                                <Setter Property="Content"
+                                        Value="Update" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
 
 
         </Grid>
-
-        <!-- 3. Materials and Labour items -->
-        <ScrollViewer Grid.Row="2"
-                      Margin="0"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled">
-            <StackPanel>
-                <!-- Materials Section -->
-                <TextBlock Text="Materials"
-                           FontWeight="Bold"
-                           FontSize="16"
-                           Margin="0,5,0,5" />
-                <ItemsControl ItemsSource="{Binding MaterialItems}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal"
-                                        Margin="0,5">
-                                <ComboBox Width="200"
-                                          IsEditable="True"
-                                          Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
-                                          ItemsSource="{Binding DataContext.AvailableMaterials, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                                <TextBox Width="100"
-                                         Margin="10,0,0,0"
-                                         Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
-                                         ToolTip="Price" />
-                                <TextBox Width="50"
-                                         Margin="10,0,0,0"
-                                         Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}"
-                                         ToolTip="Unit" />
-                                <TextBox Width="100"
-                                         Margin="10,0,0,0"
-                                         Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
-                                         ToolTip="Quantity" />
-
-                                <TextBlock Width="100"
-                                           Margin="10,0,0,0"
-                                           Text="{Binding TotalCost, StringFormat=N2}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <Button Content="Add Material"
-                        Command="{Binding AddMaterialItemCommand}"
-                        Margin="0,10,0,0"
-                        Width="150"
-                        Height="30" />
-
-                <!-- Labour Section -->
-                <TextBlock Text="Labour"
-                           FontWeight="Bold"
-                           FontSize="16"
-                           Margin="0,20,0,5" />
-                <ItemsControl ItemsSource="{Binding LabourItems}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal"
-                                        Margin="0,5">
-                                <ComboBox Width="200"
-                                          IsEditable="True"
-                                          Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
-                                          ItemsSource="{Binding AvailableLabourItems, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                                <TextBox Width="100"
-                                         Margin="10,0,0,0"
-                                         Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
-                                         ToolTip="Price" />
-                                <TextBox Width="50"
-                                         Margin="10,0,0,0"
-                                         Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}"
-                                         ToolTip="Unit" />
-                                <TextBox Width="100"
-                                         Margin="10,0,0,0"
-                                         Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
-                                         ToolTip="Quantity" />
-
-                                <TextBlock Width="100"
-                                           Margin="10,0,0,0"
-                                           Text="{Binding TotalCost, StringFormat=N2}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <Button Content="Add Labour"
-                        Command="{Binding AddLabourItemCommand}"
-                        Margin="0,10,0,0"
-                        Width="150"
-                        Height="30" />
-
-                <!-- Totals -->
-                <TextBlock Text="{Binding TotalMaterialCost, StringFormat='Material Total: {0:N2}'}"
-                           FontWeight="Bold"
-                           Margin="0,20,0,0" />
-                <TextBlock Text="{Binding TotalLabourCost, StringFormat='Labour Total: {0:N2}'}"
-                           FontWeight="Bold" />
-                <TextBlock Text="{Binding OverallTotal, StringFormat='Overall Total: {0:N2}'}"
-                           FontWeight="Bold" />
-
-            </StackPanel>
-
-        </ScrollViewer>
-
-        <!-- 4. Save Button -->
-        <Button Grid.Row="3"  Margin="0,20,0,0"
-                Width="200" Height="40" 
-                FontSize="15" FontWeight="Bold"
-                HorizontalAlignment="Right">
-            <Button.Style>
-                <Style TargetType="Button">
-                    <Setter Property="Content" Value="Save" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsEditing}" Value="True">
-                            <Setter Property="Content" Value="Update" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Button.Style>
-            <Button.Command>
-                <Binding Path="SaveCustomRateCommand"/>
-            </Button.Command>
-        </Button>
-
-    </Grid>
+    </Border>
 </UserControl>

@@ -65,6 +65,8 @@
     <Color x:Key="Color.White">#313E45</Color>
     <Color x:Key="Color.Gray">#8CA6B6</Color>
     <Color x:Key="Color.RowAlt">#66757D</Color>
+    <Color x:Key="OrangeAccentCol">#FF5900</Color>
+    <Color x:Key="OrangeAccentHoverCol">#FFE8B3</Color>
 
     <!-- 🎨 Brush Library -->
     <SolidColorBrush x:Key="PrimaryBrush"
@@ -81,6 +83,11 @@
                      Color="{DynamicResource Color.Dark}" />
     <SolidColorBrush x:Key="AltRowBrush"
                      Color="{DynamicResource Color.RowAlt}" />
+    <SolidColorBrush x:Key="OrangeAccentBrush"
+                     Color="{DynamicResource OrangeAccentCol}" />
+    <SolidColorBrush x:Key="OrangeAccentHoverBrush"
+                     Color="{DynamicResource OrangeAccentHoverCol}" />
+
 
 
 
@@ -152,7 +159,7 @@
                      Color="{DynamicResource PopupBorderCol}" />
 
     <!-- ─── FONTS ─── -->
-    <FontFamily x:Key="Mont">pack://application:,,,/Fonts/#Mont</FontFamily>
+    <FontFamily x:Key="Mont">Poppins</FontFamily>
     <FontFamily x:Key="PoppinsFont">Poppins</FontFamily>
 
     <!-- ─── CONVERTERS ─── -->
@@ -164,6 +171,12 @@
                       BlurRadius="10"
                       ShadowDepth="0"
                       Opacity="0.12" />
+    <Style x:Key="RightGroupItemMargin"
+           TargetType="FrameworkElement">
+        <Setter Property="Margin"
+                Value="0,0,16,0" />
+    </Style>
+
 
     <!-- ─── ICON BUTTONS ─── -->
     <Style x:Key="IconButton"
@@ -1111,6 +1124,62 @@
                         Value="{DynamicResource ActiveBgBrush}" />
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <Style x:Key="invBtn"
+           TargetType="Button">
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource OrangeAccentBrush}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource OrangeAccentBrush}" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="FontSize"
+                Value="16" />
+        <Setter Property="FontWeight"
+                Value="Bold" />
+        <Setter Property="Width"
+                Value="180" />
+        <Setter Property="Height"
+                Value="38" />
+        <Setter Property="Padding"
+                Value="20,8" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="btnBorder"
+                            CornerRadius="12"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="btnBorder"
+                                    Property="Background"
+                                    Value="{DynamicResource OrangeAccentHoverBrush}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Blue900Brush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter TargetName="btnBorder"
+                                    Property="Opacity"
+                                    Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 

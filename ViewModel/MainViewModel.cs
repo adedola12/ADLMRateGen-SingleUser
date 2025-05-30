@@ -11,6 +11,7 @@ using ADLMRateGen.ViewModel.Painting;
 using ADLMRateGen.ViewModel.RoofWork;
 using ADLMRateGen.ViewModel.SteelWork;
 using ADLMRateGen.ViewModel.WindowAndDoor;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Net;
@@ -26,7 +27,24 @@ namespace ADLMRateGen.ViewModel
 
 		/* ───────── current user / auth ───────── */
 
-private UserModel? _currentUser;
+		private bool _hasPriceNotifications;
+		public bool HasPriceNotifications
+		{
+			get => _hasPriceNotifications;
+			set { _hasPriceNotifications = value; RaisePropertyChanged(); }
+		}
+
+		private string _notificationMessage = "";
+		public string NotificationMessage
+		{
+			get => _notificationMessage;
+			set
+			{
+				_notificationMessage = value; RaisePropertyChanged();
+			}
+		}
+
+		private UserModel? _currentUser;
 		public UserModel? CurrentUser
 		{
 			get => _currentUser;
@@ -35,6 +53,20 @@ private UserModel? _currentUser;
 				_currentUser = value;
 				RaisePropertyChanged();             // ↺ notifies <Run …>
 				RaisePropertyChanged(nameof(CurrentUsername));
+			}
+		}
+
+		public ObservableCollection<string> Notifications { get; }
+	= new ObservableCollection<string>();
+
+		private bool _isNotificationsOpen;
+		public bool IsNotificationsOpen
+		{
+			get => _isNotificationsOpen;
+			set
+			{
+				_isNotificationsOpen = value;
+				RaisePropertyChanged();
 			}
 		}
 
@@ -218,6 +250,12 @@ private UserModel? _currentUser;
 		public ICommand LogoutCommand { get; }
 		public ICommand OpenYoutubeCommand { get; }
 		public ICommand HelpCommand { get; }
+		public ICommand RefreshPricesCommand { get; }
+		public ICommand ShowNotificationCommand { get; }
+		public ICommand ToggleNotificationsCommand { get; }
+		public ICommand DismissNotificationCommand { get; }
+
+
 
 		/* ───────── ctor ───────── */
 		public MainViewModel(
@@ -241,6 +279,45 @@ private UserModel? _currentUser;
 		{
 			/* store deps */
 			_mongoDbService = mongoDbService;
+
+			Notifications = new ObservableCollection<string>();
+
+
+			_mongoDbService.MaterialPricesChanged += () =>
+	AddNotification("New material prices available");
+
+			_mongoDbService.LabourPricesChanged += () =>
+				AddNotification("New labour prices available");
+
+
+
+
+			ToggleNotificationsCommand = new RelayCommand(_ =>
+			{
+				// flip the panel open/closed
+				IsNotificationsOpen = !IsNotificationsOpen;
+
+				// if we're opening and there are no real notifications...
+				//if (IsNotificationsOpen && Notifications.Count == 0)
+				//{
+				//	Notifications.Add("No notifications available");
+				//}
+			});
+
+			DismissNotificationCommand = new RelayCommand(idxObj =>
+			{
+				if (idxObj is int i && i >= 0 && i < Notifications.Count)
+					Notifications.RemoveAt(i);
+				IsNotificationsOpen = false;
+			});
+		
+
+
+			ShowNotificationCommand = new RelayCommand(_ =>
+			{
+				MessageBox.Show(NotificationMessage, "Price Update");
+				HasPriceNotifications = false;
+			});
 
 			/* ---------- create empty index & search VM ---------- */
 			_index = new SearchIndex();          // stays empty for now
@@ -329,6 +406,17 @@ private UserModel? _currentUser;
 
 		}
 
+		private void AddNotification(string msg)
+		{
+			// insert at top
+			Notifications.Insert(0, msg);
+			// cap at 5
+			while (Notifications.Count > 5)
+				Notifications.RemoveAt(Notifications.Count - 1);
+			RaisePropertyChanged(nameof(Notifications));
+			// badge
+			HasPriceNotifications = Notifications.Any();
+		}
 		/* ───────── auto‑login helper ───────── */
 		private bool TryAutoLogin(out UserModel? user)
 		{

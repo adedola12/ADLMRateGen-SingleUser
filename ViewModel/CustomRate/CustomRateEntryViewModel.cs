@@ -44,8 +44,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
 		public ObservableCollection<string> AvailableMaterials { get; } =
 			new ObservableCollection<string>(MaterialLibraryService.GetAllMaterialNames());
-		public ObservableCollection<string> AvailableLabourItems { get; } =
-			new ObservableCollection<string>(LabourLibraryService.GetAllLabourNames());
+		public ObservableCollection<string> AvailableLabourItems { get; }
 
 		public ObservableCollection<RateEntryItem> MaterialItems { get; } =
 			new ObservableCollection<RateEntryItem>();
@@ -123,14 +122,10 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			MaterialItems.CollectionChanged += OnMaterialCollectionChanged;
 			LabourItems.CollectionChanged += OnLabourCollectionChanged;
 
+			AvailableLabourItems = new ObservableCollection<string>(LabourLibraryService.GetAllLabourNames() );
 
-
-			AddMaterialItemCommand = new RelayCommand(
-		_ => AddMaterialItem()
-	);
-			AddLabourItemCommand = new RelayCommand(
-				_ => AddLabourItem()
-			);
+			AddMaterialItemCommand = new RelayCommand(_ => AddMaterialItem());
+			AddLabourItemCommand = new RelayCommand(_ => AddLabourItem());
 			SaveCustomRateCommand = new RelayCommand(
 				_ => SaveCustomRate()
 			);

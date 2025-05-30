@@ -53,6 +53,8 @@
     <Color x:Key="Color.White">#FFFFFFFF</Color>
     <Color x:Key="Color.Gray">#FFF0F0F0</Color>
     <Color x:Key="Color.RowAlt">#FFF5FAFF</Color>
+    <Color x:Key="OrangeAccentCol">#FF5900</Color>
+    <Color x:Key="OrangeAccentHoverCol">#FFE8B3</Color>
 
     <!-- 🎨 Brush Library -->
     <SolidColorBrush x:Key="PrimaryBrush"
@@ -84,8 +86,13 @@
                      Color="{DynamicResource NavyCol}" />
     <SolidColorBrush x:Key="MainBg"
                      Color="{DynamicResource WhiteVarCol}" />
+    <SolidColorBrush x:Key="OrangeAccentBrush"
+                     Color="{DynamicResource OrangeAccentCol}" />
+    <SolidColorBrush x:Key="OrangeAccentHoverBrush"
+                     Color="{DynamicResource OrangeAccentHoverCol}" />
 
-   
+
+
     <SolidColorBrush x:Key="PrimaryBrush2"
                      Color="{DynamicResource BlackCol}" />
     <SolidColorBrush x:Key="BorderBrushLight"
@@ -153,8 +160,8 @@
                      Color="{DynamicResource PopupBorderCol}" />
 
     <!-- ─── FONTS ─── -->
-    <FontFamily x:Key="Mont">pack://application:,,,/Fonts/#Mont</FontFamily>
-    <FontFamily x:Key="PoppinsFont">Poppins</FontFamily>
+    <FontFamily x:Key="Mont">Urbanist</FontFamily>
+    <FontFamily x:Key="PoppinsFont">Urbanist</FontFamily>
 
     <!-- ─── CONVERTERS ─── -->
     <conv:PercentConverter x:Key="PercentConverter" />
@@ -165,6 +172,13 @@
                       BlurRadius="10"
                       ShadowDepth="0"
                       Opacity="0.12" />
+    
+    <Style x:Key="RightGroupItemMargin"
+           TargetType="FrameworkElement">
+        <Setter Property="Margin"
+                Value="0,0,16,0" />
+    </Style>
+
 
     <!-- ─── ICON BUTTONS ─── -->
     <Style x:Key="IconButton"
@@ -300,6 +314,9 @@
            TargetType="ComboBox">
         <Setter Property="Background"
                 Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="Foreground"
+                Value="Black" />
+
         <Setter Property="BorderBrush"
                 Value="{DynamicResource BorderBrushLight}" />
         <Setter Property="BorderThickness"
@@ -473,11 +490,43 @@
     <Style x:Key="OPText"
            TargetType="TextBlock">
         <Setter Property="Text"
-                Value="%" />
+                Value="(%)" />
         <Setter Property="FontWeight"
                 Value="SemiBold" />
         <Setter Property="HorizontalAlignment"
                 Value="Right" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="Margin"
+                Value="0,0,12,0" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource Grey700}" />
+    </Style>
+
+    <Style x:Key="OOText"
+           TargetType="TextBlock">
+        <Setter Property="Text"
+                Value="overhead " />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="HorizontalAlignment"
+                Value="Left" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="Margin"
+                Value="0,0,12,0" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource Grey700}" />
+    </Style>
+
+    <Style x:Key="OSPText"
+           TargetType="TextBlock">
+        <Setter Property="Text"
+                Value="profit " />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="HorizontalAlignment"
+                Value="Left" />
         <Setter Property="VerticalAlignment"
                 Value="Center" />
         <Setter Property="Margin"
@@ -492,12 +541,13 @@
         <Setter Property="FontFamily"
                 Value="{DynamicResource PoppinsFont}" />
         <Setter Property="FontSize"
-                Value="14" />
+                Value="17" />
+        <Setter Property="FontWeight"
+                Value="Normal" />
         <Setter Property="Foreground"
                 Value="{DynamicResource CellTextBrush}" />
         <Setter Property="VerticalAlignment"
                 Value="Center" />
-
         <Setter Property="TextTrimming"
                 Value="CharacterEllipsis" />
     </Style>
@@ -508,7 +558,9 @@
         <Setter Property="FontFamily"
                 Value="{DynamicResource PoppinsFont}" />
         <Setter Property="FontSize"
-                Value="14" />
+                Value="17" />
+        <Setter Property="FontWeight"
+                Value="Normal" />
         <Setter Property="Foreground"
                 Value="{DynamicResource CellTextBrush}" />
         <Setter Property="VerticalAlignment"
@@ -534,11 +586,11 @@
     <Style x:Key="EstHeader"
            TargetType="TextBlock">
         <Setter Property="FontFamily"
-                Value="{DynamicResource Mont}" />
+                Value="{DynamicResource PoppinsFont}" />
         <Setter Property="FontSize"
-                Value="52" />
+                Value="31.25" />
         <Setter Property="FontWeight"
-                Value="Bold" />
+                Value="SemiBold" />
         <Setter Property="Foreground"
                 Value="{DynamicResource Blue900Brush}" />
     </Style>
@@ -546,7 +598,7 @@
     <Style x:Key="EstSubheader"
            TargetType="TextBlock">
         <Setter Property="FontFamily"
-                Value="{DynamicResource Mont}" />
+                Value="{DynamicResource PoppinsFont}" />
         <Setter Property="FontSize"
                 Value="18" />
         <Setter Property="Foreground"
@@ -1102,6 +1154,63 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="invBtn"
+           TargetType="Button">
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource OrangeAccentBrush}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource OrangeAccentBrush}" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="FontSize"
+                Value="16" />
+        <Setter Property="FontWeight"
+                Value="Bold" />
+        <Setter Property="Width"
+                Value="180" />
+        <Setter Property="Height"
+                Value="38" />
+        <Setter Property="Padding"
+                Value="20,8" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="btnBorder"
+                            CornerRadius="12"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="btnBorder"
+                                    Property="Background"
+                                    Value="{DynamicResource OrangeAccentHoverBrush}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Blue900Brush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter TargetName="btnBorder"
+                                    Property="Opacity"
+                                    Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
     <!-- ─── DATAGRID STYLES ─── -->
 
     <Style x:Key="DataGridStyle"
@@ -1130,13 +1239,13 @@
         <Setter Property="ColumnHeaderHeight"
                 Value="48" />
         <Setter Property="FontSize"
-                Value="16" />
+                Value="20" />
         <Setter Property="FontFamily"
                 Value="{DynamicResource PoppinsFont}" />
         <Setter Property="Margin"
                 Value="10,30" />
         <Setter Property="RowHeight"
-                Value="30" />
+                Value="50" />
         <Setter Property="IsReadOnly"
                 Value="True" />
         <Setter Property="GridLinesVisibility"
@@ -1164,7 +1273,7 @@
                     <Setter Property="HorizontalContentAlignment"
                             Value="Center" />
                     <Setter Property="FontWeight"
-                            Value="SemiBold" />
+                            Value="Normal" />
                     <Setter Property="BorderThickness"
                             Value="0" />
 
@@ -1262,145 +1371,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
-    
-
-    <!--<Style x:Key="DataGridStyle"
-           TargetType="DataGrid">
-        <Setter Property="AutoGenerateColumns"
-                Value="False" />
-        <Setter Property="Background"
-                Value="{DynamicResource BackgroundBrush}" />
-        <Setter Property="BorderBrush"
-                Value="{DynamicResource BorderBrushLight}" />
-        <Setter Property="BorderThickness"
-                Value="1" />
-        <Setter Property="CanUserAddRows"
-                Value="False" />
-        <Setter Property="CanUserDeleteRows"
-                Value="False" />
-        <Setter Property="CellStyle">
-            <Setter.Value>
-                <Style TargetType="DataGridCell">
-                    <Setter Property="BorderThickness"
-                            Value="0" />
-                    <Setter Property="FontFamily"
-                            Value="{DynamicResource PoppinsFont}" />
-                    <Setter Property="FontSize"
-                            Value="16" />
-                    <Setter Property="FontWeight"
-                            Value="SemiBold" />
-                    <Setter Property="Foreground"
-                            Value="{DynamicResource CellTextBrush}" />
-                    <Setter Property="HorizontalContentAlignment"
-                            Value="Center" />
-                    <Setter Property="Padding"
-                            Value="10,8" />
-                    <Setter Property="VerticalContentAlignment"
-                            Value="Center" />
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected"
-                                 Value="True">
-                            <Setter Property="Background"
-                                    Value="{DynamicResource RowAlt}" />
-                            <Setter Property="Foreground"
-                                    Value="{DynamicResource Blue900Brush}" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ColumnHeaderStyle">
-            <Setter.Value>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="Background"
-                            Value="{DynamicResource HeaderBgBrush}" />
-                    <Setter Property="BorderThickness"
-                            Value="0" />
-                    <Setter Property="FontFamily"
-                            Value="{DynamicResource PoppinsFont}" />
-                    <Setter Property="FontSize"
-                            Value="16" />
-                    <Setter Property="FontWeight"
-                            Value="SemiBold" />
-                    <Setter Property="Foreground"
-                            Value="{DynamicResource HeaderTextBrush}" />
-                    <Setter Property="HorizontalContentAlignment"
-                            Value="Center" />
-                    <Setter Property="VerticalContentAlignment"
-                            Value="Center" />
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="DataGridColumnHeader">
-                                <Border Background="{TemplateBinding Background}"
-                                        CornerRadius="6,6,0,0">
-                                    <ContentPresenter HorizontalAlignment="Center"
-                                                      VerticalAlignment="Center" />
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="GridLinesVisibility"
-                Value="Horizontal" />
-        <Setter Property="HorizontalGridLinesBrush"
-                Value="{DynamicResource BorderBrushLight}" />
-        <Setter Property="HeadersVisibility"
-                Value="Column" />
-        <Setter Property="IsReadOnly"
-                Value="True" />
-        <Setter Property="Margin"
-                Value="10,30" />
-        <Setter Property="RowBackground"
-                Value="{DynamicResource BackgroundBrush}" />
-        <Setter Property="RowHeaderWidth"
-                Value="0" />
-        <Setter Property="RowHeight"
-                Value="30" />
-        <Setter Property="RowStyle">
-            <Setter.Value>
-                <Style TargetType="DataGridRow">
-                    <Setter Property="BorderThickness"
-                            Value="0" />
-                    <Setter Property="Cursor"
-                            Value="Hand" />
-                    <Setter Property="Margin"
-                            Value="0,2" />
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="DataGridRow">
-                                <Border Background="{TemplateBinding Background}">
-                                    <DataGridCellsPresenter />
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver"
-                                 Value="True">
-                            <Setter Property="Background"
-                                    Value="{DynamicResource RowHover}" />
-                        </Trigger>
-                        <Trigger Property="IsSelected"
-                                 Value="True">
-                            <Setter Property="Background"
-                                    Value="{DynamicResource DataPrimaryBrush}" />
-                            <Setter Property="Foreground"
-                                    Value="{DynamicResource BackgroundBrush}" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ScrollViewer.CanContentScroll"
-                Value="True" />
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
-                Value="Auto" />
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
-                Value="Auto" />
-    </Style>-->
 
     <Style x:Key="DetailGrid"
            TargetType="DataGrid">
@@ -1418,12 +1388,19 @@
                 Value="{DynamicResource Blue900Brush}" />
         <Setter Property="GridLinesVisibility"
                 Value="None" />
+        <Setter Property="BorderBrush"
+                Value="Transparent" />
         <Setter Property="HeadersVisibility"
                 Value="Column" />
         <Setter Property="IsReadOnly"
                 Value="True" />
         <Setter Property="RowBackground"
                 Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="Background"
+                Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="ScrollViewer.Background"
+                Value="{DynamicResource BackgroundBrush}" />
+
         <Setter Property="CellStyle">
             <Setter.Value>
                 <Style TargetType="DataGridCell">
@@ -1481,13 +1458,25 @@
         <Setter Property="RowStyle">
             <Setter.Value>
                 <Style TargetType="DataGridRow">
+                    <Setter Property="Background"
+                            Value="{DynamicResource BackgroundBrush}" />
                     <Setter Property="BorderThickness"
                             Value="0" />
                     <Setter Property="Margin"
                             Value="0" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="DataGridRow">
+                                <Border Background="{TemplateBinding Background}">
+                                    <DataGridCellsPresenter />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </Setter.Value>
         </Setter>
+
     </Style>
 
 </ResourceDictionary>

@@ -125,7 +125,8 @@
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Description}"
                                                    TextTrimming="CharacterEllipsis"
-                                                   Foreground="{StaticResource Blue900Brush}">
+                                                   Foreground="{StaticResource Blue900Brush}"
+                                                   Style="{StaticResource CenterCellText}">
                                             <TextBlock.InputBindings>
                                                 <MouseBinding MouseAction="LeftClick"
                                                               Command="{Binding DataContext.ViewRateCommand,RelativeSource={RelativeSource AncestorType=DataGrid}}"

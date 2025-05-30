@@ -35,13 +35,10 @@
             </StackPanel>
         </DockPanel>
 
-        <!-- dotted frame with DataGrid -->
-        <Border Grid.Row="1" BorderThickness="0">
+       
+        <Border Grid.Row="1" CornerRadius="12">
             <Grid>
-                <!-- dotted outline -->
-                <Rectangle Stroke="{StaticResource Blue900Brush}"
-                           StrokeThickness="1"
-                           StrokeDashArray="2 2" />
+               
 
                 <!-- table -->
                 <DataGrid ItemsSource="{Binding BreakdownLines}"
