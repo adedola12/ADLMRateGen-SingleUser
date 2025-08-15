@@ -32,10 +32,10 @@ namespace ADLMRateGen.ViewModel.Model
 		[BsonElement("UpdatedAt")]
 		public DateTime? UpdatedAt { get; set; }
 
-		[BsonElement("IpAddress")]
-		public string IpAddress { get; set; }
+        [BsonElement("HardwareFingerprint")]
+        public string HardwareFingerprint { get; set; }
 
-		[BsonIgnore]
+        [BsonIgnore]
 		public string SubscriptionStatus
 		{
 			get

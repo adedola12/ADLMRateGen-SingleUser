@@ -194,8 +194,9 @@
                             <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding SelectedGroundworkViewCommand}"
                                      helpers:ButtonHelper.IsActive="{Binding IsGroundworkActive}"
-                                     Margin="0,4">
-
+                                     Margin="0,4"
+                                     Visibility="{Binding IsExportVisible, Converter={StaticResource BoolVis}}">
+                                
                                 <!-- button content -->
                                 <StackPanel Orientation="Horizontal"
                                             VerticalAlignment="Center">
