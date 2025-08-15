@@ -1,53 +1,105 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ADLMRateGen.Helpers;          // ← for AppPaths
 using ADLMRateGen.ViewModel.Model;
-using Newtonsoft.Json;
 
 namespace ADLMRateGen.Services
 {
     public static class MaterialLibraryService
     {
-		private static IMaterialDataSource _dataSource;
-		private static List<MaterialModel> _materials;
+        private static readonly object _sync = new();
 
-		/// <summary>
-		/// Initialize the service with a data source.
-		/// </summary>
-		public static void Initialize(IMaterialDataSource dataSource)
-		{
-			_dataSource = dataSource;
-			_materials = _dataSource.LoadMaterials().ToList();
-		}
+        // Default to JSON file in AppData
+        private static IMaterialDataSource _dataSource =
+            new MaterialJsonDataSource(AppPaths.MaterialLibraryFile);
 
-		/// <summary>
-		/// Returns all distinct material names.
-		/// </summary>
-		public static IEnumerable<string> GetAllMaterialNames()
-		{
-			return _materials?.Select(m => m.MaterialName).Distinct() ?? Enumerable.Empty<string>();
-		}
+        private static List<MaterialModel> _materials = new();
 
-		/// <summary>
-		/// Returns the price for a given material name.
-		/// </summary>
-		public static decimal GetPrice(string materialName)
-		{
-			var mat = _materials?.FirstOrDefault(m =>
-				m.MaterialName.Equals(materialName, StringComparison.OrdinalIgnoreCase));
-			return mat != null ? (decimal)mat.MaterialPrice : 0m;
-		}
+        /// <summary>
+        /// Initialize the service with a data source (optional; defaults to JSON in AppData).
+        /// </summary>
+        public static void Initialize(IMaterialDataSource? dataSource = null)
+        {
+            lock (_sync)
+            {
+                if (dataSource != null)
+                    _dataSource = dataSource;
 
-		/// <summary>
-		/// Returns all materials.
-		/// </summary>
-		public static IEnumerable<MaterialModel> GetAllMaterials() => _materials ?? Enumerable.Empty<MaterialModel>();
+                _materials = _dataSource.LoadMaterials().ToList();
+            }
+        }
 
-		/// <summary>
-		/// Replace the entire collection and persist changes.
-		/// </summary>
-		public static void AddOrUpdateMaterials(IEnumerable<MaterialModel> newMaterials)
-		{
-			_materials = newMaterials.ToList();
-			_dataSource.SaveMaterials(_materials);
-		}
-	}
+        public static IEnumerable<string> GetAllMaterialNames()
+        {
+            lock (_sync)
+                return _materials
+                    .Select(m => m.MaterialName)
+                    .Where(n => !string.IsNullOrWhiteSpace(n))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+        }
+
+        public static decimal GetPrice(string materialName)
+        {
+            if (string.IsNullOrWhiteSpace(materialName)) return 0m;
+
+            lock (_sync)
+            {
+                var mat = _materials.FirstOrDefault(m =>
+                    string.Equals(m.MaterialName, materialName, StringComparison.OrdinalIgnoreCase));
+                return mat != null ? mat.MaterialPrice : 0m;
+            }
+        }
+
+        public static IEnumerable<MaterialModel> GetAllMaterials()
+        {
+            lock (_sync) return _materials.ToList();
+        }
+
+        /// <summary>
+        /// Merge incoming materials into the library (add new, update existing by MaterialName, keep user edits).
+        /// Only updates known fields; add your own if needed.
+        /// </summary>
+        public static void AddOrUpdateMaterials(IEnumerable<MaterialModel> incoming)
+        {
+            if (incoming == null) return;
+
+            lock (_sync)
+            {
+                var dict = _materials.ToDictionary(
+                    m => m.MaterialName ?? string.Empty,
+                    StringComparer.OrdinalIgnoreCase);
+
+                foreach (var item in incoming)
+                {
+                    var key = item.MaterialName ?? string.Empty;
+                    if (string.IsNullOrWhiteSpace(key)) continue;
+
+                    if (dict.TryGetValue(key, out var existing))
+                    {
+                        // Always update price from the incoming list
+                        existing.MaterialPrice = item.MaterialPrice;
+
+                        // Update unit/category if provided (avoid overwriting with null/empty)
+                        if (!string.IsNullOrWhiteSpace(item.MaterialUnit))
+                            existing.MaterialUnit = item.MaterialUnit;
+
+                        if (!string.IsNullOrWhiteSpace(item.MaterialCategory))
+                            existing.MaterialCategory = item.MaterialCategory;
+
+                        // Keep any other user-specific fields on 'existing' intact
+                    }
+                    else
+                    {
+                        // New material entirely
+                        dict[key] = item;
+                    }
+                }
+
+                _materials = dict.Values.ToList();
+                _dataSource.SaveMaterials(_materials);
+            }
+        }
+    }
 }

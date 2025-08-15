@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ADLMRateGen.Services;
+using OfficeOpenXml;
+using System;
 using System.Linq;
 using System.Windows;
 
@@ -13,13 +15,17 @@ namespace ADLMRateGen
 		private readonly ResourceDictionary _darkDict = new();   // created once
 
 		private bool _isDark;   // false = light, true = dark
-
+        //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
+            DataMigrator.EnsureMigrated();
 
-			// get reference to the light dictionary we already loaded in XAML
-			_lightDict = Resources.MergedDictionaries
+            MaterialLibraryService.Initialize();   // uses JSON in %AppData% by default
+            LabourLibraryService.Initialize();     // uses JSON in %AppData% by default
+
+            // get reference to the light dictionary we already loaded in XAML
+            _lightDict = Resources.MergedDictionaries
 								   .First(d => d.Source != null &&
 											   d.Source.OriginalString.EndsWith("ADLMStylesTheme.xaml",
 																				StringComparison.OrdinalIgnoreCase));

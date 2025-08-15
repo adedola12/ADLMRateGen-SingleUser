@@ -93,7 +93,7 @@
     <Viewbox Stretch="Uniform"
              StretchDirection="DownOnly">
         <Grid Width="1900"
-              Height="1000">
+              Height="1050">
 
             <!-- Sign-in overlay -->
             <ContentControl Content="{Binding SignInViewModel}"
@@ -109,7 +109,7 @@
 
                 <!-- ROWS  0-Header | 1-Body | 2-Footer -->
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="60" />
+                    <RowDefinition Height="80" />
                     <RowDefinition />
 
                 </Grid.RowDefinitions>
@@ -123,7 +123,7 @@
                 <!--────────  SIDEBAR – spans ALL rows  ────────-->
                 <Border Grid.Row="0"
                         Grid.Column="0"
-                        Grid.RowSpan="3"
+                        Grid.RowSpan="4"
                         Background="{DynamicResource MainBg}"
                         CornerRadius="0,0,16,0"
                         Effect="{DynamicResource SoftShadow}">
@@ -419,8 +419,22 @@
 
 
                         <StackPanel Margin="0,40">
-
-
+                            <Button Style="{DynamicResource SidebarSubButton}"
+                                    Command="{Binding ExportAllRatesCommand}"
+                                    Margin="0,4">
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                    <fa:IconBlock Icon="FileExcel"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Foreground="{DynamicResource Blue900Brush}" />
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+                                    <TextBlock Text="Export"
+                                               Style="{DynamicResource BtnSidebarText}" />
+                                </StackPanel>
+                            </Button>
+                            
                             <Button  Style="{DynamicResource SidebarSubButton}"
                                      Command="{Binding HelpCommand}"
                                      Margin="0,4">

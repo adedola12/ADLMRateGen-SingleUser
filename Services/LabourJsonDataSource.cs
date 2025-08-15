@@ -1,36 +1,48 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using ADLMRateGen.Helpers;
 using ADLMRateGen.ViewModel.Model;
 using Newtonsoft.Json;
 
 namespace ADLMRateGen.Services
 {
-    public class LabourJsonDataSource: ILabourDataSource
+    public class LabourJsonDataSource : ILabourDataSource
     {
         private readonly string _jsonFilePath;
 
-		public LabourJsonDataSource(string jsonFilePath)
-		{
-			_jsonFilePath = jsonFilePath;
-		}
-		public IEnumerable<LabourModel> LoadLabours()
-		{
-			if (!File.Exists(_jsonFilePath))
-				return new List<LabourModel>();	
+        // New: parameterless ctor uses the stable AppData path
+        public LabourJsonDataSource() : this(AppPaths.LaboursFile) { }
 
-			string json = File.ReadAllText(_jsonFilePath);
-			var labours = JsonConvert.DeserializeObject<List<LabourModel>>(json);
-			return labours ?? new List<LabourModel>();
+        public LabourJsonDataSource(string jsonFilePath)
+        {
+            _jsonFilePath = jsonFilePath;
+        }
 
-		}
-		public void SaveLabours(IEnumerable<LabourModel> labours)
-		{
-			var directory = Path.GetDirectoryName(_jsonFilePath);
-			if (!Directory.Exists(directory))
-				Directory.CreateDirectory(directory);
+        public IEnumerable<LabourModel> LoadLabours()
+        {
+            // Seed from packaged defaults on first run
+            AppPaths.TrySeedFromPackaged(AppPaths.PackagedLaboursFile, _jsonFilePath);
 
-			string json = JsonConvert.SerializeObject(labours, Formatting.Indented);
-			File.WriteAllText(_jsonFilePath, json);
-		}
+            try
+            {
+                if (!File.Exists(_jsonFilePath))
+                    return new List<LabourModel>();
 
-	}
+                var json = File.ReadAllText(_jsonFilePath);
+                var items = JsonConvert.DeserializeObject<List<LabourModel>>(json);
+                return items ?? new List<LabourModel>();
+            }
+            catch
+            {
+                return new List<LabourModel>();
+            }
+        }
+
+        public void SaveLabours(IEnumerable<LabourModel> labours)
+        {
+            var json = JsonConvert.SerializeObject(labours, Formatting.Indented);
+            AppPaths.AtomicWrite(_jsonFilePath, json);
+        }
+    }
 }

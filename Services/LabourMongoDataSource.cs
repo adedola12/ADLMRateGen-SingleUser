@@ -1,37 +1,46 @@
-﻿using ADLMRateGen.ViewModel.Model;
+﻿using System.Collections.Generic;
+using ADLMRateGen.ViewModel.Model;
 using MongoDB.Driver;
 
 namespace ADLMRateGen.Services
 {
-    public class LabourMongoDataSource: ILabourDataSource
+    public class LabourMongoDataSource : ILabourDataSource
     {
-		private readonly string _connectionString;
-		private readonly string _databaseName;
-		private readonly string _collectionName;
+        private readonly string _connectionString;
+        private readonly string _databaseName;
+        private readonly string _collectionName;
 
-		public LabourMongoDataSource(string connectionString, string databaseName, string collectionName)
-		{
-			_connectionString = connectionString;
-			_databaseName = databaseName;
-			_collectionName = collectionName;
-		}
+        public LabourMongoDataSource(string connectionString, string databaseName, string collectionName)
+        {
+            _connectionString = connectionString;
+            _databaseName = databaseName;
+            _collectionName = collectionName;
+        }
 
-		public IEnumerable<LabourModel> LoadLabours()
-		{
-			var client = new MongoClient(_connectionString);
-			var database = client.GetDatabase(_databaseName);
-			var collection = database.GetCollection<LabourModel>(_collectionName);
-			return collection.Find(FilterDefinition<LabourModel>.Empty).ToList();
-		}
+        private IMongoCollection<LabourModel> Collection
+        {
+            get
+            {
+                var client = new MongoClient(_connectionString);
+                var db = client.GetDatabase(_databaseName);
+                return db.GetCollection<LabourModel>(_collectionName);
+            }
+        }
 
-		public void SaveLabours(IEnumerable<LabourModel> labours)
-		{
-			var client = new MongoClient(_connectionString);
-			var database = client.GetDatabase(_databaseName);
-			var collection = database.GetCollection<LabourModel>(_collectionName);
-			// Remove all previous entries and re-insert the new collection.
-			collection.DeleteMany(Builders<LabourModel>.Filter.Empty);
-			collection.InsertMany(labours);
-		}
-	}
+        public IEnumerable<LabourModel> LoadLabours() =>
+            Collection.Find(Builders<LabourModel>.Filter.Empty).ToList();
+
+        public void SaveLabours(IEnumerable<LabourModel> labours)
+        {
+            var col = Collection;
+            var opts = new ReplaceOptions { IsUpsert = true };
+
+            foreach (var l in labours)
+            {
+                var filter = Builders<LabourModel>.Filter.Eq(x => x.LabourName, l.LabourName);
+                col.ReplaceOne(filter, l, opts);
+            }
+            // No deletes – preserves existing user/customized docs.
+        }
+    }
 }

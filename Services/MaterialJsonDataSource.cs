@@ -1,38 +1,48 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using ADLMRateGen.Helpers;
 using ADLMRateGen.ViewModel.Model;
 using Newtonsoft.Json;
 
 namespace ADLMRateGen.Services
 {
-    public class MaterialJsonDataSource: IMaterialDataSource
+    public class MaterialJsonDataSource : IMaterialDataSource
     {
         private readonly string _jsonFilePath;
-		public MaterialJsonDataSource(string jsonFilePath)
-		{
-			_jsonFilePath = jsonFilePath;
-		}
 
-		public IEnumerable<MaterialModel> LoadMaterials()
-		{
-			if (!File.Exists(_jsonFilePath))
-			{
-				return new List<MaterialModel>();
-			}
+        // New: parameterless ctor uses the stable AppData path
+        public MaterialJsonDataSource() : this(AppPaths.MaterialsFile) { }
 
-			string json = File.ReadAllText(_jsonFilePath);
-			var materials = JsonConvert.DeserializeObject<List<MaterialModel>>(json);
-			return materials ?? new List<MaterialModel>();
-		}
+        public MaterialJsonDataSource(string jsonFilePath)
+        {
+            _jsonFilePath = jsonFilePath;
+        }
 
-		public void SaveMaterials(IEnumerable<MaterialModel> materials)
-		{
-			var directory = Path.GetDirectoryName(_jsonFilePath);
-			if (!Directory.Exists(directory))
-			{
-				Directory.CreateDirectory(directory);
-			}
-			string json = JsonConvert.SerializeObject(materials, Formatting.Indented);
-			File.WriteAllText(_jsonFilePath, json);
-		}
-	}
+        public IEnumerable<MaterialModel> LoadMaterials()
+        {
+            // Seed from packaged defaults on first run
+            AppPaths.TrySeedFromPackaged(AppPaths.PackagedMaterialsFile, _jsonFilePath);
+
+            try
+            {
+                if (!File.Exists(_jsonFilePath))
+                    return new List<MaterialModel>();
+
+                var json = File.ReadAllText(_jsonFilePath);
+                var items = JsonConvert.DeserializeObject<List<MaterialModel>>(json);
+                return items ?? new List<MaterialModel>();
+            }
+            catch
+            {
+                return new List<MaterialModel>();
+            }
+        }
+
+        public void SaveMaterials(IEnumerable<MaterialModel> materials)
+        {
+            var json = JsonConvert.SerializeObject(materials, Formatting.Indented);
+            AppPaths.AtomicWrite(_jsonFilePath, json);
+        }
+    }
 }

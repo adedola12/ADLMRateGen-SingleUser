@@ -11,10 +11,12 @@ using ADLMRateGen.ViewModel.Painting;
 using ADLMRateGen.ViewModel.RoofWork;
 using ADLMRateGen.ViewModel.SteelWork;
 using ADLMRateGen.ViewModel.WindowAndDoor;
+using Microsoft.Win32;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using System.Net;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
@@ -25,9 +27,10 @@ namespace ADLMRateGen.ViewModel
 		/* ───────── injected services ───────── */
 		private readonly MongoDbService _mongoDbService;
 
-		/* ───────── current user / auth ───────── */
 
-		private bool _hasPriceNotifications;
+        /* ───────── current user / auth ───────── */
+
+        private bool _hasPriceNotifications;
 		public bool HasPriceNotifications
 		{
 			get => _hasPriceNotifications;
@@ -254,11 +257,13 @@ namespace ADLMRateGen.ViewModel
 		public ICommand ShowNotificationCommand { get; }
 		public ICommand ToggleNotificationsCommand { get; }
 		public ICommand DismissNotificationCommand { get; }
+        public ICommand ExportAllRatesCommand { get; }
 
 
 
-		/* ───────── ctor ───────── */
-		public MainViewModel(
+
+        /* ───────── ctor ───────── */
+        public MainViewModel(
 			MaterialPriceViewModel priceVM,
 			MaterialLibraryViewModel libraryVM,
 			LabourPriceViewModel labourVM,
@@ -388,9 +393,11 @@ namespace ADLMRateGen.ViewModel
 			LogoutCommand = new RelayCommand(_ => Logout());
 			OpenYoutubeCommand = new RelayCommand(_ => OpenYoutube());
 			HelpCommand = new RelayCommand(_ => SendHelpEmail());
+            ExportAllRatesCommand = new RelayCommand(_ => ExportAllToExcel());
 
 
-			_index.Rebuild(this);
+
+            _index.Rebuild(this);
 
 			/* whenever a library changes, rebuild */
 
@@ -507,8 +514,90 @@ namespace ADLMRateGen.ViewModel
 			Process.Start(new ProcessStartInfo(mailto) { UseShellExecute = true });
 		}
 
+        private void ExportAllToExcel()
+        {
+            try
+            {
+                var sfd = new SaveFileDialog
+                {
+                    Title = "Export ADLM Rates",
+                    FileName = $"ADLM_Rates_{DateTime.Now:yyyyMMdd_HHmm}.xlsx",
+                    Filter = "Excel Workbook (*.xlsx)|*.xlsx"
+                };
+                if (sfd.ShowDialog() != true) return;
 
-		private async void Logout()
+                var sheets = new List<ExcelExporter.ExportSheet>();
+
+                // local helper to add a sheet if the VM exposes a suitable collection
+                void AddSheet(string name, object vm)
+                {
+                    var rows = FindRowsEnumerable(vm);   // finds a collection whose row type has ItemNo/Description/TotalCost
+                    if (rows != null && rows.Cast<object>().Any())
+                        sheets.Add(new ExcelExporter.ExportSheet(name, rows));
+                }
+
+                AddSheet("Ground", GroundWorkViewModel);
+                AddSheet("Concrete", ConcreteViewModel);
+                AddSheet("Block Works", BlockworkViewModel);
+                AddSheet("Finishes", FinishesViewModel);
+                AddSheet("Roofs", RoofWorkViewModel);
+                AddSheet("Painting", PaintWorkViewModel);
+                AddSheet("Steel", SteelWorkViewModel);
+                AddSheet("Window & Door", WindowAndDoorViewModel);
+                sheets.Add(new ExcelExporter.ExportSheet("Saved Rates", CustomRateListViewModel.CustomRates));
+
+                if (!sheets.Any())
+                {
+                    MessageBox.Show("No data available to export.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                ExcelExporter.ExportWorkbook(sheets, sfd.FileName);
+                MessageBox.Show("Export completed.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Export failed:\n{ex.Message}", "Export", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// Finds the first IEnumerable property on a VM whose element type
+        /// has ItemNo + (Description|Name|Title) + (TotalCost|TotalPrice).
+        /// Works with ObservableCollection and ICollectionView.
+        /// </summary>
+        private static IEnumerable? FindRowsEnumerable(object vm)
+        {
+            if (vm == null) return null;
+
+            foreach (var p in vm.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            {
+                var pt = p.PropertyType;
+                if (pt == typeof(string)) continue;
+                if (!typeof(IEnumerable).IsAssignableFrom(pt)) continue;
+
+                var val = p.GetValue(vm) as IEnumerable;
+                if (val == null) continue;
+
+                // peek first non-null row
+                object? first = null;
+                foreach (var r in val) { first = r; if (first != null) break; }
+
+                if (first == null) continue;
+
+                var t = first.GetType();
+                bool hasSn = t.GetProperty("ItemNo") != null || t.GetProperty("SNo") != null;
+                bool hasDesc = t.GetProperty("Description") != null || t.GetProperty("Name") != null || t.GetProperty("Title") != null;
+                bool hasTot = t.GetProperty("TotalCost") != null || t.GetProperty("TotalPrice") != null;
+
+                if (hasSn && hasDesc && hasTot)
+                    return val;
+            }
+            return null;
+        }
+
+
+        private async void Logout()
 		{
 			try
 			{

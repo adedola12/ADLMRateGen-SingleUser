@@ -102,6 +102,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="EPPlus" Version="8.0.8" />
     <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.PixelartIcons" Version="5.1.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.RadixIcons" Version="5.1.0" />

@@ -1,82 +1,116 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using ADLMRateGen.Helpers;           // << uses AppPaths.UserDataDir / AppPaths.CustomRatesFile
 using ADLMRateGen.ViewModel.CustomRate;
 using Newtonsoft.Json;
 
 namespace ADLMRateGen.Services
 {
-	public static class CustomRateServices
-	{
-		private static readonly string FilePath = Path.Combine(
-			Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-			"MyApp", "CustomRates.json");
+    public static class CustomRateServices
+    {
+        // Events
+        public static event Action<CustomRate>? OnCustomRateSaved;
+        public static event Action<CustomRate>? OnCustomRateUpdated;
 
-		// Event fired when a new rate is saved
-		public static event Action<CustomRate> OnCustomRateSaved;
+        // Thread-safety for file IO
+        private static readonly object _sync = new object();
 
-		// Event fired when an existing rate is updated
-		public static event Action<CustomRate> OnCustomRateUpdated;
+        // Centralized, roaming AppData path (e.g. %AppData%\ADLMRateGen\custom-rates.json)
+        private static string FilePath => AppPaths.CustomRatesFile;
 
-		public static void SaveCustomRate(CustomRate rate)
-		{
-			var rates = LoadCustomRates().ToList();
-			rates.Add(rate);
-			SaveRates(rates);
+        public static IEnumerable<CustomRate> LoadCustomRates()
+        {
+            lock (_sync)
+            {
+                try
+                {
+                    if (!File.Exists(FilePath))
+                        return new List<CustomRate>();
 
-			OnCustomRateSaved?.Invoke(rate);
-		}
+                    var json = File.ReadAllText(FilePath);
+                    return JsonConvert.DeserializeObject<List<CustomRate>>(json) ?? new List<CustomRate>();
+                }
+                catch
+                {
+                    // If file is corrupted or unreadable, fail gracefully
+                    return new List<CustomRate>();
+                }
+            }
+        }
 
-		/// <summary>
-		/// Update an existing CustomRate by matching on Id.
-		/// If not found, adds it. Then fires OnCustomRateUpdated.
-		/// </summary>
-		public static void UpdateCustomRate(CustomRate updatedRate)
-		{
-			var rates = LoadCustomRates().ToList();
+        public static void SaveCustomRate(CustomRate rate)
+        {
+            lock (_sync)
+            {
+                var rates = LoadCustomRates().ToList();
+                rates.Add(rate);
+                SaveRates(rates);
+            }
 
-			// Try to find the existing rate by Id
-			var existing = rates.FirstOrDefault(r => r.Id == updatedRate.Id);
-			if (existing != null)
-			{
-				// Update each field
-				existing.Title = updatedRate.Title;
-				existing.Description = updatedRate.Description;
-				existing.OverheadPercent = updatedRate.OverheadPercent;
-				existing.ProfitPercent = updatedRate.ProfitPercent;
-				existing.MaterialItems = updatedRate.MaterialItems;
-				existing.LabourItems = updatedRate.LabourItems;
-			}
-			else
-			{
-				// If no match, add it as new
-				rates.Add(updatedRate);
-			}
+            OnCustomRateSaved?.Invoke(rate);
+        }
 
-			SaveRates(rates);
+        /// <summary>
+        /// Update an existing CustomRate by matching on Id.
+        /// If not found, adds it. Then fires OnCustomRateUpdated.
+        /// </summary>
+        public static void UpdateCustomRate(CustomRate updatedRate)
+        {
+            lock (_sync)
+            {
+                var rates = LoadCustomRates().ToList();
 
-			// Invoke the 'Updated' event (not the 'Saved' event)
-			OnCustomRateUpdated?.Invoke(updatedRate);
-		}
+                var idx = rates.FindIndex(r => r.Id == updatedRate.Id);
+                if (idx >= 0)
+                {
+                    // Replace the whole object to ensure we persist all fields consistently
+                    rates[idx] = updatedRate;
+                }
+                else
+                {
+                    rates.Add(updatedRate);
+                }
 
-		public static IEnumerable<CustomRate> LoadCustomRates()
-		{
-			if (!File.Exists(FilePath))
-			{
-				return new List<CustomRate>();
-			}
+                SaveRates(rates);
+            }
 
-			var json = File.ReadAllText(FilePath);
-			return JsonConvert.DeserializeObject<List<CustomRate>>(json) ?? new List<CustomRate>();
-		}
+            OnCustomRateUpdated?.Invoke(updatedRate);
+        }
 
-		public static void SaveRates(IEnumerable<CustomRate> rates)
-		{
-			var directory = Path.GetDirectoryName(FilePath);
-			if (!Directory.Exists(directory))
-			{
-				Directory.CreateDirectory(directory);
-			}
-			var json = JsonConvert.SerializeObject(rates, Formatting.Indented);
-			File.WriteAllText(FilePath, json);
-		}
-	}
+        public static void SaveRates(IEnumerable<CustomRate> rates)
+        {
+            lock (_sync)
+            {
+                var dir = Path.GetDirectoryName(FilePath)!;
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                // Atomic write: write to temp, then replace
+                var json = JsonConvert.SerializeObject(rates, Formatting.Indented);
+                var tmp = FilePath + ".tmp";
+
+                File.WriteAllText(tmp, json);
+                // Replace the existing file (if any) with the temp file atomically where possible
+                if (File.Exists(FilePath))
+                {
+                    // Try a safe replace; fallback to delete+move if Replace isn't available on the platform
+                    try
+                    {
+                        File.Replace(tmp, FilePath, null);
+                    }
+                    catch
+                    {
+                        File.Delete(FilePath);
+                        File.Move(tmp, FilePath);
+                    }
+                }
+                else
+                {
+                    File.Move(tmp, FilePath);
+                }
+            }
+        }
+    }
 }
