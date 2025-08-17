@@ -117,23 +117,33 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
 		private static decimal CurrentRate => (decimal)CurrencyService.Instance.Rate;
 
-		/* ────────── helpers ────────── */
+        /* ────────── helpers ────────── */
 
-		private void ResolveUnitPrice()
-		{
-			if (string.IsNullOrWhiteSpace(_description)) return;
+        private void ResolveUnitPrice()
+        {
+            if (string.IsNullOrWhiteSpace(_description)) return;
 
-			UnitPrice = RateType switch
-			{
-				RateItemType.Material => MaterialLibraryService.GetPrice(_description),
-				RateItemType.Labour => LabourLibraryService.GetPrice(_description),
-				_ => 0m
-			};
-		}
+            switch (RateType)
+            {
+                case RateItemType.Material:
+                    var mat = MaterialLibraryService.FindByName(_description);
+                    if (mat != null) { UnitPrice = mat.MaterialPrice; Unit = mat.MaterialUnit; }
+                    else UnitPrice = 0m;
+                    break;
 
-		/* ────────── INotifyPropertyChanged boilerplate ────────── */
+                case RateItemType.Labour:
+                    var lab = LabourLibraryService.FindByName(_description);
+                    if (lab != null) { UnitPrice = lab.LabourPrice; Unit = lab.LabourUnit; }
+                    else UnitPrice = 0m;
+                    break;
+            }
+        }
 
-		public event PropertyChangedEventHandler? PropertyChanged;
+
+
+        /* ────────── INotifyPropertyChanged boilerplate ────────── */
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 		private void OnPropertyChanged([CallerMemberName] string? name = null) =>
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 	}

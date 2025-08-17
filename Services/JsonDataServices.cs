@@ -1,44 +1,61 @@
-﻿using System.Collections.Generic;
+﻿// Services/JsonDataServices.cs
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
+using ADLMRateGen.Helpers;   // <= add
 
-namespace ADLMRateGen.Services
+public sealed class JsonDataServices<T> where T : class
 {
-	/// <summary>
-	/// Tiny helper that serialises any POCO collection to JSON.
-	/// </summary>
-	/// <typeparam name="T">Model type stored inside the file</typeparam>
-	public sealed class JsonDataServices<T> where T : class
-	{
-		private readonly string _file;          // absolute path – avoids surprises
+    private readonly string _file;          // absolute, in AppData
+    private readonly string? _defaultAbs;   // absolute, next to EXE
 
-		public JsonDataServices(string file, string defaultFile)
-		{
-			_file = Path.GetFullPath(file);
+    public JsonDataServices(string fileNameOrPath, string? defaultRelativeToExe = null)
+    {
+        // Working file: under %APPDATA%\ADLMRateGen
+        _file = Path.IsPathRooted(fileNameOrPath)
+              ? fileNameOrPath
+              : Path.Combine(AppPaths.UserDataDir, Path.GetFileName(fileNameOrPath));
 
-			// first‑run bootstrap – copy the bundled defaults if the working file is missing
-			if (!File.Exists(_file) && File.Exists(defaultFile))
-				File.Copy(defaultFile, _file);
-		}
+        // Where the installer placed your seed JSON (read-only)
+        if (!string.IsNullOrWhiteSpace(defaultRelativeToExe))
+        {
+            var exeDir = AppContext.BaseDirectory;
+            var candidate = Path.Combine(exeDir, defaultRelativeToExe);
+            _defaultAbs = File.Exists(candidate) ? candidate : null;
+        }
 
-		public ObservableCollection<T> LoadData()
-		{
-			if (!File.Exists(_file))
-				return new ObservableCollection<T>();
+        // First-run bootstrap: copy seed → AppData
+        try
+        {
+            if (!File.Exists(_file) && !string.IsNullOrEmpty(_defaultAbs))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(_file)!);
+                File.Copy(_defaultAbs!, _file, overwrite: false);
+            }
+        }
+        catch { /* swallow – we’ll create an empty file on first save */ }
+    }
 
-			var json = File.ReadAllText(_file);
-			return JsonSerializer.Deserialize<ObservableCollection<T>>(json)!
-				   ?? new ObservableCollection<T>();
-		}
+    public ObservableCollection<T> LoadData()
+    {
+        try
+        {
+            if (!File.Exists(_file)) return new ObservableCollection<T>();
+            var json = File.ReadAllText(_file);
+            return JsonSerializer.Deserialize<ObservableCollection<T>>(json)
+                   ?? new ObservableCollection<T>();
+        }
+        catch
+        {
+            // If the file is corrupt or locked, don’t crash the app
+            return new ObservableCollection<T>();
+        }
+    }
 
-		public void SaveData(IEnumerable<T> list)
-		{
-			var json = JsonSerializer.Serialize(
-				list,
-				new JsonSerializerOptions { WriteIndented = true });
-
-			File.WriteAllText(_file, json);
-		}
-	}
+    public void SaveData(IEnumerable<T> list)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(_file)!);
+        var json = JsonSerializer.Serialize(list, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(_file, json);   // AppData is writable for the user
+    }
 }

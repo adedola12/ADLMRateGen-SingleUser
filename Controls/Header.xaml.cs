@@ -20,13 +20,13 @@ namespace ADLMCivilPlugin.Controls
 			}
 		}
 
-		private void ColorModeButton_Click(object sender, RoutedEventArgs e)
-		{
-			(Application.Current as ADLMRateGen.App)?.ToggleTheme();
+		//private void ColorModeButton_Click(object sender, RoutedEventArgs e)
+		//{
+		//	(Application.Current as ADLMRateGen.App)?.ToggleTheme();
 
-			ColorModeIcon.Icon = (ColorModeIcon.Icon == IconChar.Moon)
-								   ? IconChar.Sun
-								   : IconChar.Moon;
-		}
+		//	ColorModeIcon.Icon = (ColorModeIcon.Icon == IconChar.Moon)
+		//						   ? IconChar.Sun
+		//						   : IconChar.Moon;
+		//}
 	}
 }

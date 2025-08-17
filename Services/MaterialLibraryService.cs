@@ -101,5 +101,14 @@ namespace ADLMRateGen.Services
                 _dataSource.SaveMaterials(_materials);
             }
         }
+
+        public static MaterialModel? FindByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return null;
+            lock (_sync)
+                return _materials.FirstOrDefault(m =>
+                    string.Equals(m.MaterialName, name, StringComparison.OrdinalIgnoreCase));
+        }
+
     }
 }

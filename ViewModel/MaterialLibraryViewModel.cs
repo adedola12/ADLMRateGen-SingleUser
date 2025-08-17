@@ -282,30 +282,39 @@ namespace ADLMRateGen.ViewModel
 				MessageBox.Show("Price update canceled.", "Canceled", MessageBoxButton.OK, MessageBoxImage.Information);
 				return;
 			}
-			var mongoDataSource = new MaterialMongoDataSource(
-					"mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
-					"ADLMRateDB",
-					"Materials"
-					);
-            var mongoMaterials = mongoDataSource.LoadMaterials().ToList();
+			try
+			{
+                var mongoDataSource = new MaterialMongoDataSource(
+        "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
+        "ADLMRateDB",
+        "Materials"
+        );
+                var mongoMaterials = mongoDataSource.LoadMaterials().ToList();
 
-            foreach (var localItem in MaterialLibrary)
-            {
-                var matchingMongoItem = mongoMaterials.FirstOrDefault(m =>
-                m.MaterialName.Equals(localItem.MaterialName, StringComparison.OrdinalIgnoreCase));
-
-                if (matchingMongoItem != null)
+                foreach (var localItem in MaterialLibrary)
                 {
-                    localItem.MaterialPrice = matchingMongoItem.MaterialPrice;
-				}
-			}
+                    var matchingMongoItem = mongoMaterials.FirstOrDefault(m =>
+                    m.MaterialName.Equals(localItem.MaterialName, StringComparison.OrdinalIgnoreCase));
 
-            _json.SaveData(MaterialLibrary);
+                    if (matchingMongoItem != null)
+                    {
+                        localItem.MaterialPrice = matchingMongoItem.MaterialPrice;
+                    }
+                }
 
-			LibraryChanged?.Invoke();
-			ApplyFilter();
+                _json.SaveData(MaterialLibrary);
 
-			MessageBox.Show("Prices updated from ADLM Servers.");
+                LibraryChanged?.Invoke();
+                ApplyFilter();
+
+                MessageBox.Show("Prices updated from ADLM Servers.");
+            }
+            catch (Exception ex)
+			{
+				MessageBox.Show($"Error connecting to ADLM servers: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+            }
+
 
 
 		}

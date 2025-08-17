@@ -20,9 +20,31 @@ namespace ADLMRateGen
 		{
 			base.OnStartup(e);
             DataMigrator.EnsureMigrated();
+            MaterialLibraryService.Initialize();   
+            LabourLibraryService.Initialize();
 
-            MaterialLibraryService.Initialize();   // uses JSON in %AppData% by default
-            LabourLibraryService.Initialize();     // uses JSON in %AppData% by default
+            //// IMPORTANT: load both libraries now
+            //MaterialLibraryService.Initialize(new MaterialJsonDataSource());
+            //LabourLibraryService.Initialize(new LabourJsonDataSource());
+
+            //// where you Initialize(...)
+            //MaterialLibraryService.Initialize(
+            //    new MaterialJsonDataSource(ADLMRateGen.Helpers.AppPaths.MaterialLibraryFile));
+
+            //LabourLibraryService.Initialize(
+            //    new LabourJsonDataSource(ADLMRateGen.Helpers.AppPaths.LabourLibraryFile));
+
+            //// --- FIX: if AppData file is empty, import the shipped labour.json ---
+            //if (!LabourLibraryService.GetAllLabourNames().Any())
+            //{
+            //    var shippedLabourPath1 = System.IO.Path.Combine(AppContext.BaseDirectory, "Defaults", "labour.json");
+            //    var shippedLabourPath2 = System.IO.Path.Combine(AppContext.BaseDirectory, "Data", "labour.json"); // fallback
+            //    var path = System.IO.File.Exists(shippedLabourPath1) ? shippedLabourPath1 : shippedLabourPath2;
+
+            //    var seed = new LabourJsonDataSource(path).LoadLabours();
+            //    LabourLibraryService.AddOrUpdateLabours(seed);   // writes to AppData path
+            //}
+
 
             // get reference to the light dictionary we already loaded in XAML
             _lightDict = Resources.MergedDictionaries

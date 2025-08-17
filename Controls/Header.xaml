@@ -140,7 +140,7 @@
             </Border>
 
             <!-- color mode icon -->
-            <Button Style="{DynamicResource IconButton}"
+            <!--<Button Style="{DynamicResource IconButton}"
                     Click="ColorModeButton_Click"
                     VerticalAlignment="Center"
                     Margin="0,0,16,0">
@@ -150,7 +150,7 @@
                               Height="24"
                               HorizontalAlignment="Center"
                               VerticalAlignment="Center" />
-            </Button>
+            </Button>-->
 
             <!-- bell icon -->
             <Button x:Name="BellButton"

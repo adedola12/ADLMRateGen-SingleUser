@@ -16,6 +16,12 @@ namespace ADLMRateGen.Services
 
         private static List<LabourModel> _labours = new();
 
+        private static void EnsureLoaded()
+        {
+            if (_labours.Count == 0)
+                _labours = _dataSource.LoadLabours().ToList();
+        }
+
         /// <summary>
         /// Initialize the service with a data source (optional; defaults to JSON in AppData).
         /// </summary>
@@ -54,7 +60,22 @@ namespace ADLMRateGen.Services
 
         public static IEnumerable<LabourModel> GetAllLabours()
         {
-            lock (_sync) return _labours.ToList();
+            lock (_sync)
+            {
+                EnsureLoaded();
+                return _labours.ToList();
+            }
+        }
+
+        public static LabourModel? FindByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return null;
+            lock (_sync)
+            {
+                EnsureLoaded();
+                return _labours.FirstOrDefault(l =>
+                    string.Equals(l.LabourName, name, StringComparison.OrdinalIgnoreCase));
+            }
         }
 
         /// <summary>
