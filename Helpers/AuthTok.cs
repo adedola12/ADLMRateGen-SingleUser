@@ -22,36 +22,64 @@ namespace ADLMRateGen.Helpers
 			}
 		}
 
-		public string GenerateAuthToken(UserModel user)
-		{
-			var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("[REDACTED-JWT-KEY]"));
-			var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        public string GenerateAuthToken(UserModel user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
 
-			if (user == null)
-			{
-				throw new ArgumentNullException(nameof(user), "The user cannot be null.");
-			}
+            // fallbacks so nothing is null
+            var id = !string.IsNullOrWhiteSpace(user.Id) ? user.Id! : (user.Email ?? "unknown");
 
-			var claims = new[]
-			{
-				new Claim(ClaimTypes.NameIdentifier, user.Id),
-				new Claim(ClaimTypes.Name, user.Username),
-				new Claim(ClaimTypes.Email, user.Email),
-			};
+            var email = user.Email ?? string.Empty;
+            var username = !string.IsNullOrWhiteSpace(user.Username)
+                           ? user.Username!
+                           : DeriveUsernameFromEmail(email);   // auto-derive when missing
 
-			var token = new JwtSecurityToken(
-				issuer: "ADLMRATEGen",
-				audience: "ADLMRATEGen",
-				claims: claims,
-				expires: DateTime.Now.AddDays(15),
-				signingCredentials: credentials);
+            var securityKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("[REDACTED-JWT-KEY]"));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-			return new JwtSecurityTokenHandler().WriteToken(token);
-		}
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, id),                // never null
+                new Claim(ClaimTypes.Name,          username ?? string.Empty),
+                new Claim(ClaimTypes.Email,         email    ?? string.Empty),
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: "ADLMRATEGen",
+                audience: "ADLMRATEGen",
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(15),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private static string DeriveUsernameFromEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return "user";
+
+            var local = email.Split('@')[0];
+            if (string.IsNullOrEmpty(local)) return "user";
+
+            // split letters vs digits at the end
+            int i = local.Length - 1;
+            while (i >= 0 && char.IsDigit(local[i])) i--;
+
+            var letters = local.Substring(0, i + 1);          // "dolapo"
+            var digits = local.Substring(i + 1);             // "836"
+
+            if (digits.Length <= 2) return local;             // nothing or 1–2 digits: keep as-is
+            // mask all but last 2 digits
+            var masked = new string('*', digits.Length - 2) + digits[^2..]; // "*36" for "836"
+            return letters + masked;                           // "dolapo*36"
+        }
 
 
-		/* ───────── validate & decode ───────── */
-		public UserModel? ValidateToken(string jwt)
+
+
+        /* ───────── validate & decode ───────── */
+        public UserModel? ValidateToken(string jwt)
 		{
 			if (string.IsNullOrWhiteSpace(jwt))
 				return null;
