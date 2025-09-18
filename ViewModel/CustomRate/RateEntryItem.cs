@@ -32,7 +32,11 @@ namespace ADLMRateGen.ViewModel.CustomRate
 					OnPropertyChanged(nameof(TotalCostDisplay));
 				}
 			};
-		}
+
+            // NEW: library price changes
+            MaterialLibraryService.LibraryChanged += OnAnyLibraryChanged;
+            LabourLibraryService.LibraryChanged   += OnAnyLibraryChanged;
+        }
 
 		/* ────────── editable fields ────────── */
 
@@ -92,8 +96,14 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			}
 		}
 
-		/// <summary>Unit price **stored in NGN**.</summary>
-		public decimal UnitPrice
+        private void OnAnyLibraryChanged()
+        {
+            if (!string.IsNullOrWhiteSpace(_description))
+                ResolveUnitPrice();               // pulls latest price+unit from the right library
+        }
+
+        /// <summary>Unit price **stored in NGN**.</summary>
+        public decimal UnitPrice
 		{
 			get => _unitPriceNgn;
 			set
@@ -139,6 +149,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
             }
         }
 
+        public void RefreshFromLibrary() => ResolveUnitPrice();
 
 
         /* ────────── INotifyPropertyChanged boilerplate ────────── */

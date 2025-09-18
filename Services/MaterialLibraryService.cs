@@ -10,6 +10,9 @@ namespace ADLMRateGen.Services
     {
         private static readonly object _sync = new();
 
+        public static event Action? LibraryChanged;           // NEW
+        private static void RaiseChanged() => LibraryChanged?.Invoke(); // NEW
+
         // Default to JSON file in AppData
         private static IMaterialDataSource _dataSource =
             new MaterialJsonDataSource(AppPaths.MaterialLibraryFile);
@@ -28,6 +31,7 @@ namespace ADLMRateGen.Services
 
                 _materials = _dataSource.LoadMaterials().ToList();
             }
+            RaiseChanged();
         }
 
         public static IEnumerable<string> GetAllMaterialNames()
@@ -100,6 +104,7 @@ namespace ADLMRateGen.Services
                 _materials = dict.Values.ToList();
                 _dataSource.SaveMaterials(_materials);
             }
+            RaiseChanged();
         }
 
         public static MaterialModel? FindByName(string name)

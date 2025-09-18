@@ -137,21 +137,28 @@ namespace ADLMRateGen.Services
             TryAdd(AppPaths.CustomRatesFile);
             TryAdd(AppPaths.DataVersionFile);
         }
-
         private static void SeedFromDefaultFileNameFallback(string primary, string fallback, string targetPath)
         {
-            var shippedPrimary = Path.Combine(AppPaths.ShippedDefaultsDir, primary);
-            var shippedFallback = Path.Combine(AppPaths.ShippedDefaultsDir, fallback);
-
             Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
 
-            if (File.Exists(shippedPrimary))
-                File.Copy(shippedPrimary, targetPath, overwrite: false);
-            else if (File.Exists(shippedFallback))
-                File.Copy(shippedFallback, targetPath, overwrite: false);
-
-            // NOTE: no "[]" creation here; leave it missing so the data source can seed.
+            var seedFrom = AppPaths.FindShippedDefault(primary, fallback);
+            if (seedFrom != null)
+                File.Copy(seedFrom, targetPath, overwrite: false);
         }
+        //private static void SeedFromDefaultFileNameFallback(string primary, string fallback, string targetPath)
+        //{
+        //    var shippedPrimary = Path.Combine(AppPaths.ShippedDefaultsDir, primary);
+        //    var shippedFallback = Path.Combine(AppPaths.ShippedDefaultsDir, fallback);
+
+        //    Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
+
+        //    if (File.Exists(shippedPrimary))
+        //        File.Copy(shippedPrimary, targetPath, overwrite: false);
+        //    else if (File.Exists(shippedFallback))
+        //        File.Copy(shippedFallback, targetPath, overwrite: false);
+
+        //    // NOTE: no "[]" creation here; leave it missing so the data source can seed.
+        //}
 
 
         private static void MergeDefaults(
@@ -160,8 +167,12 @@ namespace ADLMRateGen.Services
             string userPath,
             Func<STJ.JsonElement, string?> keySelector)
         {
+
+            var shipped = AppPaths.FindShippedDefault(shippedFileName, fallbackFileName);
+            if (shipped is null || !File.Exists(userPath)) return;
+
             // choose shipped file; fallback if primary missing
-            var shipped = Path.Combine(AppPaths.ShippedDefaultsDir, shippedFileName);
+            //var shipped = Path.Combine(AppPaths.ShippedDefaultsDir, shippedFileName);
             if (!File.Exists(shipped))
             {
                 var fb = Path.Combine(AppPaths.ShippedDefaultsDir, fallbackFileName);

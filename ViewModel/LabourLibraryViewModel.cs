@@ -92,8 +92,10 @@ namespace ADLMRateGen.ViewModel
 
             SearchLabourCommand = new DelegateCommand(_ => ApplyFilter());
             ClearDatabaseCommand = new DelegateCommand(_ => ClearDatabase());
+
             DeleteLabourCommand = new DelegateCommand(o => DeleteLabour(o));
             EditLabourCommand = new DelegateCommand(o => EditLabour(o));
+
             UpdatePricesCommand = new DelegateCommand(_ => UpdatePricesFromMongo());
 
             /* when currency changes → redraw the grid */
@@ -135,16 +137,18 @@ namespace ADLMRateGen.ViewModel
             ApplyFilter();
         }
 
-        private void DeleteLabour(object o)
+        private void EditLabour(object parameter)
         {
-            if (o is LabourModel labour)
+            if (parameter is LabourModel labour)
+                EditLabourRequested?.Invoke(labour);
+        }
+
+        private void DeleteLabour(object parameter)
+        {
+            if (parameter is LabourModel labour)
             {
                 LabourLibrary.Remove(labour);
-                ReassignSerialNumbers();
-                _ds.SaveLabours(LabourLibrary);
-                LabourLibraryService.Initialize();
-                LibraryChanged?.Invoke();
-                ApplyFilter();
+                Persist();
             }
         }
 
@@ -154,41 +158,32 @@ namespace ADLMRateGen.ViewModel
                 LabourLibrary[i].SerialNumber = i + 1;
         }
 
-        private void EditLabour(object o)
-        {
-            if (o is LabourModel labour)
-                EditLabourRequested?.Invoke(labour);
-        }
 
         public ObservableCollection<LabourModel> Labours { get; } = new();
 
         /* ───────── CRUD helpers ───────── */
         public void AddOrUpdateLabour(LabourModel lab)
         {
-            /* give a new serial if it comes in fresh */
-            if (lab.SerialNumber == 0)
-                lab.SerialNumber = LabourLibrary.Count == 0
-                                   ? 1
-                                   : LabourLibrary.Max(l => l.SerialNumber) + 1;
-
             var existing = LabourLibrary.FirstOrDefault(l => l.SerialNumber == lab.SerialNumber);
-
-            if (existing == null)                     // *** ADD ***
+            if (existing == null)
             {
+                lab.SerialNumber = LabourLibrary.Count == 0
+                    ? 1
+                    : LabourLibrary.Max(l => l.SerialNumber) + 1;
                 LabourLibrary.Add(lab);
             }
-            else                                      // *** UPDATE ***
+            else
             {
-                existing.LabourUnit = lab.LabourUnit;
-                existing.LabourPrice = lab.LabourPrice;
-                existing.LabourCategory = lab.LabourCategory;
+                existing.LabourPrice = lab.LabourPrice; // editable field
             }
+            Persist();
+        }
 
-            /* persist + refresh the grid */
+        private void Persist()
+        {
             _ds.SaveLabours(LabourLibrary);
-            LabourLibraryService.Initialize();
-            LabourCollectionView.Refresh();
-            LibraryChanged?.Invoke();
+            LabourLibraryService.Initialize(_ds);  // refresh service cache
+            LibraryChanged?.Invoke();              // 🔔 notifies RateEntryItem
         }
 
         private void UpdatePricesFromMongo()

@@ -319,7 +319,7 @@
                                                           Background="White"
                                                           HorizontalContentAlignment="Left"
                                                           MinWidth="180" />
-                                                <TextBlock Text="{Binding DataContext.AvailableLabourItems.Count, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                                <!--<TextBlock Text="{Binding DataContext.AvailableLabourItems.Count, RelativeSource={RelativeSource AncestorType=UserControl}}" />-->
 
 
                                             </StackPanel>

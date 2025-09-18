@@ -93,7 +93,7 @@
     <Viewbox Stretch="Uniform"
              StretchDirection="DownOnly">
         <Grid Width="1900"
-              Height="1050">
+              Height="1150">
 
             <!-- Sign-in overlay -->
             <ContentControl Content="{Binding SignInViewModel}"
@@ -420,6 +420,22 @@
 
 
                         <StackPanel Margin="0,40">
+                            <Button Style="{DynamicResource SidebarSubButton}"
+                                    Command="{Binding ExportBillCsvCommand}"
+                                    Margin="0,4">
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                    <fa:IconBlock Icon="FileCsv"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Foreground="{DynamicResource Blue900Brush}" />
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+                                    <TextBlock Text="Export to Bill (CSV)"
+                                               Style="{DynamicResource BtnSidebarText}" />
+                                </StackPanel>
+                            </Button>
+                            
                             <Button Style="{DynamicResource SidebarSubButton}"
                                     Command="{Binding ExportAllRatesCommand}"
                                     Margin="0,4">

@@ -1,6 +1,8 @@
-﻿using ADLMRateGen.Services;
+﻿using ADLMRateGen.Helpers;
+using ADLMRateGen.Services;
 using OfficeOpenXml;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 
@@ -19,31 +21,40 @@ namespace ADLMRateGen
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
+            // App.xaml.cs  OnStartup(...)
             DataMigrator.EnsureMigrated();
-            MaterialLibraryService.Initialize();   
-            LabourLibraryService.Initialize();
 
-            //// IMPORTANT: load both libraries now
-            //MaterialLibraryService.Initialize(new MaterialJsonDataSource());
-            //LabourLibraryService.Initialize(new LabourJsonDataSource());
+            MaterialLibraryService.Initialize(new MaterialJsonDataSource(AppPaths.MaterialLibraryFile));
+            LabourLibraryService.Initialize(new LabourJsonDataSource(AppPaths.LabourLibraryFile));
 
-            //// where you Initialize(...)
-            //MaterialLibraryService.Initialize(
-            //    new MaterialJsonDataSource(ADLMRateGen.Helpers.AppPaths.MaterialLibraryFile));
+            Debug.WriteLine($"[PATH] Using materials: {AppPaths.MaterialLibraryFile}");
+            Debug.WriteLine($"[PATH] Using labour   : {AppPaths.LabourLibraryFile}");
 
-            //LabourLibraryService.Initialize(
-            //    new LabourJsonDataSource(ADLMRateGen.Helpers.AppPaths.LabourLibraryFile));
+            // App.xaml.cs  inside OnStartup after Initialize(...)
+            if (!MaterialLibraryService.GetAllMaterials().Any())
+            {
+                var seedPath = AppPaths.FindFirstNonEmptyDefault("materials.json", "defaultMaterials.json", "defaultMaterial.json");
+                if (seedPath != null)
+                {
+                    var shipped = new MaterialJsonDataSource(seedPath).LoadMaterials().ToList();
+                    if (shipped.Any())
+                    {
+                        MaterialLibraryService.AddOrUpdateMaterials(shipped);
+                        MaterialLibraryService.Initialize(); // reload + raise changed
+                        Debug.WriteLine($"[SEED] Imported {shipped.Count} materials from {seedPath}");
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"[SEED] {seedPath} existed but contained 0 rows (after parse).");
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("[SEED] No non-empty shipped materials file found.");
+                }
+            }
 
-            //// --- FIX: if AppData file is empty, import the shipped labour.json ---
-            //if (!LabourLibraryService.GetAllLabourNames().Any())
-            //{
-            //    var shippedLabourPath1 = System.IO.Path.Combine(AppContext.BaseDirectory, "Defaults", "labour.json");
-            //    var shippedLabourPath2 = System.IO.Path.Combine(AppContext.BaseDirectory, "Data", "labour.json"); // fallback
-            //    var path = System.IO.File.Exists(shippedLabourPath1) ? shippedLabourPath1 : shippedLabourPath2;
 
-            //    var seed = new LabourJsonDataSource(path).LoadLabours();
-            //    LabourLibraryService.AddOrUpdateLabours(seed);   // writes to AppData path
-            //}
 
 
             // get reference to the light dictionary we already loaded in XAML

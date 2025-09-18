@@ -1,67 +1,51 @@
-﻿using System;
+﻿using ADLMRateGen.Command;
+using ADLMRateGen.Helpers;
+using ADLMRateGen.Services;
+using ADLMRateGen.ViewModel.Model;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;                    // ← needed for LINQ
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using ADLMRateGen.Command;
-using ADLMRateGen.Services;
-using ADLMRateGen.ViewModel.Model;
 
 namespace ADLMRateGen.ViewModel
 {
     public class MaterialLibraryViewModel : ViewModelBase
     {
-		//      private const string JsonPath = "materials.json";
-		//      private const string DefaultJson = @"Data\defaultMaterials.json";
-		//private readonly JsonDataServices _json = new(JsonPath, DefaultJson);
+        /* ---------- data source (AppData file) ---------- */
+        private readonly MaterialJsonDataSource _ds = new(AppPaths.MaterialLibraryFile);
 
-		/* ---------- data source ---------------------------------------------------------- */
+        // bound to the grid
+        public ObservableCollection<MaterialModel> MaterialLibrary { get; } = new();
 
-		private const string JsonPath = "materials.json";
-		private const string DefaultJson = @"Data\defaultMaterials.json";
+        public ICollectionView MaterialCollectionView { get; private set; }
 
-		// generic helper specialises on <MaterialModel>
-		private readonly JsonDataServices<MaterialModel> _json =
-			new(JsonPath, DefaultJson);
+        public ICommand SearchMaterialCommand { get; }
+        public ICommand ClearDatabaseCommand { get; }
+        public ICommand DeleteMaterialCommand { get; }
+        public ICommand EditMaterialCommand { get; }
+        public ICommand UpdatePricesCommand { get; }
 
-		// ───────── collection bound to the grid ─────────
-		public ObservableCollection<MaterialModel> MaterialLibrary { get; }
-			= new();       // ←‑‑ instanced immediately
+        public event Action<MaterialModel> EditMaterialRequested;
+        public event Action LibraryChanged;
 
-		public ICollectionView MaterialCollectionView { get; set; }
+        public double PriceNgnToCurrent(double baseNgn) => baseNgn * CurrencyService.Instance.Rate;
 
-		public ICommand SearchMaterialCommand { get; }
-		public ICommand ClearDatabaseCommand { get; }
-		public ICommand DeleteMaterialCommand { get; }
-		public ICommand EditMaterialCommand { get; }
-		public ICommand UpdatePricesCommand { get; }
+        public double GetMaterialPrice(string name)
+        {
+            var mat = MaterialLibraryService
+                        .GetAllMaterials()
+                        .FirstOrDefault(m => m.MaterialName == name);
 
-		public event Action<MaterialModel> EditMaterialRequested;
-		public event Action LibraryChanged;
+            return mat == null ? 0 : (double)mat.MaterialPrice * CurrencyService.Instance.Rate;
+        }
 
-		public double PriceNgnToCurrent(double baseNgn) =>
-		baseNgn * CurrencyService.Instance.Rate;
+        public ICommand AddNewCommand { get; }
 
+        public ObservableCollection<string> MaterialCategory { get; set; }
 
-		/* --------  price lookup the rest of the app can call  -------- */
-		public double GetMaterialPrice(string name)
-		{
-			var mat = MaterialLibraryService
-						.GetAllMaterials()
-						.FirstOrDefault(m => m.MaterialName == name);
-
-			return mat == null
-	? 0
-	: (double)mat.MaterialPrice * CurrencyService.Instance.Rate;
-
-		}
-
-
-		public ICommand AddNewCommand { get; }
-
-
-		public ObservableCollection<string> MaterialCategory { get; set; }
         private string _selectedMaterialCategory;
         public string SelectedMaterialCategory
         {
@@ -72,74 +56,76 @@ namespace ADLMRateGen.ViewModel
                 {
                     _selectedMaterialCategory = value;
                     RaisePropertyChanged();
-					ApplyFilter();
-
-				}
-			}
+                    ApplyFilter();
+                }
+            }
         }
 
-		private string _searchTerm = string.Empty;
-		public string SearchTerm
-		{
-			get => _searchTerm;
-			set
-			{
-				if (_searchTerm != value)
-				{
-					_searchTerm = value;
-					RaisePropertyChanged();
-					ApplyFilter();
-				}
-			}
-		}
-
-		public void RequestEdit(MaterialModel toEdit) => EditMaterialRequested?.Invoke(toEdit);
-
-		public MaterialLibraryViewModel()
+        private string _searchTerm = string.Empty;
+        public string SearchTerm
         {
+            get => _searchTerm;
+            set
+            {
+                if (_searchTerm != value)
+                {
+                    _searchTerm = value;
+                    RaisePropertyChanged();
+                    ApplyFilter();
+                }
+            }
+        }
 
-			foreach (var m in _json.LoadData()) MaterialLibrary.Add(m);
+        public void RequestEdit(MaterialModel toEdit) => EditMaterialRequested?.Invoke(toEdit);
 
-			MaterialCollectionView = CollectionViewSource.GetDefaultView(MaterialLibrary);
-			ApplyFilter();
+        public MaterialLibraryViewModel()
+        {
+            // Load from AppData file and point the shared service at the SAME DS
+            foreach (var m in _ds.LoadMaterials()) MaterialLibrary.Add(m);
+            MaterialLibraryService.Initialize(_ds);
 
-			MaterialPriceViewModel.MaterialSaved += AddOrUpdateMaterial;
+            MaterialCollectionView = CollectionViewSource.GetDefaultView(MaterialLibrary);
+            ApplyFilter();
 
+            MaterialPriceViewModel.MaterialSaved += AddOrUpdateMaterial;
+            MaterialCollectionView.Filter = _ => true;
 
-			MaterialCollectionView.Filter = _ => true;
-
-			bool useMongo = false; //true to upload to DB
+            // If you later decide to use Mongo, keep both service and local collection in sync
+            bool useMongo = false;
             if (useMongo)
             {
                 var mongoDataSource = new MaterialMongoDataSource(
                     "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
                     "ADLMRateDB",
                     "Materials"
-                    );
+                );
+
                 MaterialLibraryService.Initialize(mongoDataSource);
 
-                var materialsFromMongo = MaterialLibraryService.GetAllMaterials();
-                if(materialsFromMongo == null || !materialsFromMongo.Any())
-				{
-					BulkUploadUtility.BulkUploadJsonToMongo(
+                var materialsFromMongo = MaterialLibraryService.GetAllMaterials().ToList();
+                if (!materialsFromMongo.Any())
+                {
+                    BulkUploadUtility.BulkUploadJsonToMongo(
                         jsonFilePath: "Data\\defaultMaterials.json",
                         connectionString: "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
                         databaseName: "ADLMRateDB",
-						collectionName: "Materials"
-						);
-
+                        collectionName: "Materials"
+                    );
                     MaterialLibraryService.Initialize(mongoDataSource);
-				}
-			} else
+                    materialsFromMongo = MaterialLibraryService.GetAllMaterials().ToList();
+                }
+
+                // refresh local grid from the service
+                MaterialLibrary.Clear();
+                foreach (var m in materialsFromMongo) MaterialLibrary.Add(m);
+            }
+            else
             {
-				MaterialLibraryService.Initialize(new MaterialJsonDataSource(JsonPath));
-			}
+                // already initialized with _ds; make sure local collection mirrors service
+                MaterialLibrary.Clear();
+                foreach (var m in MaterialLibraryService.GetAllMaterials()) MaterialLibrary.Add(m);
+            }
 
-			MaterialLibrary = new ObservableCollection<MaterialModel>(MaterialLibraryService.GetAllMaterials());
-			MaterialCollectionView = CollectionViewSource.GetDefaultView(MaterialLibrary);
-
-
-            
             _selectedMaterialCategory = "All";
 
             EditMaterialCommand = new DelegateCommand(o => EditMaterial(o));
@@ -148,61 +134,73 @@ namespace ADLMRateGen.ViewModel
             ClearDatabaseCommand = new DelegateCommand(o => ClearDatabase());
             UpdatePricesCommand = new DelegateCommand(_ => UpdatePricesFromMongo());
 
-			MaterialCategory = new ObservableCollection<string> { "All", "Cement Based Products", "Earthwork And Filling Materials", "Crushed Rock Products", "Terrazzo Products",
-				"Mild Steel Bar Reinforcement", "High Tensile Steel Bar Reinforcement", "Mesh Reinforcement to B.S. 4483", "Timber - Softwood", "Timber - Hardwood",
-				"Plywood - White", "Plywood - Brown", "Particle Board", "Plywood - Veneer", "Timber Others", "Glasswork - Louver Blade-Plain", "Glasswork - Louver Blade-Obscured",
-				"Glasswork - Nacco Louver Carrier", "Glasswork - Sheet Glass 3mm", "Glasswork - Sheet Glass 4mm", "Glasswork - Sheet Glass 5mm", "Finishes - Ceramic Floor Tiles",
-				"Finishes - Ceramic Wall Tiles", "Bituminous Products", "Fuels", "Structural Steel Plates", "Structural Steel", "Asa Ceilings Limited - Ceiling Boards",
-				"Luxalon Ceilings", "Efisol Mineral Ceilings", "Nigerite Limited - Ceilings", "PVC Floor Tiles", "Longspan Aluminium Roofing Sheet", "Nigerite Products - SLW Asbestos",
-				"Nigerite Products - Super Seven Asbestos", "Nails And Screws And Other Accessories", "Roof Felting", "Zinc Roofing Sheet",
-				"Aluminium Doors And Windows - Natural Anodised (Plain Glazing)", "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)",
-				"Aluminium Doors And Windows - Bullet Proof Glazing", "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)",
-				"Aluminium Doors And Windows - Entrance Doors (Bullet Proof)", "Aluminium Doors And Windows - Entrance Doors (Georgian Wired)",
-				"Aluminium Doors And Windows - Entrance Doors (Georgian Wired, Mylar)", "Aluminium Doors And Windows - Composite (Clear Glazing)",
-				"Aluminium Doors And Windows - Steel Doors (Vandal Proof)", "Aluminium Doors And Windows - Steel Doors (Bullet Proof)", "Insulated Wall Panels", "Curtain Wall",
-				"Timber Doors", "Casement Window", "Paints - Emulsion", "Paints - Gloss Oil", "Paints - Chlorinated", "Paints - Peacock", "Paints - Road", "Paints - Wood",
-				"AMERON PAINTS", "AMERON PAINTS - Finish Coating", "AMERON PAINTS - Anti-Fouling", "AMERON PAINTS - Degreaser", "AMERON PAINTS - Etching", "AMERON PAINTS - Cleaners",
-				"AMERON PAINTS - Thinners", "AMERON PAINTS - Starter Liquid", "AMERON PAINTS - Solvent Free Epoxy", "CARBOLINE PAINTS", "PORTLAND PAINTS"
-			};
+            MaterialCategory = new ObservableCollection<string>
+            {
+                "All", "Cement Based Products", "Earthwork And Filling Materials", "Crushed Rock Products", "Terrazzo Products",
+                "Mild Steel Bar Reinforcement", "High Tensile Steel Bar Reinforcement", "Mesh Reinforcement to B.S. 4483",
+                "Timber - Softwood", "Timber - Hardwood", "Plywood - White", "Plywood - Brown", "Particle Board",
+                "Plywood - Veneer", "Timber Others", "Glasswork - Louver Blade-Plain", "Glasswork - Louver Blade-Obscured",
+                "Glasswork - Nacco Louver Carrier", "Glasswork - Sheet Glass 3mm", "Glasswork - Sheet Glass 4mm",
+                "Glasswork - Sheet Glass 5mm", "Finishes - Ceramic Floor Tiles", "Finishes - Ceramic Wall Tiles",
+                "Bituminous Products", "Fuels", "Structural Steel Plates", "Structural Steel",
+                "Asa Ceilings Limited - Ceiling Boards", "Luxalon Ceilings", "Efisol Mineral Ceilings",
+                "Nigerite Limited - Ceilings", "PVC Floor Tiles", "Longspan Aluminium Roofing Sheet",
+                "Nigerite Products - SLW Asbestos", "Nigerite Products - Super Seven Asbestos",
+                "Nails And Screws And Other Accessories", "Roof Felting", "Zinc Roofing Sheet",
+                "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)",
+                "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)",
+                "Aluminium Doors And Windows - Bullet Proof Glazing",
+                "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)",
+                "Aluminium Doors And Windows - Entrance Doors (Bullet Proof)",
+                "Aluminium Doors And Windows - Entrance Doors (Georgian Wired)",
+                "Aluminium Doors And Windows - Entrance Doors (Georgian Wired, Mylar)",
+                "Aluminium Doors And Windows - Composite (Clear Glazing)",
+                "Aluminium Doors And Windows - Steel Doors (Vandal Proof)",
+                "Aluminium Doors And Windows - Steel Doors (Bullet Proof)",
+                "Insulated Wall Panels", "Curtain Wall",
+                "Timber Doors", "Casement Window", "Paints - Emulsion", "Paints - Gloss Oil",
+                "Paints - Chlorinated", "Paints - Peacock", "Paints - Road", "Paints - Wood",
+                "AMERON PAINTS", "AMERON PAINTS - Finish Coating", "AMERON PAINTS - Anti-Fouling",
+                "AMERON PAINTS - Degreaser", "AMERON PAINTS - Etching", "AMERON PAINTS - Cleaners",
+                "AMERON PAINTS - Thinners", "AMERON PAINTS - Starter Liquid", "AMERON PAINTS - Solvent Free Epoxy",
+                "CARBOLINE PAINTS", "PORTLAND PAINTS"
+            };
 
-			/* when currency changes → redraw the grid */
-			CurrencyService.Instance.PropertyChanged += (_, e) =>
-			{
-				if (e.PropertyName == nameof(CurrencyService.Rate))
-					MaterialCollectionView.Refresh();
-			};
-		}
-
+            // refresh the grid on currency change
+            CurrencyService.Instance.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(CurrencyService.Rate))
+                    MaterialCollectionView.Refresh();
+            };
+        }
 
         private void ApplyFilter()
         {
-			if (MaterialCollectionView != null)
-			{
-				MaterialCollectionView.Filter = o =>
-				{
-					if (o is MaterialModel material)
-					{
-						// Filter by category if not "All"
-						bool matchesCategory = SelectedMaterialCategory == "All" ||
-											   string.IsNullOrEmpty(SelectedMaterialCategory) ||
-											   material.MaterialCategory == SelectedMaterialCategory;
-						// Filter by text if search term is provided.
-						bool matchesText = string.IsNullOrEmpty(SearchTerm) ||
-										   (!string.IsNullOrEmpty(material.MaterialName) &&
-										   material.MaterialName.IndexOf(SearchTerm, System.StringComparison.OrdinalIgnoreCase) >= 0);
-						return matchesCategory && matchesText;
-					}
-					return false;
-				};
-				MaterialCollectionView.Refresh();
-			}
-			
+            if (MaterialCollectionView == null) return;
+
+            MaterialCollectionView.Filter = o =>
+            {
+                if (o is not MaterialModel material) return false;
+
+                bool matchesCategory = SelectedMaterialCategory == "All" ||
+                                       string.IsNullOrEmpty(SelectedMaterialCategory) ||
+                                       material.MaterialCategory == SelectedMaterialCategory;
+
+                bool matchesText = string.IsNullOrEmpty(SearchTerm) ||
+                                   (!string.IsNullOrEmpty(material.MaterialName) &&
+                                    material.MaterialName.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0);
+
+                return matchesCategory && matchesText;
+            };
+
+            MaterialCollectionView.Refresh();
         }
 
         private void ClearDatabase()
         {
             MaterialLibrary.Clear();
-            _json.SaveData(MaterialLibrary);
+            _ds.SaveMaterials(MaterialLibrary);
+            MaterialLibraryService.Initialize(_ds); // refresh service cache & raise LibraryChanged
             ApplyFilter();
         }
 
@@ -212,7 +210,8 @@ namespace ADLMRateGen.ViewModel
             {
                 MaterialLibrary.Remove(material);
                 ReassignSerialNumbers();
-                _json.SaveData(MaterialLibrary);
+                _ds.SaveMaterials(MaterialLibrary);
+                MaterialLibraryService.Initialize(_ds);
                 LibraryChanged?.Invoke();
                 ApplyFilter();
             }
@@ -221,107 +220,91 @@ namespace ADLMRateGen.ViewModel
         private void EditMaterial(object parameter)
         {
             if (parameter is MaterialModel material)
-            {
-                // Raise event so that the parent can load this material for editing.
                 EditMaterialRequested?.Invoke(material);
-            }
         }
 
         private void ReassignSerialNumbers()
         {
             int serial = 1;
             foreach (var material in MaterialLibrary)
-            {
                 material.SerialNumber = serial++;
-            }
         }
 
-
-
-
-		public void AddOrUpdateMaterial(MaterialModel mat)
-		{
-			var existing = MaterialLibrary.FirstOrDefault(m => m.SerialNumber == mat.SerialNumber);
-
-			if (existing == null)
-			{
-				mat.SerialNumber = MaterialLibrary.Count == 0
-					? 1
-					: MaterialLibrary.Max(m => m.SerialNumber) + 1;
-				MaterialLibrary.Add(mat);
-			}
-			else
-			{
-				existing.MaterialPrice = mat.MaterialPrice;   // price is the only editable field
-			}
-
-			Persist();
-		}
-
-
-
-		private void Persist()
-		{
-			_json.SaveData(MaterialLibrary);   // 💾
-			LibraryChanged?.Invoke();
-			ApplyFilter();
-		}
-
-		private void UpdatePricesFromMongo()
+        public void AddOrUpdateMaterial(MaterialModel mat)
         {
-			// Prompt the user for confirmation.
-			var result = MessageBox.Show(
-				"Are you sure you want to override the existing prices with prices from ADLM servers?",
-				"Confirm Price Update",
-				MessageBoxButton.YesNo,
-				MessageBoxImage.Question);
+            var existing = MaterialLibrary.FirstOrDefault(m => m.SerialNumber == mat.SerialNumber);
 
-			// If the user cancels, exit the method.
-			if (result != MessageBoxResult.Yes)
-			{
-				MessageBox.Show("Price update canceled.", "Canceled", MessageBoxButton.OK, MessageBoxImage.Information);
-				return;
-			}
-			try
-			{
+            if (existing == null)
+            {
+                mat.SerialNumber = MaterialLibrary.Count == 0
+                    ? 1
+                    : MaterialLibrary.Max(m => m.SerialNumber) + 1;
+                MaterialLibrary.Add(mat);
+            }
+            else
+            {
+                existing.MaterialPrice = mat.MaterialPrice; // editable field
+            }
+
+            Persist();
+        }
+
+        private void Persist()
+        {
+            _ds.SaveMaterials(MaterialLibrary);
+            MaterialLibraryService.Initialize(_ds);
+            LibraryChanged?.Invoke();
+            ApplyFilter();
+        }
+
+        private void UpdatePricesFromMongo()
+        {
+            var result = MessageBox.Show(
+                "Are you sure you want to override the existing prices with prices from ADLM servers?",
+                "Confirm Price Update",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+            {
+                MessageBox.Show("Price update canceled.", "Canceled",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
                 var mongoDataSource = new MaterialMongoDataSource(
-        "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
-        "ADLMRateDB",
-        "Materials"
-        );
+                    "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
+                    "ADLMRateDB",
+                    "Materials"
+                );
                 var mongoMaterials = mongoDataSource.LoadMaterials().ToList();
 
                 foreach (var localItem in MaterialLibrary)
                 {
                     var matchingMongoItem = mongoMaterials.FirstOrDefault(m =>
-                    m.MaterialName.Equals(localItem.MaterialName, StringComparison.OrdinalIgnoreCase));
+                        m.MaterialName.Equals(localItem.MaterialName, StringComparison.OrdinalIgnoreCase));
 
                     if (matchingMongoItem != null)
-                    {
                         localItem.MaterialPrice = matchingMongoItem.MaterialPrice;
-                    }
                 }
 
-                _json.SaveData(MaterialLibrary);
-
+                _ds.SaveMaterials(MaterialLibrary);
+                MaterialLibraryService.Initialize(_ds);
                 LibraryChanged?.Invoke();
                 ApplyFilter();
 
                 MessageBox.Show("Prices updated from ADLM Servers.");
             }
             catch (Exception ex)
-			{
-				MessageBox.Show($"Error connecting to ADLM servers: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-				return;
+            {
+                MessageBox.Show($"Error connecting to ADLM servers: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
 
-
-
-		}
-
-		/* stub you can later replace with the real dialog */
-		private void OpenNewMaterialDialog()
-			=> MessageBox.Show("TODO: open *Add Material* dialog");
-
-	}
+        private void OpenNewMaterialDialog()
+            => MessageBox.Show("TODO: open *Add Material* dialog");
+    }
 }

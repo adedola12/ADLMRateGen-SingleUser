@@ -101,6 +101,23 @@ namespace ADLMRateGen.Helpers
             }
         }
 
+        public static string? FindShippedDefault(params string[] fileNames)
+        {
+            foreach (var fn in fileNames)
+            {
+                var p1 = Path.Combine(ShippedDefaultsDir, fn);                 // ...\Defaults\fn
+                if (File.Exists(p1)) return p1;
+
+                var p2 = Path.Combine(AppContext.BaseDirectory, "Data", fn);   // ...\Data\fn (old location)
+                if (File.Exists(p2)) return p2;
+
+                var p3 = Path.Combine(AppContext.BaseDirectory, fn);           // next to exe (last resort)
+                if (File.Exists(p3)) return p3;
+            }
+            return null;
+        }
+
+
         /// <summary>
         /// Writes content atomically: write to temp, then replace/rename over target.
         /// Prevents partial/corrupt files on crashes.
@@ -191,6 +208,45 @@ namespace ADLMRateGen.Helpers
                 // ignore
             }
         }
+
+        public static string? FindFirstNonEmptyDefault(params string[] fileNames)
+        {
+            foreach (var fn in fileNames)
+            {
+                var candidates = new[]
+                {
+            Path.Combine(ShippedDefaultsDir, fn),                    // ...\Defaults\fn
+            Path.Combine(AppContext.BaseDirectory, "Data", fn),      // ...\Data\fn (legacy)
+            Path.Combine(AppContext.BaseDirectory, fn)               // next to exe
+        };
+
+                foreach (var p in candidates)
+                {
+                    if (!File.Exists(p)) continue;
+
+                    try
+                    {
+                        var text = File.ReadAllText(p).Trim();
+                        // Quick check: more than "[]", and also parse-count > 0 just to be safe
+                        if (text.Length > 2)
+                        {
+                            using var sr = File.OpenText(p);
+                            var json = sr.ReadToEnd();
+                            var items = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Collections.Generic.List<object>>(json)
+                                       ?? new System.Collections.Generic.List<object>();
+                            if (items.Count > 0)
+                                return p;
+                        }
+                    }
+                    catch
+                    {
+                        // ignore and continue looking
+                    }
+                }
+            }
+            return null;
+        }
+
 
         /// <summary>
         /// Get a simple shipped data-version string (from Defaults\data-version.json).

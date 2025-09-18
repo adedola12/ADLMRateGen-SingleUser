@@ -1,9 +1,11 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Data;
-using ADLMRateGen.Command;
-using System.Windows.Input;
+﻿using ADLMRateGen.Command;
+using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace ADLMRateGen.ViewModel.CustomRate
 {
@@ -64,7 +66,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			ViewRateCommand = new RelayCommand(
 				param => ViewRateExecute(param),        // We'll pass the row item
 				param => param is CustomRate            // Only enabled if param is a CustomRate
-);
+			);
 			DeleteRateCommand = new RelayCommand(
 				_ => DeleteRate(),
 				_ => CanDeleteRate()
@@ -74,9 +76,16 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			CustomRateServices.OnCustomRateSaved += CustomRateServices_OnCustomRateSaved;
 
 			CustomRateServices.OnCustomRateUpdated += CustomRateServices_OnCustomRateUpdated;
-		}
 
-		private void ViewRateExecute(object parameter)
+            // NEW: auto-recalc when libraries change
+            MaterialLibraryService.LibraryChanged += OnAnyLibraryChanged;
+            LabourLibraryService.LibraryChanged   += OnAnyLibraryChanged;
+
+            Debug.WriteLine($"[PATH] Material file used by service: {AppPaths.MaterialLibraryFile}");
+
+        }
+
+        private void ViewRateExecute(object parameter)
 		{
 			var rate = parameter as CustomRate;
 			if (rate != null)
@@ -155,5 +164,18 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			RatesView.Refresh();
 			LibraryChanged?.Invoke();
 		}
-	}
+
+        private void OnAnyLibraryChanged()
+        {
+            // RateEntryItem instances inside CustomRates update themselves (step 2).
+            // We just refresh the grid and persist the new numbers.
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                RatesView.Refresh();
+                CustomRateServices.SaveRates(CustomRates);   // keep file in sync with library prices
+                LibraryChanged?.Invoke();
+            });
+        }
+
+    }
 }

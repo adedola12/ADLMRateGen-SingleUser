@@ -35,11 +35,11 @@ namespace ADLMRateGen.View
 			// (or use a proper attached behaviour)
 		}
 
-		private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
-		{
-			if (DataContext is SignInViewModel vm)
-				vm.Password = PasswordBox.Password;
-		}
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ADLMRateGen.ViewModel.SignInViewModel vm && sender is PasswordBox pb)
+                vm.Password = pb.Password;
+        }
 
-	}
+    }
 }

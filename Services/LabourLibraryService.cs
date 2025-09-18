@@ -10,6 +10,9 @@ namespace ADLMRateGen.Services
     {
         private static readonly object _sync = new();
 
+        public static event Action? LibraryChanged;            // NEW
+        private static void RaiseChanged() => LibraryChanged?.Invoke(); // NEW
+
         // Default to JSON file in AppData
         private static ILabourDataSource _dataSource =
             new LabourJsonDataSource(AppPaths.LabourLibraryFile);
@@ -34,6 +37,7 @@ namespace ADLMRateGen.Services
 
                 _labours = _dataSource.LoadLabours().ToList();
             }
+            RaiseChanged();
         }
 
         public static IEnumerable<string> GetAllLabourNames()
@@ -121,6 +125,8 @@ namespace ADLMRateGen.Services
                 _labours = dict.Values.ToList();
                 _dataSource.SaveLabours(_labours);
             }
+
+            RaiseChanged();
         }
     }
 }

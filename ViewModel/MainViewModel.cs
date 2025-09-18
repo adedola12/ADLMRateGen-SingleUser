@@ -15,7 +15,10 @@ using Microsoft.Win32;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 
@@ -260,6 +263,8 @@ namespace ADLMRateGen.ViewModel
         public ICommand ToggleNotificationsCommand { get; }
         public ICommand DismissNotificationCommand { get; }
         public ICommand ExportAllRatesCommand { get; }
+        public ICommand ExportBillCsvCommand { get; }
+
 
         /* ───────── ctor ───────── */
         public MainViewModel(
@@ -368,6 +373,8 @@ namespace ADLMRateGen.ViewModel
             OpenYoutubeCommand  = new RelayCommand(_ => OpenYoutube());
             HelpCommand         = new RelayCommand(_ => SendHelpEmail());
             ExportAllRatesCommand = new RelayCommand(_ => ExportAllToExcel());
+            ExportBillCsvCommand = new RelayCommand(_ => ExportBillToCsv());
+
 
             _index.Rebuild(this);
 
@@ -507,6 +514,110 @@ namespace ADLMRateGen.ViewModel
             catch (System.Exception ex)
             {
                 MessageBox.Show($"Export failed:\n{ex.Message}", "Export", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ExportBillToCsv()
+        {
+            try
+            {
+                var sfd = new SaveFileDialog
+                {
+                    Title = "Export to Bill (CSV)",
+                    FileName = $"ADLM_Bill_{System.DateTime.Now:yyyyMMdd_HHmm}.csv",
+                    Filter = "CSV (*.csv)|*.csv"
+                };
+                if (sfd.ShowDialog() != true) return;
+
+                // Collect all sections
+                var sections = new List<(string Name, IEnumerable Rows)>();
+
+                void AddSection(string name, object vm)
+                {
+                    var rows = FindRowsEnumerable(vm);
+                    if (rows != null) sections.Add((name, rows));
+                }
+
+                // use the same VMs you export to Excel
+                AddSection("Ground", GroundWorkViewModel);
+                AddSection("Concrete", ConcreteViewModel);
+                AddSection("Block Works", BlockworkViewModel);
+                AddSection("Finishes", FinishesViewModel);
+                AddSection("Roofs", RoofWorkViewModel);
+                AddSection("Painting", PaintWorkViewModel);
+                AddSection("Steel", SteelWorkViewModel);
+                AddSection("Window & Door", WindowAndDoorViewModel);
+
+                // Custom (saved) rates: we know the collection directly
+                if (CustomRateListViewModel?.CustomRates is IEnumerable cr && cr.GetEnumerator().MoveNext())
+                    sections.Add(("Saved Rates", CustomRateListViewModel.CustomRates));
+
+                if (sections.Count == 0)
+                {
+                    MessageBox.Show("No data available to export.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                // Build CSV
+                var sb = new StringBuilder();
+                sb.AppendLine("Section,Description,Total");
+
+                foreach (var (name, rows) in sections)
+                {
+                    foreach (var row in rows)
+                    {
+                        if (row == null) continue;
+
+                        var desc = GetStringProp(row, "Description", "Name", "Title") ?? string.Empty;
+                        var total = GetDecimalProp(row, "TotalCost", "TotalPrice", "Total"); // extend names if needed
+
+                        sb.AppendLine($"{Csv(name)},{Csv(desc)},{total.ToString("0.##", CultureInfo.InvariantCulture)}");
+                    }
+                }
+
+                // Write with UTF-8 BOM so Excel opens it nicely
+                File.WriteAllText(sfd.FileName, sb.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+                MessageBox.Show("CSV exported.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Export failed:\n{ex.Message}", "Export", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            // ---- helpers ----
+            static string Csv(string s) => $"\"{(s ?? string.Empty).Replace("\"", "\"\"")}\"";
+
+            static string? GetStringProp(object o, params string[] names)
+            {
+                var t = o.GetType();
+                foreach (var n in names)
+                {
+                    var p = t.GetProperty(n);
+                    if (p == null) continue;
+                    var v = p.GetValue(o);
+                    if (v != null) return v.ToString();
+                }
+                return null;
+            }
+
+            static decimal GetDecimalProp(object o, params string[] names)
+            {
+                var t = o.GetType();
+                foreach (var n in names)
+                {
+                    var p = t.GetProperty(n);
+                    if (p == null) continue;
+                    var v = p.GetValue(o);
+                    if (v == null) continue;
+
+                    try
+                    {
+                        // supports decimal/double/float/int, etc.
+                        return Convert.ToDecimal(v, CultureInfo.InvariantCulture);
+                    }
+                    catch { /* try next name */ }
+                }
+                return 0m;
             }
         }
 
