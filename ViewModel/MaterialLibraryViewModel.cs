@@ -240,6 +240,9 @@ namespace ADLMRateGen.ViewModel
                     ? 1
                     : MaterialLibrary.Max(m => m.SerialNumber) + 1;
                 MaterialLibrary.Add(mat);
+
+
+
             }
             else
             {

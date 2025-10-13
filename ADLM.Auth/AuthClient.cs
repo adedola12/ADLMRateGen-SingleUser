@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Threading;          // <-- needed for CancellationToken
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ADLMRateGen.ADLM.Auth
 {
     public sealed class AuthOptions
     {
-        public string BaseUrl { get; set; } = "http://localhost:4000/";
+        //public string BaseUrl { get; set; } = "http://localhost:4000/";
+        public string BaseUrl { get; set; } = "https://adlmweb.onrender.com/";
         public string ProductKey { get; set; } = "";   // "rategen" | "planswift" | "revit"
         public TimeSpan AccessSkew { get; set; } = TimeSpan.FromSeconds(30);
         public Func<string> DeviceFingerprintProvider { get; set; } // optional
-        public int TimeoutMs { get; set; } = 30000;
+        public int TimeoutMs { get; set; } = 90000; // 90s to tolerate cold starts
     }
 
     internal sealed class SecureStore
@@ -61,16 +63,34 @@ namespace ADLMRateGen.ADLM.Auth
         private string _accessToken;
         private DateTimeOffset _accessExpiryUtc;
 
+        // pooled HttpClient
+        private readonly HttpClient _http;
+
         public AuthClient(AuthOptions options)
         {
             _opt = options;
             _licenseStore = new SecureStore(options.ProductKey + ".license");
+
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+
+            var handler = new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                UseCookies = false,
+                Proxy = null,
+                UseProxy = false,
+            };
+
+            _http = new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromMilliseconds(_opt.TimeoutMs)
+            };
+            _http.DefaultRequestHeaders.Accept.Clear();
+            _http.DefaultRequestHeaders.Accept.ParseAdd("application/json");
         }
 
         public string GetCachedLicenseToken() => _licenseStore.Load();
 
-        // AuthClient.cs
         public async Task<bool> LoginAsync(string identifier, string password, CancellationToken ct = default)
         {
             var body = new
@@ -96,11 +116,6 @@ namespace ADLMRateGen.ADLM.Auth
             return true;
         }
 
-
-        // BACK-COMPAT: keep the old signature and forward to the new one
-        //public Task<bool> LoginAsync(string email, string password, CancellationToken ct = default)
-        //    => LoginAsync(identifier: email, password: password, ct);
-
         private async Task<string> GetAccessTokenAsync(CancellationToken ct = default)
         {
             if (!string.IsNullOrEmpty(_accessToken) &&
@@ -124,46 +139,47 @@ namespace ADLMRateGen.ADLM.Auth
             _accessToken = null;
         }
 
-        public void Dispose() { /* nothing */ }
-
-        // ---- HTTP helpers using HttpWebRequest ----
-        // AuthClient.cs
-
-        private Task<string> GetJsonAsync(string path, string bearer, CancellationToken ct)
+        public void Dispose()
         {
-            return Task.Factory.StartNew(() =>
-            {
-                var url = CombineUrl(_opt.BaseUrl, path);
-                var req = (HttpWebRequest)WebRequest.Create(url);
-                req.Method = "GET";
-                req.Timeout = _opt.TimeoutMs;
-                req.ReadWriteTimeout = _opt.TimeoutMs;
-                req.Accept = "application/json";
-                if (!string.IsNullOrEmpty(bearer))
-                    req.Headers["Authorization"] = "Bearer " + bearer;
-
-                try
-                {
-                    using (var resp = (HttpWebResponse)req.GetResponse())
-                    using (var s = resp.GetResponseStream())
-                    using (var r = new System.IO.StreamReader(s, Encoding.UTF8))
-                    {
-                        return r.ReadToEnd(); // may be ""
-                    }
-                }
-                catch (WebException wex)
-                {
-                    var http = wex.Response as HttpWebResponse;
-                    if (http != null && (http.StatusCode == HttpStatusCode.NotFound ||
-                                         http.StatusCode == HttpStatusCode.NoContent))
-                    {
-                        return "[]"; // treat as empty list
-                    }
-                    // bubble other errors
-                    throw;
-                }
-            }, ct);
+            _http?.Dispose();
         }
+
+        /* ---------------- PUBLIC JSON HELPERS ---------------- */
+
+        public async Task<JsonDocument> GetJsonAsync(string path, CancellationToken ct = default)
+        {
+            var at = await GetAccessTokenAsync(ct);
+            if (string.IsNullOrEmpty(at)) throw new InvalidOperationException("Not signed in.");
+            var raw = await GetJsonAsyncInternal(path, at, ct);
+            if (string.IsNullOrWhiteSpace(raw)) raw = "{}";
+            return JsonDocument.Parse(raw);
+        }
+
+        public async Task<JsonDocument> PutJsonAsync(string path, object body, CancellationToken ct = default)
+        {
+            var at = await GetAccessTokenAsync(ct);
+            if (string.IsNullOrEmpty(at)) throw new InvalidOperationException("Not signed in.");
+            var jsonBody = JsonSerializer.Serialize(body ?? new { });
+            var raw = await PostJsonAsync(path, jsonBody, at, ct);
+            if (string.IsNullOrWhiteSpace(raw)) raw = "{}";
+            return JsonDocument.Parse(raw);
+        }
+
+        // (Optional) warm-up ping to reduce cold-start timeouts
+        public async Task PingAsync(CancellationToken ct = default)
+        {
+            try
+            {
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                cts.CancelAfter(TimeSpan.FromSeconds(10));
+                var url = CombineUrl(_opt.BaseUrl, "/");
+                using var req = new HttpRequestMessage(HttpMethod.Head, url);
+                await _http.SendAsync(req, cts.Token);
+            }
+            catch { /* ignore */ }
+        }
+
+        /* ---------------- ENTITLEMENT ---------------- */
 
         public async Task EnsureEntitledAsync(string productKey, CancellationToken ct = default)
         {
@@ -171,9 +187,9 @@ namespace ADLMRateGen.ADLM.Auth
             if (string.IsNullOrEmpty(at))
                 throw new InvalidOperationException("Not signed in.");
 
-            var resText = await GetJsonAsync("/me/entitlements", at, ct);
+            var resText = await GetJsonAsyncInternal("/me/entitlements", at, ct);
             if (string.IsNullOrWhiteSpace(resText))
-                resText = "[]"; // be defensive
+                resText = "[]";
 
             JsonElement root;
             try
@@ -182,7 +198,6 @@ namespace ADLMRateGen.ADLM.Auth
             }
             catch
             {
-                // If the server sent something unexpected, do not crash the app
                 throw new InvalidOperationException("Entitlements unavailable. Please try again.");
             }
 
@@ -205,42 +220,121 @@ namespace ADLMRateGen.ADLM.Auth
                 throw new UnauthorizedAccessException($"No active subscription for '{productKey}'.");
         }
 
-        private Task<string> PostJsonAsync(string path, string jsonBody, string bearer, CancellationToken ct)
+        /* ---------------- LOW-LEVEL HTTP (HttpClient) ---------------- */
+
+        private async Task<string> GetJsonAsyncInternal(string path, string bearer, CancellationToken ct)
         {
-            return Task.Factory.StartNew(() =>
+            var url = CombineUrl(_opt.BaseUrl, path);
+
+            // one retry on timeout/cold start
+            for (int attempt = 1; attempt <= 2; attempt++)
             {
-                var url = CombineUrl(_opt.BaseUrl, path);
-                var req = (HttpWebRequest)WebRequest.Create(url);
-                req.Method = "POST";
-                req.Timeout = _opt.TimeoutMs;
-                req.ReadWriteTimeout = _opt.TimeoutMs;
-                req.Accept = "application/json";
-                req.ContentType = "application/json; charset=utf-8";
-                if (!string.IsNullOrEmpty(bearer))
-                    req.Headers["Authorization"] = "Bearer " + bearer;
-
-                var data = Encoding.UTF8.GetBytes(jsonBody ?? "{}");
-                req.ContentLength = data.Length;
-                using (var rs = req.GetRequestStream())
-                    rs.Write(data, 0, data.Length);
-
                 try
                 {
-                    using (var resp = (HttpWebResponse)req.GetResponse())
-                    using (var s = resp.GetResponseStream())
-                    using (var r = new System.IO.StreamReader(s, Encoding.UTF8))
-                    {
-                        return r.ReadToEnd();
-                    }
+                    using var req = new HttpRequestMessage(HttpMethod.Get, url);
+                    if (!string.IsNullOrEmpty(bearer))
+                        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+
+                    using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                    cts.CancelAfter(TimeSpan.FromMilliseconds(_opt.TimeoutMs));
+
+                    using var resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+                    var text = await resp.Content.ReadAsStringAsync(ct);
+
+                    if (resp.StatusCode == HttpStatusCode.NoContent || resp.StatusCode == HttpStatusCode.NotFound)
+                        return "[]";
+
+                    if (resp.StatusCode == HttpStatusCode.Unauthorized)
+                        throw new UnauthorizedAccessException("Unauthorized");
+
+                    if (!resp.IsSuccessStatusCode)
+                        throw MakeHttpError(resp.StatusCode, text);
+
+                    return text;
                 }
-                catch (WebException wex)
+                catch (TaskCanceledException) when (attempt == 1)
                 {
-                    var httpResp = wex.Response as HttpWebResponse;
-                    if (httpResp != null && httpResp.StatusCode == HttpStatusCode.Unauthorized)
-                        return null;
-                    throw;
+                    // retry once on timeout
+                    await Task.Delay(1500, ct);
+                    continue;
                 }
-            }, ct);
+            }
+
+            throw new TimeoutException("GET request timed out.");
+        }
+
+        private async Task<string> PostJsonAsync(string path, string jsonBody, string bearer, CancellationToken ct)
+        {
+            var url = CombineUrl(_opt.BaseUrl, path);
+
+            for (int attempt = 1; attempt <= 2; attempt++)
+            {
+                try
+                {
+                    using var req = new HttpRequestMessage(HttpMethod.Post, url);
+                    if (!string.IsNullOrEmpty(bearer))
+                        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+
+                    req.Content = new StringContent(jsonBody ?? "{}", Encoding.UTF8, "application/json");
+
+                    using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                    cts.CancelAfter(TimeSpan.FromMilliseconds(_opt.TimeoutMs));
+
+                    using var resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+                    var text = await resp.Content.ReadAsStringAsync(ct);
+
+                    if (resp.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        // keep old behavior: return null for invalid creds
+                        return null;
+                    }
+
+                    if (resp.StatusCode == HttpStatusCode.Forbidden ||
+                        resp.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        var (msg, code) = ExtractError(text);
+                        var what = code != null ? $"{msg} ({code})" : msg;
+                        throw new UnauthorizedAccessException(what);
+                    }
+
+                    if (!resp.IsSuccessStatusCode)
+                        throw MakeHttpError(resp.StatusCode, text);
+
+                    return text;
+                }
+                catch (TaskCanceledException) when (attempt == 1)
+                {
+                    // retry once on timeout
+                    await Task.Delay(1500, ct);
+                    continue;
+                }
+            }
+
+            throw new TimeoutException("POST request timed out.");
+        }
+
+        private static Exception MakeHttpError(HttpStatusCode status, string body)
+        {
+            var (msg, _) = ExtractError(body);
+            msg = string.IsNullOrWhiteSpace(msg) ? "Request failed." : msg;
+            return new InvalidOperationException($"{(int)status} {status}: {msg}");
+        }
+
+        private static (string message, string code) ExtractError(string body)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    using var doc = JsonDocument.Parse(body);
+                    var root = doc.RootElement;
+                    string msg = root.TryGetProperty("error", out var e) ? (e.GetString() ?? "") : "";
+                    string code = root.TryGetProperty("code", out var c) ? (c.GetString() ?? "") : "";
+                    return (msg, code);
+                }
+            }
+            catch { /* ignore non-JSON */ }
+            return ("", "");
         }
 
         private static string CombineUrl(string baseUrl, string path)

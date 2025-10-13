@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using ADLMRateGen.ViewModel.Model;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace ADLMRateGen.Services
@@ -62,9 +62,22 @@ namespace ADLMRateGen.Services
         public Task<List<LabourModel>> GetLatestLaboursAsync() =>
             _labourCollection.Find(FilterDefinition<LabourModel>.Empty).ToListAsync();
 
-        // Users
-        public UserModel? GetUserById(string id) =>
-            _userCollection.Find(u => u.Id == id).FirstOrDefault();
+        // -------- USERS --------
+
+        /// <summary>
+        /// Fetch by Mongo _id (24-hex) OR by Username if not a valid ObjectId.
+        /// </summary>
+        public UserModel? GetUserById(string idOrUsername)
+        {
+            if (ObjectId.TryParse(idOrUsername, out _))
+            {
+                // Database stores _id as ObjectId. In your UserModel, make sure:
+                //   [BsonId][BsonRepresentation(BsonType.ObjectId)] public string Id {get;set;}
+                return _userCollection.Find(u => u.Id == idOrUsername).FirstOrDefault();
+            }
+            // Fallback: treat input as username
+            return _userCollection.Find(u => u.Username == idOrUsername).FirstOrDefault();
+        }
 
         public async Task<UserModel?> GetUserAsync(string username, string password)
         {
@@ -82,15 +95,22 @@ namespace ADLMRateGen.Services
             return _userCollection.ReplaceOneAsync(filter, user);
         }
 
-        // Persist hardware fingerprint (first successful login)
-        public async Task<bool> SetHardwareFingerprintAsync(string userId, string encryptedFingerprint)
+        /// <summary>
+        /// Persist the device fingerprint. Accepts _id or username.
+        /// </summary>
+        public async Task<bool> SetHardwareFingerprintAsync(string idOrUsername, string encryptedFingerprint)
         {
-            var filter = Builders<UserModel>.Filter.Eq(u => u.Id, userId);
+            FilterDefinition<UserModel> filter;
+            if (ObjectId.TryParse(idOrUsername, out _))
+                filter = Builders<UserModel>.Filter.Eq(u => u.Id, idOrUsername);
+            else
+                filter = Builders<UserModel>.Filter.Eq(u => u.Username, idOrUsername);
+
             var update = Builders<UserModel>.Update
                 .Set(u => u.HardwareFingerprint, encryptedFingerprint)
                 .Set(u => u.UpdatedAt, DateTime.UtcNow);
 
-            var result = await _userCollection.UpdateOneAsync(filter, update); // <- fixed here
+            var result = await _userCollection.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0;
         }
     }

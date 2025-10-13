@@ -171,6 +171,7 @@ namespace ADLMRateGen.ViewModel
                     ? 1
                     : LabourLibrary.Max(l => l.SerialNumber) + 1;
                 LabourLibrary.Add(lab);
+
             }
             else
             {

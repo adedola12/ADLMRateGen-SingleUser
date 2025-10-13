@@ -437,26 +437,47 @@ namespace ADLMRateGen.ViewModel
         {
             if (e.LoggedInUser == null) return;
 
-            IsLoggedIn = true;
-            CurrentUser = e.LoggedInUser;           // triggers IsExportVisible calculation
+            // Ensure username is never empty
+            string ensuredUsername = !string.IsNullOrWhiteSpace(e.LoggedInUser.Username)
+                ? e.LoggedInUser.Username
+                : (e.LoggedInUser.Email?.Split('@')[0] ?? string.Empty);
 
+            // Set CurrentUser now
+            IsLoggedIn = true;
+            CurrentUser = new UserModel
+            {
+                Id       = e.LoggedInUser.Id,
+                Email    = e.LoggedInUser.Email,
+                Username = ensuredUsername
+            };
+
+            // Persist an auth token (no need to immediately re-read/overwrite the user)
             var authTok = new AuthTok();
             ConfigManager.SaveConfig(new AppConfig
             {
-                AuthToken = authTok.GenerateAuthToken(CurrentUser),
+                AuthToken  = authTok.GenerateAuthToken(CurrentUser),
                 AuthExpiry = System.DateTime.Now.AddDays(15)
             });
 
-            // optional: also allow auto-login if token valid
-            if (TryAutoLogin(out var loggedInUser))
-            {
-                IsLoggedIn = true;
-                CurrentUser = loggedInUser;
-                SelectedViewModel = LibraryShellViewModel;   // land on shell, not material library
-            }
+            // 👇 IMPORTANT: do NOT overwrite CurrentUser from TryAutoLogin right away.
+            // If you insist on keeping it, only use it as a fallback when
+            // CurrentUser is null or missing fields.
+            // Example:
+            // if (TryAutoLogin(out var tokenUser) && tokenUser != null)
+            // {
+            //     if (string.IsNullOrWhiteSpace(CurrentUser?.Username))
+            //         CurrentUser = new UserModel {
+            //             Id = tokenUser.Id,
+            //             Email = tokenUser.Email,
+            //             Username = !string.IsNullOrWhiteSpace(tokenUser.Username)
+            //                 ? tokenUser.Username
+            //                 : (tokenUser.Email?.Split('@')[0] ?? string.Empty)
+            //         };
+            // }
 
-            SelectedViewModel = LibraryShellViewModel;       // land on library tabs
+            SelectedViewModel = LibraryShellViewModel;
         }
+
 
         private void SendHelpEmail()
         {

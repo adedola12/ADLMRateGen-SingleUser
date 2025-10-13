@@ -27,4 +27,6 @@ namespace ADLMRateGen.Helpers
 			return (double)(found?.LabourPrice ?? 0);
 		}
 	}
+
+
 }
