@@ -348,8 +348,32 @@ namespace ADLMRateGen.ViewModel
             // When SignIn succeeds, we get the authenticated user from SignInViewModel (which also did HW fingerprint checks)
             signInVM.LoginSucceeded += OnLoginSucceeded;
 
+            signInVM.ZonePricesApplied += OnZonePricesApplied;
+
+
             /* default screen */
             SelectedViewModel = SignInViewModel;
+
+            // Attempt local token auto-login on app start
+            if (TryAutoLogin(out var tokenUser) && tokenUser != null)
+            {
+                IsLoggedIn = true;
+                CurrentUser = new UserModel
+                {
+                    Id       = tokenUser.Id,
+                    Email    = tokenUser.Email,
+                    Username = !string.IsNullOrWhiteSpace(tokenUser.Username)
+                        ? tokenUser.Username
+                        : (tokenUser.Email?.Split('@')[0] ?? string.Empty)
+                };
+
+                // go straight to the library shell
+                SelectedViewModel = LibraryShellViewModel;
+
+                _ = UserLibrarySync.Instance.LoadAsync();
+
+            }
+
 
             /* command implementations */
             SelectedMaterialInputViewCommand  = new RelayCommand(_ => SelectedViewModel = priceVM);
@@ -388,6 +412,20 @@ namespace ADLMRateGen.ViewModel
             PaintWorkViewModel.PropertyChanged    += (_, __) => _index.Rebuild(this);
             SteelWorkViewModel.PropertyChanged    += (_, __) => _index.Rebuild(this);
         }
+
+        private void OnZonePricesApplied(string zone)
+        {
+            // Ensure this runs on the UI thread
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                MaterialLibraryViewModel.ReloadFromDisk();
+                LabourLibraryViewModel.ReloadFromDisk();
+
+                // optionally show a toast/notification
+                AddNotification($"Prices updated for {zone.Replace('_', ' ')}");
+            });
+        }
+
 
         private void AddNotification(string msg)
         {
@@ -459,23 +497,10 @@ namespace ADLMRateGen.ViewModel
                 AuthExpiry = System.DateTime.Now.AddDays(15)
             });
 
-            // 👇 IMPORTANT: do NOT overwrite CurrentUser from TryAutoLogin right away.
-            // If you insist on keeping it, only use it as a fallback when
-            // CurrentUser is null or missing fields.
-            // Example:
-            // if (TryAutoLogin(out var tokenUser) && tokenUser != null)
-            // {
-            //     if (string.IsNullOrWhiteSpace(CurrentUser?.Username))
-            //         CurrentUser = new UserModel {
-            //             Id = tokenUser.Id,
-            //             Email = tokenUser.Email,
-            //             Username = !string.IsNullOrWhiteSpace(tokenUser.Username)
-            //                 ? tokenUser.Username
-            //                 : (tokenUser.Email?.Split('@')[0] ?? string.Empty)
-            //         };
-            // }
-
             SelectedViewModel = LibraryShellViewModel;
+
+            _ = UserLibrarySync.Instance.LoadAsync();
+
         }
 
 

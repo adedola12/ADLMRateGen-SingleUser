@@ -68,7 +68,7 @@
                         <TextBox Style="{StaticResource HollowBox}"
                                  Tag="Input Username…"
                                  VerticalContentAlignment="Center"
-                                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}">
+                                 Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}">
                             
                         </TextBox>
 

@@ -162,7 +162,7 @@ namespace ADLMRateGen.ViewModel
         public ObservableCollection<LabourModel> Labours { get; } = new();
 
         /* ───────── CRUD helpers ───────── */
-        public void AddOrUpdateLabour(LabourModel lab)
+        public async void AddOrUpdateLabour(LabourModel lab)
         {
             var existing = LabourLibrary.FirstOrDefault(l => l.SerialNumber == lab.SerialNumber);
             if (existing == null)
@@ -170,15 +170,21 @@ namespace ADLMRateGen.ViewModel
                 lab.SerialNumber = LabourLibrary.Count == 0
                     ? 1
                     : LabourLibrary.Max(l => l.SerialNumber) + 1;
-                LabourLibrary.Add(lab);
 
+                LabourLibrary.Add(lab);
+                Persist();
+
+                _ = UserLibrarySync.Instance.TryAddLabourAsync(lab);
             }
             else
             {
-                existing.LabourPrice = lab.LabourPrice; // editable field
+                existing.LabourPrice = lab.LabourPrice;
+                Persist();
+
+                _ = UserLibrarySync.Instance.TryUpdateLabourAsync(existing);
             }
-            Persist();
         }
+
 
         private void Persist()
         {
@@ -187,10 +193,12 @@ namespace ADLMRateGen.ViewModel
             LibraryChanged?.Invoke();              // 🔔 notifies RateEntryItem
         }
 
-        private void UpdatePricesFromMongo()
+
+
+        private async void UpdatePricesFromMongo()
         {
             var result = MessageBox.Show(
-                "Override prices with ADLM server values?",
+                "Override labour prices with ADLM server values for your current zone?",
                 "Confirm",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
@@ -200,31 +208,45 @@ namespace ADLMRateGen.ViewModel
 
             try
             {
-                var mongo = new LabourMongoDataSource(
-                    "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
-                    "ADLMRateDB",
-                    "labours"
-                );
-                var serverList = mongo.LoadLabours().ToList();
-
-                foreach (var local in LabourLibrary)
+                string zone = ADLMRateGen.Properties.AppSettings.Zone ?? "";
+                if (string.IsNullOrWhiteSpace(zone))
                 {
-                    var found = serverList.FirstOrDefault(s => s.LabourName == local.LabourName);
-                    if (found != null)
-                        local.LabourPrice = found.LabourPrice;
+                    MessageBox.Show("No user zone set. Please sign in again to sync your zone profile.");
+                    return;
                 }
 
-                _ds.SaveLabours(LabourLibrary);
-                LabourLibraryService.Initialize();
-                LibraryChanged?.Invoke();
-                ApplyFilter();
-                MessageBox.Show("Updated from server.");
+
+
+                var auth = ADLMRateGen.Services.AuthProvider.Instance.Client;
+
+                // NEW
+                await UserLibrarySync.Instance.LoadAsync();
+
+                var masterDoc = await auth.GetJsonAsync($"/rategen/master?zone={Uri.EscapeDataString(zone)}");
+                var root = masterDoc.RootElement;
+
+                if (root.TryGetProperty("labour", out var labs))
+                    ADLMRateGen.Services.DataSourceCloudSync.SaveLaboursFromDto(labs);
+
+                ReloadFromDisk();
+                MessageBox.Show($"Labour prices updated for zone '{zone}'.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error connecting to server: {ex.Message}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error updating labour prices: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+
+        public void ReloadFromDisk()
+        {
+            LabourLibrary.Clear();
+            foreach (var l in _ds.LoadLabours()) LabourLibrary.Add(l);
+
+            LabourLibraryService.Initialize(_ds);
+
+            ApplyFilter();
+            LibraryChanged?.Invoke();
         }
 
         private void OpenNewLabourDialog() =>

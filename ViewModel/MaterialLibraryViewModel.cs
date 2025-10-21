@@ -230,27 +230,33 @@ namespace ADLMRateGen.ViewModel
                 material.SerialNumber = serial++;
         }
 
-        public void AddOrUpdateMaterial(MaterialModel mat)
+        public async void AddOrUpdateMaterial(MaterialModel mat)
         {
             var existing = MaterialLibrary.FirstOrDefault(m => m.SerialNumber == mat.SerialNumber);
 
             if (existing == null)
             {
+                // keep numbering continuous (master + existing user items already in collection)
                 mat.SerialNumber = MaterialLibrary.Count == 0
                     ? 1
                     : MaterialLibrary.Max(m => m.SerialNumber) + 1;
+
                 MaterialLibrary.Add(mat);
+                Persist();
 
-
-
+                // mirror to server (best-effort)
+                _ = UserLibrarySync.Instance.TryAddMaterialAsync(mat);
             }
             else
             {
                 existing.MaterialPrice = mat.MaterialPrice; // editable field
-            }
+                Persist();
 
-            Persist();
+                // if this row belongs to user's library, reflect update
+                _ = UserLibrarySync.Instance.TryUpdateMaterialAsync(existing);
+            }
         }
+
 
         private void Persist()
         {
@@ -260,51 +266,56 @@ namespace ADLMRateGen.ViewModel
             ApplyFilter();
         }
 
-        private void UpdatePricesFromMongo()
+        private async void UpdatePricesFromMongo()
         {
             var result = MessageBox.Show(
-                "Are you sure you want to override the existing prices with prices from ADLM servers?",
-                "Confirm Price Update",
+                "Override prices with ADLM server values for your current zone?",
+                "Confirm",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
             if (result != MessageBoxResult.Yes)
-            {
-                MessageBox.Show("Price update canceled.", "Canceled",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
-            }
 
             try
             {
-                var mongoDataSource = new MaterialMongoDataSource(
-                    "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
-                    "ADLMRateDB",
-                    "Materials"
-                );
-                var mongoMaterials = mongoDataSource.LoadMaterials().ToList();
-
-                foreach (var localItem in MaterialLibrary)
+                string zone = ADLMRateGen.Properties.AppSettings.Zone ?? "";
+                if (string.IsNullOrWhiteSpace(zone))
                 {
-                    var matchingMongoItem = mongoMaterials.FirstOrDefault(m =>
-                        m.MaterialName.Equals(localItem.MaterialName, StringComparison.OrdinalIgnoreCase));
-
-                    if (matchingMongoItem != null)
-                        localItem.MaterialPrice = matchingMongoItem.MaterialPrice;
+                    MessageBox.Show("No user zone set. Please sign in again to sync your zone profile.");
+                    return;
                 }
 
-                _ds.SaveMaterials(MaterialLibrary);
-                MaterialLibraryService.Initialize(_ds);
-                LibraryChanged?.Invoke();
-                ApplyFilter();
+                var auth = ADLMRateGen.Services.AuthProvider.Instance.Client;
 
-                MessageBox.Show("Prices updated from ADLM Servers.");
+                // NEW: refresh user rows from server in case another device added something
+                await UserLibrarySync.Instance.LoadAsync();
+
+                var masterDoc = await auth.GetJsonAsync($"/rategen/master?zone={Uri.EscapeDataString(zone)}");
+                var root = masterDoc.RootElement;
+
+                if (root.TryGetProperty("materials", out var mats))
+                    ADLMRateGen.Services.DataSourceCloudSync.SaveMaterialsFromDto(mats);
+
+                ReloadFromDisk();
+                MessageBox.Show($"Material prices updated for zone '{zone}'.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error connecting to ADLM servers: {ex.Message}",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error updating materials: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        public void ReloadFromDisk()
+        {
+            MaterialLibrary.Clear();
+            foreach (var m in _ds.LoadMaterials()) MaterialLibrary.Add(m);
+
+            // keep the shared service in sync too
+            MaterialLibraryService.Initialize(_ds);
+
+            ApplyFilter();           // refresh CollectionView / grid
+            LibraryChanged?.Invoke();// keep search index, etc., up to date
         }
 
         private void OpenNewMaterialDialog()
