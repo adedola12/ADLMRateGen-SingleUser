@@ -47,6 +47,8 @@ namespace ADLMRateGen.ViewModel
         private static string DeriveUsername(string email) =>
             string.IsNullOrWhiteSpace(email) ? string.Empty : email.Split('@')[0];
 
+        
+
         private async Task LoginAsync()
         {
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))

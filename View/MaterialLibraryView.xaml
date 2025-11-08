@@ -88,12 +88,45 @@
                             Width="150"/>
                 </Grid>
             </Border>
-
-            <!-- DataGrid -->
-            <DataGrid Grid.Row="1"
+            
+            <DataGrid x:Name="MaterialsGrid"
+                      Grid.Row="1"
                       ItemsSource="{Binding MaterialCollectionView}"
-                      Style="{StaticResource DataGridStyle}">
+                      Style="{StaticResource DataGridStyle}"
+                      Tag="{Binding}">
+                <!-- << store the VM here -->
+                <DataGrid.InputBindings>
+                    <KeyBinding Key="Delete"
+                                Command="{Binding DataContext.DeleteMaterialCommand, ElementName=MaterialsGrid}"
+                                CommandParameter="{Binding SelectedItem, ElementName=MaterialsGrid}" />
+                </DataGrid.InputBindings>
+                
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <!-- put the VM onto the row itself -->
+                        <Setter Property="Tag"
+                                Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <!-- row item is DataContext -->
+                                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem Header="Edit"
+                                              Command="{Binding PlacementTarget.Tag.EditMaterialCommand,
+                                        RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                              CommandParameter="{Binding}" />
+                                    <Separator />
+                                    <MenuItem Header="Delete"
+                                              Command="{Binding PlacementTarget.Tag.DeleteMaterialCommand,
+                                        RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                              CommandParameter="{Binding}" />
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.RowStyle>
                 <DataGrid.Columns>
+                    
                     <DataGridTextColumn Header="S/N"
                                         Binding="{Binding SerialNumber}"
                                         Width="60" >

@@ -30,7 +30,10 @@ namespace ADLMRateGen.Services
             public string description { get; set; } = "";
             public string unit { get; set; } = "";
             public decimal price { get; set; }
+            public string? category { get; set; }   // NEW
         }
+        
+        private record RateRow(int sn, string description, string unit, decimal price, string? category);
 
         private sealed class LibraryPayload
         {
@@ -46,19 +49,26 @@ namespace ADLMRateGen.Services
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
-        // Convenience DTO used for server payloads
-        private record RateRow(int sn, string description, string unit, decimal price);
-
         private UserLibrarySync() { }
 
-        public IReadOnlyList<(int sn, string description, string unit, decimal price)> MyMaterials
+        public IReadOnlyList<(int sn, string description, string unit, decimal price, string? category)> MyMaterials
         {
-            get { lock (_gate) return _myMaterials.Select(r => (r.sn, r.description, r.unit, r.price)).ToList(); }
+            get { lock (_gate) return _myMaterials.Select(r => (r.sn, r.description, r.unit, r.price, r.category)).ToList(); }
         }
-        public IReadOnlyList<(int sn, string description, string unit, decimal price)> MyLabour
+        public IReadOnlyList<(int sn, string description, string unit, decimal price, string? category)> MyLabour
         {
-            get { lock (_gate) return _myLabour.Select(r => (r.sn, r.description, r.unit, r.price)).ToList(); }
+            get { lock (_gate) return _myLabour.Select(r => (r.sn, r.description, r.unit, r.price, r.category)).ToList(); }
         }
+
+
+        //public IReadOnlyList<(int sn, string description, string unit, decimal price)> MyMaterials
+        //{
+        //    get { lock (_gate) return _myMaterials.Select(r => (r.sn, r.description, r.unit, r.price)).ToList(); }
+        //}
+        //public IReadOnlyList<(int sn, string description, string unit, decimal price)> MyLabour
+        //{
+        //    get { lock (_gate) return _myLabour.Select(r => (r.sn, r.description, r.unit, r.price)).ToList(); }
+        //}
 
         /// <summary>Load current user library from server (best-effort).</summary>
         public async Task LoadAsync()
@@ -82,7 +92,8 @@ namespace ADLMRateGen.Services
                             el.GetProperty("sn").GetInt32(),
                             el.GetProperty("description").GetString() ?? "",
                             el.GetProperty("unit").GetString() ?? "",
-                            el.GetProperty("price").GetDecimal()
+                            el.GetProperty("price").GetDecimal(),
+                            el.TryGetProperty("category", out var c) ? (c.GetString() ?? "") : null
                         ));
                     }
                 }
@@ -96,7 +107,8 @@ namespace ADLMRateGen.Services
                             el.GetProperty("sn").GetInt32(),
                             el.GetProperty("description").GetString() ?? "",
                             el.GetProperty("unit").GetString() ?? "",
-                            el.GetProperty("price").GetDecimal()
+                            el.GetProperty("price").GetDecimal(),
+                            el.TryGetProperty("category", out var c) ? (c.GetString() ?? "") : null
                         ));
                     }
                 }
@@ -123,7 +135,7 @@ namespace ADLMRateGen.Services
             lock (_gate)
             {
                 _myMaterials.RemoveAll(r => r.sn == m.SerialNumber); // de-dupe on S/N
-                _myMaterials.Add(new RateRow(m.SerialNumber, m.MaterialName ?? "", m.MaterialUnit ?? "", m.MaterialPrice));
+                _myMaterials.Add(new RateRow(m.SerialNumber, m.MaterialName ?? "", m.MaterialUnit ?? "", m.MaterialPrice, string.IsNullOrWhiteSpace(m.MaterialCategory) ? null : m.MaterialCategory));
             }
             await PushAsync();
         }
@@ -133,7 +145,7 @@ namespace ADLMRateGen.Services
             lock (_gate)
             {
                 _myLabour.RemoveAll(r => r.sn == l.SerialNumber);
-                _myLabour.Add(new RateRow(l.SerialNumber, l.LabourName ?? "", l.LabourUnit ?? "", l.LabourPrice));
+                _myLabour.Add(new RateRow(l.SerialNumber, l.LabourName ?? "", l.LabourUnit ?? "", l.LabourPrice, string.IsNullOrWhiteSpace(l.LabourCategory) ? null : l.LabourCategory));
             }
             await PushAsync();
         }
@@ -149,9 +161,11 @@ namespace ADLMRateGen.Services
 
                 var desc = m.MaterialName ?? existing?.description ?? "";
                 var unit = m.MaterialUnit ?? existing?.unit ?? "";
+                var cat = !string.IsNullOrWhiteSpace(m.MaterialCategory) ? m.MaterialCategory : existing?.category;
+
 
                 _myMaterials.RemoveAll(x => x.sn == m.SerialNumber);
-                _myMaterials.Add(new RateRow(m.SerialNumber, desc, unit, m.MaterialPrice));
+                _myMaterials.Add(new RateRow(m.SerialNumber, desc, unit, m.MaterialPrice, cat));
             }
             await PushAsync();
         }
@@ -165,12 +179,16 @@ namespace ADLMRateGen.Services
 
                 var desc = l.LabourName ?? existing?.description ?? "";
                 var unit = l.LabourUnit ?? existing?.unit ?? "";
+                var cat = !string.IsNullOrWhiteSpace(l.LabourCategory) ? l.LabourCategory : existing?.category;
+
 
                 _myLabour.RemoveAll(x => x.sn == l.SerialNumber);
-                _myLabour.Add(new RateRow(l.SerialNumber, desc, unit, l.LabourPrice));
+                _myLabour.Add(new RateRow(l.SerialNumber, desc, unit, l.LabourPrice, cat));
             }
             await PushAsync();
         }
+
+
 
         //private async Task PushAsync()
         //{
@@ -229,8 +247,8 @@ namespace ADLMRateGen.Services
                 var payload = new LibraryPayload
                 {
                     baseVersion = ver > 0 ? ver : (int?)null,   // omit on first push
-                    materials = mats.Select(r => new RateItemDto { sn = r.sn, description = r.description, unit = r.unit, price = r.price }).ToArray(),
-                    labour    = labs.Select(r => new RateItemDto { sn = r.sn, description = r.description, unit = r.unit, price = r.price }).ToArray()
+                    materials = mats.Select(r => new RateItemDto { sn = r.sn, description = r.description, unit = r.unit, price = r.price, category = r.category }).ToArray(),
+                    labour    = labs.Select(r => new RateItemDto { sn = r.sn, description = r.description, unit = r.unit, price = r.price, category = r.category }).ToArray()
                 };
 
                 using var doc = await auth.PutJsonAsync("/rategen/library", payload);
@@ -257,6 +275,42 @@ namespace ADLMRateGen.Services
                 // best-effort: will retry on next change/app run
             }
         }
+
+        
+        public async Task DeleteMaterialAsync(int sn, string? name = null)
+        {
+            lock (_gate)
+            {
+                // delete by sn OR description fallback (in case local renumbering happened)
+                _myMaterials.RemoveAll(r => r.sn == sn ||
+                    (!string.IsNullOrWhiteSpace(name) &&
+                     r.description.Equals(name, StringComparison.OrdinalIgnoreCase)));
+
+                CompactSerials(_myMaterials);
+            }
+            await PushAsync();
+        }
+
+        public async Task DeleteLabourAsync(int sn, string? name = null)
+        {
+            lock (_gate)
+            {
+                _myLabour.RemoveAll(r => r.sn == sn ||
+                    (!string.IsNullOrWhiteSpace(name) &&
+                     r.description.Equals(name, StringComparison.OrdinalIgnoreCase)));
+
+                CompactSerials(_myLabour);
+            }
+            await PushAsync();
+        }
+
+        private static void CompactSerials(List<RateRow> rows)
+        {
+            int next = 1;
+            foreach (var r in rows.OrderBy(r => r.sn).ThenBy(r => r.description, StringComparer.OrdinalIgnoreCase).ToList())
+                rows[rows.IndexOf(r)] = r with { sn = next++ };
+        }
+
 
     }
 }

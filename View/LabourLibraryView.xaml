@@ -82,9 +82,41 @@
             </Border>
 
             <!-- ─── DataGrid ─────────────────────────── -->
-            <DataGrid Grid.Row="1"
+            <DataGrid x:Name="LabourGrid"
+                      Grid.Row="1"
                       ItemsSource="{Binding LabourCollectionView}"
-                      Style="{StaticResource DataGridStyle}">
+                      Style="{StaticResource DataGridStyle}"
+                      Tag="{Binding}">
+                <DataGrid.InputBindings>
+                    <KeyBinding Key="Delete"
+                                Command="{Binding DataContext.DeleteLabourCommand, ElementName=LabourGrid}"
+                                CommandParameter="{Binding SelectedItem, ElementName=LabourGrid}" />
+                </DataGrid.InputBindings>
+                
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <!-- put the VM onto the row itself -->
+                        <Setter Property="Tag"
+                                Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <!-- row item is DataContext -->
+                                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem Header="Edit"
+                                              Command="{Binding PlacementTarget.Tag.EditLabourCommand,
+                                        RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                              CommandParameter="{Binding}" />
+                                    <Separator />
+                                    <MenuItem Header="Delete"
+                                              Command="{Binding PlacementTarget.Tag.DeleteLabourCommand,
+                                        RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                              CommandParameter="{Binding}" />
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.RowStyle>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="S/N"
                                         Binding="{Binding SerialNumber}"

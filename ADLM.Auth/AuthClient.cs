@@ -117,8 +117,14 @@ namespace ADLMRateGen.ADLM.Auth
 
         public void Clear() => _store.Clear();
 
+        //private static string NormalizeDomain(string? d, string fallbackHost)
+        //    => string.IsNullOrWhiteSpace(d) ? fallbackHost : d.TrimStart('.');
+
+        // Keep the domain EXACTLY as set by the server
         private static string NormalizeDomain(string? d, string fallbackHost)
-            => string.IsNullOrWhiteSpace(d) ? fallbackHost : d.TrimStart('.');
+            => string.IsNullOrWhiteSpace(d) ? fallbackHost : d;
+
+
 
         private static string FixBaseUrl(string u) => u.EndsWith("/") ? u : (u + "/");
     }

@@ -14,7 +14,7 @@ namespace ADLMRateGen.Services
             {
                 BaseUrl = "https://adlmweb.onrender.com",
                 ProductKey = "rategen",
-                DeviceFingerprintProvider = Helpers.DeviceFingerprint.Generate,
+                DeviceFingerprintProvider = DeviceFingerprint.Generate,
                 TimeoutMs = 90000
             });
         }

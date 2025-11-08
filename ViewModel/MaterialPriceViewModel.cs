@@ -117,19 +117,20 @@ namespace ADLMRateGen.ViewModel
 
 
 
-		/* ───────── update price only ───────── */
-		private void UpdateMaterial()
-		{
-			if (EditingMaterial == null) return;
+        /* ───────── update price only ───────── */
+        private void UpdateMaterial()
+        {
+            if (EditingMaterial == null) return;
+            EditingMaterial.MaterialPrice = MaterialPrice;
+            if (!string.IsNullOrWhiteSpace(NewMaterialCategory))
+                EditingMaterial.MaterialCategory = NewMaterialCategory; // NEW (optional)
+            MaterialSaved?.Invoke(EditingMaterial);
+            ClearInputs();
+            EditingMaterial = null;
+        }
 
-			EditingMaterial.MaterialPrice = MaterialPrice;            // price change only
-			MaterialSaved?.Invoke(EditingMaterial);
 
-			ClearInputs();
-			EditingMaterial = null;
-		}
-
-		private void ClearInputs()
+        private void ClearInputs()
 		{
 			MaterialName = string.Empty;
 			MaterialUnit = string.Empty;

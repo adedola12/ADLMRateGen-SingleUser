@@ -28,6 +28,8 @@ namespace ADLMRateGen.ADLM.Auth
                 sb.Append(mac);
                 sb.Append(Environment.UserName ?? "");
 
+
+
                 using (var sha = SHA256.Create())
                 {
                     var bytes = Encoding.UTF8.GetBytes(sb.ToString());

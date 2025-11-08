@@ -421,8 +421,8 @@
 
                         <StackPanel Margin="0,40">
                             <Button Style="{DynamicResource SidebarSubButton}"
-                                    Command="{Binding ExportBillCsvCommand}"
-                                    Margin="0,4">
+                                    Margin="0,4" >
+                                    <!--Command="{Binding ExportBillCsvCommand}"-->
                                 <StackPanel Orientation="Horizontal"
                                             VerticalAlignment="Center">
                                     <fa:IconBlock Icon="FileCsv"
@@ -431,7 +431,7 @@
                                                   Foreground="{DynamicResource Blue900Brush}" />
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
-                                    <TextBlock Text="Export to Bill (CSV)"
+                                    <TextBlock Text="To CM App"
                                                Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>

@@ -143,14 +143,44 @@ namespace ADLMRateGen.ViewModel
                 EditLabourRequested?.Invoke(labour);
         }
 
-        private void DeleteLabour(object parameter)
+        private async void DeleteLabour(object parameter)
         {
-            if (parameter is LabourModel labour)
+            if (parameter is not LabourModel labour) return;
+
+            if (!ADLMRateGen.Services.UserRowChecker.IsUserLabour(labour.SerialNumber, labour.LabourName ?? ""))
             {
-                LabourLibrary.Remove(labour);
-                Persist();
+                MessageBox.Show("Only your own added labour/plant items can be deleted.\nMaster items cannot be removed.",
+                    "Not allowed", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
             }
+
+            int uses = ADLMRateGen.ViewModel.CustomRate.CustomRateUsage.CountLabourUsage(labour.LabourName ?? "");
+            if (uses > 0)
+            {
+                var r = MessageBox.Show(
+                    $"{uses} custom rate item(s) use \"{labour.LabourName}\".\n" +
+                    "If you proceed, they will be removed from those custom rates.\n\nProceed?",
+                    "Used in Custom Rates", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (r != MessageBoxResult.Yes) return;
+
+                ADLMRateGen.ViewModel.CustomRate.CustomRateUsage.RemoveLabourEverywhere(labour.LabourName ?? "");
+            }
+
+            LabourLibrary.Remove(labour);
+            ReassignSerialNumbers();
+            _ds.SaveLabours(LabourLibrary);
+            LabourLibraryService.Initialize(_ds);
+            LibraryChanged?.Invoke();
+            ApplyFilter();
+
+            // user feedback now
+            MessageBox.Show("Labour item deleted successfully.", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
+
+
+            _ = UserLibrarySync.Instance.DeleteLabourAsync(labour.SerialNumber, labour.LabourName);
         }
+
 
         private void ReassignSerialNumbers()
         {
@@ -158,10 +188,8 @@ namespace ADLMRateGen.ViewModel
                 LabourLibrary[i].SerialNumber = i + 1;
         }
 
-
         public ObservableCollection<LabourModel> Labours { get; } = new();
 
-        /* ───────── CRUD helpers ───────── */
         public async void AddOrUpdateLabour(LabourModel lab)
         {
             var existing = LabourLibrary.FirstOrDefault(l => l.SerialNumber == lab.SerialNumber);
@@ -185,15 +213,12 @@ namespace ADLMRateGen.ViewModel
             }
         }
 
-
         private void Persist()
         {
             _ds.SaveLabours(LabourLibrary);
             LabourLibraryService.Initialize(_ds);  // refresh service cache
             LibraryChanged?.Invoke();              // 🔔 notifies RateEntryItem
         }
-
-
 
         private async void UpdatePricesFromMongo()
         {
@@ -208,6 +233,14 @@ namespace ADLMRateGen.ViewModel
 
             try
             {
+
+                if (!NetChecks.IsOnline())
+                {
+                    MessageBox.Show("You appear to be offline. Connect to the Internet to update prices.",
+                        "No Internet", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 string zone = ADLMRateGen.Properties.AppSettings.Zone ?? "";
                 if (string.IsNullOrWhiteSpace(zone))
                 {
@@ -231,12 +264,23 @@ namespace ADLMRateGen.ViewModel
                 ReloadFromDisk();
                 MessageBox.Show($"Labour prices updated for zone '{zone}'.");
             }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show(
+                    "Your session has expired. Please sign in again, then retry the update.",
+                    "Session expired", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("401") || ex.Message.Contains("Not signed in"))
+            {
+                MessageBox.Show(
+                    "Not signed in. Please sign in again to update prices.",
+                    "Authentication required", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error updating labour prices: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
 
         public void ReloadFromDisk()
         {

@@ -204,18 +204,51 @@ namespace ADLMRateGen.ViewModel
             ApplyFilter();
         }
 
-        private void DeleteMaterial(object parameter)
+        private async void DeleteMaterial(object parameter)
         {
-            if (parameter is MaterialModel material)
+            if (parameter is not MaterialModel material) return;
+
+            // only user-added rows are deletable
+            if (!ADLMRateGen.Services.UserRowChecker.IsUserMaterial(material.SerialNumber, material.MaterialName ?? ""))
             {
-                MaterialLibrary.Remove(material);
-                ReassignSerialNumbers();
-                _ds.SaveMaterials(MaterialLibrary);
-                MaterialLibraryService.Initialize(_ds);
-                LibraryChanged?.Invoke();
-                ApplyFilter();
+                MessageBox.Show("Only your own added materials can be deleted.\nMaster items cannot be removed.",
+                    "Not allowed", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
             }
+
+            // warn if used in custom rates
+            int uses = ADLMRateGen.ViewModel.CustomRate.CustomRateUsage.CountMaterialUsage(material.MaterialName ?? "");
+            if (uses > 0)
+            {
+                var r = MessageBox.Show(
+                    $"{uses} custom rate item(s) use \"{material.MaterialName}\".\n" +
+                    "If you proceed, they will be removed from those custom rates.\n\nProceed?",
+                    "Used in Custom Rates", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (r != MessageBoxResult.Yes) return;
+
+                // remove from custom rates to keep things consistent
+                ADLMRateGen.ViewModel.CustomRate.CustomRateUsage.RemoveMaterialEverywhere(material.MaterialName ?? "");
+            }
+
+            // local remove
+            MaterialLibrary.Remove(material);
+
+            // keep local numbering tidy for UI
+            ReassignSerialNumbers();
+            _ds.SaveMaterials(MaterialLibrary);
+            MaterialLibraryService.Initialize(_ds);
+            LibraryChanged?.Invoke();
+            ApplyFilter();
+
+            // user feedback now
+            MessageBox.Show("Material deleted successfully.", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
+
+
+            // remove from server user library (best-effort)
+            _ = UserLibrarySync.Instance.DeleteMaterialAsync(material.SerialNumber, material.MaterialName);
         }
+
 
         private void EditMaterial(object parameter)
         {
@@ -279,6 +312,13 @@ namespace ADLMRateGen.ViewModel
 
             try
             {
+                if (!NetChecks.IsOnline())
+                {
+                    MessageBox.Show("You appear to be offline. Connect to the Internet to update prices.",
+                        "No Internet", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 string zone = ADLMRateGen.Properties.AppSettings.Zone ?? "";
                 if (string.IsNullOrWhiteSpace(zone))
                 {
@@ -299,6 +339,18 @@ namespace ADLMRateGen.ViewModel
 
                 ReloadFromDisk();
                 MessageBox.Show($"Material prices updated for zone '{zone}'.");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show(
+                    "Your session has expired. Please sign in again, then retry the update.",
+                    "Session expired", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("401") || ex.Message.Contains("Not signed in"))
+            {
+                MessageBox.Show(
+                    "Not signed in. Please sign in again to update prices.",
+                    "Authentication required", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             catch (Exception ex)
             {

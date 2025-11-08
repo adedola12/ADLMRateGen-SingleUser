@@ -12,6 +12,7 @@
     <Color x:Key="Color.White">#FFFFFFFF</Color>
     <Color x:Key="Color.Gray">#FFF0F0F0</Color>
     <Color x:Key="Color.RowAlt">#FFF5FAFF</Color>
+    <Color x:Key="Color.Red500">#EF4444</Color>
 
     <!-- 🎨 Brush Library -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Color.Primary}"/>
@@ -22,7 +23,8 @@
     <SolidColorBrush x:Key="HeaderBrush" Color="{StaticResource Color.Dark}"/>
     <SolidColorBrush x:Key="AltRowBrush" Color="{StaticResource Color.RowAlt}"/>
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource Color.White}"/>
-
+    <SolidColorBrush x:Key="Red500Brush"
+                     Color="{StaticResource Color.Red500}" />
     <!-- 📝 TextBox Style -->
     <Style TargetType="TextBox">
         <Setter Property="Background" Value="White"/>
