@@ -17,6 +17,8 @@ namespace ADLMRateGen.ViewModel
     public class LabourLibraryViewModel : ViewModelBase
     {
         private readonly LabourJsonDataSource _ds = new(AppPaths.LabourLibraryFile);
+        public event Action<bool, string?>? BusyChanged;
+
 
         public ObservableCollection<LabourModel> LabourLibrary { get; }
         public ICollectionView LabourCollectionView { get; }
@@ -220,6 +222,68 @@ namespace ADLMRateGen.ViewModel
             LibraryChanged?.Invoke();              // 🔔 notifies RateEntryItem
         }
 
+        //private async void UpdatePricesFromMongo()
+        //{
+        //    var result = MessageBox.Show(
+        //        "Override labour prices with ADLM server values for your current zone?",
+        //        "Confirm",
+        //        MessageBoxButton.YesNo,
+        //        MessageBoxImage.Question);
+
+        //    if (result != MessageBoxResult.Yes)
+        //        return;
+
+        //    try
+        //    {
+
+        //        if (!NetChecks.IsOnline())
+        //        {
+        //            MessageBox.Show("You appear to be offline. Connect to the Internet to update prices.",
+        //                "No Internet", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //            return;
+        //        }
+
+        //        string zone = ADLMRateGen.Properties.AppSettings.Zone ?? "";
+        //        if (string.IsNullOrWhiteSpace(zone))
+        //        {
+        //            MessageBox.Show("No user zone set. Please sign in again to sync your zone profile.");
+        //            return;
+        //        }
+
+
+
+        //        var auth = ADLMRateGen.Services.AuthProvider.Instance.Client;
+
+        //        // NEW
+        //        await UserLibrarySync.Instance.LoadAsync();
+
+        //        var masterDoc = await auth.GetJsonAsync($"/rategen/master?zone={Uri.EscapeDataString(zone)}");
+        //        var root = masterDoc.RootElement;
+
+        //        if (root.TryGetProperty("labour", out var labs))
+        //            ADLMRateGen.Services.DataSourceCloudSync.SaveLaboursFromDto(labs);
+
+        //        ReloadFromDisk();
+        //        MessageBox.Show($"Labour prices updated for zone '{zone}'.");
+        //    }
+        //    catch (UnauthorizedAccessException)
+        //    {
+        //        MessageBox.Show(
+        //            "Your session has expired. Please sign in again, then retry the update.",
+        //            "Session expired", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //    catch (InvalidOperationException ex) when (ex.Message.StartsWith("401") || ex.Message.Contains("Not signed in"))
+        //    {
+        //        MessageBox.Show(
+        //            "Not signed in. Please sign in again to update prices.",
+        //            "Authentication required", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Error updating labour prices: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
+
         private async void UpdatePricesFromMongo()
         {
             var result = MessageBox.Show(
@@ -231,28 +295,26 @@ namespace ADLMRateGen.ViewModel
             if (result != MessageBoxResult.Yes)
                 return;
 
+            if (!NetChecks.IsOnline())
+            {
+                MessageBox.Show("You appear to be offline. Connect to the Internet to update prices.",
+                    "No Internet", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string zone = ADLMRateGen.Properties.AppSettings.Zone ?? "";
+            if (string.IsNullOrWhiteSpace(zone))
+            {
+                MessageBox.Show("No user zone set. Please sign in again to sync your zone profile.");
+                return;
+            }
+
+            BusyChanged?.Invoke(true, "Updating labour prices from server…");
+
             try
             {
-
-                if (!NetChecks.IsOnline())
-                {
-                    MessageBox.Show("You appear to be offline. Connect to the Internet to update prices.",
-                        "No Internet", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                string zone = ADLMRateGen.Properties.AppSettings.Zone ?? "";
-                if (string.IsNullOrWhiteSpace(zone))
-                {
-                    MessageBox.Show("No user zone set. Please sign in again to sync your zone profile.");
-                    return;
-                }
-
-
-
                 var auth = ADLMRateGen.Services.AuthProvider.Instance.Client;
 
-                // NEW
                 await UserLibrarySync.Instance.LoadAsync();
 
                 var masterDoc = await auth.GetJsonAsync($"/rategen/master?zone={Uri.EscapeDataString(zone)}");
@@ -279,6 +341,10 @@ namespace ADLMRateGen.ViewModel
             catch (Exception ex)
             {
                 MessageBox.Show($"Error updating labour prices: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                BusyChanged?.Invoke(false, null);
             }
         }
 

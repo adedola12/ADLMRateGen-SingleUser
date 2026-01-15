@@ -101,6 +101,21 @@
     </Resource>
   </ItemGroup>
 
+	<ItemGroup>
+		<Content Include="data\*.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<SelfContained>true</SelfContained>
+		<PublishSingleFile>true</PublishSingleFile>
+		<PublishTrimmed>false</PublishTrimmed>
+	</PropertyGroup>
+
+
+
 	<!--<ItemGroup>
 		<Content Include="Defaults\materials.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -19,6 +19,8 @@ namespace ADLMRateGen.ViewModel
 
         // bound to the grid
         public ObservableCollection<MaterialModel> MaterialLibrary { get; } = new();
+        public event Action<bool, string?>? BusyChanged;
+
 
         public ICollectionView MaterialCollectionView { get; private set; }
 
@@ -299,6 +301,66 @@ namespace ADLMRateGen.ViewModel
             ApplyFilter();
         }
 
+        //private async void UpdatePricesFromMongo()
+        //{
+        //    var result = MessageBox.Show(
+        //        "Override prices with ADLM server values for your current zone?",
+        //        "Confirm",
+        //        MessageBoxButton.YesNo,
+        //        MessageBoxImage.Question);
+
+        //    if (result != MessageBoxResult.Yes)
+        //        return;
+
+        //    try
+        //    {
+        //        if (!NetChecks.IsOnline())
+        //        {
+        //            MessageBox.Show("You appear to be offline. Connect to the Internet to update prices.",
+        //                "No Internet", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //            return;
+        //        }
+
+        //        string zone = ADLMRateGen.Properties.AppSettings.Zone ?? "";
+        //        if (string.IsNullOrWhiteSpace(zone))
+        //        {
+        //            MessageBox.Show("No user zone set. Please sign in again to sync your zone profile.");
+        //            return;
+        //        }
+
+        //        var auth = ADLMRateGen.Services.AuthProvider.Instance.Client;
+
+        //        // NEW: refresh user rows from server in case another device added something
+        //        await UserLibrarySync.Instance.LoadAsync();
+
+        //        var masterDoc = await auth.GetJsonAsync($"/rategen/master?zone={Uri.EscapeDataString(zone)}");
+        //        var root = masterDoc.RootElement;
+
+        //        if (root.TryGetProperty("materials", out var mats))
+        //            ADLMRateGen.Services.DataSourceCloudSync.SaveMaterialsFromDto(mats);
+
+        //        ReloadFromDisk();
+        //        MessageBox.Show($"Material prices updated for zone '{zone}'.");
+        //    }
+        //    catch (UnauthorizedAccessException)
+        //    {
+        //        MessageBox.Show(
+        //            "Your session has expired. Please sign in again, then retry the update.",
+        //            "Session expired", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //    catch (InvalidOperationException ex) when (ex.Message.StartsWith("401") || ex.Message.Contains("Not signed in"))
+        //    {
+        //        MessageBox.Show(
+        //            "Not signed in. Please sign in again to update prices.",
+        //            "Authentication required", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Error updating materials: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
+
+
         private async void UpdatePricesFromMongo()
         {
             var result = MessageBox.Show(
@@ -310,25 +372,28 @@ namespace ADLMRateGen.ViewModel
             if (result != MessageBoxResult.Yes)
                 return;
 
+            // Validate first (don’t show loader if we’ll immediately exit)
+            if (!NetChecks.IsOnline())
+            {
+                MessageBox.Show("You appear to be offline. Connect to the Internet to update prices.",
+                    "No Internet", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string zone = ADLMRateGen.Properties.AppSettings.Zone ?? "";
+            if (string.IsNullOrWhiteSpace(zone))
+            {
+                MessageBox.Show("No user zone set. Please sign in again to sync your zone profile.");
+                return;
+            }
+
+            BusyChanged?.Invoke(true, "Updating material prices from server…");
+
             try
             {
-                if (!NetChecks.IsOnline())
-                {
-                    MessageBox.Show("You appear to be offline. Connect to the Internet to update prices.",
-                        "No Internet", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                string zone = ADLMRateGen.Properties.AppSettings.Zone ?? "";
-                if (string.IsNullOrWhiteSpace(zone))
-                {
-                    MessageBox.Show("No user zone set. Please sign in again to sync your zone profile.");
-                    return;
-                }
-
                 var auth = ADLMRateGen.Services.AuthProvider.Instance.Client;
 
-                // NEW: refresh user rows from server in case another device added something
+                // refresh user rows (another device could have added)
                 await UserLibrarySync.Instance.LoadAsync();
 
                 var masterDoc = await auth.GetJsonAsync($"/rategen/master?zone={Uri.EscapeDataString(zone)}");
@@ -356,7 +421,12 @@ namespace ADLMRateGen.ViewModel
             {
                 MessageBox.Show($"Error updating materials: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            finally
+            {
+                BusyChanged?.Invoke(false, null);
+            }
         }
+
 
         public void ReloadFromDisk()
         {

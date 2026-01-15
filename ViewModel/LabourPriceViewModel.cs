@@ -15,6 +15,8 @@ namespace ADLMRateGen.ViewModel
         private LabourModel? _editingLabour;
 
         public event Action<LabourModel> LabourSaved;
+        public event Action<bool, string?>? BusyChanged;
+
 
         public string LabourName
         {

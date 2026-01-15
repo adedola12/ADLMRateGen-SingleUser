@@ -82,6 +82,32 @@ namespace ADLMRateGen.ViewModel
         /* used directly by the banner if you prefer */
         public string CurrentUsername => _currentUser?.Username ?? string.Empty;
 
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set { _isBusy = value; RaisePropertyChanged(); }
+        }
+
+        private string _busyMessage = "Loading…";
+        public string BusyMessage
+        {
+            get => _busyMessage;
+            set { _busyMessage = value; RaisePropertyChanged(); }
+        }
+
+        private void SetBusy(bool isBusy, string? message = null)
+        {
+            // ensure UI thread
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsBusy = isBusy;
+                if (!string.IsNullOrWhiteSpace(message))
+                    BusyMessage = message;
+            });
+        }
+
+
         /* ───────── login state ───────── */
         private bool _isLoggedIn;
         public bool IsLoggedIn
@@ -337,6 +363,10 @@ namespace ADLMRateGen.ViewModel
             LabourLibraryViewModel.LibraryChanged   += () => _index.Rebuild(this);
             CustomRateListViewModel.LibraryChanged  += () => _index.Rebuild(this);
 
+            // ✅ listen for busy signals from library VMs (server sync loader)
+            libraryVM.BusyChanged += (busy, msg) => SetBusy(busy, msg);
+            labourLibVM.BusyChanged += (busy, msg) => SetBusy(busy, msg);
+
             /* wire events (material / labour edit-flow etc.) */
             MaterialPriceViewModel.MaterialSaved += m => libraryVM.AddOrUpdateMaterial(m);
             libraryVM.EditMaterialRequested += OnEditMaterialRequested;
@@ -415,16 +445,18 @@ namespace ADLMRateGen.ViewModel
 
         private void OnZonePricesApplied(string zone)
         {
-            // Ensure this runs on the UI thread
+            SetBusy(true, $"Updating prices for {zone.Replace('_', ' ')}…");
+
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 MaterialLibraryViewModel.ReloadFromDisk();
                 LabourLibraryViewModel.ReloadFromDisk();
-
-                // optionally show a toast/notification
                 AddNotification($"Prices updated for {zone.Replace('_', ' ')}");
             });
+
+            SetBusy(false);
         }
+
 
 
         private void AddNotification(string msg)
