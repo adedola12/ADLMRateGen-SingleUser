@@ -25,8 +25,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
 		private SortState _currentSort = SortState.None;  // cycles in “Sort by ⌄”
 
 		private enum SortState { None, Overhead, TotalCost }
+        private const string SectionKey = SectionKeys.Roofing;
+        // ✅ Roofing section key
+        private readonly ComputeItemEngine _computeEngine;
 
-		public double OverheadPercent
+        public double OverheadPercent
         {
             get => _overheadPercent;
             set
@@ -94,6 +97,9 @@ namespace ADLMRateGen.ViewModel.RoofWork
             matLib.LibraryChanged += OnLibraryChange;
             labourLib.LibraryChanged += OnLibraryChange;
 
+            _computeEngine = new ComputeItemEngine(GetMaterialPrice, GetLabourRate);
+            _ = LoadComputeCatalogForSectionAsync();
+
             BuildRoofworkItem();
 
             RoofworkCollectionView = CollectionViewSource.GetDefaultView(RoofWorkItems);
@@ -111,10 +117,37 @@ namespace ADLMRateGen.ViewModel.RoofWork
 				if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
 					RecomputeAll();                 // already clears & rebuilds everything
 			};
-		}
 
-		#region Function Method
-		private void ShowDetails(object o)
+
+        }
+
+        private async Task LoadComputeCatalogForSectionAsync()
+        {
+            try
+            {
+                // Try server-side section filter
+                var ok = await ComputeCatalogStore.RefreshFromApiAsync(SectionKey);
+
+                // 🔁 Fallback: if API returns none for this section key, try without section filter
+                // (only do this if your backend section naming is inconsistent)
+                if (ok && ComputeCatalogStore.LastApiItemCount == 0)
+                {
+                    await ComputeCatalogStore.RefreshFromApiAsync(); // fetch all
+                }
+
+                // Rebuild to append whatever is now in ComputeCatalogStore.Items
+                RecomputeAll();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Compute API load failed: {ex}");
+                // still show cached disk items already loaded
+            }
+        }
+
+
+        #region Function Method
+        private void ShowDetails(object o)
 		{
 			if(o is RoofWorkItem item)
 			{
@@ -226,11 +259,98 @@ namespace ADLMRateGen.ViewModel.RoofWork
 			{
 				RoofWorkItems.Add(compute());
 			}
-		}
+
+			AppendApiComputeItems();
+
+        }
+
+        private void AppendApiComputeItems()
+        {
+            if (_computeEngine == null) return;
+            var defs = ComputeCatalogStore.Items;
+            if (defs == null || defs.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] No items loaded for section '{SectionKey}'.");
+                return;
+            }
+
+            int appended = 0;
+            int nextNo = RoofWorkItems.Count + 1;
+
+            foreach (var def in defs)
+            {
+                if (def == null || !def.enabled) continue;
+
+                var key = SectionNormalizer.ToSectionKey(def.section);
+                if (key != SectionKey) continue;
+
+                try
+                {
+                    var computed = _computeEngine.Compute(def);
+
+                    var net = (double)computed.NetCost;
+                    var ohp = ApplyOHP(net);
+
+                    var breakdown = new ObservableCollection<RoofWorkBreakdownLine>();
+
+                    foreach (var l in computed.Lines)
+                    {
+                        breakdown.Add(new RoofWorkBreakdownLine
+                        {
+                            ComponentName = $"{l.Kind}: {l.Name}",
+                            Quantity = (double)l.Qty,
+                            Unit = string.IsNullOrWhiteSpace(l.Unit) ? "" : l.Unit,
+                            UnitPrice = (double)l.UnitPrice,
+                            TotalPrice = (double)l.Total
+                        });
+                    }
+
+                    if (computed.PoPercent > 0)
+                    {
+                        breakdown.Add(new RoofWorkBreakdownLine
+                        {
+                            ComponentName = $"Compute PO/Uplift ({computed.PoPercent}%)",
+                            Quantity = (double)computed.PoPercent,
+                            Unit = "%",
+                            UnitPrice = 0,
+                            TotalPrice = (double)computed.PoAmount
+                        });
+                    }
+
+                    if (computed.Warnings.Count > 0)
+                    {
+                        breakdown.Add(new RoofWorkBreakdownLine { ComponentName = "⚠ Warnings", TotalPrice = 0 });
+                        foreach (var w in computed.Warnings)
+                            breakdown.Add(new RoofWorkBreakdownLine { ComponentName = $"- {w}", TotalPrice = 0 });
+                    }
+
+                    RoofWorkItems.Add(new RoofWorkItem
+                    {
+                        ItemNo = nextNo++,
+                        Description = def.name,
+                        Unit = string.IsNullOrWhiteSpace(def.outputUnit) ? "m2" : def.outputUnit,
+                        NetCost = Math.Round(net, 2),
+                        OverheadValue = Math.Round(ohp.overheadVal, 0),
+                        ProfitValue = Math.Round(ohp.profitVal, 0),
+                        TotalCost = Math.Round(ohp.total, 0),
+                        RoofWorkBreakdownLines = breakdown
+                    });
+
+                    appended++;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Skip '{def?.name}': {ex.Message}");
+                    continue;
+                }
 
 
+            }
 
-		private void OnLibraryChange()
+            System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Appended {appended} item(s) for section '{SectionKey}'.");
+        }
+
+        private void OnLibraryChange()
 		{
 			RecomputeAll();
 		}

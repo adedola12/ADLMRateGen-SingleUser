@@ -1,15 +1,16 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
-using ADLMRateGen.Command;
+﻿using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
 using ADLMRateGen.View;
 using ADLMRateGen.ViewModel.CustomRate;
 using ADLMRateGen.ViewModel.Groundwork;
 using ADLMRateGen.ViewModel.Painting;
+using ADLMRateGen.ViewModel.RoofWork;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace ADLMRateGen.ViewModel.SteelWork
 {
@@ -25,7 +26,11 @@ namespace ADLMRateGen.ViewModel.SteelWork
 		private bool _isNetCostFilterOn = false;          // toggled by “Filter ⌄”
 		private SortState _currentSort = SortState.None;  // cycles in “Sort by ⌄”
 
-		private enum SortState { None, Overhead, TotalCost }
+        private const string SectionKey = SectionKeys.Steelwork;
+        // ✅ Steel section key
+        private readonly ComputeItemEngine _computeEngine;
+
+        private enum SortState { None, Overhead, TotalCost }
 
 
 
@@ -97,7 +102,11 @@ namespace ADLMRateGen.ViewModel.SteelWork
 			matLib.LibraryChanged += OnLibraryChange;
 			labourLib.LibraryChanged += OnLibraryChange;
 
-			BuildSteelworkItem();
+            _computeEngine = new ComputeItemEngine(GetMaterialPrice, GetLabourRate);
+            _ = LoadComputeCatalogForSectionAsync();
+
+
+            BuildSteelworkItem();
 
 			SteelWorkCollectionView = CollectionViewSource.GetDefaultView(SteelWorkItems);
 			SteelWorkCollectionView.Filter = FilterSteelworkItem;
@@ -116,9 +125,33 @@ namespace ADLMRateGen.ViewModel.SteelWork
 			};
 		}
 
+        private async Task LoadComputeCatalogForSectionAsync()
+        {
+            try
+            {
+                // Try server-side section filter
+                var ok = await ComputeCatalogStore.RefreshFromApiAsync(SectionKey);
 
-		#region Functions
-		private void OnLibraryChange()
+                // 🔁 Fallback: if API returns none for this section key, try without section filter
+                // (only do this if your backend section naming is inconsistent)
+                if (ok && ComputeCatalogStore.LastApiItemCount == 0)
+                {
+                    await ComputeCatalogStore.RefreshFromApiAsync(); // fetch all
+                }
+
+                // Rebuild to append whatever is now in ComputeCatalogStore.Items
+                RecomputeAll();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Compute API load failed: {ex}");
+                // still show cached disk items already loaded
+            }
+        }
+
+
+        #region Functions
+        private void OnLibraryChange()
 		{
 			RecomputeAll();
 		}
@@ -253,9 +286,98 @@ namespace ADLMRateGen.ViewModel.SteelWork
 			{
 				SteelWorkItems.Add(compute());
 			}
-		}
 
-		public SteelworkItem ComputeItem1()
+			AppendApiComputeItems();
+
+        }
+
+        private void AppendApiComputeItems()
+        {
+            if (_computeEngine == null) return;
+            var defs = ComputeCatalogStore.Items;
+            if (defs == null || defs.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] No items loaded for section '{SectionKey}'.");
+                return;
+            }
+
+            int appended = 0;
+            int nextNo = SteelWorkItems.Count + 1;
+
+            foreach (var def in defs)
+            {
+                if (def == null || !def.enabled) continue;
+
+                var key = SectionNormalizer.ToSectionKey(def.section);
+                if (key != SectionKey) continue;
+
+                try
+                {
+                    var computed = _computeEngine.Compute(def);
+
+                    var net = (double)computed.NetCost;
+                    var ohp = ApplyOHP(net);
+
+                    var breakdown = new ObservableCollection<SteelWorkBreakdownLine>();
+
+                    foreach (var l in computed.Lines)
+                    {
+                        breakdown.Add(new SteelWorkBreakdownLine
+                        {
+                            ComponentName = $"{l.Kind}: {l.Name}",
+                            Quantity = (double)l.Qty,
+                            Unit = string.IsNullOrWhiteSpace(l.Unit) ? "" : l.Unit,
+                            UnitPrice = (double)l.UnitPrice,
+                            TotalPrice = (double)l.Total
+                        });
+                    }
+
+                    if (computed.PoPercent > 0)
+                    {
+                        breakdown.Add(new SteelWorkBreakdownLine
+                        {
+                            ComponentName = $"Compute PO/Uplift ({computed.PoPercent}%)",
+                            Quantity = (double)computed.PoPercent,
+                            Unit = "%",
+                            UnitPrice = 0,
+                            TotalPrice = (double)computed.PoAmount
+                        });
+                    }
+
+                    if (computed.Warnings.Count > 0)
+                    {
+                        breakdown.Add(new SteelWorkBreakdownLine { ComponentName = "⚠ Warnings", TotalPrice = 0 });
+                        foreach (var w in computed.Warnings)
+                            breakdown.Add(new SteelWorkBreakdownLine { ComponentName = $"- {w}", TotalPrice = 0 });
+                    }
+
+                    SteelWorkItems.Add(new SteelworkItem
+                    {
+                        ItemNo = nextNo++,
+                        Description = def.name,
+                        Unit = string.IsNullOrWhiteSpace(def.outputUnit) ? "m2" : def.outputUnit,
+                        NetCost = Math.Round(net, 2),
+                        OverheadValue = Math.Round(ohp.overheadVal, 0),
+                        ProfitValue = Math.Round(ohp.profitVal, 0),
+                        TotalCost = Math.Round(ohp.total, 0),
+                        SteelWorkBreakdownLines = breakdown
+                    });
+
+                    appended++;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Skip '{def?.name}': {ex.Message}");
+                    continue;
+                }
+
+
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Appended {appended} item(s) for section '{SectionKey}'.");
+        }
+
+        public SteelworkItem ComputeItem1()
 		{
 			double brushCost = GetLabourRate("Power Brush");
 			double brushQty = 1;

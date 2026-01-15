@@ -57,6 +57,9 @@ namespace ADLMRateGen
                 MaterialLibraryService.Initialize(new MaterialJsonDataSource(AppPaths.MaterialLibraryFile));
                 LabourLibraryService.Initialize(new LabourJsonDataSource(AppPaths.LabourLibraryFile));
 
+                ComputeCatalogStore.ReloadFromDisk();
+
+
                 Debug.WriteLine($"[PATH] Using materials: {AppPaths.MaterialLibraryFile}");
                 Debug.WriteLine($"[PATH] Using labour   : {AppPaths.LabourLibraryFile}");
 

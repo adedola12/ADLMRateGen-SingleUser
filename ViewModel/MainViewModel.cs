@@ -12,13 +12,19 @@ using ADLMRateGen.ViewModel.RoofWork;
 using ADLMRateGen.ViewModel.SteelWork;
 using ADLMRateGen.ViewModel.WindowAndDoor;
 using Microsoft.Win32;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -26,8 +32,17 @@ namespace ADLMRateGen.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
+        // ✅ Your deployed API host
+        private const string API_BASE_URL = "https://adlmweb.onrender.com";
+
+        // ✅ Correct compute endpoint (your server mounts compute router at /api/rates)
+        private const string COMPUTE_ITEMS_PATH = "/api/rates/compute-items";
+
         /* ───────── injected services ───────── */
         private readonly MongoDbService _mongoDbService;
+
+        /* ───────── rate sync ───────── */
+        private readonly RateCatalogSyncService _rateSync;
 
         /* ───────── current user / auth ───────── */
         private bool _hasPriceNotifications;
@@ -58,19 +73,17 @@ namespace ADLMRateGen.ViewModel
             set
             {
                 _currentUser = value;
-                RaisePropertyChanged();             // ↺ notifies <Run …>
+                RaisePropertyChanged();
                 RaisePropertyChanged(nameof(CurrentUsername));
 
-                // show Export only on first login of month and +20 days thereafter
                 if (_currentUser != null)
-                    IsExportVisible = ExportVisibilityService.ShouldShowOnThisLogin(System.DateTime.Now);
+                    IsExportVisible = ExportVisibilityService.ShouldShowOnThisLogin(DateTime.Now);
                 else
                     IsExportVisible = false;
             }
         }
 
-        public ObservableCollection<string> Notifications { get; }
-            = new ObservableCollection<string>();
+        public ObservableCollection<string> Notifications { get; } = new ObservableCollection<string>();
 
         private bool _isNotificationsOpen;
         public bool IsNotificationsOpen
@@ -79,7 +92,6 @@ namespace ADLMRateGen.ViewModel
             set { _isNotificationsOpen = value; RaisePropertyChanged(); }
         }
 
-        /* used directly by the banner if you prefer */
         public string CurrentUsername => _currentUser?.Username ?? string.Empty;
 
         private bool _isBusy;
@@ -98,15 +110,28 @@ namespace ADLMRateGen.ViewModel
 
         private void SetBusy(bool isBusy, string? message = null)
         {
-            // ensure UI thread
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            var app = Application.Current;
+            if (app?.Dispatcher == null)
             {
                 IsBusy = isBusy;
-                if (!string.IsNullOrWhiteSpace(message))
-                    BusyMessage = message;
-            });
-        }
+                if (!string.IsNullOrWhiteSpace(message)) BusyMessage = message;
+                return;
+            }
 
+            if (app.Dispatcher.CheckAccess())
+            {
+                IsBusy = isBusy;
+                if (!string.IsNullOrWhiteSpace(message)) BusyMessage = message;
+            }
+            else
+            {
+                app.Dispatcher.Invoke(() =>
+                {
+                    IsBusy = isBusy;
+                    if (!string.IsNullOrWhiteSpace(message)) BusyMessage = message;
+                });
+            }
+        }
 
         /* ───────── login state ───────── */
         private bool _isLoggedIn;
@@ -118,104 +143,48 @@ namespace ADLMRateGen.ViewModel
 
         /* ───────── sidebar “active” flags ───────── */
         private bool _isLibraryShellActive;
-        public bool IsLibraryShellActive
-        {
-            get => _isLibraryShellActive;
-            set { _isLibraryShellActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsLibraryShellActive { get => _isLibraryShellActive; set { _isLibraryShellActive = value; RaisePropertyChanged(); } }
 
         private bool _isMaterialInputActive;
-        public bool IsMaterialInputActive
-        {
-            get => _isMaterialInputActive;
-            set { _isMaterialInputActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsMaterialInputActive { get => _isMaterialInputActive; set { _isMaterialInputActive = value; RaisePropertyChanged(); } }
 
         private bool _isMaterialLibraryActive;
-        public bool IsMaterialLibraryActive
-        {
-            get => _isMaterialLibraryActive;
-            set { _isMaterialLibraryActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsMaterialLibraryActive { get => _isMaterialLibraryActive; set { _isMaterialLibraryActive = value; RaisePropertyChanged(); } }
 
         private bool _isLabourInputActive;
-        public bool IsLabourInputActive
-        {
-            get => _isLabourInputActive;
-            set { _isLabourInputActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsLabourInputActive { get => _isLabourInputActive; set { _isLabourInputActive = value; RaisePropertyChanged(); } }
 
         private bool _isLabourLibraryActive;
-        public bool IsLabourLibraryActive
-        {
-            get => _isLabourLibraryActive;
-            set { _isLabourLibraryActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsLabourLibraryActive { get => _isLabourLibraryActive; set { _isLabourLibraryActive = value; RaisePropertyChanged(); } }
 
         private bool _isGroundworkActive;
-        public bool IsGroundworkActive
-        {
-            get => _isGroundworkActive;
-            set { _isGroundworkActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsGroundworkActive { get => _isGroundworkActive; set { _isGroundworkActive = value; RaisePropertyChanged(); } }
 
         private bool _isConcreteViewActive;
-        public bool IsConcreteViewActive
-        {
-            get => _isConcreteViewActive;
-            set { _isConcreteViewActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsConcreteViewActive { get => _isConcreteViewActive; set { _isConcreteViewActive = value; RaisePropertyChanged(); } }
 
         private bool _isBlockworkActive;
-        public bool IsBlockworkActive
-        {
-            get => _isBlockworkActive;
-            set { _isBlockworkActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsBlockworkActive { get => _isBlockworkActive; set { _isBlockworkActive = value; RaisePropertyChanged(); } }
 
         private bool _isFinishesActive;
-        public bool IsFinishesActive
-        {
-            get => _isFinishesActive;
-            set { _isFinishesActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsFinishesActive { get => _isFinishesActive; set { _isFinishesActive = value; RaisePropertyChanged(); } }
 
         private bool _isRoofworkActive;
-        public bool IsRoofworkActive
-        {
-            get => _isRoofworkActive;
-            set { _isRoofworkActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsRoofworkActive { get => _isRoofworkActive; set { _isRoofworkActive = value; RaisePropertyChanged(); } }
 
         private bool _isWindowAndDoorActive;
-        public bool IsWindowAndDoorActive
-        {
-            get => _isWindowAndDoorActive;
-            set { _isWindowAndDoorActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsWindowAndDoorActive { get => _isWindowAndDoorActive; set { _isWindowAndDoorActive = value; RaisePropertyChanged(); } }
 
         private bool _isPaintingActive;
-        public bool IsPaintingActive
-        {
-            get => _isPaintingActive;
-            set { _isPaintingActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsPaintingActive { get => _isPaintingActive; set { _isPaintingActive = value; RaisePropertyChanged(); } }
 
         private bool _isSteelworkActive;
-        public bool IsSteelworkActive
-        {
-            get => _isSteelworkActive;
-            set { _isSteelworkActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsSteelworkActive { get => _isSteelworkActive; set { _isSteelworkActive = value; RaisePropertyChanged(); } }
 
         private bool _isCustomRateInputActive;
-        public bool IsCustomRateInputActive
-        {
-            get => _isCustomRateInputActive;
-            set { _isCustomRateInputActive = value; RaisePropertyChanged(); }
-        }
+        public bool IsCustomRateInputActive { get => _isCustomRateInputActive; set { _isCustomRateInputActive = value; RaisePropertyChanged(); } }
 
-        /* ───────── child view-models (public for binding) ───────── */
+        /* ───────── child view-models ───────── */
         public SignInViewModel SignInViewModel { get; }
         public MaterialPriceViewModel MaterialPriceViewModel { get; }
         public MaterialLibraryViewModel MaterialLibraryViewModel { get; }
@@ -245,7 +214,6 @@ namespace ADLMRateGen.ViewModel
             {
                 _selectedViewModel = value;
 
-                /* update all “active” flags */
                 IsLibraryShellActive = value == LibraryShellViewModel;
                 IsMaterialInputActive = value == MaterialPriceViewModel;
                 IsMaterialLibraryActive = value == MaterialLibraryViewModel;
@@ -265,7 +233,7 @@ namespace ADLMRateGen.ViewModel
             }
         }
 
-        /* ───────── commands exposed to XAML ───────── */
+        /* ───────── commands ───────── */
         public ICommand SelectedMaterialInputViewCommand { get; }
         public ICommand SelectedMaterialLibraryViewCommand { get; }
         public ICommand SelectedLabourInputViewCommand { get; }
@@ -284,15 +252,13 @@ namespace ADLMRateGen.ViewModel
         public ICommand LogoutCommand { get; }
         public ICommand OpenYoutubeCommand { get; }
         public ICommand HelpCommand { get; }
-        public ICommand RefreshPricesCommand { get; }
         public ICommand ShowNotificationCommand { get; }
         public ICommand ToggleNotificationsCommand { get; }
         public ICommand DismissNotificationCommand { get; }
         public ICommand ExportAllRatesCommand { get; }
         public ICommand ExportBillCsvCommand { get; }
+        public ICommand RunSanityCheckCommand { get; }
 
-
-        /* ───────── ctor ───────── */
         public MainViewModel(
             MaterialPriceViewModel priceVM,
             MaterialLibraryViewModel libraryVM,
@@ -312,13 +278,10 @@ namespace ADLMRateGen.ViewModel
             MongoDbService mongoDbService,
             SignInViewModel signInVM)
         {
-            /* store deps */
             _mongoDbService = mongoDbService;
 
-            Notifications = new ObservableCollection<string>();
-
-            _mongoDbService.MaterialPricesChanged += () => AddNotification("New material prices available");
-            _mongoDbService.LabourPricesChanged   += () => AddNotification("New labour prices available");
+            // ✅ Create rate sync service once
+            _rateSync = new RateCatalogSyncService(new HttpClient(), API_BASE_URL);
 
             ToggleNotificationsCommand = new RelayCommand(_ =>
             {
@@ -338,10 +301,8 @@ namespace ADLMRateGen.ViewModel
                 HasPriceNotifications = false;
             });
 
-            /* ---------- create empty index & search VM ---------- */
             GlobalSearch = new SearchBoxViewModel(_index);
 
-            /* assign child VMs */
             MaterialPriceViewModel = priceVM;
             MaterialLibraryViewModel = libraryVM;
             LabourPriceViewModel = labourVM;
@@ -359,15 +320,18 @@ namespace ADLMRateGen.ViewModel
             CustomRateEntryViewModel = customEntryVM;
             SignInViewModel = signInVM;
 
-            MaterialLibraryViewModel.LibraryChanged += () => _index.Rebuild(this);
-            LabourLibraryViewModel.LibraryChanged   += () => _index.Rebuild(this);
-            CustomRateListViewModel.LibraryChanged  += () => _index.Rebuild(this);
+            // ✅ notifications from local MongoDbService events
+            _mongoDbService.MaterialPricesChanged += () => AddNotification("New material prices available");
+            _mongoDbService.LabourPricesChanged += () => AddNotification("New labour prices available");
 
-            // ✅ listen for busy signals from library VMs (server sync loader)
+            // ✅ keep index updated when libraries change
+            MaterialLibraryViewModel.LibraryChanged += () => _index.Rebuild(this);
+            LabourLibraryViewModel.LibraryChanged += () => _index.Rebuild(this);
+            CustomRateListViewModel.LibraryChanged += () => _index.Rebuild(this);
+
             libraryVM.BusyChanged += (busy, msg) => SetBusy(busy, msg);
             labourLibVM.BusyChanged += (busy, msg) => SetBusy(busy, msg);
 
-            /* wire events (material / labour edit-flow etc.) */
             MaterialPriceViewModel.MaterialSaved += m => libraryVM.AddOrUpdateMaterial(m);
             libraryVM.EditMaterialRequested += OnEditMaterialRequested;
             labourVM.LabourSaved += l => labourLibVM.AddOrUpdateLabour(l);
@@ -375,100 +339,115 @@ namespace ADLMRateGen.ViewModel
 
             customListVM.OnViewRequested += rate => { customEntryVM.LoadRate(rate); };
 
-            // When SignIn succeeds, we get the authenticated user from SignInViewModel (which also did HW fingerprint checks)
             signInVM.LoginSucceeded += OnLoginSucceeded;
-
             signInVM.ZonePricesApplied += OnZonePricesApplied;
 
-
-            /* default screen */
             SelectedViewModel = SignInViewModel;
 
-            // Attempt local token auto-login on app start
+            // ✅ Configure compute store to the ACTUAL endpoint
+            ComputeCatalogStore.ConfigureApi(API_BASE_URL, COMPUTE_ITEMS_PATH);
+            ComputeCatalogStore.ReloadFromDisk(); // load cached first
+
+            // ✅ When rate catalog updates, reload libraries and rebuild index
+            _rateSync.CatalogUpdated += msg =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    AddNotification(msg);
+
+                    MaterialLibraryViewModel.ReloadFromDisk();
+                    LabourLibraryViewModel.ReloadFromDisk();
+                    ComputeCatalogStore.ReloadFromDisk();
+
+                    _index.Rebuild(this);
+                });
+            };
+
+            // ✅ auto-login
             if (TryAutoLogin(out var tokenUser) && tokenUser != null)
             {
                 IsLoggedIn = true;
                 CurrentUser = new UserModel
                 {
-                    Id       = tokenUser.Id,
-                    Email    = tokenUser.Email,
+                    Id = tokenUser.Id,
+                    Email = tokenUser.Email,
                     Username = !string.IsNullOrWhiteSpace(tokenUser.Username)
                         ? tokenUser.Username
                         : (tokenUser.Email?.Split('@')[0] ?? string.Empty)
                 };
 
-                // go straight to the library shell
                 SelectedViewModel = LibraryShellViewModel;
-
                 _ = UserLibrarySync.Instance.LoadAsync();
 
+                // ✅ optional: also check for updates on app start (auto-login path)
+                _ = TryCheckUpdatesAfterLoginAsync();
             }
 
-
-            /* command implementations */
-            SelectedMaterialInputViewCommand  = new RelayCommand(_ => SelectedViewModel = priceVM);
+            // navigation
+            SelectedMaterialInputViewCommand = new RelayCommand(_ => SelectedViewModel = priceVM);
             SelectedMaterialLibraryViewCommand = new RelayCommand(_ => SelectedViewModel = LibraryShellViewModel);
-            SelectedLibraryShellViewCommand    = new RelayCommand(_ => SelectedViewModel = LibraryShellViewModel);
+            SelectedLibraryShellViewCommand = new RelayCommand(_ => SelectedViewModel = LibraryShellViewModel);
+            SelectedLabourInputViewCommand = new RelayCommand(_ => SelectedViewModel = labourVM);
+            SelectedLabourLibraryViewCommand = new RelayCommand(_ => SelectedViewModel = labourLibVM);
+            SelectedGroundworkViewCommand = new RelayCommand(_ => SelectedViewModel = groundworkVM);
+            SelectedConcreteWorkViewCommand = new RelayCommand(_ => SelectedViewModel = concreteVM);
+            SelectedBlockworkViewCommand = new RelayCommand(_ => SelectedViewModel = blockworkVM);
+            SelectedFinishesViewCommand = new RelayCommand(_ => SelectedViewModel = finishesVM);
+            SelectedRoofworkViewCommand = new RelayCommand(_ => SelectedViewModel = roofVM);
+            SelectedWindowAndDoorViewCommand = new RelayCommand(_ => SelectedViewModel = winDoorVM);
+            SelectedPaintworkViewCommand = new RelayCommand(_ => SelectedViewModel = paintVM);
+            SelectedSteelworkViewCommand = new RelayCommand(_ => SelectedViewModel = steelVM);
+            SelectedCustomRateInputViewCommand = new RelayCommand(_ => SelectedViewModel = customListVM);
+            SelectedCustomRateViewCommand = new RelayCommand(_ => SelectedViewModel = customEntryVM);
 
-            SelectedLabourInputViewCommand    = new RelayCommand(_ => SelectedViewModel = labourVM);
-            SelectedLabourLibraryViewCommand  = new RelayCommand(_ => SelectedViewModel = labourLibVM);
-            SelectedGroundworkViewCommand     = new RelayCommand(_ => SelectedViewModel = groundworkVM);
-            SelectedConcreteWorkViewCommand   = new RelayCommand(_ => SelectedViewModel = concreteVM);
-            SelectedBlockworkViewCommand      = new RelayCommand(_ => SelectedViewModel = blockworkVM);
-            SelectedFinishesViewCommand       = new RelayCommand(_ => SelectedViewModel = finishesVM);
-            SelectedRoofworkViewCommand       = new RelayCommand(_ => SelectedViewModel = roofVM);
-            SelectedWindowAndDoorViewCommand  = new RelayCommand(_ => SelectedViewModel = winDoorVM);
-            SelectedPaintworkViewCommand      = new RelayCommand(_ => SelectedViewModel = paintVM);
-            SelectedSteelworkViewCommand      = new RelayCommand(_ => SelectedViewModel = steelVM);
-            SelectedCustomRateInputViewCommand= new RelayCommand(_ => SelectedViewModel = customListVM);
-            SelectedCustomRateViewCommand     = new RelayCommand(_ => SelectedViewModel = customEntryVM);
-
-            LogoutCommand       = new RelayCommand(_ => Logout());
-            OpenYoutubeCommand  = new RelayCommand(_ => OpenYoutube());
-            HelpCommand         = new RelayCommand(_ => SendHelpEmail());
+            LogoutCommand = new RelayCommand(_ => Logout());
+            OpenYoutubeCommand = new RelayCommand(_ => OpenYoutube());
+            HelpCommand = new RelayCommand(_ => SendHelpEmail());
             ExportAllRatesCommand = new RelayCommand(_ => ExportAllToExcel());
             ExportBillCsvCommand = new RelayCommand(_ => ExportBillToCsv());
 
+            RunSanityCheckCommand = new RelayCommand(async _ => await RunSanityCheckAsync());
 
+            // initial index
             _index.Rebuild(this);
 
-            /* whenever a library changes, rebuild */
-            GroundWorkViewModel.PropertyChanged   += (_, __) => _index.Rebuild(this);
-            ConcreteViewModel.PropertyChanged     += (_, __) => _index.Rebuild(this);
-            BlockworkViewModel.PropertyChanged    += (_, __) => _index.Rebuild(this);
-            FinishesViewModel.PropertyChanged     += (_, __) => _index.Rebuild(this);
-            RoofWorkViewModel.PropertyChanged     += (_, __) => _index.Rebuild(this);
-            WindowAndDoorViewModel.PropertyChanged+= (_, __) => _index.Rebuild(this);
-            PaintWorkViewModel.PropertyChanged    += (_, __) => _index.Rebuild(this);
-            SteelWorkViewModel.PropertyChanged    += (_, __) => _index.Rebuild(this);
+            // (optional) index rebuild when any section changes
+            GroundWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+            ConcreteViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+            BlockworkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+            FinishesViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+            RoofWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+            WindowAndDoorViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+            PaintWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+            SteelWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
         }
 
         private void OnZonePricesApplied(string zone)
         {
             SetBusy(true, $"Updating prices for {zone.Replace('_', ' ')}…");
 
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            Application.Current.Dispatcher.Invoke(() =>
             {
                 MaterialLibraryViewModel.ReloadFromDisk();
                 LabourLibraryViewModel.ReloadFromDisk();
+                ComputeCatalogStore.ReloadFromDisk();
                 AddNotification($"Prices updated for {zone.Replace('_', ' ')}");
             });
 
+            _index.Rebuild(this);
             SetBusy(false);
         }
-
-
 
         private void AddNotification(string msg)
         {
             Notifications.Insert(0, msg);
             while (Notifications.Count > 5)
                 Notifications.RemoveAt(Notifications.Count - 1);
+
             RaisePropertyChanged(nameof(Notifications));
             HasPriceNotifications = Notifications.Any();
         }
 
-        /* ───────── auto-login helper ───────── */
         private bool TryAutoLogin(out UserModel? user)
         {
             user = null;
@@ -477,7 +456,7 @@ namespace ADLMRateGen.ViewModel
             if (cfg == null || string.IsNullOrWhiteSpace(cfg.AuthToken))
                 return false;
 
-            if (cfg.AuthExpiry < System.DateTime.Now)
+            if (cfg.AuthExpiry < DateTime.Now)
                 return false;
 
             var authTok = new AuthTok();
@@ -489,61 +468,216 @@ namespace ADLMRateGen.ViewModel
             return true;
         }
 
-        /* ───────── edit helpers ───────── */
-        private void OnEditMaterialRequested(MaterialModel m)
-        {
-            //MaterialPriceViewModel.LoadForEdit(m);
-            //SelectedViewModel = MaterialPriceViewModel;
-        }
+        private void OnEditMaterialRequested(MaterialModel m) { }
+        private void OnEditLabourRequested(LabourModel l) { }
 
-        private void OnEditLabourRequested(LabourModel l)
-        {
-            //LabourPriceViewModel.LoadForEdit(l);
-            //SelectedViewModel = LabourPriceViewModel;
-        }
-
-        /* ───────── sign-in result ───────── */
-        private void OnLoginSucceeded(object? s, SignInViewModel.LoginEventArgs e)
+        private async void OnLoginSucceeded(object? s, SignInViewModel.LoginEventArgs e)
         {
             if (e.LoggedInUser == null) return;
 
-            // Ensure username is never empty
             string ensuredUsername = !string.IsNullOrWhiteSpace(e.LoggedInUser.Username)
                 ? e.LoggedInUser.Username
                 : (e.LoggedInUser.Email?.Split('@')[0] ?? string.Empty);
 
-            // Set CurrentUser now
             IsLoggedIn = true;
             CurrentUser = new UserModel
             {
-                Id       = e.LoggedInUser.Id,
-                Email    = e.LoggedInUser.Email,
+                Id = e.LoggedInUser.Id,
+                Email = e.LoggedInUser.Email,
                 Username = ensuredUsername
             };
 
-            // Persist an auth token (no need to immediately re-read/overwrite the user)
+            // keep your existing token storage logic
             var authTok = new AuthTok();
             ConfigManager.SaveConfig(new AppConfig
             {
-                AuthToken  = authTok.GenerateAuthToken(CurrentUser),
-                AuthExpiry = System.DateTime.Now.AddDays(15)
+                AuthToken = authTok.GenerateAuthToken(CurrentUser),
+                AuthExpiry = DateTime.Now.AddDays(15)
             });
 
             SelectedViewModel = LibraryShellViewModel;
 
+            // Load cached libraries immediately
             _ = UserLibrarySync.Instance.LoadAsync();
 
+            // Now do API update checks + compute refresh
+            await TryCheckUpdatesAfterLoginAsync();
         }
 
+        // ✅ This is the real “does it fetch rates + apply to library” flow
+        private async Task TryCheckUpdatesAfterLoginAsync()
+        {
+            try
+            {
+                var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
+                var zone = cfg.Zone ?? "Lagos";
+                var token = cfg.AuthToken;
+
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    AddNotification("⚠ Update check skipped: missing token.");
+                    return;
+                }
+
+                SetBusy(true, "Checking for latest library + compute updates…");
+
+                // 1) Probe the actual library meta endpoint (verifies token can fetch rates library)
+                var metaOk = await ProbeLibraryMetaAsync(token);
+                if (!metaOk)
+                {
+                    // If this fails, RateCatalogSyncService will also fail to pull /rategen/library/*
+                    AddNotification("⚠ Library meta probe failed. Token/entitlement may be invalid for /rategen/library/*.");
+                }
+
+                // 2) Sync materials/labour library (writes to disk) + triggers CatalogUpdated
+                await _rateSync.CheckAndPromptUpdateAsync(
+                    token,
+                    zone,
+                    async (prompt) =>
+                    {
+                        var result = MessageBox.Show(
+                            prompt,
+                            "Rate Update",
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Information);
+
+                        return await Task.FromResult(result == MessageBoxResult.Yes);
+                    });
+
+                // 3) Always refresh compute items from correct endpoint
+                var ok = await ComputeCatalogStore.RefreshFromApiAsync();
+                AddNotification(ok
+                    ? $"✅ Compute items updated ({ComputeCatalogStore.LastApiItemCount})"
+                    : $"⚠ Compute update failed: {ComputeCatalogStore.LastApiMessage}");
+
+                // 4) Ensure UI uses latest disk snapshot
+                MaterialLibraryViewModel.ReloadFromDisk();
+                LabourLibraryViewModel.ReloadFromDisk();
+                ComputeCatalogStore.ReloadFromDisk();
+
+                _index.Rebuild(this);
+            }
+            catch (Exception ex)
+            {
+                AddNotification($"Update check failed: {ex.Message}");
+            }
+            finally
+            {
+                SetBusy(false);
+            }
+        }
+
+        // ✅ Strong verification: does token work on /rategen/library/meta?
+        private static async Task<bool> ProbeLibraryMetaAsync(string bearerToken)
+        {
+            try
+            {
+                using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+                http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var resp = await http.GetAsync($"{API_BASE_URL}/rategen/library/meta");
+                return resp.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private async Task RunSanityCheckAsync()
+        {
+            try
+            {
+                SetBusy(true, "Running sanity check...");
+
+                var issues = new List<string>();
+
+                // 1) ViewModels present
+                if (MaterialPriceViewModel == null) issues.Add("MaterialPriceViewModel is null");
+                if (MaterialLibraryViewModel == null) issues.Add("MaterialLibraryViewModel is null");
+                if (LabourPriceViewModel == null) issues.Add("LabourPriceViewModel is null");
+                if (LabourLibraryViewModel == null) issues.Add("LabourLibraryViewModel is null");
+                if (GroundWorkViewModel == null) issues.Add("GroundWorkViewModel is null");
+                if (ConcreteViewModel == null) issues.Add("ConcreteViewModel is null");
+                if (BlockworkViewModel == null) issues.Add("BlockworkViewModel is null");
+                if (FinishesViewModel == null) issues.Add("FinishesViewModel is null");
+                if (RoofWorkViewModel == null) issues.Add("RoofWorkViewModel is null");
+                if (WindowAndDoorViewModel == null) issues.Add("WindowAndDoorViewModel is null");
+                if (PaintWorkViewModel == null) issues.Add("PaintWorkViewModel is null");
+                if (SteelWorkViewModel == null) issues.Add("SteelWorkViewModel is null");
+                if (CustomRateListViewModel == null) issues.Add("CustomRateListViewModel is null");
+                if (CustomRateEntryViewModel == null) issues.Add("CustomRateEntryViewModel is null");
+                if (LibraryShellViewModel == null) issues.Add("LibraryShellViewModel is null");
+
+                // 2) Disk files existence
+                var computePath = ComputeCatalogStore.FilePath;
+                if (!File.Exists(computePath))
+                    issues.Add($"Compute items file missing: {computePath}");
+
+                // 3) Load compute items
+                ComputeCatalogStore.ReloadFromDisk();
+                var items = ComputeCatalogStore.Items ?? Array.Empty<ComputeItemDefinition>();
+                if (items.Count == 0)
+                    issues.Add("Compute items loaded = 0 (compute-items.json empty or invalid).");
+
+                // 4) API reachability
+                var cfg = ConfigManager.LoadConfig();
+                if (cfg != null && !string.IsNullOrWhiteSpace(cfg.AuthToken))
+                {
+                    try
+                    {
+                        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(8) };
+                        var ping = await http.GetAsync($"{API_BASE_URL}/__debug/db");
+                        if (!ping.IsSuccessStatusCode)
+                            issues.Add($"API reachable but /__debug/db returned {(int)ping.StatusCode}");
+
+                        // meta probe (confirms /rategen/library/meta works with token)
+                        var metaOk = await ProbeLibraryMetaAsync(cfg.AuthToken);
+                        if (!metaOk)
+                            issues.Add("Token/entitlement probe failed for GET /rategen/library/meta");
+                    }
+                    catch (Exception ex)
+                    {
+                        issues.Add($"API check failed: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    issues.Add("Skipped API check: no saved auth token (not logged in).");
+                }
+
+                if (issues.Count == 0)
+                {
+                    MessageBox.Show(
+                        "✅ Sanity Check PASSED\n\nLibraries + compute file detected.\nAPI reachable.\nMeta endpoint probe passed.",
+                        "ADLM RateGen · Sanity Check",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+                    return;
+                }
+
+                MessageBox.Show(
+                    "⚠️ Sanity Check FOUND ISSUES:\n\n- " + string.Join("\n- ", issues),
+                    "ADLM RateGen · Sanity Check",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
+            }
+            finally
+            {
+                SetBusy(false);
+            }
+        }
 
         private void SendHelpEmail()
         {
             if (CurrentUser?.Email == null) return;
 
             var to = "admin@adlmstudio.net";
-            var subject = System.Uri.EscapeDataString("Need help with ADLM Rate Gen");
-            var body = System.Uri.EscapeDataString(
-                $"Hello ADLM, my name is {CurrentUser.Email} and I need help with the ADLM Rate Gen.");
+            var subject = Uri.EscapeDataString("Need help with ADLM Rate Gen");
+            var body = Uri.EscapeDataString($"Hello ADLM, my name is {CurrentUser.Email} and I need help with the ADLM Rate Gen.");
             var mailto = $"mailto:{to}?subject={subject}&body={body}";
 
             Process.Start(new ProcessStartInfo(mailto) { UseShellExecute = true });
@@ -556,7 +690,7 @@ namespace ADLMRateGen.ViewModel
                 var sfd = new SaveFileDialog
                 {
                     Title = "Export ADLM Rates",
-                    FileName = $"ADLM_Rates_{System.DateTime.Now:yyyyMMdd_HHmm}.xlsx",
+                    FileName = $"ADLM_Rates_{DateTime.Now:yyyyMMdd_HHmm}.xlsx",
                     Filter = "Excel Workbook (*.xlsx)|*.xlsx"
                 };
                 if (sfd.ShowDialog() != true) return;
@@ -589,7 +723,7 @@ namespace ADLMRateGen.ViewModel
                 ExcelExporter.ExportWorkbook(sheets, sfd.FileName);
                 MessageBox.Show("Export completed.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Export failed:\n{ex.Message}", "Export", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -602,12 +736,11 @@ namespace ADLMRateGen.ViewModel
                 var sfd = new SaveFileDialog
                 {
                     Title = "Export to Bill (CSV)",
-                    FileName = $"ADLM_Bill_{System.DateTime.Now:yyyyMMdd_HHmm}.csv",
+                    FileName = $"ADLM_Bill_{DateTime.Now:yyyyMMdd_HHmm}.csv",
                     Filter = "CSV (*.csv)|*.csv"
                 };
                 if (sfd.ShowDialog() != true) return;
 
-                // Collect all sections
                 var sections = new List<(string Name, IEnumerable Rows)>();
 
                 void AddSection(string name, object vm)
@@ -616,7 +749,6 @@ namespace ADLMRateGen.ViewModel
                     if (rows != null) sections.Add((name, rows));
                 }
 
-                // use the same VMs you export to Excel
                 AddSection("Ground", GroundWorkViewModel);
                 AddSection("Concrete", ConcreteViewModel);
                 AddSection("Block Works", BlockworkViewModel);
@@ -626,7 +758,6 @@ namespace ADLMRateGen.ViewModel
                 AddSection("Steel", SteelWorkViewModel);
                 AddSection("Window & Door", WindowAndDoorViewModel);
 
-                // Custom (saved) rates: we know the collection directly
                 if (CustomRateListViewModel?.CustomRates is IEnumerable cr && cr.GetEnumerator().MoveNext())
                     sections.Add(("Saved Rates", CustomRateListViewModel.CustomRates));
 
@@ -636,7 +767,6 @@ namespace ADLMRateGen.ViewModel
                     return;
                 }
 
-                // Build CSV
                 var sb = new StringBuilder();
                 sb.AppendLine("Section,Description,Total");
 
@@ -647,14 +777,13 @@ namespace ADLMRateGen.ViewModel
                         if (row == null) continue;
 
                         var desc = GetStringProp(row, "Description", "Name", "Title") ?? string.Empty;
-                        var total = GetDecimalProp(row, "TotalCost", "TotalPrice", "Total"); // extend names if needed
+                        var total = GetDecimalProp(row, "TotalCost", "TotalPrice", "Total");
 
                         sb.AppendLine($"{Csv(name)},{Csv(desc)},{total.ToString("0.##", CultureInfo.InvariantCulture)}");
                     }
                 }
 
-                // Write with UTF-8 BOM so Excel opens it nicely
-                File.WriteAllText(sfd.FileName, sb.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+                File.WriteAllText(sfd.FileName, sb.ToString(), new UTF8Encoding(true));
                 MessageBox.Show("CSV exported.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -662,7 +791,6 @@ namespace ADLMRateGen.ViewModel
                 MessageBox.Show($"Export failed:\n{ex.Message}", "Export", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            // ---- helpers ----
             static string Csv(string s) => $"\"{(s ?? string.Empty).Replace("\"", "\"\"")}\"";
 
             static string? GetStringProp(object o, params string[] names)
@@ -687,23 +815,13 @@ namespace ADLMRateGen.ViewModel
                     if (p == null) continue;
                     var v = p.GetValue(o);
                     if (v == null) continue;
-
-                    try
-                    {
-                        // supports decimal/double/float/int, etc.
-                        return Convert.ToDecimal(v, CultureInfo.InvariantCulture);
-                    }
-                    catch { /* try next name */ }
+                    try { return Convert.ToDecimal(v, CultureInfo.InvariantCulture); }
+                    catch { }
                 }
                 return 0m;
             }
         }
 
-        /// <summary>
-        /// Finds the first IEnumerable property on a VM whose element type
-        /// has ItemNo + (Description|Name|Title) + (TotalCost|TotalPrice).
-        /// Works with ObservableCollection and ICollectionView.
-        /// </summary>
         private static IEnumerable? FindRowsEnumerable(object vm)
         {
             if (vm == null) return null;
@@ -742,7 +860,7 @@ namespace ADLMRateGen.ViewModel
                 IsLoggedIn = false;
                 SelectedViewModel = SignInViewModel;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Log-out failed\n{ex.Message}");
             }
@@ -758,7 +876,7 @@ namespace ADLMRateGen.ViewModel
                     UseShellExecute = true
                 });
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Unable to open browser.\n{ex.Message}");
             }

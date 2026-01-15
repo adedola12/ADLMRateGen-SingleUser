@@ -143,6 +143,8 @@
                                            FontSize="20" />
                             </Grid>
                         </Button>
+                        <Button Content="Run Sanity Check"
+                                Command="{Binding RunSanityCheckCommand}" />
                         <TextBlock Text="Item of works"
                                    FontFamily="Poppins"
                                    Margin="0,24,0,12"

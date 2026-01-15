@@ -1,12 +1,13 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Data;
-using System.Windows.Input;
-using ADLMRateGen.Command;
+﻿using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
 using ADLMRateGen.View;
+using ADLMRateGen.ViewModel.ConcreteWork;
 using ADLMRateGen.ViewModel.CustomRate;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace ADLMRateGen.ViewModel.Groundwork
 {
@@ -23,7 +24,10 @@ namespace ADLMRateGen.ViewModel.Groundwork
 		private bool _isNetCostFilterOn = false;          // toggled by “Filter ⌄”
 		private SortState _currentSort = SortState.None;  // cycles in “Sort by ⌄”
 
-		private enum SortState { None, Overhead, TotalCost }
+        private const string SectionKey = SectionKeys.Ground;
+        // ✅ Ground section key
+        private readonly ComputeItemEngine _computeEngine;
+        private enum SortState { None, Overhead, TotalCost }
 
 
 		public double OverheadPercent
@@ -96,7 +100,10 @@ namespace ADLMRateGen.ViewModel.Groundwork
 			matLib.LibraryChanged += OnLibraryChanged;
 			labourLib.LibraryChanged += OnLibraryChanged;
 
-			BuildGroundWorkItems();
+            _computeEngine = new ComputeItemEngine(GetMaterialPrice, GetLabourRate);
+            _ = LoadComputeCatalogForSectionAsync();
+
+            BuildGroundWorkItems();
 
 			GroundworkCollectionView = CollectionViewSource.GetDefaultView(GroundworkItems);
 			GroundworkCollectionView.Filter = FilterGroundWorkItem;
@@ -113,11 +120,38 @@ namespace ADLMRateGen.ViewModel.Groundwork
 				if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
 					RecomputeAll();                 // already clears & rebuilds everything
 			};
-		}
 
-	
 
-		private void ShowDetails(object o)
+
+        }
+
+        private async Task LoadComputeCatalogForSectionAsync()
+        {
+            try
+            {
+                // Try server-side section filter
+                var ok = await ComputeCatalogStore.RefreshFromApiAsync(SectionKey);
+
+                // 🔁 Fallback: if API returns none for this section key, try without section filter
+                // (only do this if your backend section naming is inconsistent)
+                if (ok && ComputeCatalogStore.LastApiItemCount == 0)
+                {
+                    await ComputeCatalogStore.RefreshFromApiAsync(); // fetch all
+                }
+
+                // Rebuild to append whatever is now in ComputeCatalogStore.Items
+                RecomputeAll();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Compute API load failed: {ex}");
+                // still show cached disk items already loaded
+            }
+        }
+
+
+
+        private void ShowDetails(object o)
 		{
 			if (o is GroundworkItem item)
 			{
@@ -217,27 +251,129 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
 		private void BuildGroundWorkItems()
 		{
-			GroundworkItems.Add(ComputeItem1());
-			GroundworkItems.Add(ComputeItem2());
-			GroundworkItems.Add(ComputeItem3());
-			GroundworkItems.Add(ComputeItem4());
-			GroundworkItems.Add(ComputeItem5());
-			GroundworkItems.Add(ComputeItem6());
-			GroundworkItems.Add(ComputeItem7());
-			GroundworkItems.Add(ComputeItem8());
-			GroundworkItems.Add(ComputeItem9());
-			GroundworkItems.Add(ComputeItem10());
-			GroundworkItems.Add(ComputeItem11());
-			GroundworkItems.Add(ComputeItem12());
-			GroundworkItems.Add(ComputeItem13());
-			GroundworkItems.Add(ComputeItem14());
-			GroundworkItems.Add(ComputeItem15());
-			GroundworkItems.Add(ComputeItem16());
-			GroundworkItems.Add(ComputeItem17());
-			GroundworkItems.Add(ComputeItem18());
+			//GroundworkItems.Add(ComputeItem1());
+			//GroundworkItems.Add(ComputeItem2());
+			//GroundworkItems.Add(ComputeItem3());
+			//GroundworkItems.Add(ComputeItem4());
+			//GroundworkItems.Add(ComputeItem5());
+			//GroundworkItems.Add(ComputeItem6());
+			//GroundworkItems.Add(ComputeItem7());
+			//GroundworkItems.Add(ComputeItem8());
+			//GroundworkItems.Add(ComputeItem9());
+			//GroundworkItems.Add(ComputeItem10());
+			//GroundworkItems.Add(ComputeItem11());
+			//GroundworkItems.Add(ComputeItem12());
+			//GroundworkItems.Add(ComputeItem13());
+			//GroundworkItems.Add(ComputeItem14());
+			//GroundworkItems.Add(ComputeItem15());
+			//GroundworkItems.Add(ComputeItem16());
+			//GroundworkItems.Add(ComputeItem17());
+			//GroundworkItems.Add(ComputeItem18());
 
-		}
-		private (double overheadVal, double profitVal, double total) ApplyOHP(double netCost)
+            Func<GroundworkItem>[] computeMethods =
+{
+                ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6,
+                ComputeItem7, ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12,
+                ComputeItem13, ComputeItem14, ComputeItem15, ComputeItem16, ComputeItem17, ComputeItem18,
+
+            };
+
+            foreach (var compute in computeMethods)
+            {
+                GroundworkItems.Add(compute());
+            }
+
+            // ✅ Append dynamic compute definitions (from API/disk store)
+            AppendApiComputeItems();
+
+        }
+        private void AppendApiComputeItems()
+        {
+            if (_computeEngine == null) return;
+            var defs = ComputeCatalogStore.Items;
+            if (defs == null || defs.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] No items loaded for section '{SectionKey}'.");
+                return;
+            }
+
+            int appended = 0;
+            int nextNo = GroundworkItems.Count + 1;
+
+            foreach (var def in defs)
+            {
+                if (def == null || !def.enabled) continue;
+
+                var key = SectionNormalizer.ToSectionKey(def.section);
+                if (key != SectionKey) continue;
+
+				try
+				{
+                    var computed = _computeEngine.Compute(def);
+
+                    var net = (double)computed.NetCost;
+                    var ohp = ApplyOHP(net);
+
+                    var breakdown = new ObservableCollection<GroundworkBreakdownLine>();
+
+                    foreach (var l in computed.Lines)
+                    {
+                        breakdown.Add(new GroundworkBreakdownLine
+                        {
+                            ComponentName = $"{l.Kind}: {l.Name}",
+                            Quantity = (double)l.Qty,
+                            Unit = string.IsNullOrWhiteSpace(l.Unit) ? "" : l.Unit,
+                            UnitPrice = (double)l.UnitPrice,
+                            TotalPrice = (double)l.Total
+                        });
+                    }
+
+                    if (computed.PoPercent > 0)
+                    {
+                        breakdown.Add(new GroundworkBreakdownLine
+                        {
+                            ComponentName = $"Compute PO/Uplift ({computed.PoPercent}%)",
+                            Quantity = (double)computed.PoPercent,
+                            Unit = "%",
+                            UnitPrice = 0,
+                            TotalPrice = (double)computed.PoAmount
+                        });
+                    }
+
+                    if (computed.Warnings.Count > 0)
+                    {
+                        breakdown.Add(new GroundworkBreakdownLine { ComponentName = "⚠ Warnings", TotalPrice = 0 });
+                        foreach (var w in computed.Warnings)
+                            breakdown.Add(new GroundworkBreakdownLine { ComponentName = $"- {w}", TotalPrice = 0 });
+                    }
+
+                    GroundworkItems.Add(new GroundworkItem
+                    {
+                        ItemNo = nextNo++,
+                        Description = def.name,
+                        Unit = string.IsNullOrWhiteSpace(def.outputUnit) ? "m2" : def.outputUnit,
+                        NetCost = Math.Round(net, 2),
+                        OverheadValue = Math.Round(ohp.overheadVal, 0),
+                        ProfitValue = Math.Round(ohp.profitVal, 0),
+                        TotalCost = Math.Round(ohp.total, 0),
+                        BreakdownLines = breakdown
+                    });
+
+                    appended++;
+                }
+				catch (Exception ex)
+				{
+                    System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Skip '{def?.name}': {ex.Message}");
+                    continue;
+                }
+
+
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Appended {appended} item(s) for section '{SectionKey}'.");
+        }
+
+        private (double overheadVal, double profitVal, double total) ApplyOHP(double netCost)
 		{
 			double ov = netCost * (OverheadPercent / 100);
 			double pv = netCost * (ProfitPercent / 100);
