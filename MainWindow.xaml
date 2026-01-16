@@ -143,8 +143,22 @@
                                            FontSize="20" />
                             </Grid>
                         </Button>
-                        <Button Content="Run Sanity Check"
-                                Command="{Binding RunSanityCheckCommand}" />
+                        <!--<Button Content="Run Sanity Check"
+                                Command="{Binding RunSanityCheckCommand}" />-->
+                        <Button Command="{Binding RefreshCloudDataCommand}"
+                                ToolTip="Sync from Cloud"
+                                Width="38"
+                                Height="32"
+                                Margin="6,0"
+                                Style="{StaticResource SidebarSubButton}">
+                            <fa:IconImage Icon="SyncAlt"
+                                          Width="16"
+                                          Height="16" />
+                        </Button>
+                        <TextBlock Text="{Binding CloudSyncStatus}"
+                                   Margin="8,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Opacity="0.8" />
                         <TextBlock Text="Item of works"
                                    FontFamily="Poppins"
                                    Margin="0,24,0,12"

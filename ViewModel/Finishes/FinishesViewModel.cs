@@ -11,6 +11,9 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 
 namespace ADLMRateGen.ViewModel.Finishes
 {
@@ -23,6 +26,10 @@ namespace ADLMRateGen.ViewModel.Finishes
         private double _profitPercent = 25.0;
         private string _searchTerm = string.Empty;
         private object _selectedDetail;
+
+        private bool _isRecomputing;
+        private bool _recomputePending;
+
 
         // ─── Sorting / filtering helpers ──────────────────────────────────────────────
         private bool _isNetCostFilterOn = false;          // toggled by “Filter ⌄”
@@ -218,16 +225,63 @@ namespace ADLMRateGen.ViewModel.Finishes
         {
             RunOnUi(() =>
             {
-                using (FinishesCollectionView?.DeferRefresh())
+                // Prevent re-entrant recomputes (ComputeCatalogStore.Changed, currency change, library change, etc.)
+                if (_isRecomputing)
                 {
-                    FinishesItems.Clear();
-                    BuildFinishesItem();
+                    _recomputePending = true;
+                    return;
                 }
 
-                // keep filter applied after rebuild
-                FinishesCollectionView?.Refresh();
+                _isRecomputing = true;
+                try
+                {
+                    var snapshot = BuildFinishesItemsSnapshot();
+
+                    // IMPORTANT: do NOT DeferRefresh while editing the source collection
+                    FinishesItems.Clear();
+                    foreach (var it in snapshot)
+                        FinishesItems.Add(it);
+
+                    FinishesCollectionView?.Refresh();
+                }
+                finally
+                {
+                    _isRecomputing = false;
+
+                    // If something triggered another recompute while we were busy, run once more
+                    if (_recomputePending)
+                    {
+                        _recomputePending = false;
+                        Application.Current?.Dispatcher?.BeginInvoke(new Action(RecomputeAll));
+                    }
+                }
             });
         }
+
+        private List<FinishesItem> BuildFinishesItemsSnapshot()
+        {
+            var list = new List<FinishesItem>(64);
+
+            Func<FinishesItem>[] computeMethods =
+            {
+        ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6, ComputeItem7,
+        ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12, ComputeItem13, ComputeItem14, ComputeItem15,
+        ComputeItem16, ComputeItem17, ComputeItem18, ComputeItem19, ComputeItem20, ComputeItem21, ComputeItem22, ComputeItem23
+    };
+
+            foreach (var compute in computeMethods)
+            {
+                var item = compute?.Invoke();
+                if (item != null)
+                    list.Add(item);
+            }
+
+            // Append dynamic compute definitions (from API/disk store)
+            AppendApiComputeItems(list);
+
+            return list;
+        }
+
 
         private void OnLibraryChange()
         {
@@ -247,6 +301,9 @@ namespace ADLMRateGen.ViewModel.Finishes
                     new SortDescription(nameof(FinishesItem.NetCost),
                         ListSortDirection.Ascending));
             }
+
+            FinishesCollectionView?.Refresh();
+
         }
 
         // ─────── SORT – cycle → None ▪ Overhead ▪ Total Cost ──────
@@ -280,6 +337,9 @@ namespace ADLMRateGen.ViewModel.Finishes
                 default:
                     break;
             }
+
+            FinishesCollectionView?.Refresh();
+
         }
 
         private void OpenCustomRateEntry()
@@ -293,25 +353,25 @@ namespace ADLMRateGen.ViewModel.Finishes
 
         #region Core Compute + API Append
 
-        private void BuildFinishesItem()
-        {
-            Func<FinishesItem>[] computeMethods =
-            {
-                ComputeItem1,ComputeItem2,ComputeItem3,ComputeItem4,ComputeItem5,ComputeItem6,ComputeItem7,
-                ComputeItem8,ComputeItem9,ComputeItem10,ComputeItem11, ComputeItem12,ComputeItem13,ComputeItem14,ComputeItem15,
-                ComputeItem16,ComputeItem17,ComputeItem18, ComputeItem19,ComputeItem20,ComputeItem21,ComputeItem22,ComputeItem23
-            };
+        //private void BuildFinishesItem()
+        //{
+        //    Func<FinishesItem>[] computeMethods =
+        //    {
+        //        ComputeItem1,ComputeItem2,ComputeItem3,ComputeItem4,ComputeItem5,ComputeItem6,ComputeItem7,
+        //        ComputeItem8,ComputeItem9,ComputeItem10,ComputeItem11, ComputeItem12,ComputeItem13,ComputeItem14,ComputeItem15,
+        //        ComputeItem16,ComputeItem17,ComputeItem18, ComputeItem19,ComputeItem20,ComputeItem21,ComputeItem22,ComputeItem23
+        //    };
 
-            foreach (var compute in computeMethods)
-            {
-                var item = compute?.Invoke();
-                if (item != null)
-                    FinishesItems.Add(item);
-            }
+        //    foreach (var compute in computeMethods)
+        //    {
+        //        var item = compute?.Invoke();
+        //        if (item != null)
+        //            FinishesItems.Add(item);
+        //    }
 
-            // ✅ Append dynamic compute definitions (from API/disk store)
-            AppendApiComputeItems();
-        }
+        //    // ✅ Append dynamic compute definitions (from API/disk store)
+        //    AppendApiComputeItems();
+        //}
 
         private (double overheadVal, double profitVal, double total) ApplyOHP(double netCost)
         {
@@ -336,9 +396,10 @@ namespace ADLMRateGen.ViewModel.Finishes
             return _blockworkViewModel.GetNetValue(computeFunc);
         }
 
-        private void AppendApiComputeItems()
+        private void AppendApiComputeItems(List<FinishesItem> target)
         {
             if (_computeEngine == null) return;
+
             var defs = ComputeCatalogStore.Items;
             if (defs == null || defs.Count == 0)
             {
@@ -347,7 +408,7 @@ namespace ADLMRateGen.ViewModel.Finishes
             }
 
             int appended = 0;
-            int nextNo = FinishesItems.Count + 1;
+            int nextNo = target.Count + 1;
 
             foreach (var def in defs)
             {
@@ -396,7 +457,7 @@ namespace ADLMRateGen.ViewModel.Finishes
                             breakdown.Add(new FinishesBreakdownLine { ComponentName = $"- {w}", TotalPrice = 0 });
                     }
 
-                    FinishesItems.Add(new FinishesItem
+                    target.Add(new FinishesItem
                     {
                         ItemNo = nextNo++,
                         Description = def.name,
@@ -413,14 +474,12 @@ namespace ADLMRateGen.ViewModel.Finishes
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Skip '{def?.name}': {ex.Message}");
-                    continue;
                 }
-
-
             }
 
             System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Appended {appended} item(s) for section '{SectionKey}'.");
         }
+
 
         #endregion
 

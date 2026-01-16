@@ -11,6 +11,7 @@ using ADLMRateGen.ViewModel.Painting;
 using ADLMRateGen.ViewModel.RoofWork;
 using ADLMRateGen.ViewModel.SteelWork;
 using ADLMRateGen.ViewModel.WindowAndDoor;
+using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.Win32;
 using System;
 using System.Collections;
@@ -32,11 +33,20 @@ namespace ADLMRateGen.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
-        // ✅ Your deployed API host
         private const string API_BASE_URL = "https://adlmweb.onrender.com";
 
-        // ✅ Correct compute endpoint (your server mounts compute router at /api/rates)
-        private const string COMPUTE_ITEMS_PATH = "/api/rates/compute-items";
+        // ✅ New clean public base
+        private const string RATEGEN_V2_BASE = "/rategen-v2";
+
+        // ✅ Public compute-items endpoint (matches your server mounting)
+        private const string COMPUTE_ITEMS_PATH = RATEGEN_V2_BASE + "/compute-items";
+
+        // ✅ Public library meta (since you moved library router to /rategen-v2)
+        private const string LIBRARY_META_PATH = RATEGEN_V2_BASE + "/library/meta";
+
+        private const string RATE_LIBRARY_SYNC_PATH = RATEGEN_V2_BASE + "/library/rates/sync";
+
+
 
         /* ───────── injected services ───────── */
         private readonly MongoDbService _mongoDbService;
@@ -82,6 +92,23 @@ namespace ADLMRateGen.ViewModel
                     IsExportVisible = false;
             }
         }
+
+        public ICommand RefreshCloudDataCommand { get; }
+
+        private string _cloudSyncStatus = "Cloud sync: not started";
+        public string CloudSyncStatus
+        {
+            get => _cloudSyncStatus;
+            set { _cloudSyncStatus = value; RaisePropertyChanged(); }
+        }
+
+        private DateTime? _lastCloudSyncAt;
+        public DateTime? LastCloudSyncAt
+        {
+            get => _lastCloudSyncAt;
+            set { _lastCloudSyncAt = value; RaisePropertyChanged(); }
+        }
+
 
         public ObservableCollection<string> Notifications { get; } = new ObservableCollection<string>();
 
@@ -348,6 +375,11 @@ namespace ADLMRateGen.ViewModel
             ComputeCatalogStore.ConfigureApi(API_BASE_URL, COMPUTE_ITEMS_PATH);
             ComputeCatalogStore.ReloadFromDisk(); // load cached first
 
+            // ✅ Rate library (admin-created rates)
+            RateLibraryStore.ConfigureApi(API_BASE_URL, RATE_LIBRARY_SYNC_PATH);
+            RateLibraryStore.ReloadFromDisk();
+
+
             // ✅ When rate catalog updates, reload libraries and rebuild index
             _rateSync.CatalogUpdated += msg =>
             {
@@ -399,6 +431,8 @@ namespace ADLMRateGen.ViewModel
             SelectedSteelworkViewCommand = new RelayCommand(_ => SelectedViewModel = steelVM);
             SelectedCustomRateInputViewCommand = new RelayCommand(_ => SelectedViewModel = customListVM);
             SelectedCustomRateViewCommand = new RelayCommand(_ => SelectedViewModel = customEntryVM);
+            RefreshCloudDataCommand = new RelayCommand(async _ => await RefreshCloudDataAsync(manual: true));
+
 
             LogoutCommand = new RelayCommand(_ => Logout());
             OpenYoutubeCommand = new RelayCommand(_ => OpenYoutube());
@@ -420,6 +454,136 @@ namespace ADLMRateGen.ViewModel
             WindowAndDoorViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             PaintWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             SteelWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+        }
+
+        private static bool Is404(Exception ex)
+        {
+            if (ex is HttpRequestException hre)
+            {
+#if NET8_0_OR_GREATER
+                if (hre.StatusCode.HasValue && hre.StatusCode.Value == System.Net.HttpStatusCode.NotFound)
+                    return true;
+#endif
+                // fallback if StatusCode isn't available in your build
+                if ((hre.Message ?? "").Contains("404")) return true;
+            }
+            return (ex.Message ?? "").Contains("404");
+        }
+
+        private async Task RefreshCloudDataAsync(bool manual)
+        {
+            var results = new List<string>();
+
+            try
+            {
+                var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
+                var token = cfg.AuthToken;
+
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    CloudSyncStatus = "Cloud sync: skipped (no auth token). Please sign in again.";
+                    if (manual)
+                        MessageBox.Show("No auth token saved. Sign in again so RateGen can sync your cloud rates.",
+                            "Sync from Cloud", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                SetBusy(true, manual ? "Syncing from cloud…" : "Syncing after login…");
+                CloudSyncStatus = "Cloud sync: running…";
+
+                // ✅ 1) Admin-created Rate Library (DB rates)
+                bool ratesOk = false;
+                try
+                {
+                    RateLibraryStore.ReloadFromDisk();
+                    ratesOk = await RateLibraryStore.RefreshFromApiAsync(); // fetch all sections
+                    RateLibraryStore.ReloadFromDisk();
+
+                    results.Add($"Rates: {(ratesOk ? "OK" : "FAIL")} ({RateLibraryStore.LastApiItemCount})");
+                    if (!ratesOk) results.Add($"Rates msg: {RateLibraryStore.LastApiMessage}");
+                }
+                catch (Exception ex)
+                {
+                    results.Add($"Rates: FAIL (exception) - {ex.Message}");
+                }
+
+                // ✅ 2) Compute Catalog (may be your 404 source)
+                bool computeOk = false;
+                try
+                {
+                    ComputeCatalogStore.ReloadFromDisk();
+                    computeOk = await ComputeCatalogStore.RefreshFromApiAsync();
+                    ComputeCatalogStore.ReloadFromDisk();
+
+                    results.Add($"Compute: {(computeOk ? "OK" : "FAIL")} ({ComputeCatalogStore.LastApiItemCount})");
+                    if (!computeOk) results.Add($"Compute msg: {ComputeCatalogStore.LastApiMessage}");
+                }
+                catch (Exception ex)
+                {
+                    // if this is the 404, we don’t want to kill the entire sync
+                    if (Is404(ex))
+                        results.Add("Compute: SKIPPED (404 Not Found – endpoint route mismatch)");
+                    else
+                        results.Add($"Compute: FAIL (exception) - {ex.Message}");
+                }
+
+                // ✅ 3) Optional: materials/labour update check (this is often another 404 source)
+                try
+                {
+                    var zone = cfg.Zone ?? "Lagos";
+
+                    await _rateSync.CheckAndPromptUpdateAsync(
+                        token,
+                        zone,
+                        async (prompt) =>
+                        {
+                            var result = MessageBox.Show(prompt, "Rate Update",
+                                MessageBoxButton.YesNo, MessageBoxImage.Information);
+                            return await Task.FromResult(result == MessageBoxResult.Yes);
+                        });
+
+                    results.Add("Materials/Labour check: OK");
+                }
+                catch (Exception ex)
+                {
+                    if (Is404(ex))
+                        results.Add("Materials/Labour check: SKIPPED (404 Not Found – still pointing to old route)");
+                    else
+                        results.Add($"Materials/Labour check: FAIL - {ex.Message}");
+                }
+
+                // Refresh local UI
+                MaterialLibraryViewModel.ReloadFromDisk();
+                LabourLibraryViewModel.ReloadFromDisk();
+                _index.Rebuild(this);
+
+                LastCloudSyncAt = DateTime.Now;
+
+                CloudSyncStatus = "Cloud sync: done | " + string.Join(" | ", results.Where(x => x.StartsWith("Rates:") || x.StartsWith("Compute:")));
+                AddNotification(CloudSyncStatus);
+
+                if (manual)
+                {
+                    MessageBox.Show(
+                        string.Join("\n", results),
+                        "Sync from Cloud",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                CloudSyncStatus = $"Cloud sync: failed ({ex.Message})";
+                AddNotification(CloudSyncStatus);
+
+                if (manual)
+                    MessageBox.Show($"Sync failed:\n{ex.Message}", "Sync from Cloud",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                SetBusy(false);
+            }
         }
 
         private void OnZonePricesApplied(string zone)
@@ -471,6 +635,39 @@ namespace ADLMRateGen.ViewModel
         private void OnEditMaterialRequested(MaterialModel m) { }
         private void OnEditLabourRequested(LabourModel l) { }
 
+        //private async void OnLoginSucceeded(object? s, SignInViewModel.LoginEventArgs e)
+        //{
+        //    if (e.LoggedInUser == null) return;
+
+        //    string ensuredUsername = !string.IsNullOrWhiteSpace(e.LoggedInUser.Username)
+        //        ? e.LoggedInUser.Username
+        //        : (e.LoggedInUser.Email?.Split('@')[0] ?? string.Empty);
+
+        //    IsLoggedIn = true;
+        //    CurrentUser = new UserModel
+        //    {
+        //        Id = e.LoggedInUser.Id,
+        //        Email = e.LoggedInUser.Email,
+        //        Username = ensuredUsername
+        //    };
+
+        //    // keep your existing token storage logic
+        //    var authTok = new AuthTok();
+        //    ConfigManager.SaveConfig(new AppConfig
+        //    {
+        //        AuthToken = authTok.GenerateAuthToken(CurrentUser),
+        //        AuthExpiry = DateTime.Now.AddDays(15)
+        //    });
+
+        //    SelectedViewModel = LibraryShellViewModel;
+
+        //    // Load cached libraries immediately
+        //    _ = UserLibrarySync.Instance.LoadAsync();
+
+        //    // Now do API update checks + compute refresh
+        //    await TryCheckUpdatesAfterLoginAsync();
+        //}
+
         private async void OnLoginSucceeded(object? s, SignInViewModel.LoginEventArgs e)
         {
             if (e.LoggedInUser == null) return;
@@ -487,22 +684,44 @@ namespace ADLMRateGen.ViewModel
                 Username = ensuredUsername
             };
 
-            // keep your existing token storage logic
-            var authTok = new AuthTok();
+            // ✅ SAVE SERVER TOKEN (this fixes your 401)
+            var expiry = TryGetJwtExpiryLocal(e.AccessToken) ?? DateTime.Now.AddMinutes(25);
+
             ConfigManager.SaveConfig(new AppConfig
             {
-                AuthToken = authTok.GenerateAuthToken(CurrentUser),
-                AuthExpiry = DateTime.Now.AddDays(15)
+                AuthToken = e.AccessToken,
+                AuthExpiry = expiry
+                // Zone stays as-is if you already store it
             });
 
             SelectedViewModel = LibraryShellViewModel;
 
-            // Load cached libraries immediately
+            // Load cached first
             _ = UserLibrarySync.Instance.LoadAsync();
 
-            // Now do API update checks + compute refresh
+            // Now re-check APIs with valid token
             await TryCheckUpdatesAfterLoginAsync();
+
+            await RefreshCloudDataAsync(manual: false);
+
         }
+
+        // Reads JWT exp without validating signature (good enough for local expiry)
+        private static DateTime? TryGetJwtExpiryLocal(string jwt)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(jwt)) return null;
+                var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                var token = handler.ReadJwtToken(jwt);
+                var exp = token.Payload.Exp;
+                if (exp == null) return null;
+                var utc = DateTimeOffset.FromUnixTimeSeconds((long)exp).UtcDateTime;
+                return utc.ToLocalTime();
+            }
+            catch { return null; }
+        }
+
 
         // ✅ This is the real “does it fetch rates + apply to library” flow
         private async Task TryCheckUpdatesAfterLoginAsync()
@@ -521,13 +740,10 @@ namespace ADLMRateGen.ViewModel
 
                 SetBusy(true, "Checking for latest library + compute updates…");
 
-                // 1) Probe the actual library meta endpoint (verifies token can fetch rates library)
+                // 1) Probe library meta endpoint (token/entitlement check)
                 var metaOk = await ProbeLibraryMetaAsync(token);
                 if (!metaOk)
-                {
-                    // If this fails, RateCatalogSyncService will also fail to pull /rategen/library/*
-                    AddNotification("⚠ Library meta probe failed. Token/entitlement may be invalid for /rategen/library/*.");
-                }
+                    AddNotification($"⚠ Token/entitlement probe failed for GET {LIBRARY_META_PATH}");
 
                 // 2) Sync materials/labour library (writes to disk) + triggers CatalogUpdated
                 await _rateSync.CheckAndPromptUpdateAsync(
@@ -544,16 +760,24 @@ namespace ADLMRateGen.ViewModel
                         return await Task.FromResult(result == MessageBoxResult.Yes);
                     });
 
-                // 3) Always refresh compute items from correct endpoint
+                // 3) Refresh compute items
                 var ok = await ComputeCatalogStore.RefreshFromApiAsync();
                 AddNotification(ok
                     ? $"✅ Compute items updated ({ComputeCatalogStore.LastApiItemCount})"
                     : $"⚠ Compute update failed: {ComputeCatalogStore.LastApiMessage}");
 
                 // 4) Ensure UI uses latest disk snapshot
+                RateLibraryStore.ReloadFromDisk();
                 MaterialLibraryViewModel.ReloadFromDisk();
                 LabourLibraryViewModel.ReloadFromDisk();
                 ComputeCatalogStore.ReloadFromDisk();
+
+                // 3b) Refresh admin-created Rate Library (rategenrates)
+                var ratesOk = await RateLibraryStore.RefreshFromApiAsync();
+                AddNotification(ratesOk
+                    ? $"✅ Rate library updated ({RateLibraryStore.LastApiItemCount})"
+                    : $"⚠ Rate library update failed: {RateLibraryStore.LastApiMessage}");
+
 
                 _index.Rebuild(this);
             }
@@ -567,16 +791,21 @@ namespace ADLMRateGen.ViewModel
             }
         }
 
-        // ✅ Strong verification: does token work on /rategen/library/meta?
+        // ✅ Probe using an explicit Bearer token (used by sanity check + update flow)
         private static async Task<bool> ProbeLibraryMetaAsync(string bearerToken)
         {
             try
             {
-                using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-                http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-                http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                if (string.IsNullOrWhiteSpace(bearerToken))
+                    return false;
 
-                var resp = await http.GetAsync($"{API_BASE_URL}/rategen/library/meta");
+                using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                http.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", bearerToken);
+                http.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var resp = await http.GetAsync($"{API_BASE_URL}{LIBRARY_META_PATH}");
                 return resp.IsSuccessStatusCode;
             }
             catch
@@ -584,6 +813,22 @@ namespace ADLMRateGen.ViewModel
                 return false;
             }
         }
+
+        // ✅ Optional: probe using your AuthProvider client (if you already use it elsewhere)
+        private static async Task<bool> ProbeLibraryMetaAsync()
+        {
+            try
+            {
+                await AuthProvider.Instance.Client.GetJsonAsync(LIBRARY_META_PATH);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
 
         private async Task RunSanityCheckAsync()
         {
@@ -617,35 +862,74 @@ namespace ADLMRateGen.ViewModel
 
                 // 3) Load compute items
                 ComputeCatalogStore.ReloadFromDisk();
-                var items = ComputeCatalogStore.Items ?? Array.Empty<ComputeItemDefinition>();
-                if (items.Count == 0)
+                var items = ComputeCatalogStore.Items; // IReadOnlyList<ComputeItemDefinition>
+                if (items == null || items.Count == 0)
                     issues.Add("Compute items loaded = 0 (compute-items.json empty or invalid).");
 
-                // 4) API reachability
+                // 4) API reachability + auth checks
                 var cfg = ConfigManager.LoadConfig();
-                if (cfg != null && !string.IsNullOrWhiteSpace(cfg.AuthToken))
+                var token = cfg?.AuthToken;
+
+                try
                 {
+                    using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(8) };
+                    var ping = await http.GetAsync($"{API_BASE_URL}/__debug/db");
+                    if (!ping.IsSuccessStatusCode)
+                        issues.Add($"API reachable but /__debug/db returned {(int)ping.StatusCode}");
+                }
+                catch (Exception ex)
+                {
+                    issues.Add($"API check failed: {ex.Message}");
+                }
+
+                // 5) Token/entitlement checks
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    var metaOk = await ProbeLibraryMetaAsync(token);
+                    if (!metaOk)
+                        issues.Add($"Token/entitlement probe failed for GET {LIBRARY_META_PATH}");
+
+                    // Compute endpoint status check
                     try
                     {
-                        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(8) };
-                        var ping = await http.GetAsync($"{API_BASE_URL}/__debug/db");
-                        if (!ping.IsSuccessStatusCode)
-                            issues.Add($"API reachable but /__debug/db returned {(int)ping.StatusCode}");
+                        using var http2 = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                        http2.DefaultRequestHeaders.Authorization =
+                            new AuthenticationHeaderValue("Bearer", token);
+                        http2.DefaultRequestHeaders.Accept.Add(
+                            new MediaTypeWithQualityHeaderValue("application/json"));
 
-                        // meta probe (confirms /rategen/library/meta works with token)
-                        var metaOk = await ProbeLibraryMetaAsync(cfg.AuthToken);
-                        if (!metaOk)
-                            issues.Add("Token/entitlement probe failed for GET /rategen/library/meta");
+                        var cResp = await http2.GetAsync($"{API_BASE_URL}{COMPUTE_ITEMS_PATH}");
+                        if (!cResp.IsSuccessStatusCode)
+                            issues.Add($"Compute endpoint failed: GET {COMPUTE_ITEMS_PATH} => {(int)cResp.StatusCode}");
                     }
                     catch (Exception ex)
                     {
-                        issues.Add($"API check failed: {ex.Message}");
+                        issues.Add($"Compute endpoint check threw: {ex.Message}");
                     }
                 }
                 else
                 {
-                    issues.Add("Skipped API check: no saved auth token (not logged in).");
+                    issues.Add("Skipped auth checks: no saved auth token (not logged in).");
                 }
+
+                // Rate Library endpoint status check
+                try
+                {
+                    using var http3 = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                    http3.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", token);
+                    http3.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var rResp = await http3.GetAsync($"{API_BASE_URL}{RATE_LIBRARY_SYNC_PATH}?limit=1&sectionKey=ground");
+                    if (!rResp.IsSuccessStatusCode)
+                        issues.Add($"Rate library endpoint failed: GET {RATE_LIBRARY_SYNC_PATH} => {(int)rResp.StatusCode}");
+                }
+                catch (Exception ex)
+                {
+                    issues.Add($"Rate library endpoint check threw: {ex.Message}");
+                }
+
 
                 if (issues.Count == 0)
                 {
@@ -670,6 +954,7 @@ namespace ADLMRateGen.ViewModel
                 SetBusy(false);
             }
         }
+
 
         private void SendHelpEmail()
         {

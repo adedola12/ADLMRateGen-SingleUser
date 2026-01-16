@@ -103,6 +103,10 @@ namespace ADLMRateGen.ViewModel.Groundwork
             _computeEngine = new ComputeItemEngine(GetMaterialPrice, GetLabourRate);
             _ = LoadComputeCatalogForSectionAsync();
 
+            RateLibraryStore.Changed += OnLibraryChanged;
+            _ = LoadRateLibraryAsync();
+
+
             BuildGroundWorkItems();
 
 			GroundworkCollectionView = CollectionViewSource.GetDefaultView(GroundworkItems);
@@ -124,6 +128,41 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
 
         }
+
+        private async Task LoadRateLibraryAsync()
+        {
+            try
+            {
+                // Always show cached rates first (offline-friendly)
+                RateLibraryStore.ReloadFromDisk();
+                System.Diagnostics.Debug.WriteLine($"[RateLibrary] Cached disk items={RateLibraryStore.Items?.Count ?? 0}");
+
+                // pull latest (requires logged-in token)
+                var ok = await RateLibraryStore.RefreshFromApiAsync(SectionKey);
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"[RateLibrary] Refresh ok={ok}, status={RateLibraryStore.LastApiStatusCode}, count={RateLibraryStore.LastApiItemCount}, msg={RateLibraryStore.LastApiMessage}");
+
+                // fallback if section mismatch
+                if (ok && RateLibraryStore.LastApiItemCount == 0)
+                {
+                    System.Diagnostics.Debug.WriteLine("[RateLibrary] Section returned 0. Retrying without sectionKey...");
+                    await RateLibraryStore.RefreshFromApiAsync();
+
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[RateLibrary] Retry(all) status={RateLibraryStore.LastApiStatusCode}, count={RateLibraryStore.LastApiItemCount}, msg={RateLibraryStore.LastApiMessage}");
+                }
+
+                // Ensure UI refresh on dispatcher
+                OnLibraryChanged();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[RateLibrary] load failed: {ex}");
+            }
+        }
+
+
 
         private async Task LoadComputeCatalogForSectionAsync()
         {
@@ -177,18 +216,32 @@ namespace ADLMRateGen.ViewModel.Groundwork
 			}
 			return false;
 		}
-		private void OnLibraryChanged()
-		{
-			RecomputeAll();
-		}
-		private void RecomputeAll()
-		{
-			GroundworkItems.Clear();
-			BuildGroundWorkItems();
-		}
+        private void OnLibraryChanged()
+        {
+            // RateLibraryStore / ComputeCatalogStore can raise Changed from a background thread.
+            var disp = System.Windows.Application.Current?.Dispatcher;
+            if (disp == null)
+            {
+                RecomputeAll();
+                return;
+            }
 
-		// ────── FILTER – order by Net Cost (low → high) ──────
-		private void ToggleNetCostFilter()
+            if (disp.CheckAccess())
+                RecomputeAll();
+            else
+                disp.Invoke(RecomputeAll);
+        }
+
+        private void RecomputeAll()
+        {
+            GroundworkItems.Clear();
+            BuildGroundWorkItems();
+            GroundworkCollectionView?.Refresh();
+        }
+
+
+        // ────── FILTER – order by Net Cost (low → high) ──────
+        private void ToggleNetCostFilter()
 		{
 			_isNetCostFilterOn = !_isNetCostFilterOn;
 
@@ -285,6 +338,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             // ✅ Append dynamic compute definitions (from API/disk store)
             AppendApiComputeItems();
+            AppendAdminRateItems();
+
 
         }
         private void AppendApiComputeItems()
@@ -372,6 +427,67 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Appended {appended} item(s) for section '{SectionKey}'.");
         }
+        private void AppendAdminRateItems()
+        {
+            var rates = RateLibraryStore.Items;
+            if (rates == null || rates.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"[RateLibrary] No rate items in store. File={ADLMRateGen.Services.RateLibraryStore.FilePath}");
+                return;
+            }
+
+            int nextNo = GroundworkItems.Count + 1;
+            int appended = 0;
+
+            System.Diagnostics.Debug.WriteLine($"[RateLibrary] Store contains {rates.Count} total rates. Filtering section='{SectionKey}'");
+
+            foreach (var r in rates)
+            {
+                if (r == null) continue;
+
+                if (!string.Equals(r.SectionKey ?? "", SectionKey, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var net = (double)r.NetCost;
+                if (!(net > 0)) continue;
+
+                var ohp = ApplyOHP(net);
+
+                var breakdown = new ObservableCollection<GroundworkBreakdownLine>();
+                if (r.Breakdown != null)
+                {
+                    foreach (var l in r.Breakdown)
+                    {
+                        breakdown.Add(new GroundworkBreakdownLine
+                        {
+                            ComponentName = l.ComponentName,
+                            Quantity = (double)l.Quantity,
+                            Unit = l.Unit,
+                            UnitPrice = (double)l.UnitPrice,
+                            TotalPrice = (double)(l.LineTotal != 0 ? l.LineTotal : (l.Quantity * l.UnitPrice))
+                        });
+                    }
+                }
+
+                GroundworkItems.Add(new GroundworkItem
+                {
+                    ItemNo = nextNo++,
+                    Description = r.Description,
+                    Unit = string.IsNullOrWhiteSpace(r.Unit) ? "m2" : r.Unit,
+                    NetCost = Math.Round(net, 2),
+                    OverheadValue = Math.Round(ohp.overheadVal, 0),
+                    ProfitValue = Math.Round(ohp.profitVal, 0),
+                    TotalCost = Math.Round(ohp.total, 0),
+                    BreakdownLines = breakdown
+                });
+
+                appended++;
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[RateLibrary] Appended {appended} admin rate(s) for section '{SectionKey}'.");
+        }
+
+
 
         private (double overheadVal, double profitVal, double total) ApplyOHP(double netCost)
 		{

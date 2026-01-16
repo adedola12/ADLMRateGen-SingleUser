@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -15,7 +17,7 @@ namespace ADLMRateGen.ADLM.Auth
         public string BaseUrl { get; set; } = "https://adlmweb.onrender.com";
         public string ProductKey { get; set; } = "rategen";
         public TimeSpan AccessSkew { get; set; } = TimeSpan.FromSeconds(30);
-        public Func<string>? DeviceFingerprintProvider { get; set; }   // optional
+        public Func<string> DeviceFingerprintProvider { get; set; } // optional
         public int TimeoutMs { get; set; } = 90000;
     }
 
@@ -23,34 +25,43 @@ namespace ADLMRateGen.ADLM.Auth
     internal sealed class SecureStore
     {
         private readonly string _name;
-        public SecureStore(string name) => _name = name;
+        public SecureStore(string name) { _name = name; }
 
         public void Save(string clear)
         {
             var bytes = Encoding.UTF8.GetBytes(clear ?? "");
             var enc = ProtectedData.Protect(bytes, null, DataProtectionScope.CurrentUser);
             Directory.CreateDirectory(Dir);
-            File.WriteAllBytes(Path, enc);
+            File.WriteAllBytes(FilePath, enc);
         }
 
-        public string? Load()
+        public string Load()
         {
-            if (!File.Exists(Path)) return null;
-            var enc = File.ReadAllBytes(Path);
+            if (!File.Exists(FilePath)) return null;
+            var enc = File.ReadAllBytes(FilePath);
             var dec = ProtectedData.Unprotect(enc, null, DataProtectionScope.CurrentUser);
             return Encoding.UTF8.GetString(dec);
         }
 
         public void Clear()
         {
-            if (File.Exists(Path)) File.Delete(Path);
+            if (File.Exists(FilePath)) File.Delete(FilePath);
         }
 
-        private string Dir => System.IO.Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "ADLM.Auth");
+        private string Dir
+        {
+            get
+            {
+                return System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "ADLM.Auth");
+            }
+        }
 
-        private string Path => System.IO.Path.Combine(Dir, _name + ".bin");
+        private string FilePath
+        {
+            get { return System.IO.Path.Combine(Dir, _name + ".bin"); }
+        }
     }
 
     /// <summary>Persist/restore cookies for the refresh flow across restarts.</summary>
@@ -67,7 +78,7 @@ namespace ADLMRateGen.ADLM.Auth
 
         public void Save(CookieContainer jar)
         {
-            var list = new System.Collections.Generic.List<object>();
+            var list = new List<object>();
             foreach (Cookie c in jar.GetCookies(_baseUri))
             {
                 list.Add(new
@@ -91,42 +102,57 @@ namespace ADLMRateGen.ADLM.Auth
 
             try
             {
-                var arr = JsonSerializer.Deserialize<JsonElement>(raw);
-                foreach (var el in arr.EnumerateArray())
+                JsonElement arr = JsonSerializer.Deserialize<JsonElement>(raw);
+                if (arr.ValueKind != JsonValueKind.Array) return;
+
+                foreach (JsonElement el in arr.EnumerateArray())
                 {
-                    var ck = new Cookie(
-                        el.GetProperty("Name").GetString() ?? "",
-                        el.GetProperty("Value").GetString() ?? "",
-                        el.GetProperty("Path").GetString() ?? "/",
-                        NormalizeDomain(el.GetProperty("Domain").GetString(), _baseUri.Host)
-                    )
+                    string name = el.TryGetProperty("Name", out var n) ? (n.GetString() ?? "") : "";
+                    string value = el.TryGetProperty("Value", out var v) ? (v.GetString() ?? "") : "";
+                    string path = el.TryGetProperty("Path", out var p) ? (p.GetString() ?? "/") : "/";
+                    string domain = el.TryGetProperty("Domain", out var d)
+                        ? NormalizeDomain(d.GetString(), _baseUri.Host)
+                        : _baseUri.Host;
+
+                    if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(domain))
+                        continue;
+
+                    var ck = new Cookie(name, value, path, domain)
                     {
-                        Secure = el.TryGetProperty("Secure", out var s) && s.GetBoolean(),
-                        HttpOnly = el.TryGetProperty("HttpOnly", out var h) && h.GetBoolean()
+                        Secure = el.TryGetProperty("Secure", out var s) && s.ValueKind == JsonValueKind.True,
+                        HttpOnly = el.TryGetProperty("HttpOnly", out var h) && h.ValueKind == JsonValueKind.True
                     };
 
-                    if (el.TryGetProperty("Expires", out var ex) && ex.ValueKind == JsonValueKind.String &&
+                    if (el.TryGetProperty("Expires", out var ex) &&
+                        ex.ValueKind == JsonValueKind.String &&
                         DateTime.TryParse(ex.GetString(), out var dt))
+                    {
                         ck.Expires = dt;
+                    }
 
                     jar.Add(_baseUri, ck);
                 }
             }
-            catch { /* ignore corrupt cookie store */ }
+            catch
+            {
+                // ignore corrupt cookie store
+            }
         }
 
-        public void Clear() => _store.Clear();
+        public void Clear() { _store.Clear(); }
 
-        //private static string NormalizeDomain(string? d, string fallbackHost)
-        //    => string.IsNullOrWhiteSpace(d) ? fallbackHost : d.TrimStart('.');
+        // Safe normalize: keep domain usable for CookieContainer
+        private static string NormalizeDomain(string d, string fallbackHost)
+        {
+            if (string.IsNullOrWhiteSpace(d)) return fallbackHost;
+            return d.Trim().TrimStart('.');
+        }
 
-        // Keep the domain EXACTLY as set by the server
-        private static string NormalizeDomain(string? d, string fallbackHost)
-            => string.IsNullOrWhiteSpace(d) ? fallbackHost : d;
-
-
-
-        private static string FixBaseUrl(string u) => u.EndsWith("/") ? u : (u + "/");
+        private static string FixBaseUrl(string u)
+        {
+            if (string.IsNullOrWhiteSpace(u)) return "/";
+            return u.EndsWith("/") ? u : (u + "/");
+        }
     }
 
     public sealed class AuthClient : IDisposable
@@ -141,22 +167,20 @@ namespace ADLMRateGen.ADLM.Auth
         private readonly CookieContainer _cookies = new CookieContainer();
         private readonly CookieVault _cookieVault;
 
-        private string? _accessToken;
-        private DateTimeOffset _accessExpiryUtc;
-
-        public bool HasSession => !string.IsNullOrEmpty(_accessToken);
+        private string _accessToken;                  // current in-memory access token
+        private DateTimeOffset _accessExpiryUtc;      // expiry (UTC)
 
         private readonly HttpClient _http;
 
         public AuthClient(AuthOptions options)
         {
-            _opt = options;
-            _licenseStore = new SecureStore(options.ProductKey + ".license");
+            _opt = options ?? throw new ArgumentNullException(nameof(options));
+            _licenseStore = new SecureStore((_opt.ProductKey ?? "rategen") + ".license");
             _cookieVault = new CookieVault("refresh.cookies", _opt.BaseUrl);
 
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+            // .NET Framework-safe: enable TLS1.2
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 
-            // HttpClient with persistent cookies
             var handler = new HttpClientHandler
             {
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
@@ -175,149 +199,187 @@ namespace ADLMRateGen.ADLM.Auth
 
             // Restore prior access token if present
             TryLoadSession();
+
+            // If we restored a valid token, set default auth header
+            if (!string.IsNullOrWhiteSpace(_accessToken))
+            {
+                _http.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", _accessToken);
+            }
         }
 
         /* ================ PUBLIC API ================ */
 
-        public string? GetCachedLicenseToken() => _licenseStore.Load();
+        public string AccessToken { get { return _accessToken ?? ""; } }
 
-        public async Task<bool> LoginAsync(string identifier, string password, CancellationToken ct = default)
+        public bool HasSession { get { return !string.IsNullOrWhiteSpace(_accessToken); } }
+
+        public string GetCachedLicenseToken() { return _licenseStore.Load(); }
+
+        public async Task<bool> LoginAsync(string identifier, string password, CancellationToken ct = default(CancellationToken))
         {
             var body = new
             {
-                identifier,
-                password,
+                identifier = identifier,
+                password = password,
                 productKey = _opt.ProductKey,
-                device_fingerprint = _opt.DeviceFingerprintProvider?.Invoke()
+                device_fingerprint = _opt.DeviceFingerprintProvider != null ? _opt.DeviceFingerprintProvider() : null
             };
 
-            var resText = await PostJsonAsync("/auth/login", JsonSerializer.Serialize(body), null, ct);
+            string resText = await PostJsonAsync("/auth/login", JsonSerializer.Serialize(body), null, ct);
             if (resText == null) return false;
 
-            var root = JsonDocument.Parse(resText).RootElement;
+            JsonElement root = JsonDocument.Parse(resText).RootElement;
 
             if (!root.TryGetProperty("accessToken", out var atProp))
                 throw new InvalidOperationException("Login failed: accessToken missing in server response.");
 
-            _accessToken = atProp.GetString();
-            _accessExpiryUtc = DateTimeOffset.UtcNow.AddMinutes(14);
+            string token = atProp.GetString();
+            if (string.IsNullOrWhiteSpace(token))
+                throw new InvalidOperationException("Login failed: accessToken empty.");
+
+            _accessToken = token.Trim();
+            _accessExpiryUtc = TryGetJwtExpiryUtc(_accessToken) ?? DateTimeOffset.UtcNow.AddMinutes(14);
+
             SaveSession();
 
-            // persist cookies received during login (refresh cookie)
+            // Persist cookies received during login (refresh cookie)
             _cookieVault.Save(_cookies);
+
+            // Set default header for subsequent calls
+            _http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _accessToken);
 
             if (root.TryGetProperty("licenseToken", out var licProp))
             {
-                var lic = licProp.GetString();
-                if (!string.IsNullOrEmpty(lic)) _licenseStore.Save(lic);
+                string lic = licProp.GetString();
+                if (!string.IsNullOrWhiteSpace(lic))
+                    _licenseStore.Save(lic);
             }
 
             return true;
         }
 
-        public async Task PingAsync(CancellationToken ct = default)
+        public async Task PingAsync(CancellationToken ct = default(CancellationToken))
         {
             try
             {
-                using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                cts.CancelAfter(TimeSpan.FromSeconds(10));
-                using var req = new HttpRequestMessage(HttpMethod.Head, CombineUrl(_opt.BaseUrl, "/"));
-                await _http.SendAsync(req, cts.Token);
+                using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct))
+                {
+                    cts.CancelAfter(TimeSpan.FromSeconds(10));
+                    using (var req = new HttpRequestMessage(HttpMethod.Head, CombineUrl(_opt.BaseUrl, "/")))
+                    {
+                        await _http.SendAsync(req, cts.Token).ConfigureAwait(false);
+                    }
+                }
             }
-            catch { /* ignore */ }
+            catch
+            {
+                // ignore
+            }
         }
 
-        public async Task EnsureEntitledAsync(string productKey, CancellationToken ct = default)
+        public async Task EnsureEntitledAsync(string productKey, CancellationToken ct = default(CancellationToken))
         {
-            var at = await GetAccessTokenAsync(ct);
-            if (string.IsNullOrEmpty(at))
+            string at = await GetAccessTokenAsync(ct).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(at))
                 throw new InvalidOperationException("Not signed in.");
 
-            var raw = await GetJsonRawAsync("/me/entitlements", at, ct) ?? "[]";
-            var arr = JsonDocument.Parse(raw).RootElement;
+            string raw = await GetJsonRawAsync("/me/entitlements", at, ct).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(raw)) raw = "[]";
 
-            var ok = false;
-            foreach (var e in arr.EnumerateArray())
+            JsonElement arr = JsonDocument.Parse(raw).RootElement;
+            bool ok = false;
+
+            if (arr.ValueKind == JsonValueKind.Array)
             {
-                var key = e.TryGetProperty("productKey", out var pk) ? (pk.GetString() ?? "") : "";
-                if (!key.Equals(productKey, StringComparison.OrdinalIgnoreCase)) continue;
+                foreach (JsonElement e in arr.EnumerateArray())
+                {
+                    string key = e.TryGetProperty("productKey", out var pk) ? (pk.GetString() ?? "") : "";
+                    if (!key.Equals(productKey, StringComparison.OrdinalIgnoreCase)) continue;
 
-                var statusOk = e.TryGetProperty("status", out var s) &&
-                               string.Equals(s.GetString(), "active", StringComparison.OrdinalIgnoreCase);
+                    bool statusOk =
+                        e.TryGetProperty("status", out var s) &&
+                        string.Equals(s.GetString(), "active", StringComparison.OrdinalIgnoreCase);
 
-                var expOk = e.TryGetProperty("expiresAt", out var ex) &&
-                            DateTimeOffset.TryParse(ex.GetString(), out var exp) &&
-                            exp > DateTimeOffset.UtcNow;
+                    bool expOk =
+                        e.TryGetProperty("expiresAt", out var ex) &&
+                        DateTimeOffset.TryParse(ex.GetString(), out var exp) &&
+                        exp > DateTimeOffset.UtcNow;
 
-                if (statusOk && expOk) { ok = true; break; }
+                    if (statusOk && expOk) { ok = true; break; }
+                }
             }
-            if (!ok) throw new UnauthorizedAccessException($"No active subscription for '{productKey}'.");
+
+            if (!ok) throw new UnauthorizedAccessException("No active subscription for '" + productKey + "'.");
         }
 
-        public async Task<JsonDocument> GetJsonAsync(string path, CancellationToken ct = default)
+        public async Task<JsonDocument> GetJsonAsync(string path, CancellationToken ct = default(CancellationToken))
         {
-            var at = await GetAccessTokenAsync(ct);
-            if (string.IsNullOrEmpty(at)) throw new InvalidOperationException("Not signed in.");
-            var raw = await GetJsonRawAsync(path, at, ct) ?? "{}";
+            string at = await GetAccessTokenAsync(ct).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(at)) throw new InvalidOperationException("Not signed in.");
+
+            string raw = await GetJsonRawAsync(path, at, ct).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(raw)) raw = "{}";
             return JsonDocument.Parse(raw);
         }
 
-        // ADLM.Auth/AuthClient.cs
-        public async Task<JsonDocument> PutJsonAsync(string path, object body, CancellationToken ct = default)
+        public async Task<JsonDocument> PutJsonAsync(string path, object body, CancellationToken ct = default(CancellationToken))
         {
-            var at = await GetAccessTokenAsync(ct);
-            if (string.IsNullOrEmpty(at)) throw new InvalidOperationException("Not signed in.");
+            string at = await GetAccessTokenAsync(ct).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(at)) throw new InvalidOperationException("Not signed in.");
 
-            // omit nulls (so baseVersion = null is not sent)
-            var json = JsonSerializer.Serialize(body ?? new { }, new JsonSerializerOptions
-            {
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-            });
+            string json = JsonSerializer.Serialize(body ?? new { });
 
-            var url = CombineUrl(_opt.BaseUrl, path);
+            string url = CombineUrl(_opt.BaseUrl, path);
 
             for (int attempt = 1; attempt <= 2; attempt++)
             {
                 try
                 {
-                    using var req = new HttpRequestMessage(HttpMethod.Put, url);
-                    req.Headers.Authorization =
-                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", at);
-                    req.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                    using (var req = new HttpRequestMessage(HttpMethod.Put, url))
+                    {
+                        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", at);
+                        req.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                    cts.CancelAfter(TimeSpan.FromMilliseconds(_opt.TimeoutMs));
+                        using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct))
+                        {
+                            cts.CancelAfter(TimeSpan.FromMilliseconds(_opt.TimeoutMs));
 
-                    using var resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token);
-                    var text = await resp.Content.ReadAsStringAsync(ct);
+                            using (HttpResponseMessage resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token).ConfigureAwait(false))
+                            {
+                                string text = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                    if (resp.StatusCode == HttpStatusCode.Unauthorized)
-                        throw new UnauthorizedAccessException("Unauthorized");
+                                if (resp.StatusCode == HttpStatusCode.Unauthorized)
+                                    throw new UnauthorizedAccessException("Unauthorized");
 
-                    if (!resp.IsSuccessStatusCode)
-                        throw MakeHttpError(resp.StatusCode, text);
+                                if (!resp.IsSuccessStatusCode)
+                                    throw MakeHttpError(resp.StatusCode, text);
 
-                    return JsonDocument.Parse(string.IsNullOrWhiteSpace(text) ? "{}" : text);
+                                return JsonDocument.Parse(string.IsNullOrWhiteSpace(text) ? "{}" : text);
+                            }
+                        }
+                    }
                 }
                 catch (TaskCanceledException) when (attempt == 1)
                 {
-                    await Task.Delay(1200, ct);
+                    await Task.Delay(1200, ct).ConfigureAwait(false);
                 }
             }
 
             throw new TimeoutException("PUT request timed out.");
         }
 
-
-
-
         public void SignOut()
         {
             _licenseStore.Clear();
             _sessionStore.Clear();
             _cookieVault.Clear();
+
             _accessToken = null;
-            _accessExpiryUtc = default;
+            _accessExpiryUtc = default(DateTimeOffset);
+
+            _http.DefaultRequestHeaders.Authorization = null;
         }
 
         public void Dispose()
@@ -330,150 +392,182 @@ namespace ADLMRateGen.ADLM.Auth
 
         private void SaveSession()
         {
-            var payload = JsonSerializer.Serialize(new
+            string payload = JsonSerializer.Serialize(new
             {
                 access = _accessToken ?? "",
-                expiry = _accessExpiryUtc.UtcDateTime
+                expiry = _accessExpiryUtc.UtcDateTime.ToString("o")
             });
+
             _sessionStore.Save(payload);
         }
 
         private void TryLoadSession()
         {
-            var raw = _sessionStore.Load();
+            string raw = _sessionStore.Load();
             if (string.IsNullOrWhiteSpace(raw)) return;
 
             try
             {
-                var root = JsonDocument.Parse(raw).RootElement;
-                var tok = root.TryGetProperty("access", out var a) ? a.GetString() : null;
-                var expStr = root.TryGetProperty("expiry", out var e) ? e.GetString() : null;
+                JsonElement root = JsonDocument.Parse(raw).RootElement;
+
+                string tok = root.TryGetProperty("access", out var a) ? a.GetString() : null;
+                string expStr = root.TryGetProperty("expiry", out var e) ? e.GetString() : null;
 
                 if (!string.IsNullOrWhiteSpace(tok) &&
                     DateTimeOffset.TryParse(expStr, out var exp) &&
                     exp > DateTimeOffset.UtcNow)
                 {
-                    _accessToken = tok;
+                    _accessToken = tok.Trim();
                     _accessExpiryUtc = exp;
                 }
             }
-            catch { /* ignore corrupt session */ }
+            catch
+            {
+                // ignore corrupt session
+            }
         }
 
-        private async Task<string?> GetAccessTokenAsync(CancellationToken ct)
+        private async Task<string> GetAccessTokenAsync(CancellationToken ct)
         {
             // 1) still valid?
-            if (!string.IsNullOrEmpty(_accessToken) &&
+            if (!string.IsNullOrWhiteSpace(_accessToken) &&
                 DateTimeOffset.UtcNow.Add(_opt.AccessSkew) < _accessExpiryUtc)
+            {
                 return _accessToken;
+            }
 
             // 2) try refresh (uses persisted cookie)
-            var resText = await PostJsonAsync("/auth/refresh", "{}", null, ct);
+            string resText = await PostJsonAsync("/auth/refresh", "{}", null, ct).ConfigureAwait(false);
             if (resText == null) return null;
 
-            var root = JsonDocument.Parse(resText).RootElement;
+            JsonElement root = JsonDocument.Parse(resText).RootElement;
             if (!root.TryGetProperty("accessToken", out var atProp))
                 throw new InvalidOperationException("Refresh failed: accessToken missing in server response.");
 
-            _accessToken = atProp.GetString();
-            _accessExpiryUtc = DateTimeOffset.UtcNow.AddMinutes(14);
+            string token = atProp.GetString();
+            if (string.IsNullOrWhiteSpace(token)) return null;
+
+            _accessToken = token.Trim();
+            _accessExpiryUtc = TryGetJwtExpiryUtc(_accessToken) ?? DateTimeOffset.UtcNow.AddMinutes(14);
+
             SaveSession();
 
             // cookies might rotate; persist jar again
             try { _cookieVault.Save(_cookies); } catch { }
 
+            // update default header
+            _http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _accessToken);
+
             if (root.TryGetProperty("licenseToken", out var licProp))
             {
-                var lic = licProp.GetString();
-                if (!string.IsNullOrEmpty(lic)) _licenseStore.Save(lic);
+                string lic = licProp.GetString();
+                if (!string.IsNullOrWhiteSpace(lic))
+                    _licenseStore.Save(lic);
             }
 
             return _accessToken;
         }
 
-        private async Task<string?> GetJsonRawAsync(string path, string bearer, CancellationToken ct)
+        private async Task<string> GetJsonRawAsync(string path, string bearer, CancellationToken ct)
         {
-            var url = CombineUrl(_opt.BaseUrl, path);
+            string url = CombineUrl(_opt.BaseUrl, path);
+
             for (int attempt = 1; attempt <= 2; attempt++)
             {
                 try
                 {
-                    using var req = new HttpRequestMessage(HttpMethod.Get, url);
-                    if (!string.IsNullOrEmpty(bearer))
-                        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
+                    using (var req = new HttpRequestMessage(HttpMethod.Get, url))
+                    {
+                        if (!string.IsNullOrWhiteSpace(bearer))
+                            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
 
-                    using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                    cts.CancelAfter(TimeSpan.FromMilliseconds(_opt.TimeoutMs));
+                        using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct))
+                        {
+                            cts.CancelAfter(TimeSpan.FromMilliseconds(_opt.TimeoutMs));
 
-                    using var resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token);
-                    var text = await resp.Content.ReadAsStringAsync(ct);
+                            using (HttpResponseMessage resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token).ConfigureAwait(false))
+                            {
+                                string text = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                    if (resp.StatusCode == HttpStatusCode.NoContent || resp.StatusCode == HttpStatusCode.NotFound)
-                        return "[]";
+                                if (resp.StatusCode == HttpStatusCode.NoContent || resp.StatusCode == HttpStatusCode.NotFound)
+                                    return "[]";
 
-                    if (resp.StatusCode == HttpStatusCode.Unauthorized)
-                        throw new UnauthorizedAccessException("Unauthorized");
+                                if (resp.StatusCode == HttpStatusCode.Unauthorized)
+                                    throw new UnauthorizedAccessException("Unauthorized");
 
-                    if (!resp.IsSuccessStatusCode)
-                        throw MakeHttpError(resp.StatusCode, text);
+                                if (!resp.IsSuccessStatusCode)
+                                    throw MakeHttpError(resp.StatusCode, text);
 
-                    return text;
+                                return text;
+                            }
+                        }
+                    }
                 }
                 catch (TaskCanceledException) when (attempt == 1)
                 {
-                    await Task.Delay(1200, ct);
+                    await Task.Delay(1200, ct).ConfigureAwait(false);
                 }
             }
+
             throw new TimeoutException("GET request timed out.");
         }
 
-        private async Task<string?> PostJsonAsync(string path, string jsonBody, string? bearer, CancellationToken ct)
+        private async Task<string> PostJsonAsync(string path, string jsonBody, string bearer, CancellationToken ct)
         {
-            var url = CombineUrl(_opt.BaseUrl, path);
+            string url = CombineUrl(_opt.BaseUrl, path);
+
             for (int attempt = 1; attempt <= 2; attempt++)
             {
                 try
                 {
-                    using var req = new HttpRequestMessage(HttpMethod.Post, url);
-                    if (!string.IsNullOrEmpty(bearer))
-                        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearer);
-
-                    req.Content = new StringContent(jsonBody ?? "{}", Encoding.UTF8, "application/json");
-
-                    using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                    cts.CancelAfter(TimeSpan.FromMilliseconds(_opt.TimeoutMs));
-
-                    using var resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token);
-                    var text = await resp.Content.ReadAsStringAsync(ct);
-
-                    if (resp.StatusCode == HttpStatusCode.Unauthorized)
-                        return null; // login/refresh invalid
-
-                    if (resp.StatusCode == HttpStatusCode.Forbidden)
+                    using (var req = new HttpRequestMessage(HttpMethod.Post, url))
                     {
-                        var (msg, code) = ExtractError(text);
-                        var what = !string.IsNullOrWhiteSpace(code) ? $"{msg} ({code})" : msg;
-                        throw new UnauthorizedAccessException(what);
+                        if (!string.IsNullOrWhiteSpace(bearer))
+                            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
+
+                        req.Content = new StringContent(jsonBody ?? "{}", Encoding.UTF8, "application/json");
+
+                        using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct))
+                        {
+                            cts.CancelAfter(TimeSpan.FromMilliseconds(_opt.TimeoutMs));
+
+                            using (HttpResponseMessage resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token).ConfigureAwait(false))
+                            {
+                                string text = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                                if (resp.StatusCode == HttpStatusCode.Unauthorized)
+                                    return null; // login/refresh invalid
+
+                                if (resp.StatusCode == HttpStatusCode.Forbidden)
+                                {
+                                    var ex = ExtractError(text);
+                                    string what = !string.IsNullOrWhiteSpace(ex.code) ? (ex.message + " (" + ex.code + ")") : ex.message;
+                                    throw new UnauthorizedAccessException(what);
+                                }
+
+                                if (!resp.IsSuccessStatusCode)
+                                    throw MakeHttpError(resp.StatusCode, text);
+
+                                return text;
+                            }
+                        }
                     }
-
-                    if (!resp.IsSuccessStatusCode)
-                        throw MakeHttpError(resp.StatusCode, text);
-
-                    return text;
                 }
                 catch (TaskCanceledException) when (attempt == 1)
                 {
-                    await Task.Delay(1200, ct);
+                    await Task.Delay(1200, ct).ConfigureAwait(false);
                 }
             }
+
             throw new TimeoutException("POST request timed out.");
         }
 
         private static Exception MakeHttpError(HttpStatusCode status, string body)
         {
-            var (msg, _) = ExtractError(body);
-            msg = string.IsNullOrWhiteSpace(msg) ? "Request failed." : msg;
-            return new InvalidOperationException($"{(int)status} {status}: {msg}");
+            var ex = ExtractError(body);
+            string msg = string.IsNullOrWhiteSpace(ex.message) ? "Request failed." : ex.message;
+            return new InvalidOperationException(((int)status) + " " + status + ": " + msg);
         }
 
         private static (string message, string code) ExtractError(string body)
@@ -482,11 +576,13 @@ namespace ADLMRateGen.ADLM.Auth
             {
                 if (!string.IsNullOrWhiteSpace(body))
                 {
-                    using var doc = JsonDocument.Parse(body);
-                    var root = doc.RootElement;
-                    string msg = root.TryGetProperty("error", out var e) ? (e.GetString() ?? "") : "";
-                    string code = root.TryGetProperty("code", out var c) ? (c.GetString() ?? "") : "";
-                    return (msg, code);
+                    using (JsonDocument doc = JsonDocument.Parse(body))
+                    {
+                        JsonElement root = doc.RootElement;
+                        string msg = root.TryGetProperty("error", out var e) ? (e.GetString() ?? "") : "";
+                        string code = root.TryGetProperty("code", out var c) ? (c.GetString() ?? "") : "";
+                        return (msg, code);
+                    }
                 }
             }
             catch { }
@@ -495,11 +591,54 @@ namespace ADLMRateGen.ADLM.Auth
 
         private static string CombineUrl(string baseUrl, string path)
         {
-            if (string.IsNullOrEmpty(baseUrl)) return path ?? "";
-            if (string.IsNullOrEmpty(path)) return baseUrl;
-            if (baseUrl.EndsWith("/")) baseUrl = baseUrl.TrimEnd('/');
-            if (!path.StartsWith("/")) path = "/" + path;
-            return baseUrl + path;
+            if (string.IsNullOrWhiteSpace(baseUrl)) return path ?? "";
+            if (string.IsNullOrWhiteSpace(path)) return baseUrl;
+
+            string b = baseUrl.EndsWith("/") ? baseUrl.TrimEnd('/') : baseUrl;
+            string p = path.StartsWith("/") ? path : ("/" + path);
+            return b + p;
+        }
+
+        // ---- JWT expiry helpers (reads exp claim) ----
+        private static DateTimeOffset? TryGetJwtExpiryUtc(string jwt)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(jwt)) return null;
+                string[] parts = jwt.Split('.');
+                if (parts.Length < 2) return null;
+
+                string payloadJson = Encoding.UTF8.GetString(Base64UrlDecode(parts[1]));
+                using (JsonDocument doc = JsonDocument.Parse(payloadJson))
+                {
+                    JsonElement root = doc.RootElement;
+                    if (!root.TryGetProperty("exp", out var expEl)) return null;
+
+                    long expSec;
+                    if (expEl.ValueKind == JsonValueKind.Number && expEl.TryGetInt64(out expSec))
+                    {
+                        return DateTimeOffset.FromUnixTimeSeconds(expSec);
+                    }
+
+                    if (expEl.ValueKind == JsonValueKind.String && long.TryParse(expEl.GetString(), out expSec))
+                    {
+                        return DateTimeOffset.FromUnixTimeSeconds(expSec);
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        private static byte[] Base64UrlDecode(string s)
+        {
+            string padded = s.Replace('-', '+').Replace('_', '/');
+            switch (padded.Length % 4)
+            {
+                case 2: padded += "=="; break;
+                case 3: padded += "="; break;
+            }
+            return Convert.FromBase64String(padded);
         }
     }
 }

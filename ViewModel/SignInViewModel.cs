@@ -6,6 +6,7 @@ using ADLMRateGen.Services;
 using ADLMRateGen.ViewModel.Model;
 using System;
 using System.Net.NetworkInformation;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -17,37 +18,48 @@ namespace ADLMRateGen.ViewModel
         private const string ProductKey = "rategen";
         private const string HS256_SHARED = "[REDACTED-JWT-LICENSE-SECRET]";
 
-        //private readonly AuthClient _auth = new AuthClient(
-        //    new AuthOptions
-        //    {
-        //        BaseUrl = "https://adlmweb.onrender.com",
-        //        ProductKey = ProductKey,
-        //        DeviceFingerprintProvider = Helpers.DeviceFingerprint.Generate
-        //    }
-        //);
-
-        private AuthClient _auth => AuthProvider.Instance.Client;
+        private AuthClient _auth { get { return AuthProvider.Instance.Client; } }
 
         private string _email = "";
         private string _password = "";
         private bool _isLoading;
 
-        public event Action<string>? ZonePricesApplied;
-        public event EventHandler<LoginEventArgs>? LoginSucceeded;
+        public event Action<string> ZonePricesApplied;
+        public event EventHandler<LoginEventArgs> LoginSucceeded;
 
         public ICommand LoginCommand { get; }
 
-        public SignInViewModel() => LoginCommand = new RelayCommand(async _ => await LoginAsync());
-        public SignInViewModel(object? _) : this() { }
+        public SignInViewModel()
+        {
+            LoginCommand = new RelayCommand(async _ => await LoginAsync());
+        }
 
-        public string Email { get => _email; set { _email = value; RaisePropertyChanged(); } }
-        public string Password { get => _password; set { _password = value; RaisePropertyChanged(); } }
-        public bool IsLoading { get => _isLoading; set { _isLoading = value; RaisePropertyChanged(); } }
+        public SignInViewModel(object _) : this() { }
 
-        private static string DeriveUsername(string email) =>
-            string.IsNullOrWhiteSpace(email) ? string.Empty : email.Split('@')[0];
+        public string Email
+        {
+            get { return _email; }
+            set { _email = value; RaisePropertyChanged(); }
+        }
 
-        
+        public string Password
+        {
+            get { return _password; }
+            set { _password = value; RaisePropertyChanged(); }
+        }
+
+        public bool IsLoading
+        {
+            get { return _isLoading; }
+            set { _isLoading = value; RaisePropertyChanged(); }
+        }
+
+        private static string DeriveUsername(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return string.Empty;
+            var parts = email.Split('@');
+            return parts.Length > 0 ? parts[0] : email;
+        }
 
         private async Task LoginAsync()
         {
@@ -68,7 +80,11 @@ namespace ADLMRateGen.ViewModel
                         Email = Email,
                         Username = DeriveUsername(Email)
                     };
-                    LoginSucceeded?.Invoke(this, new LoginEventArgs(user));
+
+                    var args = new LoginEventArgs(user) { AccessToken = "" };
+                    var ev = LoginSucceeded;
+                    if (ev != null) ev(this, args);
+
                     MessageBox.Show("Signed in (offline) via cached license.");
                     return;
                 }
@@ -82,6 +98,7 @@ namespace ADLMRateGen.ViewModel
             try
             {
                 await _auth.PingAsync();
+
                 var ok = await _auth.LoginAsync(identifier: Email, password: Password);
                 if (!ok)
                 {
@@ -92,13 +109,23 @@ namespace ADLMRateGen.ViewModel
 
                 await _auth.EnsureEntitledAsync(ProductKey);
 
-                var user = new UserModel
+                var userOnline = new UserModel
                 {
                     Email = Email,
                     Username = DeriveUsername(Email)
                 };
 
-                LoginSucceeded?.Invoke(this, new LoginEventArgs(user));
+                // ✅ server-issued token is now stored by AuthClient
+                var accessTokenFromServer = _auth.AccessToken;
+
+                var args2 = new LoginEventArgs(userOnline)
+                {
+                    AccessToken = accessTokenFromServer ?? ""
+                };
+
+                var ev2 = LoginSucceeded;
+                if (ev2 != null) ev2(this, args2);
+
                 MessageBox.Show("Sign in successful!");
 
                 // Fetch and sync zone-based pricing
@@ -106,7 +133,8 @@ namespace ADLMRateGen.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Login Error: {ex.Message}", "Unexpected error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Login Error: " + ex.Message, "Unexpected error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -118,67 +146,81 @@ namespace ADLMRateGen.ViewModel
         {
             try
             {
-                var profDoc = await _auth.GetJsonAsync("/me/profile");
-                var profRoot = profDoc.RootElement;
-                var serverZone = profRoot.TryGetProperty("zone", out var zEl)
-                    ? (zEl.GetString() ?? "")
-                    : "";
-
-                if (string.IsNullOrWhiteSpace(serverZone))
+                using (var profDoc = await _auth.GetJsonAsync("/me/profile"))
                 {
-                    MessageBox.Show("Your profile does not have a zone assigned.");
-                    return;
-                }
+                    JsonElement profRoot = profDoc.RootElement;
 
-                var localZone = AppSettings.Zone ?? "";
-                if (!string.Equals(serverZone, localZone, StringComparison.OrdinalIgnoreCase))
-                {
-                    var resp = MessageBox.Show(
-                        $"Your account zone is '{serverZone}'. Update your RateGen prices to this zone now?",
-                        "Update prices for location",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Question);
+                    string serverZone = profRoot.TryGetProperty("zone", out var zEl)
+                        ? (zEl.GetString() ?? "")
+                        : "";
 
-                    if (resp == MessageBoxResult.Yes)
+                    if (string.IsNullOrWhiteSpace(serverZone))
                     {
-                        var masterDoc = await _auth.GetJsonAsync($"/rategen/master?zone={Uri.EscapeDataString(serverZone)}");
-                        var root = masterDoc.RootElement;
-
-                        if (root.TryGetProperty("materials", out var mats))
-                            DataSourceCloudSync.SaveMaterialsFromDto(mats);
-
-                        if (root.TryGetProperty("labour", out var labs))
-                            DataSourceCloudSync.SaveLaboursFromDto(labs);
-
-                        AppSettings.Zone = serverZone;
-                        ZonePricesApplied?.Invoke(serverZone);
-
-                        MessageBox.Show($"Prices updated for zone: {serverZone}");
+                        MessageBox.Show("Your profile does not have a zone assigned.");
+                        return;
                     }
-                    else
+
+                    string localZone = AppSettings.Zone ?? "";
+                    if (!string.Equals(serverZone, localZone, StringComparison.OrdinalIgnoreCase))
                     {
-                        AppSettings.Zone = serverZone;
+                        var resp = MessageBox.Show(
+                            "Your account zone is '" + serverZone + "'. Update your RateGen prices to this zone now?",
+                            "Update prices for location",
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Question);
+
+                        if (resp == MessageBoxResult.Yes)
+                        {
+                            using (var masterDoc = await _auth.GetJsonAsync("/rategen/master?zone=" + Uri.EscapeDataString(serverZone)))
+                            {
+                                JsonElement root = masterDoc.RootElement;
+
+                                if (root.TryGetProperty("materials", out var mats))
+                                    DataSourceCloudSync.SaveMaterialsFromDto(mats);
+
+                                if (root.TryGetProperty("labour", out var labs))
+                                    DataSourceCloudSync.SaveLaboursFromDto(labs);
+                            }
+
+                            AppSettings.Zone = serverZone;
+                            var ev = ZonePricesApplied;
+                            if (ev != null) ev(serverZone);
+
+                            MessageBox.Show("Prices updated for zone: " + serverZone);
+                        }
+                        else
+                        {
+                            // Still store the server zone so next sessions are consistent
+                            AppSettings.Zone = serverZone;
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Zone sync failed: {ex.Message}", "Zone Sync", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Zone sync failed: " + ex.Message, "Zone Sync",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
         private bool TryOfflineLicense(string jwt)
         {
-            if (!JwtLicenseValidator.TryValidateHS256(jwt, HS256_SHARED, out var payload, out _))
+            JsonElement payload;
+            string err;
+
+            if (!JwtLicenseValidator.TryValidateHS256(jwt, HS256_SHARED, out payload, out err))
                 return false;
 
             var dfp = Helpers.DeviceFingerprint.Generate();
             return JwtLicenseValidator.IsEntitledForDevice(payload, ProductKey, dfp);
         }
 
-        private UserModel? BuildUserFromLicense(string jwt)
+        private UserModel BuildUserFromLicense(string jwt)
         {
-            if (!JwtLicenseValidator.TryValidateHS256(jwt, HS256_SHARED, out var payload, out _))
+            JsonElement payload;
+            string err;
+
+            if (!JwtLicenseValidator.TryValidateHS256(jwt, HS256_SHARED, out payload, out err))
                 return null;
 
             var user = new UserModel();
@@ -197,8 +239,15 @@ namespace ADLMRateGen.ViewModel
 
         public class LoginEventArgs : EventArgs
         {
-            public UserModel LoggedInUser { get; }
-            public LoginEventArgs(UserModel user) => LoggedInUser = user;
+            public UserModel LoggedInUser { get; private set; }
+            public string AccessToken { get; set; }
+
+            public LoginEventArgs(UserModel user)
+            {
+                if (user == null) throw new ArgumentNullException(nameof(user));
+                LoggedInUser = user;
+                AccessToken = "";
+            }
         }
     }
 }

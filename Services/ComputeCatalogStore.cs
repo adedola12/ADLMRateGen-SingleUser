@@ -1,8 +1,10 @@
 ﻿using ADLMRateGen.Helpers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -11,8 +13,9 @@ using System.Threading.Tasks;
 namespace ADLMRateGen.Services
 {
     /// <summary>
-    /// Disk-backed store for admin-pushed compute items.
-    /// Now also supports API refresh -> saves into compute-items.json.
+    /// Disk-backed store for compute items (admin/cloud).
+    /// Fetches from: /rategen-v2/library/compute-items/sync (paged by cursor).
+    /// Saves to: compute-items.json
     /// </summary>
     public static class ComputeCatalogStore
     {
@@ -24,36 +27,47 @@ namespace ADLMRateGen.Services
         public static string FilePath =>
             Path.Combine(UserLibrarySync.UserDataFolder, "compute-items.json");
 
-        // ✅ Configure once from MainViewModel (recommended)
+        // ✅ Configure once from MainViewModel
         private static string _apiBaseUrl = "https://adlmweb.onrender.com";
-        private static string _computeApiPath = "/api/rates/compute-items"; // 🔁 CHANGE THIS if your backend uses a different route
 
-        public static void ConfigureApi(string baseUrl, string? computeApiPath = null)
+        // ✅ MUST match server route in rategen.library.js
+        // router.get("/library/compute-items/sync", ...)
+        private static string _computeSyncPath = "/rategen-v2/library/compute-items/sync";
+
+        public static void ConfigureApi(string baseUrl, string? computeSyncPath = null)
         {
             if (!string.IsNullOrWhiteSpace(baseUrl))
                 _apiBaseUrl = baseUrl.TrimEnd('/');
 
-            if (!string.IsNullOrWhiteSpace(computeApiPath))
-                _computeApiPath = computeApiPath.StartsWith("/") ? computeApiPath : "/" + computeApiPath;
+            if (!string.IsNullOrWhiteSpace(computeSyncPath))
+                _computeSyncPath = computeSyncPath.StartsWith("/") ? computeSyncPath : "/" + computeSyncPath;
         }
 
-        // ✅ last API sync diagnostics (so you can confirm it fired)
+        // diagnostics
         public static DateTime? LastApiSyncUtc { get; private set; }
         public static int LastApiStatusCode { get; private set; }
         public static int LastApiItemCount { get; private set; }
         public static string LastApiMessage { get; private set; } = "";
 
-        /// <summary>
-        /// Ensures folder + file exist. If file doesn't exist, creates with "[]".
-        /// </summary>
+        private static readonly HttpClient _http = CreateHttp();
+
+        private static HttpClient CreateHttp()
+        {
+            var http = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(20)
+            };
+            http.DefaultRequestHeaders.Accept.Clear();
+            http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return http;
+        }
+
         public static void EnsureStoreExists()
         {
             Directory.CreateDirectory(UserLibrarySync.UserDataFolder);
 
             if (!File.Exists(FilePath))
-            {
                 File.WriteAllText(FilePath, "[]");
-            }
         }
 
         public static void ReloadFromDisk()
@@ -71,21 +85,18 @@ namespace ADLMRateGen.Services
                 }
 
                 var items = JsonConvert.DeserializeObject<List<ComputeItemDefinition>>(json)
-                            ?? new List<ComputeItemDefinition>();
+                           ?? new List<ComputeItemDefinition>();
 
                 Items = items;
                 Changed?.Invoke();
             }
             catch
             {
-                // Keep last known items (best-effort). Still notify so UI can show warnings if it wants.
+                // best-effort
                 Changed?.Invoke();
             }
         }
 
-        /// <summary>
-        /// Saves items to disk and reloads (fires Changed).
-        /// </summary>
         public static void SaveToDisk(IEnumerable<ComputeItemDefinition> items)
         {
             EnsureStoreExists();
@@ -99,121 +110,145 @@ namespace ADLMRateGen.Services
         // -------------------- ✅ API refresh --------------------
 
         public static Task<bool> RefreshFromApiAsync(CancellationToken ct = default)
-            => RefreshFromApiInternalAsync(sectionKey: null, ct);
+            => RefreshFromApiInternalAsync(sectionFilter: null, ct: ct);
 
-        public static Task<bool> RefreshFromApiAsync(string sectionKey, CancellationToken ct = default)
-            => RefreshFromApiInternalAsync(sectionKey, ct);
+        public static Task<bool> RefreshFromApiAsync(string sectionFilter, CancellationToken ct = default)
+            => RefreshFromApiInternalAsync(sectionFilter, ct);
 
-        private static async Task<bool> RefreshFromApiInternalAsync(string? sectionKey, CancellationToken ct)
+        private static async Task<bool> RefreshFromApiInternalAsync(string? sectionFilter, CancellationToken ct)
         {
             LastApiSyncUtc = null;
             LastApiStatusCode = 0;
             LastApiItemCount = 0;
             LastApiMessage = "";
 
-            // 🔐 Load token/zone from config
             var cfg = ConfigManager.LoadConfig();
             var token = cfg?.AuthToken ?? "";
-            var zone = cfg?.Zone ?? "Lagos";
 
             if (string.IsNullOrWhiteSpace(token))
             {
-                LastApiMessage = "Skipped compute API refresh: missing AuthToken (user not logged in).";
+                LastApiMessage = "Skipped compute sync: missing AuthToken (not logged in).";
                 return false;
             }
 
-            // Build URL: /api/compute-items?zone=...&section=...
-            var url = $"{_apiBaseUrl}{_computeApiPath}";
-            var q = new List<string>();
-
-            if (!string.IsNullOrWhiteSpace(zone))
-                q.Add("zone=" + Uri.EscapeDataString(zone));
-
-            if (!string.IsNullOrWhiteSpace(sectionKey))
-                q.Add("section=" + Uri.EscapeDataString(sectionKey.Trim()));
-
-            if (q.Count > 0)
-                url += "?" + string.Join("&", q);
+            // ✅ Paged sync
+            // GET /rategen-v2/library/compute-items/sync?limit=500&cursor=...
+            string? cursor = null;
+            var all = new List<ComputeItemDefinition>();
 
             try
             {
-                using (var http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) })
+                for (int page = 0; page < 50; page++) // safety cap
                 {
-                    http.DefaultRequestHeaders.Accept.Clear();
-                    http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var url = $"{_apiBaseUrl}{_computeSyncPath}?limit=500";
+                    if (!string.IsNullOrWhiteSpace(cursor))
+                        url += "&cursor=" + Uri.EscapeDataString(cursor);
 
-                    var resp = await http.GetAsync(url, ct).ConfigureAwait(false);
+                    using var req = new HttpRequestMessage(HttpMethod.Get, url);
+                    req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
+                    using var resp = await _http.SendAsync(req, ct).ConfigureAwait(false);
                     LastApiStatusCode = (int)resp.StatusCode;
+
                     var body = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                    if (resp.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        LastApiMessage = "Compute sync failed: Unauthorized (token expired). Please sign in again.";
+                        return false;
+                    }
+
+                    if (resp.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        LastApiMessage = "Compute sync failed: Forbidden (no entitlement for rategen).";
+                        return false;
+                    }
 
                     if (!resp.IsSuccessStatusCode)
                     {
-                        LastApiMessage = $"Compute API failed: {(int)resp.StatusCode} {resp.ReasonPhrase}. Body: {Trim(body, 250)}";
+                        LastApiMessage = $"Compute sync failed: {(int)resp.StatusCode} {resp.ReasonPhrase}. Body: {Trim(body, 250)}";
                         return false;
                     }
 
-                    // Accept both:
-                    // 1) [ ... ]
-                    // 2) { items: [ ... ] } or { data: [ ... ] }
-                    var items = TryParseItems(body);
-
-                    if (items == null)
+                    // expected shape:
+                    // { ok:true, meta:{...}, items:[...], nextCursor:"..." }
+                    var parsed = TryParseSyncResponse(body);
+                    if (parsed == null)
                     {
-                        LastApiMessage = "Compute API returned JSON, but could not parse into compute items list.";
+                        LastApiMessage = "Compute sync returned JSON but could not parse (unexpected response shape).";
                         return false;
                     }
 
-                    LastApiItemCount = items.Count;
-                    LastApiSyncUtc = DateTime.UtcNow;
-                    LastApiMessage = $"Compute API OK. Items={items.Count}. Saved to disk.";
+                    if (parsed.Items != null && parsed.Items.Count > 0)
+                        all.AddRange(parsed.Items);
 
-                    // Save + reload triggers Changed event
-                    SaveToDisk(items);
-                    return true;
+                    cursor = string.IsNullOrWhiteSpace(parsed.NextCursor) ? null : parsed.NextCursor;
+
+                    if (cursor == null) break; // done
                 }
+
+                // optional local filter by section
+                if (!string.IsNullOrWhiteSpace(sectionFilter))
+                {
+                    var f = sectionFilter.Trim();
+                    all = all.FindAll(x =>
+                        (x.section ?? "").IndexOf(f, StringComparison.OrdinalIgnoreCase) >= 0);
+                }
+
+                LastApiItemCount = all.Count;
+                LastApiSyncUtc = DateTime.UtcNow;
+                LastApiMessage = $"Compute sync OK. Items={all.Count}. Saved to disk.";
+
+                SaveToDisk(all);
+                return true;
             }
             catch (TaskCanceledException)
             {
-                LastApiMessage = "Compute API timed out or was cancelled.";
+                LastApiMessage = "Compute sync timed out or was cancelled.";
                 return false;
             }
             catch (Exception ex)
             {
-                LastApiMessage = $"Compute API exception: {ex.Message}";
+                LastApiMessage = $"Compute sync exception: {ex.Message}";
                 return false;
             }
         }
 
-        private static List<ComputeItemDefinition>? TryParseItems(string json)
+        private static ComputeSyncResponse? TryParseSyncResponse(string json)
         {
-            if (string.IsNullOrWhiteSpace(json))
-                return new List<ComputeItemDefinition>();
+            if (string.IsNullOrWhiteSpace(json)) return null;
 
             try
             {
-                // list format
-                var list = JsonConvert.DeserializeObject<List<ComputeItemDefinition>>(json);
-                if (list != null) return list;
-            }
-            catch { }
+                var root = JObject.Parse(json);
 
-            try
+                // server returns "items"
+                var itemsTok = root["items"];
+                var nextCursorTok = root["nextCursor"];
+
+                var items = itemsTok != null
+                    ? itemsTok.ToObject<List<ComputeItemDefinition>>()
+                    : new List<ComputeItemDefinition>();
+
+                return new ComputeSyncResponse
+                {
+                    Items = items ?? new List<ComputeItemDefinition>(),
+                    NextCursor = nextCursorTok?.ToString()
+                };
+            }
+            catch
             {
-                var wrap1 = JsonConvert.DeserializeObject<ComputeItemsWrapperItems>(json);
-                if (wrap1?.items != null) return wrap1.items;
-            }
-            catch { }
+                // some servers might return raw array
+                try
+                {
+                    var list = JsonConvert.DeserializeObject<List<ComputeItemDefinition>>(json);
+                    if (list != null)
+                        return new ComputeSyncResponse { Items = list, NextCursor = null };
+                }
+                catch { }
 
-            try
-            {
-                var wrap2 = JsonConvert.DeserializeObject<ComputeItemsWrapperData>(json);
-                if (wrap2?.data != null) return wrap2.data;
+                return null;
             }
-            catch { }
-
-            return null;
         }
 
         private static string Trim(string s, int max)
@@ -223,37 +258,48 @@ namespace ADLMRateGen.Services
             return s.Length <= max ? s : s.Substring(0, max) + "...";
         }
 
-        private sealed class ComputeItemsWrapperItems
+        private sealed class ComputeSyncResponse
         {
-            public List<ComputeItemDefinition> items { get; set; } = new List<ComputeItemDefinition>();
-        }
-
-        private sealed class ComputeItemsWrapperData
-        {
-            public List<ComputeItemDefinition> data { get; set; } = new List<ComputeItemDefinition>();
+            public List<ComputeItemDefinition> Items { get; set; } = new List<ComputeItemDefinition>();
+            public string? NextCursor { get; set; }
         }
     }
 
-    // Keep this schema stable between web admin + desktop app
+    // ✅ matches server toComputeItemDefinition shape (keeps backward compatibility too)
     public sealed class ComputeItemDefinition
     {
-        public string id { get; set; } = "";          // server id or slug
-        public string section { get; set; } = "";     // e.g. "Finishes"
+        public string id { get; set; } = "";
+        public string section { get; set; } = "";
         public string name { get; set; } = "";
         public string outputUnit { get; set; } = "m2";
-        public decimal poPercent { get; set; } = 0;   // optional uplift at compute-item level
+
+        // server fields
+        public decimal overheadPercentDefault { get; set; } = 10;
+        public decimal profitPercentDefault { get; set; } = 25;
+
+        // legacy convenience
+        public decimal poPercent { get; set; } = 0;
+
         public bool enabled { get; set; } = true;
+        public string notes { get; set; } = "";
+        public DateTime? updatedAt { get; set; }
 
         public List<ComputeLine> lines { get; set; } = new List<ComputeLine>();
     }
 
     public sealed class ComputeLine
     {
-        public string kind { get; set; } = "material";   // "material" | "labour" | "constant"
-        public int? refSn { get; set; }                  // optional (if you later want SN lookup)
-        public string description { get; set; } = "";    // must match library name if using name lookup
+        public string kind { get; set; } = "material"; // material | labour | constant
+
+        public int? refSn { get; set; }
+        public string? refKey { get; set; }
+        public string? refName { get; set; }
+
+        // used by your older compute engine
+        public string description { get; set; } = "";
+
         public string unit { get; set; } = "";
-        public decimal? unitPriceAtBuild { get; set; }   // used for constant or cached preview
+        public decimal? unitPriceAtBuild { get; set; }
 
         public decimal qtyPerUnit { get; set; } = 0;
         public decimal factor { get; set; } = 1;

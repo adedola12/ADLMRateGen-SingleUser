@@ -14,7 +14,17 @@ namespace ADLMRateGen.ViewModel.CustomRate
 		// CustomRateListViewModel.cs  ❯  add at the top of the class
 		public event Action LibraryChanged;
 
-		public ObservableCollection<CustomRate> CustomRates { get; set; } = new ObservableCollection<CustomRate>();
+        private bool _isNetCostFilterOn = false;
+        private SortState _currentSort = SortState.None;
+
+        private enum SortState { None, Overhead, TotalCost }
+
+        public ICollectionView? ItemsView { get; set; }   // set this to your collection view
+
+        public ICommand FilterCommand { get; }
+        public ICommand SortCommand { get; }
+
+        public ObservableCollection<CustomRate> CustomRates { get; set; } = new ObservableCollection<CustomRate>();
 
 		private string _searchTerm;
 		public string SearchTerm
@@ -54,7 +64,10 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			foreach (var rate in rates)
 				CustomRates.Add(rate);
 
-			RatesView = CollectionViewSource.GetDefaultView(CustomRates);
+            FilterCommand = new DelegateCommand(_ => ToggleNetCostFilter());
+            SortCommand = new DelegateCommand(_ => CycleSort());
+
+            RatesView = CollectionViewSource.GetDefaultView(CustomRates);
 			RatesView.Filter = RateFilter;
 
 			CustomRates.CollectionChanged += (_, __) => LibraryChanged?.Invoke();
@@ -94,9 +107,37 @@ namespace ADLMRateGen.ViewModel.CustomRate
 			}
 		}
 
+        private void ToggleNetCostFilter()
+        {
+            _isNetCostFilterOn = !_isNetCostFilterOn;
+            if (ItemsView == null) return;
+
+            ItemsView.SortDescriptions.Clear();
+            if (_isNetCostFilterOn)
+                ItemsView.SortDescriptions.Add(new SortDescription("NetCost", ListSortDirection.Ascending));
+        }
+
+        private void CycleSort()
+        {
+            _currentSort = _currentSort switch
+            {
+                SortState.None => SortState.Overhead,
+                SortState.Overhead => SortState.TotalCost,
+                SortState.TotalCost => SortState.None,
+                _ => SortState.None
+            };
+
+            if (ItemsView == null) return;
+
+            ItemsView.SortDescriptions.Clear();
+            if (_currentSort == SortState.Overhead)
+                ItemsView.SortDescriptions.Add(new SortDescription("OverheadValue", ListSortDirection.Ascending));
+            else if (_currentSort == SortState.TotalCost)
+                ItemsView.SortDescriptions.Add(new SortDescription("TotalCost", ListSortDirection.Ascending));
+        }
 
 
-		private void CustomRateServices_OnCustomRateSaved(CustomRate newRate)
+        private void CustomRateServices_OnCustomRateSaved(CustomRate newRate)
 		{
 			// Add to local collection so user sees it
 			App.Current.Dispatcher.Invoke(() =>
