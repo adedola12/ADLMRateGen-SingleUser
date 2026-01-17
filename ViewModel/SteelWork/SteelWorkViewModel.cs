@@ -6,294 +6,318 @@ using ADLMRateGen.ViewModel.CustomRate;
 using ADLMRateGen.ViewModel.Groundwork;
 using ADLMRateGen.ViewModel.Painting;
 using ADLMRateGen.ViewModel.RoofWork;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace ADLMRateGen.ViewModel.SteelWork
 {
-    public class SteelWorkViewModel: ViewModelBase
+    public class SteelWorkViewModel : ViewModelBase
     {
-		private readonly GetItemsFromDB _helper;
+        private readonly GetItemsFromDB _helper;
 
-		private double _overheadPercent = 10.0;
-		private double _profitPercent = 25.0;
-		private string _searchTerm = string.Empty;
-		private object _selectedDetail;
-		// ─── Sorting / filtering helpers ──────────────────────────────────────────────
-		private bool _isNetCostFilterOn = false;          // toggled by “Filter ⌄”
-		private SortState _currentSort = SortState.None;  // cycles in “Sort by ⌄”
+        private double _overheadPercent = 10.0;
+        private double _profitPercent = 25.0;
+        private string _searchTerm = string.Empty;
+        private object _selectedDetail;
 
-        private const string SectionKey = SectionKeys.Steelwork;
-        // ✅ Steel section key
+        // ─── Sorting / filtering helpers ──────────────────────────────────────────────
+        private bool _isNetCostFilterOn = false;
+        private SortState _currentSort = SortState.None;
+
+        private const string SectionKey = SectionKeys.Steelwork; // ✅ Steel section key
         private readonly ComputeItemEngine _computeEngine;
 
         private enum SortState { None, Overhead, TotalCost }
 
+        public double OverheadPercent
+        {
+            get => _overheadPercent;
+            set
+            {
+                if (_overheadPercent != value)
+                {
+                    _overheadPercent = value;
+                    RaisePropertyChanged();
+                    RecomputeAll();
+                }
+            }
+        }
 
+        public double ProfitPercent
+        {
+            get => _profitPercent;
+            set
+            {
+                if (_profitPercent != value)
+                {
+                    _profitPercent = value;
+                    RaisePropertyChanged();
+                    RecomputeAll();
+                }
+            }
+        }
 
-		public double OverheadPercent
-		{
-			get => _overheadPercent;
-			set
-			{
-				if (_overheadPercent != value)
-				{
-					_overheadPercent = value;
-					RaisePropertyChanged();
-					RecomputeAll();
-				}
-			}
-		}
-		public double ProfitPercent
-		{
-			get => _profitPercent;
-			set
-			{
-				if (_profitPercent != value)
-				{
-					_profitPercent = value;
-					RaisePropertyChanged();
-					RecomputeAll();
+        public object SelectedDetail
+        {
+            get => _selectedDetail;
+            set
+            {
+                if (_selectedDetail != value)
+                {
+                    _selectedDetail = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
 
-				}
-			}
-		}
-		public object SelectedDetail
-		{
-			get => _selectedDetail;
-			set
-			{
-				if (_selectedDetail != value)
-				{
-					_selectedDetail = value;
-					RaisePropertyChanged();
-				}
-			}
-		}
-		public ObservableCollection<SteelworkItem> SteelWorkItems { get; set; } =
-			new ObservableCollection<SteelworkItem>();
-		public ICollectionView SteelWorkCollectionView { get; private set; }
-		public string SearchTerm
-		{
-			get => _searchTerm;
-			set
-			{
-				if (_searchTerm != value)
-				{
-					_searchTerm = value;
-					RaisePropertyChanged();
-					SteelWorkCollectionView.Refresh();
-				}
-			}
-		}
-	
-		public ICommand RecomputeCommand { get; }
-		public ICommand ShowDetailsCommand { get; }
-		public ICommand FilterCommand { get; }   // NEW
-		public ICommand SortCommand { get; }   // NEW
-		public ICommand AddCustomRateCommand { get; }           // ❶ NEW
+        public ObservableCollection<SteelworkItem> SteelWorkItems { get; set; } =
+            new ObservableCollection<SteelworkItem>();
 
-		public SteelWorkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourLib)
-		{
-			_helper = new GetItemsFromDB(matLib, labourLib);
-			matLib.LibraryChanged += OnLibraryChange;
-			labourLib.LibraryChanged += OnLibraryChange;
+        public ICollectionView SteelWorkCollectionView { get; private set; }
 
+        public string SearchTerm
+        {
+            get => _searchTerm;
+            set
+            {
+                if (_searchTerm != value)
+                {
+                    _searchTerm = value;
+                    RaisePropertyChanged();
+                    SteelWorkCollectionView?.Refresh();
+                }
+            }
+        }
+
+        public ICommand RecomputeCommand { get; }
+        public ICommand ShowDetailsCommand { get; }
+        public ICommand FilterCommand { get; }
+        public ICommand SortCommand { get; }
+        public ICommand AddCustomRateCommand { get; }
+
+        public SteelWorkViewModel(MaterialLibraryViewModel matLib, LabourLibraryViewModel labourLib)
+        {
+            _helper = new GetItemsFromDB(matLib, labourLib);
+
+            // Lib changes
+            matLib.LibraryChanged += OnLibraryChanged;
+            labourLib.LibraryChanged += OnLibraryChanged;
+
+            // Views
+            SteelWorkCollectionView = CollectionViewSource.GetDefaultView(SteelWorkItems);
+            SteelWorkCollectionView.Filter = FilterSteelworkItem;
+
+            // Commands
+            RecomputeCommand = new DelegateCommand(_ => RecomputeAll());
+            ShowDetailsCommand = new DelegateCommand(o => ShowDetails(o));
+            FilterCommand = new DelegateCommand(_ => ToggleNetCostFilter());
+            SortCommand = new DelegateCommand(_ => CycleSort());
+            AddCustomRateCommand = new DelegateCommand(_ => OpenCustomRateEntry());
+
+            // Compute engine
             _computeEngine = new ComputeItemEngine(GetMaterialPrice, GetLabourRate);
+
+            // ✅ Disk-first (offline)
+            ComputeCatalogStore.ReloadFromDisk();
+            RateLibraryStore.ReloadFromDisk();
+
+            // ✅ Listen to stores like GroundWork
+            ComputeCatalogStore.Changed += OnLibraryChanged;
+            RateLibraryStore.Changed += OnLibraryChanged;
+
+            // ✅ Start API refresh (async)
             _ = LoadComputeCatalogForSectionAsync();
+            _ = LoadRateLibraryAsync();
 
+            // ✅ Build initial items immediately from cache
+            RecomputeAll();
 
-            BuildSteelworkItem();
+            // Currency updates
+            CurrencyService.Instance.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
+                    RecomputeAll();
+            };
+        }
 
-			SteelWorkCollectionView = CollectionViewSource.GetDefaultView(SteelWorkItems);
-			SteelWorkCollectionView.Filter = FilterSteelworkItem;
-
-			RecomputeCommand = new DelegateCommand(o => RecomputeAll());
-			ShowDetailsCommand = new DelegateCommand(o => ShowDetails(o));
-			FilterCommand = new DelegateCommand(_ => ToggleNetCostFilter());
-			SortCommand = new DelegateCommand(_ => CycleSort());
-
-			AddCustomRateCommand = new DelegateCommand(_ => OpenCustomRateEntry());
-
-			CurrencyService.Instance.PropertyChanged += (_, e) =>
-			{
-				if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
-					RecomputeAll();                 // already clears & rebuilds everything
-			};
-		}
+        /* -------------------- API LOADERS -------------------- */
 
         private async Task LoadComputeCatalogForSectionAsync()
         {
             try
             {
-                // Try server-side section filter
                 var ok = await ComputeCatalogStore.RefreshFromApiAsync(SectionKey);
 
-                // 🔁 Fallback: if API returns none for this section key, try without section filter
-                // (only do this if your backend section naming is inconsistent)
+                // fallback if section mismatch / empty
                 if (ok && ComputeCatalogStore.LastApiItemCount == 0)
-                {
-                    await ComputeCatalogStore.RefreshFromApiAsync(); // fetch all
-                }
+                    await ComputeCatalogStore.RefreshFromApiAsync();
 
-                // Rebuild to append whatever is now in ComputeCatalogStore.Items
-                RecomputeAll();
+                OnLibraryChanged();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Compute API load failed: {ex}");
-                // still show cached disk items already loaded
+                System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] load failed: {ex}");
             }
         }
 
+        private async Task LoadRateLibraryAsync()
+        {
+            try
+            {
+                // Show cached first
+                RateLibraryStore.ReloadFromDisk();
+                System.Diagnostics.Debug.WriteLine($"[RateLibrary] Cached disk items={RateLibraryStore.Items?.Count ?? 0}");
 
-        #region Functions
-        private void OnLibraryChange()
-		{
-			RecomputeAll();
-		}
-		private bool FilterSteelworkItem(object obj)
-		{
-			if(obj is SteelworkItem item)
-			{
-				if (string.IsNullOrEmpty(SearchTerm))
-				{
-					return true;
-				}
-				return item.Description.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0;
+                var ok = await RateLibraryStore.RefreshFromApiAsync(SectionKey);
 
-			}
-			return false;
+                System.Diagnostics.Debug.WriteLine(
+                    $"[RateLibrary] Refresh ok={ok}, status={RateLibraryStore.LastApiStatusCode}, count={RateLibraryStore.LastApiItemCount}, msg={RateLibraryStore.LastApiMessage}");
 
-		}
-		private void RecomputeAll()
-		{
-			SteelWorkItems.Clear();
-			BuildSteelworkItem();
-		}
-		private void ShowDetails(object o)
-		{
-			if(o is SteelworkItem item)
-			{
-				var detailedControl = new SteelWorkDetailControl();
-				detailedControl.DataContext = item;
+                // fallback if section mismatch
+                if (ok && RateLibraryStore.LastApiItemCount == 0)
+                {
+                    System.Diagnostics.Debug.WriteLine("[RateLibrary] Section returned 0. Retrying without sectionKey...");
+                    await RateLibraryStore.RefreshFromApiAsync();
 
-				detailedControl.BackRequested += () =>
-				{
-					SelectedDetail = null;
-				};
-				SelectedDetail = detailedControl;
-			}
-		}
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[RateLibrary] Retry(all) status={RateLibraryStore.LastApiStatusCode}, count={RateLibraryStore.LastApiItemCount}, msg={RateLibraryStore.LastApiMessage}");
+                }
 
-		// ────── FILTER – order by Net Cost (low → high) ──────
-		private void ToggleNetCostFilter()
-		{
-			_isNetCostFilterOn = !_isNetCostFilterOn;
+                OnLibraryChanged();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[RateLibrary] load failed: {ex}");
+            }
+        }
 
-			SteelWorkCollectionView.SortDescriptions.Clear();
+        /* -------------------- UI SAFE REBUILD -------------------- */
 
-			if (_isNetCostFilterOn)
-				SteelWorkCollectionView.SortDescriptions.Add(
-					new SortDescription(nameof(SteelworkItem.NetCost),
-										ListSortDirection.Ascending));
-		}
+        private void OnLibraryChanged()
+        {
+            var disp = Application.Current?.Dispatcher;
+            if (disp == null)
+            {
+                RecomputeAll();
+                return;
+            }
 
-		// ────── SORT – cycle → None ▪ Overhead ▪ Total Cost ──────
-		private void CycleSort()
-		{
-			// next state
-			_currentSort = _currentSort switch
-			{
-				SortState.None => SortState.Overhead,
-				SortState.Overhead => SortState.TotalCost,
-				SortState.TotalCost => SortState.None,
-				_ => SortState.None
-			};
+            if (disp.CheckAccess())
+                RecomputeAll();
+            else
+                disp.Invoke(RecomputeAll);
+        }
 
-			SteelWorkCollectionView.SortDescriptions.Clear();
+        /* -------------------- UI / FILTER / SORT -------------------- */
 
-			switch (_currentSort)
-			{
-				case SortState.Overhead:
-					SteelWorkCollectionView.SortDescriptions.Add(
-						new SortDescription(nameof(SteelworkItem.OverheadValue),
-											ListSortDirection.Ascending));
-					break;
+        private bool FilterSteelworkItem(object obj)
+        {
+            if (obj is SteelworkItem item)
+            {
+                if (string.IsNullOrEmpty(SearchTerm))
+                    return true;
 
-				case SortState.TotalCost:
-					SteelWorkCollectionView.SortDescriptions.Add(
-						new SortDescription(nameof(SteelworkItem.TotalCost),
-											ListSortDirection.Ascending));
-					break;
+                return (item.Description ?? "")
+                    .IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0;
+            }
+            return false;
+        }
 
-				case SortState.None:
-				default:
-					// back to the order in the underlying ObservableCollection
-					break;
-			}
-		}
+        private void RecomputeAll()
+        {
+            SteelWorkItems.Clear();
+            BuildSteelworkItem();
+            SteelWorkCollectionView?.Refresh();
+        }
 
-		private void OpenCustomRateEntry()
-		{
-			// create the entry view + its view‑model (DI / service‑locator would
-			// be nicer, but a direct new‑up works fine here)
-			var view = new CustomRateEntryView();
-			view.DataContext = new CustomRateEntryViewModel();
+        private void ShowDetails(object o)
+        {
+            if (o is SteelworkItem item)
+            {
+                var detailedControl = new SteelWorkDetailControl();
+                detailedControl.DataContext = item;
 
-			/* optional: close the popup when the entry VM tells us it's done
-			   (expose bool IsSaved / event Saved in the entry‑VM if you like) */
-			// ((CustomRateEntryViewModel)view.DataContext).Saved += () => SelectedDetail = null;
+                detailedControl.BackRequested += () => { SelectedDetail = null; };
+                SelectedDetail = detailedControl;
+            }
+        }
 
-			SelectedDetail = view;         // GroundWorkView listens to this
-		}
-		private (double overheadVal, double profitVal, double total) ApplyOHP(double netCost)
-		{
-			double ov = netCost * (OverheadPercent / 100);
-			double pv = netCost * (ProfitPercent / 100);
-			double total = netCost + ov + pv;
+        private void ToggleNetCostFilter()
+        {
+            _isNetCostFilterOn = !_isNetCostFilterOn;
 
-			return (ov, pv, total);
-		}
-		private double GetMaterialPrice(string name) => _helper.GetMaterialPrice(name);
-		private double GetLabourRate(string name) => _helper.GetLabourRate(name);
-		public double GetNetValue(Func<PaintWorkItem> computeItemFunc)
-		{
-			var item = computeItemFunc();
-			return item.NetCost;
-		}
-		public double GetSteelNetValue(Func<SteelworkItem> computeFunc)
-		{
-			return computeFunc().NetCost;
-		}
-		#endregion
+            SteelWorkCollectionView.SortDescriptions.Clear();
 
-		#region Compute Item
-		private void BuildSteelworkItem()
-		{
-			Func<SteelworkItem>[] computeMethods =
-			{
-				ComputeItem1,ComputeItem2,
-				ComputeItem3,
-				//ComputeItem4,ComputeItem5,
-				//ComputeItem6,ComputeItem7,ComputeItem8,ComputeItem9,
-			};
+            if (_isNetCostFilterOn)
+                SteelWorkCollectionView.SortDescriptions.Add(
+                    new SortDescription(nameof(SteelworkItem.NetCost), ListSortDirection.Ascending));
+        }
 
-			foreach(var compute in computeMethods)
-			{
-				SteelWorkItems.Add(compute());
-			}
+        private void CycleSort()
+        {
+            _currentSort = _currentSort switch
+            {
+                SortState.None => SortState.Overhead,
+                SortState.Overhead => SortState.TotalCost,
+                SortState.TotalCost => SortState.None,
+                _ => SortState.None
+            };
 
-			AppendApiComputeItems();
+            SteelWorkCollectionView.SortDescriptions.Clear();
 
+            switch (_currentSort)
+            {
+                case SortState.Overhead:
+                    SteelWorkCollectionView.SortDescriptions.Add(
+                        new SortDescription(nameof(SteelworkItem.OverheadValue), ListSortDirection.Ascending));
+                    break;
+
+                case SortState.TotalCost:
+                    SteelWorkCollectionView.SortDescriptions.Add(
+                        new SortDescription(nameof(SteelworkItem.TotalCost), ListSortDirection.Ascending));
+                    break;
+
+                case SortState.None:
+                default:
+                    break;
+            }
+        }
+
+        private void OpenCustomRateEntry()
+        {
+            var view = new CustomRateEntryView();
+            view.DataContext = new CustomRateEntryViewModel();
+            SelectedDetail = view;
+        }
+
+        /* -------------------- BUILD ITEMS -------------------- */
+
+        private void BuildSteelworkItem()
+        {
+            Func<SteelworkItem>[] computeMethods =
+            {
+                ComputeItem1, ComputeItem2, ComputeItem3
+            };
+
+            foreach (var compute in computeMethods)
+                SteelWorkItems.Add(compute());
+
+            // ✅ API compute definitions
+            AppendApiComputeItems();
+
+            // ✅ Admin/DB rates (RateLibraryStore) like GroundWork
+            AppendAdminRateItems();
         }
 
         private void AppendApiComputeItems()
         {
             if (_computeEngine == null) return;
+
             var defs = ComputeCatalogStore.Items;
             if (defs == null || defs.Count == 0)
             {
@@ -359,7 +383,7 @@ namespace ADLMRateGen.ViewModel.SteelWork
                         NetCost = Math.Round(net, 2),
                         OverheadValue = Math.Round(ohp.overheadVal, 0),
                         ProfitValue = Math.Round(ohp.profitVal, 0),
-                        TotalCost = Math.Round(ohp.total, 0),
+                        TotalCost = Math.Round(ohp.total, 2),
                         SteelWorkBreakdownLines = breakdown
                     });
 
@@ -368,251 +392,302 @@ namespace ADLMRateGen.ViewModel.SteelWork
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Skip '{def?.name}': {ex.Message}");
-                    continue;
                 }
-
-
             }
 
             System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Appended {appended} item(s) for section '{SectionKey}'.");
         }
 
+        private void AppendAdminRateItems()
+        {
+            var rates = RateLibraryStore.Items;
+            if (rates == null || rates.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"[RateLibrary] No rate items in store. File={RateLibraryStore.FilePath}");
+                return;
+            }
+
+            int nextNo = SteelWorkItems.Count + 1;
+            int appended = 0;
+
+            System.Diagnostics.Debug.WriteLine($"[RateLibrary] Store contains {rates.Count} total rates. Filtering section='{SectionKey}'");
+
+            foreach (var r in rates)
+            {
+                if (r == null) continue;
+
+                if (!string.Equals(r.SectionKey ?? "", SectionKey, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var net = (double)r.NetCost;
+                if (!(net > 0)) continue;
+
+                var ohp = ApplyOHP(net);
+
+                var breakdown = new ObservableCollection<SteelWorkBreakdownLine>();
+                if (r.Breakdown != null)
+                {
+                    foreach (var l in r.Breakdown)
+                    {
+                        breakdown.Add(new SteelWorkBreakdownLine
+                        {
+                            ComponentName = l.ComponentName,
+                            Quantity = (double)l.Quantity,
+                            Unit = l.Unit,
+                            UnitPrice = (double)l.UnitPrice,
+                            TotalPrice = (double)(l.LineTotal != 0 ? l.LineTotal : (l.Quantity * l.UnitPrice))
+                        });
+                    }
+                }
+
+                SteelWorkItems.Add(new SteelworkItem
+                {
+                    ItemNo = nextNo++,
+                    Description = r.Description,
+                    Unit = string.IsNullOrWhiteSpace(r.Unit) ? "m2" : r.Unit,
+                    NetCost = Math.Round(net, 2),
+                    OverheadValue = Math.Round(ohp.overheadVal, 0),
+                    ProfitValue = Math.Round(ohp.profitVal, 0),
+                    TotalCost = Math.Round(ohp.total, 2),
+                    SteelWorkBreakdownLines = breakdown
+                });
+
+                appended++;
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[RateLibrary] Appended {appended} admin rate(s) for section '{SectionKey}'.");
+        }
+
+        /* -------------------- SHARED HELPERS -------------------- */
+
+        private (double overheadVal, double profitVal, double total) ApplyOHP(double netCost)
+        {
+            double ov = netCost * (OverheadPercent / 100);
+            double pv = netCost * (ProfitPercent / 100);
+            double total = netCost + ov + pv;
+            return (ov, pv, total);
+        }
+
+        private double GetMaterialPrice(string name) => _helper.GetMaterialPrice(name);
+        private double GetLabourRate(string name) => _helper.GetLabourRate(name);
+
+        public double GetNetValue(Func<PaintWorkItem> computeItemFunc)
+        {
+            var item = computeItemFunc();
+            return item.NetCost;
+        }
+
+        public double GetSteelNetValue(Func<SteelworkItem> computeFunc)
+        {
+            return computeFunc().NetCost;
+        }
+
+        /* -------------------- YOUR EXISTING COMPUTE ITEMS -------------------- */
+
         public SteelworkItem ComputeItem1()
-		{
-			double brushCost = GetLabourRate("Power Brush");
-			double brushQty = 1;
-			double brushTotal = brushCost * brushQty;
+        {
+            double brushCost = GetLabourRate("Power Brush");
+            double brushQty = 1;
+            double brushTotal = brushCost * brushQty;
 
-			double brushPer = 10;
-			double brushOv = brushTotal * (brushPer / 100);
+            double brushPer = 10;
+            double brushOv = brushTotal * (brushPer / 100);
 
-			double artisanCost = GetLabourRate("Semi skilled") * 1.4;
-			double artisanQty = 1;
-			double artisanTotal = artisanCost * artisanQty;
+            double artisanCost = GetLabourRate("Semi skilled") * 1.4;
+            double artisanQty = 1;
+            double artisanTotal = artisanCost * artisanQty;
 
-			double totalCostPerDay = brushTotal + brushOv + artisanTotal;
-			double dailyOutput = 30;
-			double netCost = totalCostPerDay / dailyOutput;
+            double totalCostPerDay = brushTotal + brushOv + artisanTotal;
+            double dailyOutput = 30;
+            double netCost = totalCostPerDay / dailyOutput;
 
-			var ohp = ApplyOHP(netCost);
+            var ohp = ApplyOHP(netCost);
 
-			var breakdown = new ObservableCollection<SteelWorkBreakdownLine>
-			{
-				new SteelWorkBreakdownLine{ComponentName = "Power Brush",Quantity = brushQty,Unit = "No/Day",UnitPrice = brushCost,TotalPrice = brushTotal},
-				new SteelWorkBreakdownLine{ComponentName="Allow for Brushes",Quantity=brushPer, Unit="%",TotalPrice=brushOv},
-				new SteelWorkBreakdownLine{ComponentName="Skilled/Artisan",Quantity=artisanQty,Unit="No/Day",UnitPrice=artisanCost,TotalPrice=artisanTotal},
-				new SteelWorkBreakdownLine{ComponentName="Total Cost/Day",Quantity=dailyOutput,Unit="m",UnitPrice=totalCostPerDay,TotalPrice=netCost},
-			};
+            var breakdown = new ObservableCollection<SteelWorkBreakdownLine>
+            {
+                new SteelWorkBreakdownLine{ComponentName = "Power Brush",Quantity = brushQty,Unit = "No/Day",UnitPrice = brushCost,TotalPrice = brushTotal},
+                new SteelWorkBreakdownLine{ComponentName="Allow for Brushes",Quantity=brushPer, Unit="%",TotalPrice=brushOv},
+                new SteelWorkBreakdownLine{ComponentName="Skilled/Artisan",Quantity=artisanQty,Unit="No/Day",UnitPrice=artisanCost,TotalPrice=artisanTotal},
+                new SteelWorkBreakdownLine{ComponentName="Total Cost/Day",Quantity=dailyOutput,Unit="m",UnitPrice=totalCostPerDay,TotalPrice=netCost},
+            };
 
-			return new SteelworkItem
-			{
-				ItemNo = 1,
-				Description = "Clean down steel surface to bare metal using power brush",
-				Unit="m",
-				NetCost = Math.Round(netCost, 2),
-				OverheadValue = Math.Round(ohp.overheadVal, 0),
-				ProfitValue = Math.Round(ohp.profitVal, 0),
-				TotalCost = Math.Round(ohp.total, 2),
-				SteelWorkBreakdownLines = breakdown
-			};
-		}
+            return new SteelworkItem
+            {
+                ItemNo = 1,
+                Description = "Clean down steel surface to bare metal using power brush",
+                Unit = "m",
+                NetCost = Math.Round(netCost, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 0),
+                ProfitValue = Math.Round(ohp.profitVal, 0),
+                TotalCost = Math.Round(ohp.total, 2),
+                SteelWorkBreakdownLines = breakdown
+            };
+        }
 
-		private SteelworkItem ComputeItem2()
-		{
-			//Blasting
-			double compressorCost = GetLabourRate("Compressor") / 8;
-			double fuelCost = GetMaterialPrice("Diesel");
-			double sandPotCost = GetLabourRate("Sand Pot for sand blasting") / 8;
-			double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
-			double gritCost = GetMaterialPrice("Grit (for sand blasting)");
+        private SteelworkItem ComputeItem2()
+        {
+            //Blasting
+            double compressorCost = GetLabourRate("Compressor") / 8;
+            double fuelCost = GetMaterialPrice("Diesel");
+            double sandPotCost = GetLabourRate("Sand Pot for sand blasting") / 8;
+            double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
+            double gritCost = GetMaterialPrice("Grit (for sand blasting)");
 
-			double compressorQty = 0.025;
-			double fuelQty = 45;
-			double oilPer = 3;
-			double sandPotQty = 0.025;
-			double respiratoryQty = 0.025;
-			double gritQty = 0.15;
+            double compressorQty = 0.025;
+            double fuelQty = 45;
+            double oilPer = 3;
+            double sandPotQty = 0.025;
+            double respiratoryQty = 0.025;
+            double gritQty = 0.15;
 
-			double compressorRate = compressorCost * compressorQty;
-			double fuelRate = fuelCost * fuelQty;
-			double sandPotRate = sandPotCost * sandPotQty;
-			double respiratoryRate = respiratoryCost * respiratoryQty;
-			double gritRate = gritCost * gritQty;
-			double oilRate = fuelRate * (oilPer / 100);
+            double compressorRate = compressorCost * compressorQty;
+            double fuelRate = fuelCost * fuelQty;
+            double sandPotRate = sandPotCost * sandPotQty;
+            double respiratoryRate = respiratoryCost * respiratoryQty;
+            double gritRate = gritCost * gritQty;
+            double oilRate = fuelRate * (oilPer / 100);
 
-			double blastingOperatorCost = GetLabourRate("Light plant operator") * 1.4;
-			double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
-			double blastingForemanCost = GetLabourRate("Foreman") * 1.4;
+            double blastingOperatorCost = GetLabourRate("Light plant operator") * 1.4;
+            double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
+            double blastingForemanCost = GetLabourRate("Foreman") * 1.4;
 
-			double blastingOperatorQty = 1;
-			double blastingLabouurQty = 3;
-			double blastingForemanQty = 1;
+            double blastingOperatorQty = 1;
+            double blastingLabouurQty = 3;
+            double blastingForemanQty = 1;
 
-			double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
-			double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
-			double blastingForemanRate = blastingForemanCost * blastingForemanQty;
+            double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
+            double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
+            double blastingForemanRate = blastingForemanCost * blastingForemanQty;
 
-			double blastingLabour = blastingOperatorRate + blastingLabourRate+blastingForemanRate;
-			double blastingOutputDaily = 300;
+            double blastingLabour = blastingOperatorRate + blastingLabourRate + blastingForemanRate;
+            double blastingOutputDaily = 300;
 
-			double blastingPerSqm = blastingLabour / blastingOutputDaily;
+            double blastingPerSqm = blastingLabour / blastingOutputDaily;
 
-			double netCost = compressorRate + fuelRate + sandPotRate + respiratoryRate + gritRate + oilRate + blastingPerSqm;
+            double netCost = compressorRate + fuelRate + sandPotRate + respiratoryRate + gritRate + oilRate + blastingPerSqm;
 
-			var ohp = ApplyOHP(netCost);
+            var ohp = ApplyOHP(netCost);
 
-			var breakdown = new ObservableCollection<SteelWorkBreakdownLine>
-			{
-				new SteelWorkBreakdownLine{ ComponentName="Compressor", Quantity=compressorQty, Unit="hr/m2",
-					UnitPrice= compressorCost, TotalPrice=compressorRate},
-				new SteelWorkBreakdownLine{ ComponentName="Fuel (Diesel)", Quantity=fuelQty, Unit="lit/day",
-					UnitPrice= fuelCost, TotalPrice=fuelRate},
-				new SteelWorkBreakdownLine{ComponentName="Oil and consumables (per day)", Quantity=oilPer, Unit="%",
-					TotalPrice=oilRate},
-				new SteelWorkBreakdownLine{ ComponentName="Sand Pot", Quantity=sandPotQty, Unit="hr/m2",
-					UnitPrice= sandPotCost, TotalPrice=sandPotRate},
-				new SteelWorkBreakdownLine{ ComponentName="Respiratory gear.", Quantity=respiratoryQty, Unit="hr/m2",
-					UnitPrice= respiratoryCost, TotalPrice=respiratoryRate},
-				new SteelWorkBreakdownLine{ ComponentName="Grit", Quantity=gritQty, Unit="m3/m2",
-					UnitPrice= gritCost, TotalPrice=gritRate},
+            var breakdown = new ObservableCollection<SteelWorkBreakdownLine>
+            {
+                new SteelWorkBreakdownLine{ ComponentName="Compressor", Quantity=compressorQty, Unit="hr/m2",
+                    UnitPrice= compressorCost, TotalPrice=compressorRate},
+                new SteelWorkBreakdownLine{ ComponentName="Fuel (Diesel)", Quantity=fuelQty, Unit="lit/day",
+                    UnitPrice= fuelCost, TotalPrice=fuelRate},
+                new SteelWorkBreakdownLine{ComponentName="Oil and consumables (per day)", Quantity=oilPer, Unit="%",
+                    TotalPrice=oilRate},
+                new SteelWorkBreakdownLine{ ComponentName="Sand Pot", Quantity=sandPotQty, Unit="hr/m2",
+                    UnitPrice= sandPotCost, TotalPrice=sandPotRate},
+                new SteelWorkBreakdownLine{ ComponentName="Respiratory gear.", Quantity=respiratoryQty, Unit="hr/m2",
+                    UnitPrice= respiratoryCost, TotalPrice=respiratoryRate},
+                new SteelWorkBreakdownLine{ ComponentName="Grit", Quantity=gritQty, Unit="m3/m2",
+                    UnitPrice= gritCost, TotalPrice=gritRate},
 
-				new SteelWorkBreakdownLine{ ComponentName="Blasting operator.", Quantity=blastingOperatorQty, Unit="per/day",
-					UnitPrice= blastingOperatorCost, TotalPrice=blastingOperatorRate},
-				new SteelWorkBreakdownLine{ ComponentName="Labour (for loading sand pot)", Quantity=blastingLabouurQty, Unit="per/day",
-					UnitPrice= blastingLabourCost, TotalPrice=blastingLabourRate},
-				new SteelWorkBreakdownLine{ ComponentName="Foreman", Quantity=blastingForemanQty, Unit="per/day", UnitPrice=blastingForemanCost,
-				TotalPrice=blastingForemanRate},
-				new SteelWorkBreakdownLine{ComponentName="Labour Output", Quantity=blastingOutputDaily, Unit="m2/day", UnitPrice=blastingLabour,
-					TotalPrice=blastingPerSqm},
-				new SteelWorkBreakdownLine{ComponentName="Total Blasting ", TotalPrice=netCost},
-			};
+                new SteelWorkBreakdownLine{ ComponentName="Blasting operator.", Quantity=blastingOperatorQty, Unit="per/day",
+                    UnitPrice= blastingOperatorCost, TotalPrice=blastingOperatorRate},
+                new SteelWorkBreakdownLine{ ComponentName="Labour (for loading sand pot)", Quantity=blastingLabouurQty, Unit="per/day",
+                    UnitPrice= blastingLabourCost, TotalPrice=blastingLabourRate},
+                new SteelWorkBreakdownLine{ ComponentName="Foreman", Quantity=blastingForemanQty, Unit="per/day", UnitPrice=blastingForemanCost,
+                TotalPrice=blastingForemanRate},
+                new SteelWorkBreakdownLine{ComponentName="Labour Output", Quantity=blastingOutputDaily, Unit="m2/day", UnitPrice=blastingLabour,
+                    TotalPrice=blastingPerSqm},
+                new SteelWorkBreakdownLine{ComponentName="Total Blasting ", TotalPrice=netCost},
+            };
 
-			return new SteelworkItem
-			{
-				ItemNo = 2,
-				Description = "Prepare surface of structure by grit blasting to SP10",
-				Unit = "m2",
-				NetCost = Math.Round(netCost, 2),
-				OverheadValue = Math.Round(ohp.overheadVal, 0),
-				ProfitValue = Math.Round(ohp.profitVal, 0),
-				TotalCost = Math.Round(ohp.total, 2),
-				SteelWorkBreakdownLines = breakdown
-			};
-		}
+            return new SteelworkItem
+            {
+                ItemNo = 2,
+                Description = "Prepare surface of structure by grit blasting to SP10",
+                Unit = "m2",
+                NetCost = Math.Round(netCost, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 0),
+                ProfitValue = Math.Round(ohp.profitVal, 0),
+                TotalCost = Math.Round(ohp.total, 2),
+                SteelWorkBreakdownLines = breakdown
+            };
+        }
 
-		private SteelworkItem ComputeItem3()
-		{
-			//Blasting
-			double compressorCost = GetLabourRate("Compressor") / 8;
-			double fuelCost = GetMaterialPrice("Diesel");
-			double sandPotCost = GetLabourRate("Sand Pot for sand blasting") / 8;
-			double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
-			double gritCost = GetMaterialPrice("Sharp Sand");
+        private SteelworkItem ComputeItem3()
+        {
+            //Blasting
+            double compressorCost = GetLabourRate("Compressor") / 8;
+            double fuelCost = GetMaterialPrice("Diesel");
+            double sandPotCost = GetLabourRate("Sand Pot for sand blasting") / 8;
+            double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
+            double gritCost = GetMaterialPrice("Sharp Sand");
 
-			double compressorQty = 0.025;
-			double fuelQty = 45;
-			double oilPer = 3;
-			double sandPotQty = 0.025;
-			double respiratoryQty = 0.025;
-			double gritQty = 0.15;
+            double compressorQty = 0.025;
+            double fuelQty = 45;
+            double oilPer = 3;
+            double sandPotQty = 0.025;
+            double respiratoryQty = 0.025;
+            double gritQty = 0.15;
 
-			double compressorRate = compressorCost * compressorQty;
-			double fuelRate = fuelCost * fuelQty;
-			double sandPotRate = sandPotCost * sandPotQty;
-			double respiratoryRate = respiratoryCost * respiratoryQty;
-			double gritRate = gritCost * gritQty;
-			double oilRate = fuelRate * (oilPer / 100);
+            double compressorRate = compressorCost * compressorQty;
+            double fuelRate = fuelCost * fuelQty;
+            double sandPotRate = sandPotCost * sandPotQty;
+            double respiratoryRate = respiratoryCost * respiratoryQty;
+            double gritRate = gritCost * gritQty;
+            double oilRate = fuelRate * (oilPer / 100);
 
-			double blastingOperatorCost = GetLabourRate("Light plant operator") * 1.4;
-			double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
-			double blastingForemanCost = GetLabourRate("Foreman") * 1.4;
+            double blastingOperatorCost = GetLabourRate("Light plant operator") * 1.4;
+            double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
+            double blastingForemanCost = GetLabourRate("Foreman") * 1.4;
 
-			double blastingOperatorQty = 1;
-			double blastingLabouurQty = 3;
-			double blastingForemanQty = 1;
+            double blastingOperatorQty = 1;
+            double blastingLabouurQty = 3;
+            double blastingForemanQty = 1;
 
-			double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
-			double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
-			double blastingForemanRate = blastingForemanCost * blastingForemanQty;
+            double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
+            double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
+            double blastingForemanRate = blastingForemanCost * blastingForemanQty;
 
-			double blastingLabour = blastingOperatorRate + blastingLabourRate + blastingForemanRate;
-			double blastingOutputDaily = 300;
+            double blastingLabour = blastingOperatorRate + blastingLabourRate + blastingForemanRate;
+            double blastingOutputDaily = 300;
 
-			double blastingPerSqm = blastingLabour / blastingOutputDaily;
+            double blastingPerSqm = blastingLabour / blastingOutputDaily;
 
-			double netCost = compressorRate + gritRate + fuelRate + sandPotRate + respiratoryRate + oilRate + blastingPerSqm;
+            double netCost = compressorRate + gritRate + fuelRate + sandPotRate + respiratoryRate + oilRate + blastingPerSqm;
 
-			var ohp = ApplyOHP(netCost);
+            var ohp = ApplyOHP(netCost);
 
-			var breakdown = new ObservableCollection<SteelWorkBreakdownLine>
-			{
-				new SteelWorkBreakdownLine{ ComponentName="Compressor", Quantity=compressorQty, Unit="hr/m2",
-					UnitPrice= compressorCost, TotalPrice=compressorRate},
-				new SteelWorkBreakdownLine{ ComponentName="Fuel (Diesel)", Quantity=fuelQty, Unit="lit/day",
-					UnitPrice= fuelCost, TotalPrice=fuelRate},
-				new SteelWorkBreakdownLine{ComponentName="Oil and consumables (per day)", Quantity=oilPer, Unit="%",
-					TotalPrice=oilRate},
-				new SteelWorkBreakdownLine{ ComponentName="Sand Pot", Quantity=sandPotQty, Unit="hr/m2",
-					UnitPrice= sandPotCost, TotalPrice=sandPotRate},
-				new SteelWorkBreakdownLine{ ComponentName="Respiratory gear.", Quantity=respiratoryQty, Unit="hr/m2",
-					UnitPrice= respiratoryCost, TotalPrice=respiratoryRate},
-				new SteelWorkBreakdownLine{ ComponentName="Grit", Quantity=gritQty, Unit="m3/m2",
-					UnitPrice= gritCost, TotalPrice=gritRate},
+            var breakdown = new ObservableCollection<SteelWorkBreakdownLine>
+            {
+                new SteelWorkBreakdownLine{ ComponentName="Compressor", Quantity=compressorQty, Unit="hr/m2",
+                    UnitPrice= compressorCost, TotalPrice=compressorRate},
+                new SteelWorkBreakdownLine{ ComponentName="Fuel (Diesel)", Quantity=fuelQty, Unit="lit/day",
+                    UnitPrice= fuelCost, TotalPrice=fuelRate},
+                new SteelWorkBreakdownLine{ComponentName="Oil and consumables (per day)", Quantity=oilPer, Unit="%",
+                    TotalPrice=oilRate},
+                new SteelWorkBreakdownLine{ ComponentName="Sand Pot", Quantity=sandPotQty, Unit="hr/m2",
+                    UnitPrice= sandPotCost, TotalPrice=sandPotRate},
+                new SteelWorkBreakdownLine{ ComponentName="Respiratory gear.", Quantity=respiratoryQty, Unit="hr/m2",
+                    UnitPrice= respiratoryCost, TotalPrice=respiratoryRate},
+                new SteelWorkBreakdownLine{ ComponentName="Grit", Quantity=gritQty, Unit="m3/m2",
+                    UnitPrice= gritCost, TotalPrice=gritRate},
 
-				new SteelWorkBreakdownLine{ ComponentName="Blasting operator.", Quantity=blastingOperatorQty, Unit="per/day",
-					UnitPrice= blastingOperatorCost, TotalPrice=blastingOperatorRate},
-				new SteelWorkBreakdownLine{ ComponentName="Labour (for loading sand pot)", Quantity=blastingLabouurQty, Unit="per/day",
-					UnitPrice= blastingLabourCost, TotalPrice=blastingLabourRate},
-				new SteelWorkBreakdownLine{ ComponentName="Foreman", Quantity=blastingForemanQty, Unit="per/day", UnitPrice=blastingForemanCost,
-				TotalPrice=blastingForemanRate},
-				new SteelWorkBreakdownLine{ComponentName="Labour Output", Quantity=blastingOutputDaily, Unit="m2/day", UnitPrice=blastingLabour,
-					TotalPrice=blastingPerSqm},
-				new SteelWorkBreakdownLine{ComponentName="Total Blasting ", TotalPrice=netCost},
-			};
+                new SteelWorkBreakdownLine{ ComponentName="Blasting operator.", Quantity=blastingOperatorQty, Unit="per/day",
+                    UnitPrice= blastingOperatorCost, TotalPrice=blastingOperatorRate},
+                new SteelWorkBreakdownLine{ ComponentName="Labour (for loading sand pot)", Quantity=blastingLabouurQty, Unit="per/day",
+                    UnitPrice= blastingLabourCost, TotalPrice=blastingLabourRate},
+                new SteelWorkBreakdownLine{ ComponentName="Foreman", Quantity=blastingForemanQty, Unit="per/day", UnitPrice=blastingForemanCost,
+                TotalPrice=blastingForemanRate},
+                new SteelWorkBreakdownLine{ComponentName="Labour Output", Quantity=blastingOutputDaily, Unit="m2/day", UnitPrice=blastingLabour,
+                    TotalPrice=blastingPerSqm},
+                new SteelWorkBreakdownLine{ComponentName="Total Blasting ", TotalPrice=netCost},
+            };
 
-			return new SteelworkItem
-			{
-				ItemNo = 3,
-				Description = "Prepare surface of structure by sand blasting to SP10",
-				Unit = "m2",
-				NetCost = Math.Round(netCost, 2),
-				OverheadValue = Math.Round(ohp.overheadVal, 0),
-				ProfitValue = Math.Round(ohp.profitVal, 0),
-				TotalCost = Math.Round(ohp.total, 2),
-				SteelWorkBreakdownLines = breakdown
-			};
-		}
-
-		private SteelworkItem ComputeItem4()
-		{
-			throw new NotImplementedException();
-		}
-
-		private SteelworkItem ComputeItem5()
-		{
-			throw new NotImplementedException();
-		}
-
-		private SteelworkItem ComputeItem6()
-		{
-			throw new NotImplementedException();
-		}
-
-		private SteelworkItem ComputeItem7()
-		{
-			throw new NotImplementedException();
-		}
-
-		private SteelworkItem ComputeItem8()
-		{
-			throw new NotImplementedException();
-		}
-
-		private SteelworkItem ComputeItem9()
-		{
-			throw new NotImplementedException();
-		}
-
-		#endregion
-	}
+            return new SteelworkItem
+            {
+                ItemNo = 3,
+                Description = "Prepare surface of structure by sand blasting to SP10",
+                Unit = "m2",
+                NetCost = Math.Round(netCost, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 0),
+                ProfitValue = Math.Round(ohp.profitVal, 0),
+                TotalCost = Math.Round(ohp.total, 2),
+                SteelWorkBreakdownLines = breakdown
+            };
+        }
+    }
 }

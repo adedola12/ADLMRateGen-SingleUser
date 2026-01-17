@@ -4,8 +4,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+
 using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
@@ -22,6 +25,7 @@ namespace ADLMRateGen.ViewModel.BlockWork
 
         private const string SectionKey = SectionKeys.Blockwork;
 
+        private readonly ComputeItemEngine _computeEngine;
 
         private double _overheadPercent = 10.0;
         private double _profitPercent = 25.0;
@@ -33,6 +37,51 @@ namespace ADLMRateGen.ViewModel.BlockWork
         private SortState _currentSort = SortState.None;
 
         private enum SortState { None, Overhead, TotalCost }
+
+        public BlockworkViewModel(
+            MaterialLibraryViewModel matLib,
+            LabourLibraryViewModel labourLib,
+            ConcreteViewModel concreteViewModel)
+        {
+            _helper = new GetItemsFromDB(matLib, labourLib);
+            _concreteViewModel = concreteViewModel;
+
+            _computeEngine = new ComputeItemEngine(GetMaterialPrice, GetLabourRate);
+
+            // Material/Labour library updates
+            matLib.LibraryChanged += OnLibraryChanged;
+            labourLib.LibraryChanged += OnLibraryChanged;
+
+            // Disk-first (offline-friendly)
+            ComputeCatalogStore.ReloadFromDisk();
+            RateLibraryStore.ReloadFromDisk();
+
+            // API refresh (section filtered + fallback)
+            _ = LoadComputeCatalogForSectionAsync();
+            _ = LoadRateLibraryAsync();
+
+            // Store change events (may come from bg thread)
+            ComputeCatalogStore.Changed += OnLibraryChanged;
+            RateLibraryStore.Changed += OnLibraryChanged;
+
+            // Build initial list
+            BuildBlockWorkItems();
+
+            BlockworkCollectionView = CollectionViewSource.GetDefaultView(BlockworkItems);
+            BlockworkCollectionView.Filter = FilterBlockWorkItem;
+
+            RecomputeCommand = new DelegateCommand(_ => RecomputeAll());
+            ShowDetailsCommand = new DelegateCommand(o => ShowDetails(o));
+            FilterCommand = new DelegateCommand(_ => ToggleNetCostFilter());
+            SortCommand = new DelegateCommand(_ => CycleSort());
+            AddCustomRateCommand = new DelegateCommand(_ => OpenCustomRateEntry());
+
+            CurrencyService.Instance.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
+                    RecomputeAll();
+            };
+        }
 
         public double OverheadPercent
         {
@@ -100,47 +149,48 @@ namespace ADLMRateGen.ViewModel.BlockWork
         public ICommand SortCommand { get; }
         public ICommand AddCustomRateCommand { get; }
 
-        public BlockworkViewModel(
-            MaterialLibraryViewModel matLib,
-            LabourLibraryViewModel labourLib,
-            ConcreteViewModel concreteViewModel)
+        // -------------------- API loaders --------------------
+
+        private async Task LoadRateLibraryAsync()
         {
-            _helper = new GetItemsFromDB(matLib, labourLib);
-            _concreteViewModel = concreteViewModel;
-
-            matLib.LibraryChanged += OnLibraryChange;
-            labourLib.LibraryChanged += OnLibraryChange;
-
-            // ✅ Load pushed compute-items at least once (otherwise Items stays empty)
-            ComputeCatalogStore.ReloadFromDisk();
-
-            // Build list (built-in + pushed)
-            BuildBlockWorkItem();
-
-            BlockworkCollectionView = CollectionViewSource.GetDefaultView(BlockworkItems);
-            BlockworkCollectionView.Filter = FilterBlockWorkItem;
-
-            RecomputeCommand = new DelegateCommand(_ => RecomputeAll());
-            ShowDetailsCommand = new DelegateCommand(o => ShowDetails(o));
-            FilterCommand = new DelegateCommand(_ => ToggleNetCostFilter());
-            SortCommand = new DelegateCommand(_ => CycleSort());
-            AddCustomRateCommand = new DelegateCommand(_ => OpenCustomRateEntry());
-
-            // ✅ When admin pushes new compute-items.json and your app reloads it,
-            // this event must rebuild the list.
-            ComputeCatalogStore.Changed += LoadComputeItems;
-
-            CurrencyService.Instance.PropertyChanged += (_, e) =>
+            try
             {
-                if (e.PropertyName == nameof(CurrencyService.Rate) ||
-                    e.PropertyName == nameof(CurrencyService.Code))
-                {
-                    RecomputeAll();
-                }
-            };
+                // disk-first already done, but safe
+                RateLibraryStore.ReloadFromDisk();
+
+                var ok = await RateLibraryStore.RefreshFromApiAsync(SectionKey);
+
+                // fallback if section mismatch
+                if (ok && RateLibraryStore.LastApiItemCount == 0)
+                    await RateLibraryStore.RefreshFromApiAsync();
+
+                OnLibraryChanged();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[RateLibrary] load failed: {ex}");
+            }
         }
 
-        // -------------------- core UI actions --------------------
+        private async Task LoadComputeCatalogForSectionAsync()
+        {
+            try
+            {
+                var ok = await ComputeCatalogStore.RefreshFromApiAsync(SectionKey);
+
+                // fallback if section mismatch / inconsistent naming
+                if (ok && ComputeCatalogStore.LastApiItemCount == 0)
+                    await ComputeCatalogStore.RefreshFromApiAsync();
+
+                OnLibraryChanged();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] load failed: {ex}");
+            }
+        }
+
+        // -------------------- UI actions --------------------
 
         private void ShowDetails(object o)
         {
@@ -154,25 +204,43 @@ namespace ADLMRateGen.ViewModel.BlockWork
             }
         }
 
+        private void OpenCustomRateEntry()
+        {
+            var view = new CustomRateEntryView();
+            view.DataContext = new CustomRateEntryViewModel();
+            SelectedDetail = view;
+        }
+
         private bool FilterBlockWorkItem(object obj)
         {
-            if (!(obj is BlockworkItem item)) return false;
+            if (obj is not BlockworkItem item) return false;
             if (string.IsNullOrWhiteSpace(SearchTerm)) return true;
 
             return (item.Description ?? string.Empty)
                 .IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
+        // Thread-safe refresh
+        private void OnLibraryChanged()
+        {
+            var disp = Application.Current?.Dispatcher;
+            if (disp == null)
+            {
+                RecomputeAll();
+                return;
+            }
+
+            if (disp.CheckAccess())
+                RecomputeAll();
+            else
+                disp.Invoke(RecomputeAll);
+        }
+
         private void RecomputeAll()
         {
             BlockworkItems.Clear();
-            BuildBlockWorkItem();
+            BuildBlockWorkItems();
             BlockworkCollectionView?.Refresh();
-        }
-
-        private void OnLibraryChange()
-        {
-            RecomputeAll();
         }
 
         private void ToggleNetCostFilter()
@@ -180,6 +248,7 @@ namespace ADLMRateGen.ViewModel.BlockWork
             _isNetCostFilterOn = !_isNetCostFilterOn;
 
             BlockworkCollectionView.SortDescriptions.Clear();
+
             if (_isNetCostFilterOn)
             {
                 BlockworkCollectionView.SortDescriptions.Add(
@@ -189,197 +258,216 @@ namespace ADLMRateGen.ViewModel.BlockWork
 
         private void CycleSort()
         {
-            // cycle: None -> Overhead -> TotalCost -> None
-            if (_currentSort == SortState.None) _currentSort = SortState.Overhead;
-            else if (_currentSort == SortState.Overhead) _currentSort = SortState.TotalCost;
-            else _currentSort = SortState.None;
+            _currentSort = _currentSort switch
+            {
+                SortState.None => SortState.Overhead,
+                SortState.Overhead => SortState.TotalCost,
+                SortState.TotalCost => SortState.None,
+                _ => SortState.None
+            };
 
             BlockworkCollectionView.SortDescriptions.Clear();
 
-            if (_currentSort == SortState.Overhead)
+            switch (_currentSort)
             {
-                BlockworkCollectionView.SortDescriptions.Add(
-                    new SortDescription(nameof(BlockworkItem.OverheadValue), ListSortDirection.Ascending));
+                case SortState.Overhead:
+                    BlockworkCollectionView.SortDescriptions.Add(
+                        new SortDescription(nameof(BlockworkItem.OverheadValue), ListSortDirection.Ascending));
+                    break;
+
+                case SortState.TotalCost:
+                    BlockworkCollectionView.SortDescriptions.Add(
+                        new SortDescription(nameof(BlockworkItem.TotalCost), ListSortDirection.Ascending));
+                    break;
+
+                case SortState.None:
+                default:
+                    break;
             }
-            else if (_currentSort == SortState.TotalCost)
-            {
-                BlockworkCollectionView.SortDescriptions.Add(
-                    new SortDescription(nameof(BlockworkItem.TotalCost), ListSortDirection.Ascending));
-            }
         }
 
-        private void OpenCustomRateEntry()
+        // -------------------- Build items --------------------
+
+        private void BuildBlockWorkItems()
         {
-            var view = new CustomRateEntryView();
-            view.DataContext = new CustomRateEntryViewModel();
-            SelectedDetail = view;
+            // 1) Built-in ComputeItem1..ComputeItem18 (reflection, so no hard refs)
+            AddBuiltInItemsByReflection();
+
+            // 2) Compute catalog pushed items (API/disk)
+            AppendApiComputeItems();
+
+            // 3) Admin custom rates (API/disk)
+            AppendAdminRateItems();
         }
 
-        // -------------------- pushed compute-items wiring --------------------
-
-        // ✅ Fixes CS0103 and ensures pushed items rebuild the view
-        private void LoadComputeItems()
+        private void AddBuiltInItemsByReflection()
         {
-            // IMPORTANT: Do NOT call ReloadFromDisk() here (it raises Changed again)
-            RecomputeAll();
-        }
+            // Finds ComputeItem1..ComputeItem99 methods returning BlockworkItem and having no parameters.
+            var t = GetType();
 
-        private void BuildBlockWorkItem()
-        {
-            // 1) built-in items
-            AddBuiltInItems();
-
-            // 2) pushed compute catalog items
-            AppendComputeCatalogItems();
-        }
-
-        private void AddBuiltInItems()
-        {
-            Func<BlockworkItem>[] computeMethods =
-            {
-                ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6,
-                ComputeItem7, ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12,
-                ComputeItem13, ComputeItem14, ComputeItem15, ComputeItem16, ComputeItem17, ComputeItem18
-            };
-
-            foreach (var compute in computeMethods)
-                BlockworkItems.Add(compute());
-        }
-
-        private void AppendComputeCatalogItems()
-        {
-            var defs = ComputeCatalogStore.Items
-                .Where(d => d != null && d.enabled)
-                .Where(d => SectionNormalizer.ToSectionKey(d.section) == SectionKey)
+            var methods = t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(m => m.Name.StartsWith("ComputeItem", StringComparison.OrdinalIgnoreCase))
+                .Where(m => m.GetParameters().Length == 0)
+                .Where(m => typeof(BlockworkItem).IsAssignableFrom(m.ReturnType))
+                .Select(m => new
+                {
+                    Method = m,
+                    No = ParseTrailingInt(m.Name)
+                })
+                .Where(x => x.No > 0)
+                .OrderBy(x => x.No)
                 .ToList();
 
-            if (defs.Count == 0) return;
+            foreach (var m in methods)
+            {
+                try
+                {
+                    var item = m.Method.Invoke(this, null) as BlockworkItem;
+                    if (item != null) BlockworkItems.Add(item);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Blockwork] Skip {m.Method.Name}: {ex.Message}");
+                }
+            }
+        }
+
+        private static int ParseTrailingInt(string name)
+        {
+            // ComputeItem13 -> 13
+            if (string.IsNullOrWhiteSpace(name)) return 0;
+            int i = name.Length - 1;
+            while (i >= 0 && char.IsDigit(name[i])) i--;
+            var digits = name[(i + 1)..];
+            return int.TryParse(digits, out var n) ? n : 0;
+        }
+
+        private void AppendApiComputeItems()
+        {
+            if (_computeEngine == null) return;
+
+            var defs = ComputeCatalogStore.Items;
+            if (defs == null || defs.Count == 0) return;
 
             int nextNo = BlockworkItems.Count + 1;
 
             foreach (var def in defs)
             {
-                var item = BuildBlockworkItemFromDefinition(def, nextNo++);
-                if (item != null)
-                    BlockworkItems.Add(item);
+                if (def == null || !def.enabled) continue;
+
+                var key = SectionNormalizer.ToSectionKey(def.section);
+                if (!string.Equals(key, SectionKey, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                try
+                {
+                    var computed = _computeEngine.Compute(def);
+
+                    var net = (double)computed.NetCost;
+                    var ohp = ApplyOHP(net);
+
+                    var breakdown = new ObservableCollection<BlockworkBreakdownLine>();
+
+                    foreach (var l in computed.Lines)
+                    {
+                        breakdown.Add(new BlockworkBreakdownLine
+                        {
+                            ComponentName = $"{l.Kind}: {l.Name}",
+                            Quantity = (double)l.Qty,
+                            Unit = string.IsNullOrWhiteSpace(l.Unit) ? "" : l.Unit,
+                            UnitPrice = (double)l.UnitPrice,
+                            TotalPrice = (double)l.Total
+                        });
+                    }
+
+                    if (computed.PoPercent > 0)
+                    {
+                        breakdown.Add(new BlockworkBreakdownLine
+                        {
+                            ComponentName = $"Compute PO/Uplift ({computed.PoPercent}%)",
+                            Quantity = (double)computed.PoPercent,
+                            Unit = "%",
+                            UnitPrice = 0,
+                            TotalPrice = (double)computed.PoAmount
+                        });
+                    }
+
+                    if (computed.Warnings.Count > 0)
+                    {
+                        breakdown.Add(new BlockworkBreakdownLine { ComponentName = "⚠ Warnings", TotalPrice = 0 });
+                        foreach (var w in computed.Warnings)
+                            breakdown.Add(new BlockworkBreakdownLine { ComponentName = $"- {w}", TotalPrice = 0 });
+                    }
+
+                    BlockworkItems.Add(new BlockworkItem
+                    {
+                        ItemNo = nextNo++,
+                        Description = def.name,
+                        Unit = string.IsNullOrWhiteSpace(def.outputUnit) ? "m2" : def.outputUnit,
+                        NetCost = Math.Round(net, 2),
+                        OverheadValue = Math.Round(ohp.overheadVal, 0),
+                        ProfitValue = Math.Round(ohp.profitVal, 0),
+                        TotalCost = Math.Round(ohp.total, 0),
+                        BlockworkBreakdownLine = breakdown
+                    });
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] Skip '{def?.name}': {ex.Message}");
+                }
             }
         }
 
-        private BlockworkItem BuildBlockworkItemFromDefinition(ComputeItemDefinition def, int itemNo)
+        private void AppendAdminRateItems()
         {
-            if (def == null) return null;
+            var rates = RateLibraryStore.Items;
+            if (rates == null || rates.Count == 0) return;
 
-            double net = 0.0;
-            var breakdown = new ObservableCollection<BlockworkBreakdownLine>();
+            int nextNo = BlockworkItems.Count + 1;
 
-            var lines = def.lines ?? new List<ComputeLine>();
-            foreach (var ln in lines)
+            foreach (var r in rates)
             {
-                if (ln == null) continue;
+                if (r == null) continue;
 
-                double qty = (double)ln.qtyPerUnit;
-                double factor = (double)(ln.factor == 0 ? 1 : ln.factor);
+                if (!string.Equals(r.SectionKey ?? "", SectionKey, StringComparison.OrdinalIgnoreCase))
+                    continue;
 
-                double unitPrice = ResolveLineUnitPrice(ln);
-                double lineTotal = qty * factor * unitPrice;
+                var net = (double)r.NetCost;
+                if (!(net > 0)) continue;
 
-                net += lineTotal;
+                var ohp = ApplyOHP(net);
 
-                breakdown.Add(new BlockworkBreakdownLine
+                var breakdown = new ObservableCollection<BlockworkBreakdownLine>();
+                if (r.Breakdown != null)
                 {
-                    ComponentName = string.IsNullOrWhiteSpace(ln.description) ? def.name : ln.description,
-                    Quantity = Math.Round(qty * factor, 6),
-                    Unit = ln.unit ?? "",
-                    UnitPrice = Math.Round(unitPrice, 2),
-                    TotalPrice = Math.Round(lineTotal, 2)
+                    foreach (var l in r.Breakdown)
+                    {
+                        breakdown.Add(new BlockworkBreakdownLine
+                        {
+                            ComponentName = l.ComponentName,
+                            Quantity = (double)l.Quantity,
+                            Unit = l.Unit,
+                            UnitPrice = (double)l.UnitPrice,
+                            TotalPrice = (double)(l.LineTotal != 0 ? l.LineTotal : (l.Quantity * l.UnitPrice))
+                        });
+                    }
+                }
+
+                BlockworkItems.Add(new BlockworkItem
+                {
+                    ItemNo = nextNo++,
+                    Description = r.Description,
+                    Unit = string.IsNullOrWhiteSpace(r.Unit) ? "m2" : r.Unit,
+                    NetCost = Math.Round(net, 2),
+                    OverheadValue = Math.Round(ohp.overheadVal, 0),
+                    ProfitValue = Math.Round(ohp.profitVal, 0),
+                    TotalCost = Math.Round(ohp.total, 0),
+                    BlockworkBreakdownLine = breakdown
                 });
             }
-
-            var ohp = ApplyOHP(net);
-
-            return new BlockworkItem
-            {
-                ItemNo = itemNo,
-                Description = def.name ?? "Custom Item",
-                Unit = string.IsNullOrWhiteSpace(def.outputUnit) ? "m2" : def.outputUnit,
-                NetCost = Math.Round(net, 2),
-                OverheadValue = Math.Round(ohp.overheadVal, 0),
-                ProfitValue = Math.Round(ohp.profitVal, 0),
-                TotalCost = Math.Round(ohp.total, 2),
-                BlockworkBreakdownLine = breakdown
-            };
         }
 
-        private double ResolveLineUnitPrice(ComputeLine ln)
-        {
-            string kind = (ln.kind ?? "").Trim().ToLowerInvariant();
-
-            // If backend cached a unit price preview, use as fallback (not primary)
-            double cached = ln.unitPriceAtBuild.HasValue ? (double)ln.unitPriceAtBuild.Value : 0.0;
-
-            // Try resolve by SN if your helper supports it (reflection-safe)
-            if (ln.refSn.HasValue && ln.refSn.Value > 0)
-            {
-                int sn = ln.refSn.Value;
-
-                if (kind == "material")
-                {
-                    double bySn = TryInvokePriceBySn(_helper, new[]
-                    {
-                        "GetMaterialPriceBySn", "GetMaterialPriceBySN", "GetMaterialPriceByRefSn"
-                    }, sn);
-
-                    if (!double.IsNaN(bySn)) return bySn;
-                }
-                else if (kind == "labour")
-                {
-                    double bySn = TryInvokePriceBySn(_helper, new[]
-                    {
-                        "GetLabourRateBySn", "GetLabourRateBySN", "GetLabourRateByRefSn"
-                    }, sn);
-
-                    if (!double.IsNaN(bySn)) return bySn;
-                }
-            }
-
-            // Fallback: resolve by description name (works if you store names matching your library)
-            if (kind == "material")
-                return _helper.GetMaterialPrice(ln.description);
-
-            if (kind == "labour")
-                return _helper.GetLabourRate(ln.description);
-
-            // "constant" or unknown kind
-            return cached;
-        }
-
-        private static double TryInvokePriceBySn(object target, string[] methodNames, int sn)
-        {
-            try
-            {
-                var t = target.GetType();
-                foreach (var name in methodNames)
-                {
-                    var mi = t.GetMethod(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                        null, new[] { typeof(int) }, null);
-
-                    if (mi == null) continue;
-
-                    var res = mi.Invoke(target, new object[] { sn });
-                    if (res == null) continue;
-
-                    return Convert.ToDouble(res);
-                }
-            }
-            catch
-            {
-                // ignore; we return NaN if not supported
-            }
-
-            return double.NaN;
-        }
-
-        // -------------------- existing helpers (unchanged) --------------------
+        // -------------------- pricing helpers --------------------
 
         private (double overheadVal, double profitVal, double total) ApplyOHP(double netCost)
         {
@@ -392,21 +480,70 @@ namespace ADLMRateGen.ViewModel.BlockWork
         private double GetMaterialPrice(string name) => _helper.GetMaterialPrice(name);
         private double GetLabourRate(string name) => _helper.GetLabourRate(name);
 
+        // -------------------- your existing utility methods (fixed) --------------------
+
         public double GetNetValue(Func<BlockworkItem> computeItemFunc)
         {
-            var item = computeItemFunc();
-            return item.NetCost;
+            if (computeItemFunc == null) return 0d;
+
+            try
+            {
+                var item = computeItemFunc();
+                return item?.NetCost ?? 0d;
+            }
+            catch
+            {
+                return 0d;
+            }
         }
 
+        // ✅ FIX: ConcreteViewModel no longer takes Func<ConcreteworkItem>,
+        // so just evaluate the func and return NetCost.
         public double GetConcreteNetValue(Func<ConcreteworkItem> computeFunc)
         {
-            return _concreteViewModel.GetConcreteNetValue(computeFunc);
+            if (computeFunc == null) return 0d;
+
+            try
+            {
+                var item = computeFunc();
+                return item?.NetCost ?? 0d;
+            }
+            catch
+            {
+                return 0d;
+            }
         }
 
-        public double GetBlockworkNetValue(Func<ConcreteworkItem> computeFunc)
+        // ✅ OPTIONAL overloads (use these if you want to query concrete by itemNo/description)
+        public double GetConcreteNetValue(int itemNo)
         {
-            return computeFunc().NetCost;
+            try { return _concreteViewModel?.GetConcreteNetValue(itemNo) ?? 0d; }
+            catch { return 0d; }
         }
+
+        public double GetConcreteNetValue(string descriptionContains, string unit = null)
+        {
+            try { return _concreteViewModel?.GetConcreteNetValue(descriptionContains, unit) ?? 0d; }
+            catch { return 0d; }
+        }
+
+        // ✅ FIX: this was wrongly typed as Func<ConcreteworkItem> in your screenshot.
+        // Blockwork net value should use BlockworkItem.
+        public double GetBlockworkNetValue(Func<BlockworkItem> computeFunc)
+        {
+            if (computeFunc == null) return 0d;
+
+            try
+            {
+                var item = computeFunc();
+                return item?.NetCost ?? 0d;
+            }
+            catch
+            {
+                return 0d;
+            }
+        }
+
 
         // -------------------- YOUR EXISTING ComputeItem1..ComputeItem18 METHODS GO HERE --------------------
 
@@ -1619,8 +1756,5 @@ namespace ADLMRateGen.ViewModel.BlockWork
         }
 
         #endregion
-
-
-
     }
 }

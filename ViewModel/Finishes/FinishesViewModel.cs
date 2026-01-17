@@ -6,13 +6,14 @@ using ADLMRateGen.ViewModel.BlockWork;
 using ADLMRateGen.ViewModel.CustomRate;
 using ADLMRateGen.ViewModel.Groundwork;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 
 namespace ADLMRateGen.ViewModel.Finishes
@@ -122,20 +123,22 @@ namespace ADLMRateGen.ViewModel.Finishes
             SortCommand = new DelegateCommand(_ => CycleSort());
             AddCustomRateCommand = new DelegateCommand(_ => OpenCustomRateEntry());
 
-            // Listen for library changes
+            // Listen for local material/labour library changes
             matLib.LibraryChanged += OnLibraryChange;
             labourLib.LibraryChanged += OnLibraryChange;
 
-            // ✅ INIT compute engine BEFORE first build (this was your main bug)
+            // ✅ Compute engine
             _computeEngine = new ComputeItemEngine(GetMaterialPrice, GetLabourRate);
+
+            // ✅ Compute catalog: disk first, then cloud
+            ComputeCatalogStore.ReloadFromDisk();
+            ComputeCatalogStore.Changed += OnComputeCatalogChanged;
             _ = LoadComputeCatalogForSectionAsync();
 
-
-            // Load compute catalog once, then rebuild
-            ComputeCatalogStore.ReloadFromDisk();
-
-            // React to updates (API sync or disk write)
-            ComputeCatalogStore.Changed += OnComputeCatalogChanged;
+            // ✅ Rate library: disk first, then cloud  ✅ (THIS IS WHAT YOU NEED)
+            RateLibraryStore.ReloadFromDisk();
+            RateLibraryStore.Changed += OnRateLibraryChanged;
+            _ = LoadRateLibraryAsync();
 
             // Currency changes => rebuild totals
             CurrencyService.Instance.PropertyChanged += (_, e) =>
@@ -144,9 +147,50 @@ namespace ADLMRateGen.ViewModel.Finishes
                     RecomputeAll();
             };
 
-            // ✅ Initial build
+            // ✅ Initial build (shows disk cached items immediately)
             RecomputeAll();
         }
+
+        private void OnRateLibraryChanged()
+        {
+            // RateLibraryStore can raise Changed from background thread
+            RunOnUi(RecomputeAll);
+        }
+
+        private async Task LoadRateLibraryAsync()
+        {
+            try
+            {
+                // Always show cached rates first (offline-friendly)
+                RateLibraryStore.ReloadFromDisk();
+                Debug.WriteLine($"[RateLibrary] Cached disk items={RateLibraryStore.Items?.Count ?? 0}");
+
+                // Pull latest (requires logged-in token)
+                var ok = await RateLibraryStore.RefreshFromApiAsync(SectionKey);
+
+                Debug.WriteLine(
+                    $"[RateLibrary] Refresh ok={ok}, status={RateLibraryStore.LastApiStatusCode}, count={RateLibraryStore.LastApiItemCount}, msg={RateLibraryStore.LastApiMessage}");
+
+                // Fallback if section mismatch
+                if (ok && RateLibraryStore.LastApiItemCount == 0)
+                {
+                    Debug.WriteLine("[RateLibrary] Section returned 0. Retrying without sectionKey...");
+                    await RateLibraryStore.RefreshFromApiAsync();
+
+                    Debug.WriteLine(
+                        $"[RateLibrary] Retry(all) status={RateLibraryStore.LastApiStatusCode}, count={RateLibraryStore.LastApiItemCount}, msg={RateLibraryStore.LastApiMessage}");
+                }
+
+                // Refresh UI
+                RunOnUi(RecomputeAll);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[RateLibrary] load failed: {ex}");
+            }
+        }
+
+
         private async Task LoadComputeCatalogForSectionAsync()
         {
             try
@@ -276,11 +320,76 @@ namespace ADLMRateGen.ViewModel.Finishes
                     list.Add(item);
             }
 
-            // Append dynamic compute definitions (from API/disk store)
+            // ✅ Append dynamic compute definitions (from API/disk store)
             AppendApiComputeItems(list);
+
+            // ✅ Append admin "rate items" (from RateLibraryStore disk/cloud)
+            AppendAdminRateItems(list);
 
             return list;
         }
+
+        private void AppendAdminRateItems(List<FinishesItem> target)
+        {
+            var rates = RateLibraryStore.Items;
+            if (rates == null || rates.Count == 0)
+            {
+                Debug.WriteLine($"[RateLibrary] No rate items in store. File={RateLibraryStore.FilePath}");
+                return;
+            }
+
+            int nextNo = target.Count + 1;
+            int appended = 0;
+
+            Debug.WriteLine($"[RateLibrary] Store contains {rates.Count} total rates. Filtering section='{SectionKey}'");
+
+            foreach (var r in rates)
+            {
+                if (r == null) continue;
+
+                if (!string.Equals(r.SectionKey ?? "", SectionKey, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var net = (double)r.NetCost;
+                if (!(net > 0)) continue;
+
+                var ohp = ApplyOHP(net);
+
+                var breakdown = new ObservableCollection<FinishesBreakdownLine>();
+
+                if (r.Breakdown != null)
+                {
+                    foreach (var l in r.Breakdown)
+                    {
+                        breakdown.Add(new FinishesBreakdownLine
+                        {
+                            ComponentName = l.ComponentName,
+                            Quantity = (double)l.Quantity,
+                            Unit = l.Unit,
+                            UnitPrice = (double)l.UnitPrice,
+                            TotalPrice = (double)(l.LineTotal != 0 ? l.LineTotal : (l.Quantity * l.UnitPrice))
+                        });
+                    }
+                }
+
+                target.Add(new FinishesItem
+                {
+                    ItemNo = nextNo++,
+                    Description = r.Description,
+                    Unit = string.IsNullOrWhiteSpace(r.Unit) ? "m2" : r.Unit,
+                    NetCost = Math.Round(net, 2),
+                    OverheadValue = Math.Round(ohp.overheadVal, 0),
+                    ProfitValue = Math.Round(ohp.profitVal, 0),
+                    TotalCost = Math.Round(ohp.total, 0),
+                    FinishesBreakdownLine = breakdown
+                });
+
+                appended++;
+            }
+
+            Debug.WriteLine($"[RateLibrary] Appended {appended} admin rate(s) for section '{SectionKey}'.");
+        }
+
 
 
         private void OnLibraryChange()
