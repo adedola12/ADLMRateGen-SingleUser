@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,6 +21,11 @@ namespace ADLMRateGen
         private ResourceDictionary? _lightDict;
         private readonly ResourceDictionary _darkDict = new(); // created once
         private bool _isDark; // false = light, true = dark
+
+        private Mutex? _mutex;
+
+        // use a stable unique name (include company + app)
+        private const string MutexName = "Global\\ADLMStudio_ADLMRateGen_SingleInstance";
 
         private static string LogDir =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -37,6 +43,22 @@ namespace ADLMRateGen
             DispatcherUnhandledException += OnDispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+
+            bool createdNew;
+            _mutex = new Mutex(true, MutexName, out createdNew);
+
+            if (!createdNew)
+            {
+                TryBringExistingToFront();
+                MessageBox.Show(
+                    "ADLM Rate Gen is already running.",
+                    "ADLM Rate Gen",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                Shutdown();
+                return;
+            }
 
             base.OnStartup(e);
 
@@ -219,5 +241,51 @@ namespace ADLMRateGen
             }
             catch { }
         }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            try
+            {
+                _mutex?.ReleaseMutex();
+                _mutex?.Dispose();
+            }
+            catch { }
+            finally
+            {
+                _mutex = null;
+            }
+
+            base.OnExit(e);
+        }
+
+        private static void TryBringExistingToFront()
+        {
+            try
+            {
+                var current = Process.GetCurrentProcess();
+                var other = Process.GetProcessesByName(current.ProcessName)
+                                   .FirstOrDefault(p => p.Id != current.Id);
+
+                if (other == null) return;
+
+                // sometimes MainWindowHandle is not ready immediately
+                other.WaitForInputIdle(1000);
+
+                var hWnd = other.MainWindowHandle;
+                if (hWnd == IntPtr.Zero) return;
+
+                ShowWindow(hWnd, SW_RESTORE);
+                SetForegroundWindow(hWnd);
+            }
+            catch { }
+        }
+
+        private const int SW_RESTORE = 9;
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
     }
 }

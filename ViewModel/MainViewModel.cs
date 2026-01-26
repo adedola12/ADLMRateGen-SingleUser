@@ -2,6 +2,7 @@
 using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
 using ADLMRateGen.ViewModel.BlockWork;
+using ADLMRateGen.ViewModel.CarbonOthers;
 using ADLMRateGen.ViewModel.ConcreteWork;
 using ADLMRateGen.ViewModel.CustomRate;
 using ADLMRateGen.ViewModel.Finishes;
@@ -211,6 +212,16 @@ namespace ADLMRateGen.ViewModel
         private bool _isCustomRateInputActive;
         public bool IsCustomRateInputActive { get => _isCustomRateInputActive; set { _isCustomRateInputActive = value; RaisePropertyChanged(); } }
 
+        private bool _isCarbonOthersActive;
+        public bool IsCarbonOthersActive
+        {
+            get => _isCarbonOthersActive;
+            set { _isCarbonOthersActive = value; RaisePropertyChanged(); }
+        }
+
+
+        public ICommand SelectedCarbonOthersViewCommand { get; }
+
         /* ───────── child view-models ───────── */
         public SignInViewModel SignInViewModel { get; }
         public MaterialPriceViewModel MaterialPriceViewModel { get; }
@@ -228,6 +239,8 @@ namespace ADLMRateGen.ViewModel
         public SteelWorkViewModel SteelWorkViewModel { get; }
         public CustomRateEntryViewModel CustomRateEntryViewModel { get; }
         public CustomRateListViewModel CustomRateListViewModel { get; }
+        public CarbonOthersViewModel CarbonOthersViewModel { get; }
+
         public SearchBoxViewModel GlobalSearch { get; }
 
         private readonly SearchIndex _index = new();
@@ -255,10 +268,26 @@ namespace ADLMRateGen.ViewModel
                 IsPaintingActive = value == PaintWorkViewModel;
                 IsSteelworkActive = value == SteelWorkViewModel;
                 IsCustomRateInputActive = value == CustomRateListViewModel;
+                IsCarbonOthersActive = value == CarbonOthersViewModel;
+
 
                 RaisePropertyChanged();
             }
         }
+
+        private static bool IsUnauthorizedText(string? msg)
+        {
+            if (string.IsNullOrWhiteSpace(msg)) return false;
+
+            msg = msg.ToLowerInvariant();
+            return msg.Contains("401") ||
+                   msg.Contains("unauthorized") ||
+                   msg.Contains("token expired") ||
+                   msg.Contains("jwt expired") ||
+                   msg.Contains("expired token");
+        }
+
+
 
         /* ───────── commands ───────── */
         public ICommand SelectedMaterialInputViewCommand { get; }
@@ -299,6 +328,7 @@ namespace ADLMRateGen.ViewModel
             WindowAndDoorViewModel winDoorVM,
             PaintWorkViewModel paintVM,
             SteelWorkViewModel steelVM,
+            CarbonOthersViewModel carbonVM,
             LibraryShellViewModel libraryShellVM,
             CustomRateListViewModel customListVM,
             CustomRateEntryViewModel customEntryVM,
@@ -343,6 +373,7 @@ namespace ADLMRateGen.ViewModel
             WindowAndDoorViewModel = winDoorVM;
             PaintWorkViewModel = paintVM;
             SteelWorkViewModel = steelVM;
+            CarbonOthersViewModel = carbonVM;
             CustomRateListViewModel = customListVM;
             CustomRateEntryViewModel = customEntryVM;
             SignInViewModel = signInVM;
@@ -433,6 +464,9 @@ namespace ADLMRateGen.ViewModel
             SelectedCustomRateViewCommand = new RelayCommand(_ => SelectedViewModel = customEntryVM);
             RefreshCloudDataCommand = new RelayCommand(async _ => await RefreshCloudDataAsync(manual: true));
 
+            SelectedCarbonOthersViewCommand = new RelayCommand(_ => SelectedViewModel = carbonVM);
+
+
 
             LogoutCommand = new RelayCommand(_ => Logout());
             OpenYoutubeCommand = new RelayCommand(_ => OpenYoutube());
@@ -454,6 +488,8 @@ namespace ADLMRateGen.ViewModel
             WindowAndDoorViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             PaintWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             SteelWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+            CarbonOthersViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+
         }
 
         private static bool Is404(Exception ex)
@@ -479,12 +515,10 @@ namespace ADLMRateGen.ViewModel
                 var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
                 var token = cfg.AuthToken;
 
-                if (string.IsNullOrWhiteSpace(token))
+                // also treat expired local expiry as sign-in required
+                if (string.IsNullOrWhiteSpace(token) || cfg.AuthExpiry <= DateTime.Now)
                 {
-                    CloudSyncStatus = "Cloud sync: skipped (no auth token). Please sign in again.";
-                    if (manual)
-                        MessageBox.Show("No auth token saved. Sign in again so RateGen can sync your cloud rates.",
-                            "Sync from Cloud", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    RequireSignInAgain(manual);
                     return;
                 }
 
@@ -499,15 +533,26 @@ namespace ADLMRateGen.ViewModel
                     ratesOk = await RateLibraryStore.RefreshFromApiAsync(); // fetch all sections
                     RateLibraryStore.ReloadFromDisk();
 
+                    if (!ratesOk && IsUnauthorizedText(RateLibraryStore.LastApiMessage))
+                    {
+                        RequireSignInAgain(manual);
+                        return;
+                    }
+
                     results.Add($"Rates: {(ratesOk ? "OK" : "FAIL")} ({RateLibraryStore.LastApiItemCount})");
-                    if (!ratesOk) results.Add($"Rates msg: {RateLibraryStore.LastApiMessage}");
                 }
                 catch (Exception ex)
                 {
-                    results.Add($"Rates: FAIL (exception) - {ex.Message}");
+                    if (IsUnauthorizedException(ex))
+                    {
+                        RequireSignInAgain(manual);
+                        return;
+                    }
+
+                    results.Add($"Rates: FAIL");
                 }
 
-                // ✅ 2) Compute Catalog (may be your 404 source)
+                // ✅ 2) Compute Catalog
                 bool computeOk = false;
                 try
                 {
@@ -515,19 +560,29 @@ namespace ADLMRateGen.ViewModel
                     computeOk = await ComputeCatalogStore.RefreshFromApiAsync();
                     ComputeCatalogStore.ReloadFromDisk();
 
+                    if (!computeOk && IsUnauthorizedText(ComputeCatalogStore.LastApiMessage))
+                    {
+                        RequireSignInAgain(manual);
+                        return;
+                    }
+
                     results.Add($"Compute: {(computeOk ? "OK" : "FAIL")} ({ComputeCatalogStore.LastApiItemCount})");
-                    if (!computeOk) results.Add($"Compute msg: {ComputeCatalogStore.LastApiMessage}");
                 }
                 catch (Exception ex)
                 {
-                    // if this is the 404, we don’t want to kill the entire sync
+                    if (IsUnauthorizedException(ex))
+                    {
+                        RequireSignInAgain(manual);
+                        return;
+                    }
+
                     if (Is404(ex))
-                        results.Add("Compute: SKIPPED (404 Not Found – endpoint route mismatch)");
+                        results.Add("Compute: SKIPPED (404 Not Found)");
                     else
-                        results.Add($"Compute: FAIL (exception) - {ex.Message}");
+                        results.Add("Compute: FAIL");
                 }
 
-                // ✅ 3) Optional: materials/labour update check (this is often another 404 source)
+                // ✅ 3) Optional: materials/labour update check
                 try
                 {
                     var zone = cfg.Zone ?? "Lagos";
@@ -537,8 +592,12 @@ namespace ADLMRateGen.ViewModel
                         zone,
                         async (prompt) =>
                         {
-                            var result = MessageBox.Show(prompt, "Rate Update",
-                                MessageBoxButton.YesNo, MessageBoxImage.Information);
+                            var result = MessageBox.Show(
+                                prompt,
+                                "Rate Update",
+                                MessageBoxButton.YesNo,
+                                MessageBoxImage.Information);
+
                             return await Task.FromResult(result == MessageBoxResult.Yes);
                         });
 
@@ -546,10 +605,16 @@ namespace ADLMRateGen.ViewModel
                 }
                 catch (Exception ex)
                 {
+                    if (IsUnauthorizedException(ex))
+                    {
+                        RequireSignInAgain(manual);
+                        return;
+                    }
+
                     if (Is404(ex))
-                        results.Add("Materials/Labour check: SKIPPED (404 Not Found – still pointing to old route)");
+                        results.Add("Materials/Labour check: SKIPPED (404 Not Found)");
                     else
-                        results.Add($"Materials/Labour check: FAIL - {ex.Message}");
+                        results.Add("Materials/Labour check: FAIL");
                 }
 
                 // Refresh local UI
@@ -558,8 +623,7 @@ namespace ADLMRateGen.ViewModel
                 _index.Rebuild(this);
 
                 LastCloudSyncAt = DateTime.Now;
-
-                CloudSyncStatus = "Cloud sync: done | " + string.Join(" | ", results.Where(x => x.StartsWith("Rates:") || x.StartsWith("Compute:")));
+                CloudSyncStatus = "Cloud sync: done";
                 AddNotification(CloudSyncStatus);
 
                 if (manual)
@@ -573,12 +637,24 @@ namespace ADLMRateGen.ViewModel
             }
             catch (Exception ex)
             {
-                CloudSyncStatus = $"Cloud sync: failed ({ex.Message})";
+                // if it’s auth, show the clean message
+                if (IsUnauthorizedException(ex))
+                {
+                    RequireSignInAgain(manual);
+                    return;
+                }
+
+                CloudSyncStatus = $"Cloud sync: failed";
                 AddNotification(CloudSyncStatus);
 
                 if (manual)
-                    MessageBox.Show($"Sync failed:\n{ex.Message}", "Sync from Cloud",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                {
+                    MessageBox.Show(
+                        "Sync failed.",
+                        "Sync from Cloud",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
             }
             finally
             {
@@ -612,6 +688,54 @@ namespace ADLMRateGen.ViewModel
             HasPriceNotifications = Notifications.Any();
         }
 
+
+
+        private static bool IsUnauthorizedException(Exception ex)
+        {
+            if (ex == null) return false;
+
+            if (ex is HttpRequestException hre)
+            {
+#if NET8_0_OR_GREATER
+                if (hre.StatusCode.HasValue && hre.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                    return true;
+#endif
+                if (IsUnauthorizedText(hre.Message)) return true;
+            }
+
+            return IsUnauthorizedText(ex.Message);
+        }
+
+        private void RequireSignInAgain(bool manual)
+        {
+            // preserve non-auth config (like Zone) if you have it
+            try
+            {
+                var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
+                cfg.AuthToken = null;
+                cfg.AuthExpiry = DateTime.MinValue;
+                ConfigManager.SaveConfig(cfg);
+            }
+            catch { }
+
+            // force UI back to sign-in so user isn’t confused
+            IsLoggedIn = false;
+            CurrentUser = null;
+            SelectedViewModel = SignInViewModel;
+
+            CloudSyncStatus = "Cloud sync: Please sign in again.";
+            AddNotification(CloudSyncStatus);
+
+            if (manual)
+            {
+                MessageBox.Show(
+                    "Please sign in again.",
+                    "Sync from Cloud",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
+            }
+        }
         private bool TryAutoLogin(out UserModel? user)
         {
             user = null;
@@ -997,6 +1121,7 @@ namespace ADLMRateGen.ViewModel
                 AddSheet("Painting", PaintWorkViewModel);
                 AddSheet("Steel", SteelWorkViewModel);
                 AddSheet("Window & Door", WindowAndDoorViewModel);
+                AddSheet("Carbon & Others", CarbonOthersViewModel);
                 sheets.Add(new ExcelExporter.ExportSheet("Saved Rates", CustomRateListViewModel.CustomRates));
 
                 if (!sheets.Any())
@@ -1042,6 +1167,7 @@ namespace ADLMRateGen.ViewModel
                 AddSection("Painting", PaintWorkViewModel);
                 AddSection("Steel", SteelWorkViewModel);
                 AddSection("Window & Door", WindowAndDoorViewModel);
+                AddSection("Carbon & Others", CarbonOthersViewModel);
 
                 if (CustomRateListViewModel?.CustomRates is IEnumerable cr && cr.GetEnumerator().MoveNext())
                     sections.Add(("Saved Rates", CustomRateListViewModel.CustomRates));

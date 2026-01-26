@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace ADLMRateGen.Services
 {
@@ -9,10 +10,15 @@ namespace ADLMRateGen.Services
             var s = (raw ?? "").Trim().ToLowerInvariant();
             if (string.IsNullOrWhiteSpace(s)) return "";
 
-            // normalize separators
-            s = s.Replace("&", "and").Replace("-", "_").Replace(" ", "_");
+            // normalize separators + common variants
+            s = s.Replace("&", "and")
+                 .Replace("/", " ")
+                 .Replace("-", " ")
+                 .Replace("_", " ");
 
-            // Accept many aliases, always return your canonical keys
+            s = Regex.Replace(s, @"\s+", " ").Trim();
+
+            // map to canonical keys
             if (s.Contains("door") || s.Contains("window")) return SectionKeys.DoorsWindows;
             if (s.Contains("steel")) return SectionKeys.Steelwork;
             if (s.Contains("roof")) return SectionKeys.Roofing;
@@ -21,13 +27,15 @@ namespace ADLMRateGen.Services
             if (s.Contains("concrete")) return SectionKeys.Concrete;
             if (s.Contains("finish")) return SectionKeys.Finishes;
             if (s.Contains("block")) return SectionKeys.Blockwork;
+            if (s.Contains("carbon") || s.Contains("other")) return SectionKeys.CarbonOthers;
 
-            // already canonical?
+            // if it's already canonical, return it
+            var canonical = s.Replace(" ", "_");
             foreach (var k in SectionKeys.All)
-                if (string.Equals(s, k, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(canonical, k, StringComparison.OrdinalIgnoreCase))
                     return k;
 
-            return s; // unknown, but don’t crash
+            return canonical; // unknown, but don’t crash
         }
     }
 }

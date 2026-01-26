@@ -10,10 +10,19 @@
         public const string DoorsWindows = "doors_windows";
         public const string Paint = "paint";
         public const string Steelwork = "steelwork";
+        public const string CarbonOthers = "carbon";
 
         public static readonly string[] All =
         {
-            Ground, Concrete, Blockwork, Finishes, Roofing, DoorsWindows, Paint, Steelwork
+            Ground,
+            Concrete,
+            Blockwork,
+            Finishes,
+            Roofing,
+            DoorsWindows,
+            Paint,
+            Steelwork,
+            CarbonOthers // ✅ IMPORTANT: add this
         };
     }
 }

@@ -15,6 +15,7 @@ using ADLMRateGen.ViewModel.Painting;
 using ADLMRateGen.ViewModel.RoofWork;
 using ADLMRateGen.ViewModel.SteelWork;
 using ADLMRateGen.ViewModel.WindowAndDoor;
+using ADLMRateGen.ViewModel.CarbonOthers;
 
 namespace ADLMRateGen
 {
@@ -46,6 +47,7 @@ namespace ADLMRateGen
             var windowAndDoorVM = new WindowAndDoorViewModel(libraryVM, labourLibraryVM);
             var paintVM = new PaintWorkViewModel(libraryVM, labourLibraryVM);
             var steelWorkVM = new SteelWorkViewModel(libraryVM, labourLibraryVM);
+            var carbonVM = new CarbonOthersViewModel(libraryVM, labourLibraryVM);
 
             var customInputVM = new CustomRateEntryViewModel();
             var customViewVM = new CustomRateListViewModel();
@@ -67,6 +69,12 @@ namespace ADLMRateGen
 
             _popup = PopupHost;
 
+            // ✅ Carbon: open details in same popup host
+            carbonVM.RequestShowDetails += item =>
+            {
+                _popup.Show(new CarbonRateItemDetailControl { DataContext = item });
+            };
+
             // 3) Create the MainViewModel
             var mainVM = new MainViewModel(
                 priceVM,
@@ -81,6 +89,7 @@ namespace ADLMRateGen
                 windowAndDoorVM,
                 paintVM,
                 steelWorkVM,
+                  carbonVM,
                 _shellVm,
                 customViewVM,
                 customInputVM,

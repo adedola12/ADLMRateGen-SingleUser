@@ -14,6 +14,7 @@
         xmlns:roof="clr-namespace:ADLMRateGen.ViewModel.RoofWork"
         xmlns:windowAndDoor="clr-namespace:ADLMRateGen.ViewModel.WindowAndDoor"
         xmlns:paint="clr-namespace:ADLMRateGen.ViewModel.Painting"
+        xmlns:carbon="clr-namespace:ADLMRateGen.ViewModel.CarbonOthers"
         xmlns:steel="clr-namespace:ADLMRateGen.ViewModel.SteelWork"
         xmlns:customInput="clr-namespace:ADLMRateGen.ViewModel.CustomRate"
         xmlns:helpers="clr-namespace:ADLMRateGen.Helpers"
@@ -69,6 +70,9 @@
             <DataTemplate DataType="{x:Type steel:SteelWorkViewModel}">
                 <view:SteelworkView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type carbon:CarbonOthersViewModel}">
+                <view:CarbonOthersView />
+            </DataTemplate>
             <!-- custom-rate -->
             <DataTemplate DataType="{x:Type customInput:CustomRateEntryViewModel}">
                 <view:CustomRateEntryView />
@@ -113,11 +117,11 @@
                         Background="{DynamicResource MainBg}"
                         CornerRadius="0,0,16,0"
                         Effect="{DynamicResource SoftShadow}">
-                    <StackPanel Margin="24,32,24,24"
+                    <StackPanel Margin="24,28,24,24"
                                 VerticalAlignment="Stretch">
                         <Image Source="/Resources/adlm_rate_generator_logo_small.png"
-                               Width="100"
-                               Margin="0,0,0,32"
+                               Width="90"
+                               Margin="0,0,0,28"
                                HorizontalAlignment="Center" />
                         <Button Style="{DynamicResource NavPrimaryButton}"
                                 Command="{Binding SelectedMaterialLibraryViewCommand}"
@@ -310,6 +314,22 @@
                                     <Rectangle Width="14"
                                                Fill="Transparent" />
                                     <TextBlock Text="Saved Rates"
+                                               Style="{DynamicResource BtnSidebarText}" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{DynamicResource SidebarSubButton}"
+                                    Command="{Binding SelectedCarbonOthersViewCommand}"
+                                    helpers:ButtonHelper.IsActive="{Binding IsCarbonOthersActive}"
+                                    Margin="0,4">
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                    <fa:IconBlock Icon="Leaf"
+                                                  Width="24"
+                                                  Height="24"
+                                                  Foreground="{DynamicResource Blue900Brush}" />
+                                    <Rectangle Width="14"
+                                               Fill="Transparent" />
+                                    <TextBlock Text="Carbon &amp; Others"
                                                Style="{DynamicResource BtnSidebarText}" />
                                 </StackPanel>
                             </Button>
