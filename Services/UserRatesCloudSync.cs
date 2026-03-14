@@ -561,7 +561,8 @@ namespace ADLMRateGen.Services
         {
             using var sha256 = SHA256.Create();
             var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(key));
-            return "local-" + Convert.ToHexString(bytes).ToLowerInvariant();
+            var hex = Convert.ToHexString(bytes).ToLowerInvariant();
+            return hex.Substring(0, 24);
         }
 
         private static bool AreEquivalent(RateOverridePayload local, RateOverridePayload server)

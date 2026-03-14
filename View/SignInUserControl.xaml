@@ -16,7 +16,7 @@
             <Setter Property="FontFamily"
                     Value="{DynamicResource Mont}" />
             <Setter Property="FontSize"
-                    Value="12" />
+                    Value="13" />
             <Setter Property="FontWeight"
                     Value="SemiBold" />
             <Setter Property="Margin"
@@ -37,11 +37,11 @@
             <Setter Property="CaretBrush"
                     Value="{DynamicResource SignInBrush}" />
             <Setter Property="FontSize"
-                    Value="15" />
+                    Value="16" />
             <Setter Property="Height"
-                    Value="50" />
+                    Value="56" />
             <Setter Property="Padding"
-                    Value="18,0" />
+                    Value="20,0" />
         </Style>
 
         <Style x:Key="SignInPasswordBoxStyle"
@@ -57,11 +57,11 @@
             <Setter Property="FontFamily"
                     Value="{DynamicResource Mont}" />
             <Setter Property="FontSize"
-                    Value="15" />
+                    Value="16" />
             <Setter Property="Height"
-                    Value="50" />
+                    Value="56" />
             <Setter Property="Padding"
-                    Value="18,0,56,0" />
+                    Value="20,0,60,0" />
             <Setter Property="VerticalContentAlignment"
                     Value="Center" />
             <Setter Property="Template">
@@ -110,6 +110,100 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <Style x:Key="SignInLoginButtonStyle"
+               TargetType="Button">
+            <Setter Property="Background"
+                    Value="{DynamicResource SignInBrush}" />
+            <Setter Property="BorderBrush"
+                    Value="#8DBAFF" />
+            <Setter Property="BorderThickness"
+                    Value="1.2" />
+            <Setter Property="Foreground"
+                    Value="White" />
+            <Setter Property="Width"
+                    Value="560" />
+            <Setter Property="Height"
+                    Value="62" />
+            <Setter Property="Cursor"
+                    Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="ShadowLayer"
+                                    Margin="0,8,0,0"
+                                    CornerRadius="18"
+                                    Background="#182A4A"
+                                    Opacity="0.92" />
+
+                            <Border x:Name="Face"
+                                    Margin="0"
+                                    CornerRadius="18"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    RenderTransformOrigin="0.5,0.5">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="18"
+                                                      ShadowDepth="4"
+                                                      Color="#4C8DFF"
+                                                      Opacity="0.34" />
+                                </Border.Effect>
+
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Margin="18,0"
+                                                  RecognizesAccessKey="True"
+                                                  TextElement.Foreground="{TemplateBinding Foreground}" />
+                            </Border>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter TargetName="Face"
+                                        Property="Margin"
+                                        Value="0,-4,0,4" />
+                                <Setter TargetName="ShadowLayer"
+                                        Property="Margin"
+                                        Value="0,12,0,0" />
+                            </Trigger>
+
+                            <Trigger Property="IsPressed"
+                                     Value="True">
+                                <Setter TargetName="Face"
+                                        Property="Margin"
+                                        Value="0,2,0,-2" />
+                                <Setter TargetName="ShadowLayer"
+                                        Property="Opacity"
+                                        Value="0.44" />
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled"
+                                     Value="False">
+                                <Setter Property="Cursor"
+                                        Value="Arrow" />
+                                <Setter TargetName="Face"
+                                        Property="Opacity"
+                                        Value="0.58" />
+                                <Setter TargetName="ShadowLayer"
+                                        Property="Opacity"
+                                        Value="0.28" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLoading}"
+                             Value="True">
+                    <Setter Property="IsEnabled"
+                            Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto"
@@ -117,24 +211,19 @@
                   CanContentScroll="False"
                   Background="Transparent">
         <Grid x:Name="LayoutRoot"
-              MinHeight="820">
-            <Grid.Background>
-                <ImageBrush x:Name="WallpaperBrush"
-                            Stretch="UniformToFill"
-                            Opacity="0.98" />
-            </Grid.Background>
-
-            <Border Background="#B7122E53" />
-
-            <Grid Margin="40">
-                <Grid MaxWidth="960"
+              MinHeight="760"
+              Background="Transparent">
+            <Grid Margin="24"
+                  ClipToBounds="False">
+                <Grid MaxWidth="980"
                       MinWidth="320"
                       HorizontalAlignment="Center"
-                      VerticalAlignment="Center">
+                      VerticalAlignment="Center"
+                      ClipToBounds="False">
                     <Border x:Name="SignInCard"
-                            Width="860"
-                            MinHeight="580"
-                            Padding="44,32,44,28"
+                            Width="920"
+                            MinHeight="620"
+                            Padding="54,34,54,30"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             CornerRadius="32"
@@ -177,28 +266,28 @@
                                        Stretch="Uniform" />
 
                                 <StackPanel Grid.Row="2"
-                                            MaxWidth="430"
+                                            Width="560"
                                             HorizontalAlignment="Center">
-                                    <TextBlock Text="Email"
+                                    <TextBlock Text="Email or username"
                                                Style="{StaticResource SignInLabelStyle}" />
 
                                     <TextBox x:Name="EmailTextBox"
                                              Style="{StaticResource SignInFieldTextBoxStyle}"
-                                             Tag="example@gmail.com"
+                                             Width="560"
                                              Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <TextBlock Text="Password"
                                                Style="{StaticResource SignInLabelStyle}"
-                                               Margin="0,18,0,8" />
+                                               Margin="0,20,0,8" />
 
-                                    <Grid>
+                                    <Grid Width="560">
                                         <PasswordBox x:Name="PasswordBox"
                                                      Style="{StaticResource SignInPasswordBoxStyle}"
                                                      PasswordChanged="PasswordBox_PasswordChanged" />
 
                                         <TextBox x:Name="PasswordPreviewTextBox"
                                                  Style="{StaticResource SignInFieldTextBoxStyle}"
-                                                 Padding="18,0,56,0"
+                                                 Padding="20,0,60,0"
                                                  Visibility="Collapsed"
                                                  TextChanged="PasswordPreviewTextBox_TextChanged" />
 
@@ -222,13 +311,15 @@
                                 </StackPanel>
 
                                 <Button Grid.Row="3"
-                                        Style="{StaticResource LogBtnStyle}"
+                                        Style="{StaticResource SignInLoginButtonStyle}"
                                         Command="{Binding LoginCommand}"
-                                        Width="430"
                                         HorizontalAlignment="Center"
                                         Margin="0,28,0,0">
                                     <TextBlock Text="Log in"
-                                               Style="{StaticResource BtnText}" />
+                                               FontFamily="{DynamicResource Mont}"
+                                               FontSize="21"
+                                               FontWeight="SemiBold"
+                                               Foreground="White" />
                                 </Button>
 
                                 <StackPanel Grid.Row="4"
@@ -255,21 +346,21 @@
                     </Border>
 
                     <Image Source="/Resources/bg_frame.png"
-                           Width="120"
-                           Height="142"
+                           Width="126"
+                           Height="150"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Top"
-                           Margin="0,-26,-24,0"
+                           Margin="0,-30,-34,0"
                            Panel.ZIndex="2"
                            Opacity="0.96"
                            IsHitTestVisible="False" />
 
                     <Image Source="/Resources/bg_frame.png"
-                           Width="124"
-                           Height="148"
+                           Width="126"
+                           Height="150"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Bottom"
-                           Margin="-28,0,0,-26"
+                           Margin="-34,0,0,-30"
                            Panel.ZIndex="2"
                            Opacity="0.96"
                            IsHitTestVisible="False" />
