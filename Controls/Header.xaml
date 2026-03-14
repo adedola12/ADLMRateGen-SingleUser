@@ -30,9 +30,9 @@
         <Style x:Key="HeaderActionButtonStyle"
                TargetType="Button">
             <Setter Property="Width"
-                    Value="36" />
+                    Value="38" />
             <Setter Property="Height"
-                    Value="36" />
+                    Value="38" />
             <Setter Property="Cursor"
                     Value="Hand" />
             <Setter Property="Background"
@@ -46,7 +46,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Surface"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="12">
+                                CornerRadius="14">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center" />
                         </Border>
@@ -68,6 +68,23 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="HeaderCurrencyComboStyle"
+               TargetType="ComboBox"
+               BasedOn="{StaticResource TopNavComboBoxStyle}">
+            <Setter Property="Background"
+                    Value="Transparent" />
+            <Setter Property="BorderBrush"
+                    Value="Transparent" />
+            <Setter Property="Foreground"
+                    Value="{DynamicResource Blue900Brush}" />
+            <Setter Property="FontSize"
+                    Value="11.5" />
+            <Setter Property="FontWeight"
+                    Value="SemiBold" />
+            <Setter Property="Padding"
+                    Value="0" />
+        </Style>
     </UserControl.Resources>
 
     <UserControl.DataContext>
@@ -80,20 +97,21 @@
             Background="{DynamicResource BackgroundBrush}"
             BorderBrush="{DynamicResource BorderBrushLight}"
             BorderThickness="1"
-            CornerRadius="26"
+            CornerRadius="28"
             Effect="{DynamicResource SoftShadow}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="20" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Border x:Name="SearchSurface"
                     Grid.Column="0"
-                    Height="48"
+                    Height="52"
                     Padding="16,0"
-                    Style="{StaticResource HeaderSurfaceBorderStyle}">
+                    Style="{StaticResource HeaderSurfaceBorderStyle}"
+                    CornerRadius="20">
                 <Grid DataContext="{Binding GlobalSearch}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -202,31 +220,28 @@
             <StackPanel Grid.Column="2"
                         Orientation="Horizontal"
                         VerticalAlignment="Center">
-                <Border Height="40"
+                <Border Height="42"
                         Margin="0,0,10,0"
                         Padding="10,0"
                         VerticalAlignment="Center"
-                        Style="{StaticResource HeaderSurfaceBorderStyle}">
-                    <ComboBox Width="86"
+                        Style="{StaticResource HeaderSurfaceBorderStyle}"
+                        CornerRadius="14">
+                    <ComboBox Width="90"
+                              Style="{StaticResource HeaderCurrencyComboStyle}"
                               ItemsSource="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Supported}"
-                              SelectedItem="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Selected}"
-                              BorderThickness="0"
-                              Background="Transparent"
-                              Foreground="{DynamicResource CellTextBrush}"
-                              FontFamily="{DynamicResource PoppinsFont}"
-                              FontSize="11"
-                              VerticalContentAlignment="Center">
+                              SelectedItem="{Binding Source={x:Static services:CurrencyService.Instance}, Path=Selected}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal"
                                             VerticalAlignment="Center">
                                     <Image Width="16"
                                            Height="11"
-                                           Source="{Binding Converter={StaticResource CurrencyToFlagConverter}}"
-                                           Margin="0,0,4,0" />
+                                           Margin="0,0,6,0"
+                                           Source="{Binding Converter={StaticResource CurrencyToFlagConverter}}" />
                                     <TextBlock Text="{Binding}"
                                                FontFamily="{DynamicResource PoppinsFont}"
                                                FontSize="11"
+                                               Foreground="{DynamicResource Blue900Brush}"
                                                VerticalAlignment="Center" />
                                 </StackPanel>
                             </DataTemplate>
@@ -249,26 +264,146 @@
                                       Foreground="{DynamicResource Blue900Brush}" />
                     </Button>
 
-                    <Button x:Name="BellButton"
-                            Style="{StaticResource HeaderActionButtonStyle}"
-                            Command="{Binding ToggleNotificationsCommand}"
-                            ToolTip="Price update notifications">
-                        <Grid>
-                            <fa:IconBlock Icon="Bell"
-                                          Width="16"
-                                          Height="16"
-                                          Foreground="{DynamicResource Blue900Brush}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center" />
-                            <Ellipse Width="8"
-                                     Height="8"
-                                     Fill="#FF6B57"
-                                     HorizontalAlignment="Right"
-                                     VerticalAlignment="Top"
-                                     Margin="0,6,6,0"
-                                     Visibility="{Binding HasPriceNotifications, Converter={StaticResource BoolToVisibility}}" />
-                        </Grid>
-                    </Button>
+                    <Grid>
+                        <Button x:Name="BellButton"
+                                Style="{StaticResource HeaderActionButtonStyle}"
+                                Command="{Binding ToggleNotificationsCommand}"
+                                ToolTip="Updates and admin notifications">
+                            <Grid>
+                                <fa:IconBlock Icon="Bell"
+                                              Width="16"
+                                              Height="16"
+                                              Foreground="{DynamicResource Blue900Brush}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                                <Ellipse Width="8"
+                                         Height="8"
+                                         Fill="#FF6B57"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Top"
+                                         Margin="0,6,6,0"
+                                         Visibility="{Binding HasPriceNotifications, Converter={StaticResource BoolToVisibility}}" />
+                            </Grid>
+                        </Button>
+
+                        <Popup x:Name="NotificationsPopup"
+                               Placement="Bottom"
+                               PlacementTarget="{Binding ElementName=BellButton}"
+                               DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
+                               IsOpen="{Binding IsNotificationsOpen, Mode=TwoWay}"
+                               AllowsTransparency="True"
+                               PopupAnimation="Fade"
+                               StaysOpen="False"
+                               Closed="NotificationsPopup_Closed">
+                            <Border Width="332"
+                                    Margin="0,12,0,0"
+                                    Padding="16"
+                                    Background="{DynamicResource BackgroundBrush}"
+                                    BorderBrush="{DynamicResource BorderBrushLight}"
+                                    BorderThickness="1"
+                                    CornerRadius="18"
+                                    Effect="{DynamicResource SoftShadow}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <DockPanel>
+                                        <TextBlock Text="Notifications"
+                                                   FontFamily="{DynamicResource PoppinsFont}"
+                                                   FontSize="15"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource Blue900Brush}" />
+                                        <Button DockPanel.Dock="Right"
+                                                Width="28"
+                                                Height="28"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Cursor="Hand"
+                                                Command="{Binding PlacementTarget.DataContext.ToggleNotificationsCommand, RelativeSource={RelativeSource AncestorType=Popup}}"
+                                                ToolTip="Close notifications">
+                                            <fa:IconBlock Icon="Times"
+                                                          Width="12"
+                                                          Height="12"
+                                                          Foreground="{DynamicResource Grey700}" />
+                                        </Button>
+                                    </DockPanel>
+
+                                    <TextBlock Grid.Row="1"
+                                               Margin="0,8,0,0"
+                                               Text="You are all caught up."
+                                               FontFamily="{DynamicResource PoppinsFont}"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource Grey700}"
+                                               Visibility="{Binding Notifications.Count, Converter={StaticResource EmptyCollectionToVisibility}}" />
+
+                                    <ScrollViewer Grid.Row="2"
+                                                  Margin="0,12,0,0"
+                                                  MaxHeight="260"
+                                                  VerticalScrollBarVisibility="Auto"
+                                                  HorizontalScrollBarVisibility="Disabled">
+                                        <ItemsControl ItemsSource="{Binding Notifications}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Margin="0,0,0,10"
+                                                            Padding="12"
+                                                            Background="{DynamicResource MainBg}"
+                                                            BorderBrush="{DynamicResource BorderBrushLight}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="14">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <Border Width="30"
+                                                                    Height="30"
+                                                                    Background="{DynamicResource LightGrayBrush}"
+                                                                    CornerRadius="10"
+                                                                    VerticalAlignment="Top">
+                                                                <fa:IconBlock Icon="Bell"
+                                                                              Width="12"
+                                                                              Height="12"
+                                                                              Foreground="{DynamicResource SignInBrush}"
+                                                                              HorizontalAlignment="Center"
+                                                                              VerticalAlignment="Center" />
+                                                            </Border>
+
+                                                            <TextBlock Grid.Column="1"
+                                                                       Margin="12,0,10,0"
+                                                                       Text="{Binding}"
+                                                                       TextWrapping="Wrap"
+                                                                       FontFamily="{DynamicResource PoppinsFont}"
+                                                                       FontSize="11.5"
+                                                                       Foreground="{DynamicResource CellTextBrush}" />
+
+                                                            <Button Grid.Column="2"
+                                                                    Width="24"
+                                                                    Height="24"
+                                                                    Background="Transparent"
+                                                                    BorderThickness="0"
+                                                                    Cursor="Hand"
+                                                                    Command="{Binding PlacementTarget.DataContext.DismissNotificationCommand, RelativeSource={RelativeSource AncestorType=Popup}}"
+                                                                    CommandParameter="{Binding}">
+                                                                <fa:IconBlock Icon="Times"
+                                                                              Width="10"
+                                                                              Height="10"
+                                                                              Foreground="{DynamicResource Grey700}" />
+                                                            </Button>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Border>
+                        </Popup>
+                    </Grid>
                 </StackPanel>
 
                 <Button Background="Transparent"

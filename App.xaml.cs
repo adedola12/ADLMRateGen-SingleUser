@@ -274,6 +274,18 @@ namespace ADLMRateGen
         {
             try
             {
+                if (Current?.MainWindow?.DataContext is ViewModel.MainViewModel mainVm)
+                {
+                    try
+                    {
+                        mainVm.FlushUserRatesCloudSyncAsync().GetAwaiter().GetResult();
+                    }
+                    catch
+                    {
+                        // best-effort on shutdown
+                    }
+                }
+
                 _mutex?.ReleaseMutex();
                 _mutex?.Dispose();
             }

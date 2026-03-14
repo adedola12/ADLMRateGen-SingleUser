@@ -7,6 +7,73 @@
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground"
+                    Value="{DynamicResource CellTextBrush}" />
+            <Setter Property="FontFamily"
+                    Value="{DynamicResource Mont}" />
+        </Style>
+
+        <Style x:Key="FormLabelTextStyle"
+               TargetType="TextBlock">
+            <Setter Property="Foreground"
+                    Value="{DynamicResource Blue900Brush}" />
+            <Setter Property="FontFamily"
+                    Value="{DynamicResource Mont}" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="FontWeight"
+                    Value="SemiBold" />
+            <Setter Property="Margin"
+                    Value="0,0,0,8" />
+        </Style>
+
+        <Style x:Key="InlineHintTextStyle"
+               TargetType="TextBlock">
+            <Setter Property="Foreground"
+                    Value="{DynamicResource HintGrey}" />
+            <Setter Property="FontFamily"
+                    Value="{DynamicResource Mont}" />
+            <Setter Property="FontSize"
+                    Value="11" />
+        </Style>
+
+        <Style x:Key="FormEditorComboStyle"
+               TargetType="ComboBox">
+            <Setter Property="Foreground"
+                    Value="{DynamicResource CellTextBrush}" />
+            <Setter Property="TextElement.Foreground"
+                    Value="{DynamicResource CellTextBrush}" />
+            <Setter Property="Background"
+                    Value="{DynamicResource BackgroundBrush}" />
+            <Setter Property="BorderBrush"
+                    Value="{DynamicResource BorderBrushLight}" />
+            <Setter Property="BorderThickness"
+                    Value="1" />
+            <Setter Property="Padding"
+                    Value="10,0" />
+            <Setter Property="FontFamily"
+                    Value="{DynamicResource Mont}" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="Height"
+                    Value="46" />
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center" />
+        </Style>
+
+        <Style x:Key="TotalsTextStyle"
+               TargetType="TextBlock">
+            <Setter Property="FontWeight"
+                    Value="SemiBold" />
+            <Setter Property="Foreground"
+                    Value="{DynamicResource Blue900Brush}" />
+            <Setter Property="Margin"
+                    Value="0,4,0,0" />
+        </Style>
+    </UserControl.Resources>
+
     <Border Background="{DynamicResource BackgroundBrush}"
             Margin="25,-20"
             CornerRadius="20">
@@ -38,7 +105,7 @@
 
             <ScrollViewer  Grid.Row="2"
                            Margin="20,20,20,10"
-                           VerticalScrollBarVisibility="Hidden"
+                           VerticalScrollBarVisibility="Auto"
                            HorizontalScrollBarVisibility="Disabled"
                            PanningMode="VerticalOnly"
                            CanContentScroll="True">
@@ -56,9 +123,7 @@
                             <!-- Name of Rate -->
                             <StackPanel>
                                 <TextBlock Text="Name of Rate"
-                                           FontSize="14"
-                                           FontFamily="{DynamicResource Mont}"
-                                           Margin="0,0,0,8" />
+                                           Style="{StaticResource FormLabelTextStyle}" />
                                 <TextBox Style="{StaticResource OPTextBox}"
                                          Text="{Binding RateName, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
@@ -67,9 +132,7 @@
                             <StackPanel Grid.Column="1"
                                         Margin="10,0">
                                 <TextBlock Text="Description"
-                                           FontSize="14"
-                                           FontFamily="{DynamicResource Mont}"
-                                           Margin="0,0,0,8" />
+                                           Style="{StaticResource FormLabelTextStyle}" />
                                 <TextBox Style="{StaticResource OPTextBox}"
                                          Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
                                          TextWrapping="Wrap"
@@ -82,9 +145,7 @@
                                     Margin="0,10,0,10">
                             <StackPanel Width="180">
                                 <TextBlock Text="Overhead"
-                                           FontSize="14"
-                                           FontFamily="{DynamicResource Mont}"
-                                           Margin="0,0,0,8" />
+                                           Style="{StaticResource FormLabelTextStyle}" />
                                 <Grid>
                                     <TextBox Style="{StaticResource HollowBox}"
                                              Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}" />
@@ -100,9 +161,7 @@
                             <StackPanel Width="180"
                                         Margin="20,0,0,0">
                                 <TextBlock Text="Profit"
-                                           FontSize="14"
-                                           FontFamily="{DynamicResource Mont}"
-                                           Margin="0,0,0,8" />
+                                           Style="{StaticResource FormLabelTextStyle}" />
                                 <Grid>
                                     <TextBox Style="{StaticResource OPTextBox}"
                                              Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}" />
@@ -135,8 +194,7 @@
                                            Style="{StaticResource Body}" />
                                 <TextBlock Text="Click to add new material"
                                            Margin="0,2,0,0"
-                                           FontSize="11"
-                                           Foreground="{DynamicResource HintGrey}" />
+                                           Style="{StaticResource InlineHintTextStyle}" />
                             </StackPanel>
 
                             <Button Grid.Column="1"
@@ -169,31 +227,20 @@
                                             <StackPanel Grid.Column="0"
                                                         Margin="0,0,8,0">
                                                 <TextBlock Text="Name"
-                                                           FontSize="11"
-                                                           FontFamily="{DynamicResource Mont}"
-                                                           Foreground="{DynamicResource HintGrey}" />
+                                                           Style="{StaticResource InlineHintTextStyle}" />
                                                 <ComboBox IsEditable="True"
                                                           Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                           ItemsSource="{Binding DataContext.AvailableMaterials, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                          Height="46"
-                                                          FontFamily="{DynamicResource Mont}"
-                                                          FontSize="14"
-                                                          BorderBrush="{DynamicResource BorderBrushLight}"
-                                                          BorderThickness="1"
-                                                          Padding="10,0"
-                                                          VerticalContentAlignment="Center"
-                                                          Background="White"
                                                           HorizontalContentAlignment="Left"
-                                                          MinWidth="180" />
+                                                          MinWidth="180"
+                                                          Style="{StaticResource FormEditorComboStyle}" />
                                             </StackPanel>
 
                                             <!-- Rate -->
                                             <StackPanel Grid.Column="1"
                                                         Margin="8,0">
                                                 <TextBlock Text="Rate"
-                                                           FontSize="11"
-                                                           FontFamily="{DynamicResource Mont}"
-                                                           Foreground="{DynamicResource HintGrey}" />
+                                                           Style="{StaticResource InlineHintTextStyle}" />
                                                 <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                          Style="{StaticResource OPTextBox}" />
                                             </StackPanel>
@@ -202,16 +249,15 @@
                                             <StackPanel Grid.Column="2"
                                                         Margin="8,0">
                                                 <TextBlock Text="Unit"
-                                                           FontSize="11"
-                                                           FontFamily="{DynamicResource Mont}"
-                                                           Foreground="{DynamicResource HintGrey}" />
+                                                           Style="{StaticResource InlineHintTextStyle}" />
                                                 <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                          Width="50"
                                                          FontFamily="{DynamicResource Mont}"
                                                          Style="{StaticResource OPTextBox}"
                                                          FontSize="14"
                                                          Padding="10,0"
-                                                         Background="White"
+                                                         Background="{DynamicResource BackgroundBrush}"
+                                                         Foreground="{DynamicResource CellTextBrush}"
                                                          BorderBrush="{DynamicResource BorderBrushLight}"
                                                          BorderThickness="1"
                                                          VerticalContentAlignment="Center"
@@ -223,9 +269,7 @@
                                             <StackPanel Grid.Column="3"
                                                         Margin="8,0">
                                                 <TextBlock Text="Quantity"
-                                                           FontSize="11"
-                                                           FontFamily="{DynamicResource Mont}"
-                                                           Foreground="{DynamicResource HintGrey}" />
+                                                           Style="{StaticResource InlineHintTextStyle}" />
                                                 <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                          Style="{StaticResource OPTextBox}" />
                                             </StackPanel>
@@ -234,9 +278,7 @@
                                             <StackPanel Grid.Column="4"
                                                         Margin="8,0">
                                                 <TextBlock Text="Amount"
-                                                           FontSize="11"
-                                                           FontFamily="{DynamicResource Mont}"
-                                                           Foreground="{DynamicResource HintGrey}" />
+                                                           Style="{StaticResource InlineHintTextStyle}" />
                                                 <TextBlock Text="{Binding TotalCost, StringFormat=N2}"
                                                            Style="{StaticResource CenterCellText}"
                                                            Margin="0,12,0,0" />
@@ -264,8 +306,7 @@
                                            Style="{StaticResource Body}" />
                                 <TextBlock Text="Click to add new labour"
                                            Margin="10,0"
-                                           FontSize="11"
-                                           Foreground="{DynamicResource HintGrey}"
+                                           Style="{StaticResource InlineHintTextStyle}"
                                            VerticalAlignment="Center" />
                             </StackPanel>
 
@@ -301,24 +342,15 @@
                                             <StackPanel Grid.Column="0"
                                                         Margin="0,0,8,0">
                                                 <TextBlock Text="Name"
-                                                           FontSize="11"
-                                                           FontFamily="{DynamicResource Mont}"
-                                                           Foreground="{DynamicResource HintGrey}" />
+                                                           Style="{StaticResource InlineHintTextStyle}" />
                                                 <ComboBox IsEditable="True"
                                                           IsTextSearchEnabled="True"
                                                           StaysOpenOnEdit="True"
                                                           Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                           ItemsSource="{Binding DataContext.AvailableLabourItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                          Height="46"
-                                                          FontFamily="{DynamicResource Mont}"
-                                                          FontSize="14"
-                                                          BorderBrush="{DynamicResource BorderBrushLight}"
-                                                          BorderThickness="1"
-                                                          Padding="10,0"
-                                                          VerticalContentAlignment="Center"
-                                                          Background="White"
                                                           HorizontalContentAlignment="Left"
-                                                          MinWidth="180" />
+                                                          MinWidth="180"
+                                                          Style="{StaticResource FormEditorComboStyle}" />
                                                 <!--<TextBlock Text="{Binding DataContext.AvailableLabourItems.Count, RelativeSource={RelativeSource AncestorType=UserControl}}" />-->
 
 
@@ -328,9 +360,7 @@
                                             <StackPanel Grid.Column="1"
                                                         Margin="8,0">
                                                 <TextBlock Text="Rate"
-                                                           FontSize="11"
-                                                           FontFamily="{DynamicResource Mont}"
-                                                           Foreground="{DynamicResource HintGrey}" />
+                                                           Style="{StaticResource InlineHintTextStyle}" />
                                                 <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                          Style="{StaticResource OPTextBox}" />
                                             </StackPanel>
@@ -339,16 +369,15 @@
                                             <StackPanel Grid.Column="2"
                                                         Margin="8,0">
                                                 <TextBlock Text="Unit"
-                                                           FontSize="11"
-                                                           FontFamily="{DynamicResource Mont}"
-                                                           Foreground="{DynamicResource HintGrey}" />
+                                                           Style="{StaticResource InlineHintTextStyle}" />
                                                 <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                          Width="50"
                                                          FontFamily="{DynamicResource Mont}"
                                                          Style="{StaticResource OPTextBox}"
                                                          FontSize="14"
                                                          Padding="10,0"
-                                                         Background="White"
+                                                         Background="{DynamicResource BackgroundBrush}"
+                                                         Foreground="{DynamicResource CellTextBrush}"
                                                          BorderBrush="{DynamicResource BorderBrushLight}"
                                                          BorderThickness="1"
                                                          VerticalContentAlignment="Center"
@@ -360,9 +389,7 @@
                                             <StackPanel Grid.Column="3"
                                                         Margin="8,0">
                                                 <TextBlock Text="Quantity"
-                                                           FontSize="11"
-                                                           FontFamily="{DynamicResource Mont}"
-                                                           Foreground="{DynamicResource HintGrey}" />
+                                                           Style="{StaticResource InlineHintTextStyle}" />
                                                 <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                          Style="{StaticResource OPTextBox}" />
                                             </StackPanel>
@@ -371,9 +398,7 @@
                                             <StackPanel Grid.Column="4"
                                                         Margin="8,0">
                                                 <TextBlock Text="Amount"
-                                                           FontSize="11"
-                                                           FontFamily="{DynamicResource Mont}"
-                                                           Foreground="{DynamicResource HintGrey}" />
+                                                           Style="{StaticResource InlineHintTextStyle}" />
                                                 <TextBlock Text="{Binding TotalCost, StringFormat=N2}"
                                                            Style="{StaticResource CenterCellText}"
                                                            Margin="0,12,0,0" />
@@ -387,12 +412,12 @@
                        
                         <!-- Totals -->
                         <TextBlock Text="{Binding TotalMaterialCost, StringFormat='Material Total: {0:N2}'}"
-                                   FontWeight="Bold"
+                                   Style="{StaticResource TotalsTextStyle}"
                                    Margin="0,20,0,0" />
                         <TextBlock Text="{Binding TotalLabourCost, StringFormat='Labour Total: {0:N2}'}"
-                                   FontWeight="Bold" />
+                                   Style="{StaticResource TotalsTextStyle}" />
                         <TextBlock Text="{Binding OverallTotal, StringFormat='Overall Total: {0:N2}'}"
-                                   FontWeight="Bold" />
+                                   Style="{StaticResource TotalsTextStyle}" />
 
                     </StackPanel>
 

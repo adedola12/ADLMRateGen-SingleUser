@@ -30,6 +30,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ADLMRateGen.ViewModel
 {
@@ -55,6 +56,13 @@ namespace ADLMRateGen.ViewModel
 
         /* ───────── rate sync ───────── */
         private readonly RateCatalogSyncService _rateSync;
+        private readonly DispatcherTimer _notificationPollTimer;
+        private readonly DispatcherTimer _userRatesSyncTimer;
+        private bool _isServerNotificationCheckRunning;
+        private int _lastMaterialsVersion;
+        private int _lastLabourVersion;
+        private int _lastComputeVersion;
+        private int _lastRatesVersion;
 
         /* ───────── current user / auth ───────── */
         private bool _hasPriceNotifications;
@@ -282,7 +290,9 @@ namespace ADLMRateGen.ViewModel
 
             msg = msg.ToLowerInvariant();
             return msg.Contains("401") ||
+                   msg.Contains("403") ||
                    msg.Contains("unauthorized") ||
+                   msg.Contains("forbidden") ||
                    msg.Contains("token expired") ||
                    msg.Contains("jwt expired") ||
                    msg.Contains("expired token");
@@ -340,16 +350,38 @@ namespace ADLMRateGen.ViewModel
 
             // ✅ Create rate sync service once
             _rateSync = new RateCatalogSyncService(new HttpClient(), API_BASE_URL);
+            _notificationPollTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMinutes(4)
+            };
+            _notificationPollTimer.Tick += async (_, _) => await CheckForServerNotificationsAsync();
+            _userRatesSyncTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(3)
+            };
+            _userRatesSyncTimer.Tick += async (_, _) =>
+            {
+                _userRatesSyncTimer.Stop();
+                await FlushUserRatesCloudSyncAsync();
+            };
 
             ToggleNotificationsCommand = new RelayCommand(_ =>
             {
                 IsNotificationsOpen = !IsNotificationsOpen;
+                if (IsNotificationsOpen)
+                    HasPriceNotifications = false;
             });
 
             DismissNotificationCommand = new RelayCommand(idxObj =>
             {
-                if (idxObj is int i && i >= 0 && i < Notifications.Count)
+                if (idxObj is string message)
+                    Notifications.Remove(message);
+                else if (idxObj is int i && i >= 0 && i < Notifications.Count)
                     Notifications.RemoveAt(i);
+
+                if (Notifications.Count == 0)
+                    HasPriceNotifications = false;
+
                 IsNotificationsOpen = false;
             });
 
@@ -384,9 +416,21 @@ namespace ADLMRateGen.ViewModel
             _mongoDbService.LabourPricesChanged += () => AddNotification("New labour prices available");
 
             // ✅ keep index updated when libraries change
-            MaterialLibraryViewModel.LibraryChanged += () => _index.Rebuild(this);
-            LabourLibraryViewModel.LibraryChanged += () => _index.Rebuild(this);
-            CustomRateListViewModel.LibraryChanged += () => _index.Rebuild(this);
+            MaterialLibraryViewModel.LibraryChanged += () =>
+            {
+                _index.Rebuild(this);
+                ScheduleUserRatesCloudSync();
+            };
+            LabourLibraryViewModel.LibraryChanged += () =>
+            {
+                _index.Rebuild(this);
+                ScheduleUserRatesCloudSync();
+            };
+            CustomRateListViewModel.LibraryChanged += () =>
+            {
+                _index.Rebuild(this);
+                ScheduleUserRatesCloudSync();
+            };
 
             libraryVM.BusyChanged += (busy, msg) => SetBusy(busy, msg);
             labourLibVM.BusyChanged += (busy, msg) => SetBusy(busy, msg);
@@ -450,6 +494,9 @@ namespace ADLMRateGen.ViewModel
 
                 // ✅ optional: also check for updates on app start (auto-login path)
                 _ = TryCheckUpdatesAfterLoginAsync();
+                _ = InitializeNotificationStateAsync();
+                StartNotificationPolling();
+                ScheduleUserRatesCloudSync();
             }
 
             // navigation
@@ -495,7 +542,66 @@ namespace ADLMRateGen.ViewModel
             PaintWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             SteelWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             CarbonOthersViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+            GroundWorkViewModel.PropertyChanged += OnSectionRateStateChanged;
+            ConcreteViewModel.PropertyChanged += OnSectionRateStateChanged;
+            BlockworkViewModel.PropertyChanged += OnSectionRateStateChanged;
+            FinishesViewModel.PropertyChanged += OnSectionRateStateChanged;
+            RoofWorkViewModel.PropertyChanged += OnSectionRateStateChanged;
+            WindowAndDoorViewModel.PropertyChanged += OnSectionRateStateChanged;
+            PaintWorkViewModel.PropertyChanged += OnSectionRateStateChanged;
+            SteelWorkViewModel.PropertyChanged += OnSectionRateStateChanged;
+            CarbonOthersViewModel.PropertyChanged += OnSectionRateStateChanged;
 
+        }
+
+        private void OnSectionRateStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(GroundWorkViewModel.OverheadPercent) or nameof(GroundWorkViewModel.ProfitPercent))
+                ScheduleUserRatesCloudSync();
+        }
+
+        private void ScheduleUserRatesCloudSync()
+        {
+            if (!IsLoggedIn || !AuthProvider.Instance.Client.HasSession)
+                return;
+
+            if (Application.Current?.Dispatcher == null)
+                return;
+
+            void RestartTimer()
+            {
+                _userRatesSyncTimer.Stop();
+                _userRatesSyncTimer.Start();
+            }
+
+            if (Application.Current.Dispatcher.CheckAccess())
+                RestartTimer();
+            else
+                Application.Current.Dispatcher.Invoke(RestartTimer);
+        }
+
+        public async Task<bool> FlushUserRatesCloudSyncAsync()
+        {
+            if (!IsLoggedIn || !AuthProvider.Instance.Client.HasSession)
+                return false;
+
+            var ok = await UserRatesCloudSync.Instance.PushSnapshotAsync(this).ConfigureAwait(false);
+
+            Application.Current?.Dispatcher?.Invoke(() =>
+            {
+                CloudSyncStatus = UserRatesCloudSync.Instance.LastStatus;
+
+                if (ok)
+                {
+                    LastCloudSyncAt = DateTime.Now;
+                }
+                else if (!string.IsNullOrWhiteSpace(CloudSyncStatus))
+                {
+                    AddNotification(CloudSyncStatus);
+                }
+            });
+
+            return ok;
         }
 
         private static bool Is404(Exception ex)
@@ -631,6 +737,8 @@ namespace ADLMRateGen.ViewModel
                 LastCloudSyncAt = DateTime.Now;
                 CloudSyncStatus = "Cloud sync: done";
                 AddNotification(CloudSyncStatus);
+                await InitializeNotificationStateAsync();
+                ScheduleUserRatesCloudSync();
 
                 if (manual)
                 {
@@ -681,17 +789,196 @@ namespace ADLMRateGen.ViewModel
             });
 
             _index.Rebuild(this);
+            ScheduleUserRatesCloudSync();
             SetBusy(false);
         }
 
         private void AddNotification(string msg)
         {
+            if (string.IsNullOrWhiteSpace(msg))
+                return;
+
+            Notifications.Remove(msg);
             Notifications.Insert(0, msg);
             while (Notifications.Count > 5)
                 Notifications.RemoveAt(Notifications.Count - 1);
 
             RaisePropertyChanged(nameof(Notifications));
-            HasPriceNotifications = Notifications.Any();
+            HasPriceNotifications = true;
+        }
+
+        private void StartNotificationPolling()
+        {
+            if (!_notificationPollTimer.IsEnabled)
+                _notificationPollTimer.Start();
+        }
+
+        private void StopNotificationPolling()
+        {
+            if (_notificationPollTimer.IsEnabled)
+                _notificationPollTimer.Stop();
+
+            _isServerNotificationCheckRunning = false;
+        }
+
+        private async Task InitializeNotificationStateAsync()
+        {
+            var snapshot = await FetchLibraryMetaAsync();
+            if (snapshot == null)
+                return;
+
+            _lastMaterialsVersion = snapshot.MaterialsVersion;
+            _lastLabourVersion = snapshot.LabourVersion;
+            _lastComputeVersion = snapshot.ComputeVersion;
+            _lastRatesVersion = snapshot.RatesVersion;
+        }
+
+        private async Task CheckForServerNotificationsAsync()
+        {
+            if (!IsLoggedIn || _isServerNotificationCheckRunning)
+                return;
+
+            _isServerNotificationCheckRunning = true;
+
+            try
+            {
+                var snapshot = await FetchLibraryMetaAsync();
+                if (snapshot == null)
+                    return;
+
+                var hasBaseline =
+                    _lastMaterialsVersion > 0 ||
+                    _lastLabourVersion > 0 ||
+                    _lastComputeVersion > 0 ||
+                    _lastRatesVersion > 0;
+
+                if (!hasBaseline)
+                {
+                    _lastMaterialsVersion = snapshot.MaterialsVersion;
+                    _lastLabourVersion = snapshot.LabourVersion;
+                    _lastComputeVersion = snapshot.ComputeVersion;
+                    _lastRatesVersion = snapshot.RatesVersion;
+                    return;
+                }
+
+                var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
+                var token = cfg.AuthToken;
+                var zone = ADLMRateGen.Properties.AppSettings.Zone ?? cfg.Zone ?? "Lagos";
+
+                if (string.IsNullOrWhiteSpace(token))
+                    return;
+
+                var materialChanged = snapshot.MaterialsVersion > _lastMaterialsVersion;
+                var labourChanged = snapshot.LabourVersion > _lastLabourVersion;
+                var computeChanged = snapshot.ComputeVersion > _lastComputeVersion;
+                var ratesChanged = snapshot.RatesVersion > _lastRatesVersion;
+
+                if (!materialChanged && !labourChanged && !computeChanged && !ratesChanged)
+                    return;
+
+                if (materialChanged)
+                    AddNotification("Material prices or materials were updated by admin.");
+
+                if (labourChanged)
+                    AddNotification("Labour prices or labour items were updated by admin.");
+
+                if (ratesChanged)
+                    AddNotification("New or updated default rates are available.");
+
+                if (computeChanged)
+                    AddNotification("Rate computation rules were updated by admin.");
+
+                if (materialChanged || labourChanged)
+                {
+                    await _rateSync.CheckAndPromptUpdateAsync(
+                        token,
+                        zone,
+                        _ => Task.FromResult(true));
+
+                    MaterialLibraryViewModel.ReloadFromDisk();
+                    LabourLibraryViewModel.ReloadFromDisk();
+                }
+
+                if (computeChanged)
+                {
+                    await ComputeCatalogStore.RefreshFromApiAsync();
+                    ComputeCatalogStore.ReloadFromDisk();
+                }
+
+                if (ratesChanged)
+                {
+                    await RateLibraryStore.RefreshFromApiAsync();
+                    RateLibraryStore.ReloadFromDisk();
+                }
+
+                _lastMaterialsVersion = snapshot.MaterialsVersion;
+                _lastLabourVersion = snapshot.LabourVersion;
+                _lastComputeVersion = snapshot.ComputeVersion;
+                _lastRatesVersion = snapshot.RatesVersion;
+
+                _index.Rebuild(this);
+            }
+            catch (Exception ex)
+            {
+                if (IsUnauthorizedException(ex))
+                    RequireSignInAgain(manual: false);
+            }
+            finally
+            {
+                _isServerNotificationCheckRunning = false;
+            }
+        }
+
+        private static async Task<LibraryMetaSnapshot?> FetchLibraryMetaAsync()
+        {
+            var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
+            var token = cfg.AuthToken;
+
+            if (string.IsNullOrWhiteSpace(token))
+                return null;
+
+            using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+            http.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            using var resp = await http.GetAsync($"{API_BASE_URL}{LIBRARY_META_PATH}");
+            if (resp.StatusCode is System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden)
+                throw new InvalidOperationException($"{(int)resp.StatusCode} {resp.ReasonPhrase}");
+
+            if (!resp.IsSuccessStatusCode)
+                return null;
+
+            using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
+            if (!doc.RootElement.TryGetProperty("meta", out var meta))
+                return null;
+
+            return new LibraryMetaSnapshot
+            {
+                MaterialsVersion = ReadVersion(meta, "materials"),
+                LabourVersion = ReadVersion(meta, "labour"),
+                ComputeVersion = ReadVersion(meta, "compute"),
+                RatesVersion = ReadVersion(meta, "rates")
+            };
+        }
+
+        private static int ReadVersion(JsonElement meta, string name)
+        {
+            if (!meta.TryGetProperty(name, out var section))
+                return 0;
+
+            return section.TryGetProperty("version", out var version) && version.TryGetInt32(out var value)
+                ? value
+                : 0;
+        }
+
+        private sealed class LibraryMetaSnapshot
+        {
+            public int MaterialsVersion { get; init; }
+            public int LabourVersion { get; init; }
+            public int ComputeVersion { get; init; }
+            public int RatesVersion { get; init; }
         }
 
 
@@ -716,6 +1003,7 @@ namespace ADLMRateGen.ViewModel
         {
             try
             {
+                StopNotificationPolling();
                 AuthProvider.Instance.Client.SignOut();
 
                 var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
@@ -728,6 +1016,8 @@ namespace ADLMRateGen.ViewModel
             // force UI back to sign-in so user isn’t confused
             IsLoggedIn = false;
             CurrentUser = null;
+            HasPriceNotifications = false;
+            IsNotificationsOpen = false;
             SelectedViewModel = SignInViewModel;
 
             CloudSyncStatus = "Cloud sync: Please sign in again.";
@@ -833,6 +1123,9 @@ namespace ADLMRateGen.ViewModel
             await TryCheckUpdatesAfterLoginAsync();
 
             await RefreshCloudDataAsync(manual: false);
+            await InitializeNotificationStateAsync();
+            StartNotificationPolling();
+            ScheduleUserRatesCloudSync();
 
         }
 
@@ -1254,6 +1547,16 @@ namespace ADLMRateGen.ViewModel
         {
             try
             {
+                try
+                {
+                    FlushUserRatesCloudSyncAsync().GetAwaiter().GetResult();
+                }
+                catch
+                {
+                    // best-effort on logout
+                }
+
+                StopNotificationPolling();
                 AuthProvider.Instance.Client.SignOut();
 
                 var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
@@ -1264,6 +1567,8 @@ namespace ADLMRateGen.ViewModel
                 CurrentUser = null;
 
                 IsLoggedIn = false;
+                HasPriceNotifications = false;
+                IsNotificationsOpen = false;
                 SelectedViewModel = SignInViewModel;
             }
             catch (Exception ex)

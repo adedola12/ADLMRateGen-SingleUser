@@ -8,141 +8,272 @@
              d:DesignWidth="1024"
              d:DesignHeight="900">
 
+    <UserControl.Resources>
+        <Style x:Key="SignInLabelStyle"
+               TargetType="TextBlock">
+            <Setter Property="Foreground"
+                    Value="#E6F0FF" />
+            <Setter Property="FontFamily"
+                    Value="{DynamicResource Mont}" />
+            <Setter Property="FontSize"
+                    Value="12" />
+            <Setter Property="FontWeight"
+                    Value="SemiBold" />
+            <Setter Property="Margin"
+                    Value="0,0,0,8" />
+        </Style>
+
+        <Style x:Key="SignInFieldTextBoxStyle"
+               TargetType="TextBox"
+               BasedOn="{StaticResource HollowBox}">
+            <Setter Property="Background"
+                    Value="#F9FBFF" />
+            <Setter Property="BorderBrush"
+                    Value="#D8E6FF" />
+            <Setter Property="BorderThickness"
+                    Value="1.2" />
+            <Setter Property="Foreground"
+                    Value="{DynamicResource Blue900Brush}" />
+            <Setter Property="CaretBrush"
+                    Value="{DynamicResource SignInBrush}" />
+            <Setter Property="FontSize"
+                    Value="15" />
+            <Setter Property="Height"
+                    Value="50" />
+            <Setter Property="Padding"
+                    Value="18,0" />
+        </Style>
+
+        <Style x:Key="SignInPasswordBoxStyle"
+               TargetType="PasswordBox">
+            <Setter Property="Background"
+                    Value="#F9FBFF" />
+            <Setter Property="BorderBrush"
+                    Value="#D8E6FF" />
+            <Setter Property="BorderThickness"
+                    Value="1.2" />
+            <Setter Property="Foreground"
+                    Value="{DynamicResource Blue900Brush}" />
+            <Setter Property="FontFamily"
+                    Value="{DynamicResource Mont}" />
+            <Setter Property="FontSize"
+                    Value="15" />
+            <Setter Property="Height"
+                    Value="50" />
+            <Setter Property="Padding"
+                    Value="18,0,56,0" />
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border CornerRadius="12"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SignInTextLinkButtonStyle"
+               TargetType="Button">
+            <Setter Property="Background"
+                    Value="Transparent" />
+            <Setter Property="BorderThickness"
+                    Value="0" />
+            <Setter Property="Cursor"
+                    Value="Hand" />
+            <Setter Property="Foreground"
+                    Value="#E7F1FF" />
+            <Setter Property="FontFamily"
+                    Value="{DynamicResource Mont}" />
+            <Setter Property="FontSize"
+                    Value="12" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver"
+                         Value="True">
+                    <Setter Property="Foreground"
+                            Value="{DynamicResource SignInBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled"
-                  CanContentScroll="False">
-        <Grid MinHeight="720">
-            <Image Source="/Resources/bg_frame.png"
-                   Width="140"
-                   Height="140"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Top"
-                   Margin="0,18,18,0"
-                   Opacity="0.85"
-                   IsHitTestVisible="False" />
-            <Image Source="/Resources/bg_frame.png"
-                   Width="150"
-                   Height="165"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Bottom"
-                   Margin="18,0,0,18"
-                   Opacity="0.85"
-                   IsHitTestVisible="False" />
+                  CanContentScroll="False"
+                  Background="Transparent">
+        <Grid x:Name="LayoutRoot"
+              MinHeight="820">
+            <Grid.Background>
+                <ImageBrush x:Name="WallpaperBrush"
+                            Stretch="UniformToFill"
+                            Opacity="0.98" />
+            </Grid.Background>
 
-            <Grid Margin="24">
-                <Border MaxWidth="1120"
-                        MinWidth="320"
-                        MinHeight="620"
-                        Padding="56"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        CornerRadius="40"
-                        BorderBrush="{DynamicResource BorColBrush}"
-                        BorderThickness="2">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="20"
-                                          Color="{StaticResource SignInCol}"
-                                          ShadowDepth="0"
-                                          Opacity="0.55" />
-                    </Border.Effect>
-                    <Border.Background>
-                        <ImageBrush ImageSource="/Resources/panel_blueprint.png"
-                                    Stretch="UniformToFill" />
-                    </Border.Background>
+            <Border Background="#B7122E53" />
 
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+            <Grid Margin="40">
+                <Grid MaxWidth="960"
+                      MinWidth="320"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center">
+                    <Border x:Name="SignInCard"
+                            Width="860"
+                            MinHeight="580"
+                            Padding="44,32,44,28"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            CornerRadius="32"
+                            BorderBrush="{DynamicResource SignInBrush}"
+                            BorderThickness="1.6">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="32"
+                                              Color="{StaticResource SignInCol}"
+                                              ShadowDepth="0"
+                                              Opacity="0.36" />
+                        </Border.Effect>
 
-                        <Image Source="/Resources/adlm_studio_logo_small.png"
-                               Height="30"
-                               HorizontalAlignment="Center" />
+                        <Grid>
+                            <Grid.Background>
+                                <ImageBrush ImageSource="/Resources/panel_blueprint.png"
+                                            Stretch="UniformToFill" />
+                            </Grid.Background>
 
-                        <Image Grid.Row="1"
-                               Source="/Resources/adlm_rate_generator_logo.png"
-                               Height="150"
-                               Margin="0,52,0,20"
-                               HorizontalAlignment="Center"
-                               Stretch="Uniform" />
+                            <Border CornerRadius="28"
+                                    Background="#CC07172D" />
 
-                        <StackPanel Grid.Row="2"
-                                    MaxWidth="520"
-                                    Width="Auto"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center">
-                            <TextBlock Text="Username"
-                                       Foreground="{StaticResource BackgroundBrush}"
-                                       Margin="4,10" />
+                            <Grid Margin="54,18,54,8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                            <Border CornerRadius="12.5"
-                                    Background="{DynamicResource BackgroundBrush}"
-                                    Height="48"
-                                    Margin="0,0,0,14">
-                                <TextBox Style="{StaticResource HollowBox}"
-                                         Tag="Input Username..."
-                                         VerticalContentAlignment="Center"
-                                         Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
-                            </Border>
+                                <Image Source="/Resources/adlm_studio_logo_small.png"
+                                       Height="28"
+                                       HorizontalAlignment="Center" />
 
-                            <TextBlock Text="Password"
-                                       Foreground="{StaticResource BackgroundBrush}"
-                                       Margin="4,10" />
+                                <Image Grid.Row="1"
+                                       Source="/Resources/adlm_rate_generator_logo.png"
+                                       MaxHeight="160"
+                                       Margin="0,28,0,30"
+                                       HorizontalAlignment="Center"
+                                       Stretch="Uniform" />
 
-                            <Grid Height="48"
-                                  Margin="0,0,0,14">
-                                <Border CornerRadius="12.5"
-                                        Background="{DynamicResource BackgroundBrush}" />
+                                <StackPanel Grid.Row="2"
+                                            MaxWidth="430"
+                                            HorizontalAlignment="Center">
+                                    <TextBlock Text="Email"
+                                               Style="{StaticResource SignInLabelStyle}" />
 
-                                <PasswordBox x:Name="PasswordBox"
-                                             Padding="18,0,56,0"
-                                             BorderThickness="0"
-                                             Background="Transparent"
-                                             FontSize="14"
-                                             VerticalAlignment="Center"
-                                             PasswordChanged="PasswordBox_PasswordChanged" />
+                                    <TextBox x:Name="EmailTextBox"
+                                             Style="{StaticResource SignInFieldTextBoxStyle}"
+                                             Tag="example@gmail.com"
+                                             Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
 
-                                <TextBox x:Name="PasswordPreviewTextBox"
-                                         Padding="18,0,56,0"
-                                         BorderThickness="0"
-                                         Background="Transparent"
-                                         FontSize="14"
-                                         VerticalContentAlignment="Center"
-                                         VerticalAlignment="Center"
-                                         Visibility="Collapsed"
-                                         TextChanged="PasswordPreviewTextBox_TextChanged" />
+                                    <TextBlock Text="Password"
+                                               Style="{StaticResource SignInLabelStyle}"
+                                               Margin="0,18,0,8" />
 
-                                <Button Width="32"
-                                        Height="32"
-                                        HorizontalAlignment="Right"
-                                        Margin="0,0,10,0"
-                                        VerticalAlignment="Center"
-                                        Background="Transparent"
-                                        BorderThickness="0"
-                                        Focusable="False"
-                                        ToolTip="Show or hide password"
-                                        Click="TogglePwd_Click">
-                                    <fa:IconBlock x:Name="PasswordToggleIcon"
-                                                  Icon="Eye"
-                                                  Width="18"
-                                                  Height="18"
-                                                  Foreground="{DynamicResource SignInBrush}" />
+                                    <Grid>
+                                        <PasswordBox x:Name="PasswordBox"
+                                                     Style="{StaticResource SignInPasswordBoxStyle}"
+                                                     PasswordChanged="PasswordBox_PasswordChanged" />
+
+                                        <TextBox x:Name="PasswordPreviewTextBox"
+                                                 Style="{StaticResource SignInFieldTextBoxStyle}"
+                                                 Padding="18,0,56,0"
+                                                 Visibility="Collapsed"
+                                                 TextChanged="PasswordPreviewTextBox_TextChanged" />
+
+                                        <Button Width="34"
+                                                Height="34"
+                                                HorizontalAlignment="Right"
+                                                Margin="0,0,10,0"
+                                                VerticalAlignment="Center"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Focusable="False"
+                                                ToolTip="Show or hide password"
+                                                Click="TogglePwd_Click">
+                                            <fa:IconBlock x:Name="PasswordToggleIcon"
+                                                          Icon="Eye"
+                                                          Width="18"
+                                                          Height="18"
+                                                          Foreground="{DynamicResource Blue900Brush}" />
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+
+                                <Button Grid.Row="3"
+                                        Style="{StaticResource LogBtnStyle}"
+                                        Command="{Binding LoginCommand}"
+                                        Width="430"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,28,0,0">
+                                    <TextBlock Text="Log in"
+                                               Style="{StaticResource BtnText}" />
                                 </Button>
-                            </Grid>
 
-                            <Button Style="{StaticResource LogBtnStyle}"
-                                    Command="{Binding LoginCommand}"
-                                    Margin="0,24,0,0"
-                                    Height="56">
-                                <TextBlock Text="Log in"
-                                           Style="{StaticResource BtnText}" />
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </Border>
+                                <StackPanel Grid.Row="4"
+                                            Margin="0,16,0,0"
+                                            HorizontalAlignment="Center">
+                                    <Button Content="Forgot password?"
+                                            Style="{StaticResource SignInTextLinkButtonStyle}"
+                                            Click="OpenForgotPassword_Click" />
+
+                                    <TextBlock Margin="0,8,0,0"
+                                               HorizontalAlignment="Center"
+                                               FontFamily="{DynamicResource Mont}"
+                                               FontSize="12"
+                                               Foreground="#D8E6FF">
+                                        <Run Text="Don't have an account? " />
+                                        <Hyperlink Click="OpenSignUp_Click"
+                                                   Foreground="{DynamicResource SignInBrush}">
+                                            <Run Text="Create account" />
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <Image Source="/Resources/bg_frame.png"
+                           Width="120"
+                           Height="142"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top"
+                           Margin="0,-26,-24,0"
+                           Panel.ZIndex="2"
+                           Opacity="0.96"
+                           IsHitTestVisible="False" />
+
+                    <Image Source="/Resources/bg_frame.png"
+                           Width="124"
+                           Height="148"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Bottom"
+                           Margin="-28,0,0,-26"
+                           Panel.ZIndex="2"
+                           Opacity="0.96"
+                           IsHitTestVisible="False" />
+                </Grid>
             </Grid>
         </Grid>
     </ScrollViewer>

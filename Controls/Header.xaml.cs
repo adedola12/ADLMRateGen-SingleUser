@@ -50,6 +50,14 @@ namespace ADLMCivilPlugin.Controls
             }
         }
 
+        private void NotificationsPopup_Closed(object sender, System.EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.IsNotificationsOpen = false;
+            }
+        }
+
         private void UpdateThemeIcon(bool isDark)
         {
             ColorModeIcon.Icon = isDark ? IconChar.Sun : IconChar.Moon;

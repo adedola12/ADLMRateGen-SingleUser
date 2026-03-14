@@ -494,15 +494,13 @@
                             </Grid>
                         </Grid>
                     </Border>
-                    <ScrollViewer Grid.Row="1"
-                                  Margin="0,0,0,12"
-                                  VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled"
-                                  CanContentScroll="False">
+                    <Border Grid.Row="1"
+                            Margin="0,0,0,12"
+                            Background="Transparent">
                         <ContentControl Content="{Binding SelectedViewModel}"
                                         HorizontalAlignment="Stretch"
-                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
-                    </ScrollViewer>
+                                        VerticalAlignment="Stretch" />
+                    </Border>
                 </Grid>
             </Grid>
             <!-- ✅ Global loader overlay (ONLY ONE PopupHost in this window) -->

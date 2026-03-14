@@ -311,6 +311,8 @@
            TargetType="ComboBox">
         <Setter Property="Background"
                 Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource CellTextBrush}" />
         <Setter Property="BorderBrush"
                 Value="{DynamicResource BorderBrushLight}" />
         <Setter Property="BorderThickness"
@@ -329,6 +331,54 @@
                 Value="12,4" />
         <Setter Property="SnapsToDevicePixels"
                 Value="True" />
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Foreground"
+                            Value="{DynamicResource CellTextBrush}" />
+                    <Setter Property="Background"
+                            Value="{DynamicResource BackgroundBrush}" />
+                    <Setter Property="FontFamily"
+                            Value="{DynamicResource PoppinsFont}" />
+                    <Setter Property="FontSize"
+                            Value="13" />
+                    <Setter Property="Padding"
+                            Value="12,8" />
+                    <Setter Property="HorizontalContentAlignment"
+                            Value="Left" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ComboBoxItem">
+                                <Border x:Name="ItemRoot"
+                                        Background="{TemplateBinding Background}"
+                                        CornerRadius="8"
+                                        Margin="4,2"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="Center" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsHighlighted"
+                                             Value="True">
+                                        <Setter TargetName="ItemRoot"
+                                                Property="Background"
+                                                Value="{DynamicResource HoverLightBrush}" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected"
+                                             Value="True">
+                                        <Setter TargetName="ItemRoot"
+                                                Property="Background"
+                                                Value="{DynamicResource ActiveBgBrush}" />
+                                        <Setter Property="Foreground"
+                                                Value="{DynamicResource Blue900Brush}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBox">
