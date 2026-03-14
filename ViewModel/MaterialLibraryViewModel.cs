@@ -92,41 +92,9 @@ namespace ADLMRateGen.ViewModel
             MaterialPriceViewModel.MaterialSaved += AddOrUpdateMaterial;
             MaterialCollectionView.Filter = _ => true;
 
-            // If you later decide to use Mongo, keep both service and local collection in sync
-            bool useMongo = false;
-            if (useMongo)
-            {
-                var mongoDataSource = new MaterialMongoDataSource(
-                    "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
-                    "ADLMRateDB",
-                    "Materials"
-                );
-
-                MaterialLibraryService.Initialize(mongoDataSource);
-
-                var materialsFromMongo = MaterialLibraryService.GetAllMaterials().ToList();
-                if (!materialsFromMongo.Any())
-                {
-                    BulkUploadUtility.BulkUploadJsonToMongo(
-                        jsonFilePath: "Data\\defaultMaterials.json",
-                        connectionString: "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB",
-                        databaseName: "ADLMRateDB",
-                        collectionName: "Materials"
-                    );
-                    MaterialLibraryService.Initialize(mongoDataSource);
-                    materialsFromMongo = MaterialLibraryService.GetAllMaterials().ToList();
-                }
-
-                // refresh local grid from the service
-                MaterialLibrary.Clear();
-                foreach (var m in materialsFromMongo) MaterialLibrary.Add(m);
-            }
-            else
-            {
-                // already initialized with _ds; make sure local collection mirrors service
-                MaterialLibrary.Clear();
-                foreach (var m in MaterialLibraryService.GetAllMaterials()) MaterialLibrary.Add(m);
-            }
+            // Public builds read from the local library file and use API sync for cloud updates.
+            MaterialLibrary.Clear();
+            foreach (var m in MaterialLibraryService.GetAllMaterials()) MaterialLibrary.Add(m);
 
             _selectedMaterialCategory = "All";
 

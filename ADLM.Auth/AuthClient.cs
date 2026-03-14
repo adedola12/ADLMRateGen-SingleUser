@@ -9,15 +9,16 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ADLMRateGen.Helpers;
 
 namespace ADLMRateGen.ADLM.Auth
 {
     public sealed class AuthOptions
     {
-        public string BaseUrl { get; set; } = "https://adlmweb.onrender.com";
-        public string ProductKey { get; set; } = "rategen";
+        public string BaseUrl { get; set; } = AppEnvironment.ApiBaseUrl;
+        public string ProductKey { get; set; } = AppEnvironment.ProductKey;
         public TimeSpan AccessSkew { get; set; } = TimeSpan.FromSeconds(30);
-        public Func<string> DeviceFingerprintProvider { get; set; } // optional
+        public Func<string>? DeviceFingerprintProvider { get; set; }
         public int TimeoutMs { get; set; } = 90000;
     }
 
@@ -35,7 +36,7 @@ namespace ADLMRateGen.ADLM.Auth
             File.WriteAllBytes(FilePath, enc);
         }
 
-        public string Load()
+        public string? Load()
         {
             if (!File.Exists(FilePath)) return null;
             var enc = File.ReadAllBytes(FilePath);
@@ -52,7 +53,7 @@ namespace ADLMRateGen.ADLM.Auth
         {
             get
             {
-                return System.IO.Path.Combine(
+                return Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "ADLM.Auth");
             }
@@ -60,7 +61,7 @@ namespace ADLMRateGen.ADLM.Auth
 
         private string FilePath
         {
-            get { return System.IO.Path.Combine(Dir, _name + ".bin"); }
+            get { return Path.Combine(Dir, _name + ".bin"); }
         }
     }
 
@@ -141,7 +142,6 @@ namespace ADLMRateGen.ADLM.Auth
 
         public void Clear() { _store.Clear(); }
 
-        // Safe normalize: keep domain usable for CookieContainer
         private static string NormalizeDomain(string d, string fallbackHost)
         {
             if (string.IsNullOrWhiteSpace(d)) return fallbackHost;
@@ -159,16 +159,13 @@ namespace ADLMRateGen.ADLM.Auth
     {
         private readonly AuthOptions _opt;
 
-        // License token is for offline checks
         private readonly SecureStore _licenseStore;
-
-        // Access token + expiry are persisted so we can resume without asking user
         private readonly SecureStore _sessionStore = new SecureStore("session.jwt");
         private readonly CookieContainer _cookies = new CookieContainer();
         private readonly CookieVault _cookieVault;
 
-        private string _accessToken;                  // current in-memory access token
-        private DateTimeOffset _accessExpiryUtc;      // expiry (UTC)
+        private string _accessToken = string.Empty;
+        private DateTimeOffset _accessExpiryUtc;
 
         private readonly HttpClient _http;
 
@@ -178,7 +175,7 @@ namespace ADLMRateGen.ADLM.Auth
             _licenseStore = new SecureStore((_opt.ProductKey ?? "rategen") + ".license");
             _cookieVault = new CookieVault("refresh.cookies", _opt.BaseUrl);
 
-            // .NET Framework-safe: enable TLS1.2
+            // .NET Framework-safe TLS1.2
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 
             var handler = new HttpClientHandler
@@ -190,17 +187,14 @@ namespace ADLMRateGen.ADLM.Auth
                 UseProxy = false
             };
 
-            // Restore cookies from last run
             _cookieVault.Restore(_cookies);
 
             _http = new HttpClient(handler) { Timeout = TimeSpan.FromMilliseconds(_opt.TimeoutMs) };
             _http.DefaultRequestHeaders.Accept.Clear();
             _http.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
-            // Restore prior access token if present
             TryLoadSession();
 
-            // If we restored a valid token, set default auth header
             if (!string.IsNullOrWhiteSpace(_accessToken))
             {
                 _http.DefaultRequestHeaders.Authorization =
@@ -211,23 +205,35 @@ namespace ADLMRateGen.ADLM.Auth
         /* ================ PUBLIC API ================ */
 
         public string AccessToken { get { return _accessToken ?? ""; } }
-
         public bool HasSession { get { return !string.IsNullOrWhiteSpace(_accessToken); } }
-
         public string GetCachedLicenseToken() { return _licenseStore.Load(); }
+        public string BaseUrl { get { return _opt.BaseUrl; } }
 
         public async Task<bool> LoginAsync(string identifier, string password, CancellationToken ct = default(CancellationToken))
         {
+            identifier = (identifier ?? "").Trim();
+            password = password ?? string.Empty;
+
+            string dfp = "";
+            try
+            {
+                dfp = _opt.DeviceFingerprintProvider != null ? (_opt.DeviceFingerprintProvider() ?? "") : "";
+            }
+            catch
+            {
+                dfp = "";
+            }
+
             var body = new
             {
                 identifier = identifier,
                 password = password,
                 productKey = _opt.ProductKey,
-                device_fingerprint = _opt.DeviceFingerprintProvider != null ? _opt.DeviceFingerprintProvider() : null
+                device_fingerprint = string.IsNullOrWhiteSpace(dfp) ? null : dfp
             };
 
             string resText = await PostJsonAsync("/auth/login", JsonSerializer.Serialize(body), null, ct);
-            if (resText == null) return false;
+            if (string.IsNullOrWhiteSpace(resText)) return false;
 
             JsonElement root = JsonDocument.Parse(resText).RootElement;
 
@@ -243,10 +249,10 @@ namespace ADLMRateGen.ADLM.Auth
 
             SaveSession();
 
-            // Persist cookies received during login (refresh cookie)
+            // persist refresh cookie
             _cookieVault.Save(_cookies);
 
-            // Set default header for subsequent calls
+            // set default header
             _http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _accessToken);
 
@@ -273,12 +279,12 @@ namespace ADLMRateGen.ADLM.Auth
                     }
                 }
             }
-            catch
-            {
-                // ignore
-            }
+            catch { }
         }
 
+        /// <summary>
+        /// ✅ RESTORED: checks subscription/entitlement for a product.
+        /// </summary>
         public async Task EnsureEntitledAsync(string productKey, CancellationToken ct = default(CancellationToken))
         {
             string at = await GetAccessTokenAsync(ct).ConfigureAwait(false);
@@ -296,7 +302,7 @@ namespace ADLMRateGen.ADLM.Auth
                 foreach (JsonElement e in arr.EnumerateArray())
                 {
                     string key = e.TryGetProperty("productKey", out var pk) ? (pk.GetString() ?? "") : "";
-                    if (!key.Equals(productKey, StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!key.Equals(productKey ?? "", StringComparison.OrdinalIgnoreCase)) continue;
 
                     bool statusOk =
                         e.TryGetProperty("status", out var s) &&
@@ -311,7 +317,8 @@ namespace ADLMRateGen.ADLM.Auth
                 }
             }
 
-            if (!ok) throw new UnauthorizedAccessException("No active subscription for '" + productKey + "'.");
+            if (!ok)
+                throw new UnauthorizedAccessException("No active subscription for '" + productKey + "'.");
         }
 
         public async Task<JsonDocument> GetJsonAsync(string path, CancellationToken ct = default(CancellationToken))
@@ -330,7 +337,6 @@ namespace ADLMRateGen.ADLM.Auth
             if (string.IsNullOrWhiteSpace(at)) throw new InvalidOperationException("Not signed in.");
 
             string json = JsonSerializer.Serialize(body ?? new { });
-
             string url = CombineUrl(_opt.BaseUrl, path);
 
             for (int attempt = 1; attempt <= 2; attempt++)
@@ -351,7 +357,18 @@ namespace ADLMRateGen.ADLM.Auth
                                 string text = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                                 if (resp.StatusCode == HttpStatusCode.Unauthorized)
-                                    throw new UnauthorizedAccessException("Unauthorized");
+                                {
+                                    var ex = ExtractError(text);
+                                    var msg = !string.IsNullOrWhiteSpace(ex.message) ? ex.message : "Unauthorized (401).";
+                                    throw new UnauthorizedAccessException(msg);
+                                }
+
+                                if (resp.StatusCode == HttpStatusCode.Forbidden)
+                                {
+                                    var ex = ExtractError(text);
+                                    string what = !string.IsNullOrWhiteSpace(ex.code) ? (ex.message + " (" + ex.code + ")") : ex.message;
+                                    throw new UnauthorizedAccessException(what);
+                                }
 
                                 if (!resp.IsSuccessStatusCode)
                                     throw MakeHttpError(resp.StatusCode, text);
@@ -421,52 +438,53 @@ namespace ADLMRateGen.ADLM.Auth
                     _accessExpiryUtc = exp;
                 }
             }
-            catch
-            {
-                // ignore corrupt session
-            }
+            catch { }
         }
 
         private async Task<string> GetAccessTokenAsync(CancellationToken ct)
         {
-            // 1) still valid?
             if (!string.IsNullOrWhiteSpace(_accessToken) &&
                 DateTimeOffset.UtcNow.Add(_opt.AccessSkew) < _accessExpiryUtc)
             {
                 return _accessToken;
             }
 
-            // 2) try refresh (uses persisted cookie)
-            string resText = await PostJsonAsync("/auth/refresh", "{}", null, ct).ConfigureAwait(false);
-            if (resText == null) return null;
-
-            JsonElement root = JsonDocument.Parse(resText).RootElement;
-            if (!root.TryGetProperty("accessToken", out var atProp))
-                throw new InvalidOperationException("Refresh failed: accessToken missing in server response.");
-
-            string token = atProp.GetString();
-            if (string.IsNullOrWhiteSpace(token)) return null;
-
-            _accessToken = token.Trim();
-            _accessExpiryUtc = TryGetJwtExpiryUtc(_accessToken) ?? DateTimeOffset.UtcNow.AddMinutes(14);
-
-            SaveSession();
-
-            // cookies might rotate; persist jar again
-            try { _cookieVault.Save(_cookies); } catch { }
-
-            // update default header
-            _http.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _accessToken);
-
-            if (root.TryGetProperty("licenseToken", out var licProp))
+            try
             {
-                string lic = licProp.GetString();
-                if (!string.IsNullOrWhiteSpace(lic))
-                    _licenseStore.Save(lic);
-            }
+                string resText = await PostJsonAsync("/auth/refresh", "{}", null, ct).ConfigureAwait(false);
+                if (string.IsNullOrWhiteSpace(resText)) return null;
 
-            return _accessToken;
+                JsonElement root = JsonDocument.Parse(resText).RootElement;
+                if (!root.TryGetProperty("accessToken", out var atProp))
+                    throw new InvalidOperationException("Refresh failed: accessToken missing in server response.");
+
+                string token = atProp.GetString();
+                if (string.IsNullOrWhiteSpace(token)) return null;
+
+                _accessToken = token.Trim();
+                _accessExpiryUtc = TryGetJwtExpiryUtc(_accessToken) ?? DateTimeOffset.UtcNow.AddMinutes(14);
+
+                SaveSession();
+
+                try { _cookieVault.Save(_cookies); } catch { }
+
+                _http.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", _accessToken);
+
+                if (root.TryGetProperty("licenseToken", out var licProp))
+                {
+                    string lic = licProp.GetString();
+                    if (!string.IsNullOrWhiteSpace(lic))
+                        _licenseStore.Save(lic);
+                }
+
+                return _accessToken;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                SignOut();
+                return null;
+            }
         }
 
         private async Task<string> GetJsonRawAsync(string path, string bearer, CancellationToken ct)
@@ -494,7 +512,18 @@ namespace ADLMRateGen.ADLM.Auth
                                     return "[]";
 
                                 if (resp.StatusCode == HttpStatusCode.Unauthorized)
-                                    throw new UnauthorizedAccessException("Unauthorized");
+                                {
+                                    var ex = ExtractError(text);
+                                    var msg = !string.IsNullOrWhiteSpace(ex.message) ? ex.message : "Unauthorized (401).";
+                                    throw new UnauthorizedAccessException(msg);
+                                }
+
+                                if (resp.StatusCode == HttpStatusCode.Forbidden)
+                                {
+                                    var ex = ExtractError(text);
+                                    string what = !string.IsNullOrWhiteSpace(ex.code) ? (ex.message + " (" + ex.code + ")") : ex.message;
+                                    throw new UnauthorizedAccessException(what);
+                                }
 
                                 if (!resp.IsSuccessStatusCode)
                                     throw MakeHttpError(resp.StatusCode, text);
@@ -537,7 +566,11 @@ namespace ADLMRateGen.ADLM.Auth
                                 string text = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                                 if (resp.StatusCode == HttpStatusCode.Unauthorized)
-                                    return null; // login/refresh invalid
+                                {
+                                    var ex = ExtractError(text);
+                                    var msg = !string.IsNullOrWhiteSpace(ex.message) ? ex.message : "Unauthorized (401).";
+                                    throw new UnauthorizedAccessException(msg);
+                                }
 
                                 if (resp.StatusCode == HttpStatusCode.Forbidden)
                                 {
@@ -599,7 +632,6 @@ namespace ADLMRateGen.ADLM.Auth
             return b + p;
         }
 
-        // ---- JWT expiry helpers (reads exp claim) ----
         private static DateTimeOffset? TryGetJwtExpiryUtc(string jwt)
         {
             try
@@ -616,14 +648,10 @@ namespace ADLMRateGen.ADLM.Auth
 
                     long expSec;
                     if (expEl.ValueKind == JsonValueKind.Number && expEl.TryGetInt64(out expSec))
-                    {
                         return DateTimeOffset.FromUnixTimeSeconds(expSec);
-                    }
 
                     if (expEl.ValueKind == JsonValueKind.String && long.TryParse(expEl.GetString(), out expSec))
-                    {
                         return DateTimeOffset.FromUnixTimeSeconds(expSec);
-                    }
                 }
             }
             catch { }

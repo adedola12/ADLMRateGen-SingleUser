@@ -26,6 +26,10 @@
     <Color x:Key="Grey700Col">#5F6D7E</Color>
     <Color x:Key="DivCol">#D1D5DB</Color>
     <Color x:Key="PopupBorderCol">#888888</Color>
+    <Color x:Key="ScrollbarTrackCol">#EAF1FF</Color>
+    <Color x:Key="ScrollbarThumbCol">#B4C8F6</Color>
+    <Color x:Key="ScrollbarThumbHoverCol">#7BA3EE</Color>
+    <Color x:Key="ScrollbarThumbPressedCol">#4F7FE0</Color>
 
     <!-- Accent & states -->
     <Color x:Key="HoverLightCol">#F3F4F6</Color>
@@ -158,6 +162,14 @@
                      Color="{DynamicResource SelectedCellCol}" />
     <SolidColorBrush x:Key="PopupBorderBrush"
                      Color="{DynamicResource PopupBorderCol}" />
+    <SolidColorBrush x:Key="ScrollbarTrackBrush"
+                     Color="{DynamicResource ScrollbarTrackCol}" />
+    <SolidColorBrush x:Key="ScrollbarThumbBrush"
+                     Color="{DynamicResource ScrollbarThumbCol}" />
+    <SolidColorBrush x:Key="ScrollbarThumbHoverBrush"
+                     Color="{DynamicResource ScrollbarThumbHoverCol}" />
+    <SolidColorBrush x:Key="ScrollbarThumbPressedBrush"
+                     Color="{DynamicResource ScrollbarThumbPressedCol}" />
 
     <!-- ─── FONTS ─── -->
     <FontFamily x:Key="Mont">Urbanist</FontFamily>
@@ -581,6 +593,23 @@
                 Value="Center" />
         <Setter Property="Margin"
                 Value="0" />
+    </Style>
+
+    <Style x:Key="TableDescriptionText"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource CenterCellText}">
+        <Setter Property="TextWrapping"
+                Value="Wrap" />
+        <Setter Property="TextTrimming"
+                Value="CharacterEllipsis" />
+        <Setter Property="LineHeight"
+                Value="20" />
+        <Setter Property="MaxHeight"
+                Value="40" />
+        <Setter Property="Margin"
+                Value="0,6,12,6" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
     </Style>
 
     <Style x:Key="EstHeader"
@@ -1020,9 +1049,10 @@
     <Style x:Key="LogBtnStyle"
            TargetType="Button"
            BasedOn="{StaticResource RectButton}">
-       
+        <Setter Property="Background"
+                Value="{DynamicResource SignInBrush}" />
         <Setter Property="BorderBrush"
-                Value="{DynamicResource ButCol}" />
+                Value="{DynamicResource SignInBrush}" />
         <Setter Property="Margin"
                 Value="0,24,0,0" />
         <Setter Property="Height"
@@ -1058,7 +1088,7 @@
                                  Value="True">
                             <Setter TargetName="brd"
                                     Property="Background"
-                                    Value="#0055FF" />
+                                    Value="{DynamicResource SignInBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled"
                                  Value="False">
@@ -1211,6 +1241,96 @@
     </Style>
 
 
+    <!-- ─── SCROLLBARS ─── -->
+    <Style x:Key="ScrollBarPageButtonStyle"
+           TargetType="RepeatButton">
+        <Setter Property="Focusable"
+                Value="False" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Rectangle Fill="Transparent" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ScrollBarThumbStyle"
+           TargetType="Thumb">
+        <Setter Property="SnapsToDevicePixels"
+                Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border x:Name="ThumbRoot"
+                            Background="{DynamicResource ScrollbarThumbBrush}"
+                            CornerRadius="6"
+                            Margin="2" />
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="ThumbRoot"
+                                    Property="Background"
+                                    Value="{DynamicResource ScrollbarThumbHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsDragging"
+                                 Value="True">
+                            <Setter TargetName="ThumbRoot"
+                                    Property="Background"
+                                    Value="{DynamicResource ScrollbarThumbPressedBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ScrollBar">
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="Width"
+                Value="14" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Border Background="{DynamicResource ScrollbarTrackBrush}"
+                            CornerRadius="7"
+                            Margin="2,0">
+                        <Track x:Name="PART_Track"
+                               IsDirectionReversed="True"
+                               Margin="1">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageUpCommand"
+                                              Style="{StaticResource ScrollBarPageButtonStyle}" />
+                            </Track.DecreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource ScrollBarThumbStyle}" />
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageDownCommand"
+                                              Style="{StaticResource ScrollBarPageButtonStyle}" />
+                            </Track.IncreaseRepeatButton>
+                        </Track>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation"
+                                 Value="Horizontal">
+                            <Setter Property="Height"
+                                    Value="14" />
+                            <Setter TargetName="PART_Track"
+                                    Property="IsDirectionReversed"
+                                    Value="False" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ─── DATAGRID STYLES ─── -->
 
     <Style x:Key="DataGridStyle"
@@ -1223,6 +1343,8 @@
                 Value="1" />
         <Setter Property="RowBackground"
                 Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="AlternatingRowBackground"
+                Value="{DynamicResource RowAlt}" />
 
         <Setter Property="GridLinesVisibility"
                 Value="None" />
@@ -1239,15 +1361,23 @@
         <Setter Property="ColumnHeaderHeight"
                 Value="48" />
         <Setter Property="FontSize"
-                Value="20" />
+                Value="15" />
         <Setter Property="FontFamily"
                 Value="{DynamicResource PoppinsFont}" />
         <Setter Property="Margin"
-                Value="10,30" />
+                Value="0,18,0,0" />
         <Setter Property="RowHeight"
-                Value="50" />
+                Value="{x:Static sys:Double.NaN}" />
+        <Setter Property="MinRowHeight"
+                Value="58" />
         <Setter Property="IsReadOnly"
                 Value="True" />
+        <Setter Property="AlternationCount"
+                Value="2" />
+        <Setter Property="CanUserResizeColumns"
+                Value="False" />
+        <Setter Property="CanUserSortColumns"
+                Value="False" />
         <Setter Property="GridLinesVisibility"
                 Value="Horizontal" />
         <Setter Property="HorizontalGridLinesBrush"
@@ -1259,15 +1389,17 @@
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
                 Value="Auto" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
-                Value="Auto" />
+                Value="Disabled" />
+        <Setter Property="helpers:DataGridScrollHelper.EnableMouseWheelScroll"
+                Value="True" />
 
         <Setter Property="CellStyle">
             <Setter.Value>
                 <Style TargetType="DataGridCell">
                     <Setter Property="FontSize"
-                            Value="16" />
+                            Value="14" />
                     <Setter Property="Padding"
-                            Value="8,8" />
+                            Value="14,10" />
                     <Setter Property="VerticalContentAlignment"
                             Value="Center" />
                     <Setter Property="HorizontalContentAlignment"
@@ -1302,7 +1434,7 @@
             <Setter.Value>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="FontSize"
-                            Value="18" />
+                            Value="15" />
                     <Setter Property="Background"
                             Value="{DynamicResource HeaderBgBrush}" />
 
@@ -1313,9 +1445,9 @@
                     <Setter Property="FontFamily"
                             Value="{DynamicResource PoppinsFont}" />
                     <Setter Property="Padding"
-                            Value="12,8" />
+                            Value="16,10" />
                     <Setter Property="HorizontalContentAlignment"
-                            Value="Center" />
+                            Value="Left" />
                     <Setter Property="VerticalContentAlignment"
                             Value="Center" />
                     <Setter Property="BorderThickness"
@@ -1325,8 +1457,8 @@
                             <ControlTemplate TargetType="DataGridColumnHeader">
                                 <Border Background="{TemplateBinding Background}"
                                         CornerRadius="6,6,0,0">
-                                    <ContentPresenter HorizontalAlignment="Center"
-                                                      VerticalAlignment="Center" />
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                       VerticalAlignment="Center" />
                                 </Border>
                             </ControlTemplate>
                         </Setter.Value>
@@ -1400,6 +1532,8 @@
                 Value="{DynamicResource BackgroundBrush}" />
         <Setter Property="ScrollViewer.Background"
                 Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="helpers:DataGridScrollHelper.EnableMouseWheelScroll"
+                Value="True" />
 
         <Setter Property="CellStyle">
             <Setter.Value>

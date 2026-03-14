@@ -5,55 +5,46 @@
                     xmlns:helpers="clr-namespace:ADLMRateGen.Helpers"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <!-- ─── BRUSHES & COLORS (Dark Mode, Grayish-Black) ─── -->
+    <!-- ─── BRUSHES & COLORS (Dark Mode) ─── -->
     <!-- Primary palette -->
-    <Color x:Key="Blue900">#F6E1C6</Color>
-    <Color x:Key="ButColCol">#EDBA57</Color>
-    <Color x:Key="SignInCol">#FFAA00</Color>
-    <Color x:Key="NavyCol">#F6E1C6</Color>
+    <Color x:Key="Blue900">#F3F8FF</Color>
+    <Color x:Key="ButColCol">#2C74FF</Color>
+    <Color x:Key="SignInCol">#4C8DFF</Color>
+    <Color x:Key="NavyCol">#F3F8FF</Color>
 
     <!-- Neutrals & backgrounds -->
-    <Color x:Key="WhiteCol">#121212</Color>
-  
-    <Color x:Key="BlackCol">#EEEEEE</Color>
-   
-    <Color x:Key="LightGrayCol">#1E1E1E</Color>
-
-    <Color x:Key="LighterGrayCol">#242424</Color>
-   
-    <Color x:Key="InputBgCol">#1A1A1A</Color>
-
-    <Color x:Key="RowAltCol">#6E787D</Color>
-   
-    <Color x:Key="RowHoverCol">#242424</Color>
-  
-    <Color x:Key="HeaderBgCol">#1A1A1A</Color>
-
-    <Color x:Key="HintGreyCol">#756B59</Color>
-    <Color x:Key="Grey700Col">#A09281</Color>
-    <Color x:Key="DivCol">#2E2A24</Color>
-    <Color x:Key="PopupBorderCol">#777777</Color>
+    <Color x:Key="WhiteCol">#071325</Color>
+    <Color x:Key="BlackCol">#000000</Color>
+    <Color x:Key="LightGrayCol">#0C1B31</Color>
+    <Color x:Key="LighterGrayCol">#10233D</Color>
+    <Color x:Key="InputBgCol">#0F2239</Color>
+    <Color x:Key="RowAltCol">#0C1B31</Color>
+    <Color x:Key="RowHoverCol">#112745</Color>
+    <Color x:Key="HeaderBgCol">#0E223B</Color>
+    <Color x:Key="HintGreyCol">#88A2C8</Color>
+    <Color x:Key="Grey700Col">#B3C6E7</Color>
+    <Color x:Key="DivCol">#18314F</Color>
+    <Color x:Key="PopupBorderCol">#375A87</Color>
+    <Color x:Key="ScrollbarTrackCol">#0E223A</Color>
+    <Color x:Key="ScrollbarThumbCol">#234A7D</Color>
+    <Color x:Key="ScrollbarThumbHoverCol">#35639F</Color>
+    <Color x:Key="ScrollbarThumbPressedCol">#4C82C9</Color>
 
     <!-- Accent & states -->
-    <Color x:Key="HoverLightCol">#242424</Color>
-
-    <Color x:Key="ActiveBgCol">#2C2C2C</Color>
-
-    <Color x:Key="PressedBgCol">#323232</Color>
-
-    <Color x:Key="DisabledBgCol">#1E1E1E</Color>
- 
-    <Color x:Key="DisabledFgCol">#777777</Color>
-    <Color x:Key="CheckedBgCol">#1A1A1A</Color>
-
-    <Color x:Key="CheckedFgCol">#FFCF78</Color>
-    <Color x:Key="DarkHoverCol">#F8DBB0</Color>
-    <Color x:Key="DarkButtonCol">#E5DFD3</Color>
-    <Color x:Key="DarkButtonHoverCol">#EEE5D4</Color>
-    <Color x:Key="MouseOverCellCol">#FFCFAF</Color>
-    <Color x:Key="SelectedCellCol">#FFCFAF</Color>
-    <Color x:Key="SecondaryTextCol">#D2C8B7</Color>
-    <Color x:Key="HeaderTextCol">#D2C8B7</Color>
+    <Color x:Key="HoverLightCol">#10233D</Color>
+    <Color x:Key="ActiveBgCol">#132A46</Color>
+    <Color x:Key="PressedBgCol">#173557</Color>
+    <Color x:Key="DisabledBgCol">#0C1A2E</Color>
+    <Color x:Key="DisabledFgCol">#7B93B5</Color>
+    <Color x:Key="CheckedBgCol">#10233D</Color>
+    <Color x:Key="CheckedFgCol">#FFFFFF</Color>
+    <Color x:Key="DarkHoverCol">#4C8DFF</Color>
+    <Color x:Key="DarkButtonCol">#173A67</Color>
+    <Color x:Key="DarkButtonHoverCol">#1F4C87</Color>
+    <Color x:Key="MouseOverCellCol">#163154</Color>
+    <Color x:Key="SelectedCellCol">#214B7E</Color>
+    <Color x:Key="SecondaryTextCol">#E7F0FF</Color>
+    <Color x:Key="HeaderTextCol">#F3F8FF</Color>
 
     <!-- 🎨 ADLM Color Palette (Centralized) -->
     <Color x:Key="Color.Primary">#FF1E90FF</Color>
@@ -157,6 +148,14 @@
                      Color="{DynamicResource SelectedCellCol}" />
     <SolidColorBrush x:Key="PopupBorderBrush"
                      Color="{DynamicResource PopupBorderCol}" />
+    <SolidColorBrush x:Key="ScrollbarTrackBrush"
+                     Color="{DynamicResource ScrollbarTrackCol}" />
+    <SolidColorBrush x:Key="ScrollbarThumbBrush"
+                     Color="{DynamicResource ScrollbarThumbCol}" />
+    <SolidColorBrush x:Key="ScrollbarThumbHoverBrush"
+                     Color="{DynamicResource ScrollbarThumbHoverCol}" />
+    <SolidColorBrush x:Key="ScrollbarThumbPressedBrush"
+                     Color="{DynamicResource ScrollbarThumbPressedCol}" />
 
     <!-- ─── FONTS ─── -->
     <FontFamily x:Key="Mont">Poppins</FontFamily>
@@ -498,6 +497,38 @@
                 Value="{DynamicResource Grey700}" />
     </Style>
 
+    <Style x:Key="OOText"
+           TargetType="TextBlock">
+        <Setter Property="Text"
+                Value="overhead " />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="HorizontalAlignment"
+                Value="Left" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="Margin"
+                Value="0,0,12,0" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource Grey700}" />
+    </Style>
+
+    <Style x:Key="OSPText"
+           TargetType="TextBlock">
+        <Setter Property="Text"
+                Value="profit " />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="HorizontalAlignment"
+                Value="Left" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="Margin"
+                Value="0,0,12,0" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource Grey700}" />
+    </Style>
+
     <Style x:Key="CenterCellText"
            TargetType="TextBlock">
         <!-- this will make your Quantity/Unit/Price columns centered -->
@@ -541,6 +572,23 @@
                 Value="Center" />
         <Setter Property="Margin"
                 Value="0" />
+    </Style>
+
+    <Style x:Key="TableDescriptionText"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource CenterCellText}">
+        <Setter Property="TextWrapping"
+                Value="Wrap" />
+        <Setter Property="TextTrimming"
+                Value="CharacterEllipsis" />
+        <Setter Property="LineHeight"
+                Value="20" />
+        <Setter Property="MaxHeight"
+                Value="40" />
+        <Setter Property="Margin"
+                Value="0,6,12,6" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
     </Style>
 
     <Style x:Key="EstHeader"
@@ -980,7 +1028,7 @@
                                  Value="True">
                             <Setter TargetName="brd"
                                     Property="Background"
-                                    Value="{DynamicResource SignInCol}" />
+                                    Value="{DynamicResource SignInBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled"
                                  Value="False">
@@ -1183,6 +1231,96 @@
     </Style>
 
 
+    <!-- ─── SCROLLBARS ─── -->
+    <Style x:Key="ScrollBarPageButtonStyle"
+           TargetType="RepeatButton">
+        <Setter Property="Focusable"
+                Value="False" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Rectangle Fill="Transparent" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ScrollBarThumbStyle"
+           TargetType="Thumb">
+        <Setter Property="SnapsToDevicePixels"
+                Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border x:Name="ThumbRoot"
+                            Background="{DynamicResource ScrollbarThumbBrush}"
+                            CornerRadius="6"
+                            Margin="2" />
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="ThumbRoot"
+                                    Property="Background"
+                                    Value="{DynamicResource ScrollbarThumbHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsDragging"
+                                 Value="True">
+                            <Setter TargetName="ThumbRoot"
+                                    Property="Background"
+                                    Value="{DynamicResource ScrollbarThumbPressedBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ScrollBar">
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="Width"
+                Value="14" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Border Background="{DynamicResource ScrollbarTrackBrush}"
+                            CornerRadius="7"
+                            Margin="2,0">
+                        <Track x:Name="PART_Track"
+                               IsDirectionReversed="True"
+                               Margin="1">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageUpCommand"
+                                              Style="{StaticResource ScrollBarPageButtonStyle}" />
+                            </Track.DecreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource ScrollBarThumbStyle}" />
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageDownCommand"
+                                              Style="{StaticResource ScrollBarPageButtonStyle}" />
+                            </Track.IncreaseRepeatButton>
+                        </Track>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation"
+                                 Value="Horizontal">
+                            <Setter Property="Height"
+                                    Value="14" />
+                            <Setter TargetName="PART_Track"
+                                    Property="IsDirectionReversed"
+                                    Value="False" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ─── DATAGRID STYLES ─── -->
     <Style x:Key="DataGridStyle"
            TargetType="DataGrid">
@@ -1194,6 +1332,8 @@
                 Value="1" />
         <Setter Property="RowBackground"
                 Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="AlternatingRowBackground"
+                Value="{DynamicResource RowAlt}" />
 
         <Setter Property="GridLinesVisibility"
                 Value="None" />
@@ -1210,15 +1350,23 @@
         <Setter Property="ColumnHeaderHeight"
                 Value="48" />
         <Setter Property="FontSize"
-                Value="16" />
+                Value="15" />
         <Setter Property="FontFamily"
                 Value="{DynamicResource PoppinsFont}" />
         <Setter Property="Margin"
-                Value="10,30" />
+                Value="0,18,0,0" />
         <Setter Property="RowHeight"
-                Value="30" />
+                Value="{x:Static sys:Double.NaN}" />
+        <Setter Property="MinRowHeight"
+                Value="58" />
         <Setter Property="IsReadOnly"
                 Value="True" />
+        <Setter Property="AlternationCount"
+                Value="2" />
+        <Setter Property="CanUserResizeColumns"
+                Value="False" />
+        <Setter Property="CanUserSortColumns"
+                Value="False" />
         <Setter Property="GridLinesVisibility"
                 Value="Horizontal" />
         <Setter Property="HorizontalGridLinesBrush"
@@ -1230,15 +1378,17 @@
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
                 Value="Auto" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
-                Value="Auto" />
+                Value="Disabled" />
+        <Setter Property="helpers:DataGridScrollHelper.EnableMouseWheelScroll"
+                Value="True" />
 
         <Setter Property="CellStyle">
             <Setter.Value>
                 <Style TargetType="DataGridCell">
                     <Setter Property="FontSize"
-                            Value="16" />
+                            Value="14" />
                     <Setter Property="Padding"
-                            Value="8,8" />
+                            Value="14,10" />
                     <Setter Property="VerticalContentAlignment"
                             Value="Center" />
                     <Setter Property="HorizontalContentAlignment"
@@ -1273,7 +1423,7 @@
             <Setter.Value>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="FontSize"
-                            Value="18" />
+                            Value="15" />
                     <Setter Property="Background"
                             Value="{DynamicResource HeaderBgBrush}" />
 
@@ -1284,9 +1434,9 @@
                     <Setter Property="FontFamily"
                             Value="{DynamicResource PoppinsFont}" />
                     <Setter Property="Padding"
-                            Value="12,8" />
+                            Value="16,10" />
                     <Setter Property="HorizontalContentAlignment"
-                            Value="Center" />
+                            Value="Left" />
                     <Setter Property="VerticalContentAlignment"
                             Value="Center" />
                     <Setter Property="BorderThickness"
@@ -1296,8 +1446,8 @@
                             <ControlTemplate TargetType="DataGridColumnHeader">
                                 <Border Background="{TemplateBinding Background}"
                                         CornerRadius="6,6,0,0">
-                                    <ContentPresenter HorizontalAlignment="Center"
-                                                      VerticalAlignment="Center" />
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                       VerticalAlignment="Center" />
                                 </Border>
                             </ControlTemplate>
                         </Setter.Value>
@@ -1367,6 +1517,8 @@
                 Value="True" />
         <Setter Property="Foreground"
                 Value="{DynamicResource Blue900Brush}" />
+        <Setter Property="helpers:DataGridScrollHelper.EnableMouseWheelScroll"
+                Value="True" />
 
         <Setter Property="CellStyle">
             <Setter.Value>

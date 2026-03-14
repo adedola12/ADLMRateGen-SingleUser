@@ -1,8 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
+using ADLMRateGen.Helpers;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ADLMRateGen.ADLM.Auth
 {
@@ -52,7 +53,7 @@ namespace ADLMRateGen.ADLM.Auth
             return statusOk && expOk;
         }
 
-        // Used by the plugin’s offline path – enforces per-product device binding
+        // Used by the plugin's offline path - enforces per-product device binding
         public static bool IsEntitledForDevice(JsonElement licensePayload, string productKey, string deviceFingerprint)
         {
             if (!licensePayload.TryGetProperty("entitlements", out var ent)) return false;
@@ -73,7 +74,7 @@ namespace ADLMRateGen.ADLM.Auth
 
         internal static class LicenseSecrets
         {
-            public const string HS256_SHARED = "[REDACTED-JWT-LICENSE-SECRET]";
+            public static string? SharedSecret => AppEnvironment.OfflineLicenseSharedSecret;
         }
     }
 }

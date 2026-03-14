@@ -28,7 +28,7 @@ namespace ADLMRateGen.Services
             Path.Combine(UserLibrarySync.UserDataFolder, "compute-items.json");
 
         // ✅ Configure once from MainViewModel
-        private static string _apiBaseUrl = "https://adlmweb.onrender.com";
+        private static string _apiBaseUrl = AppEnvironment.ApiBaseUrl;
 
         // ✅ MUST match server route in rategen.library.js
         // router.get("/library/compute-items/sync", ...)

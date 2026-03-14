@@ -1,157 +1,149 @@
-﻿<UserControl x:Class="ADLMRateGen.View.SignInUserControl"
+<UserControl x:Class="ADLMRateGen.View.SignInUserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:fa="clr-namespace:FontAwesome.Sharp;assembly=FontAwesome.Sharp"
              mc:Ignorable="d"
              d:DesignWidth="1024"
-             d:DesignHeight="1000">
+             d:DesignHeight="900">
 
-    <Grid>
-        <!-- outer frame if needed:  <Image Source="/Resources/bg_frame.png" Stretch="Fill"/> -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  CanContentScroll="False">
+        <Grid MinHeight="720">
+            <Image Source="/Resources/bg_frame.png"
+                   Width="140"
+                   Height="140"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top"
+                   Margin="0,18,18,0"
+                   Opacity="0.85"
+                   IsHitTestVisible="False" />
+            <Image Source="/Resources/bg_frame.png"
+                   Width="150"
+                   Height="165"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Bottom"
+                   Margin="18,0,0,18"
+                   Opacity="0.85"
+                   IsHitTestVisible="False" />
 
-        <!-- Card -->
-        <Border Width="1600"
-                Height="850"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                CornerRadius="40"
-                BorderBrush="{DynamicResource BorColBrush}"
-                BorderThickness="2">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="20"
-                                  Color="{StaticResource SignInCol}"
-                                  ShadowDepth="0"
-                                  Opacity="0.55" />
-            </Border.Effect>
-            <Border.Background>
-                <ImageBrush ImageSource="/Resources/panel_blueprint.png"
-                            Stretch="UniformToFill" />
-            </Border.Background>
+            <Grid Margin="24">
+                <Border MaxWidth="1120"
+                        MinWidth="320"
+                        MinHeight="620"
+                        Padding="56"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        CornerRadius="40"
+                        BorderBrush="{DynamicResource BorColBrush}"
+                        BorderThickness="2">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="20"
+                                          Color="{StaticResource SignInCol}"
+                                          ShadowDepth="0"
+                                          Opacity="0.55" />
+                    </Border.Effect>
+                    <Border.Background>
+                        <ImageBrush ImageSource="/Resources/panel_blueprint.png"
+                                    Stretch="UniformToFill" />
+                    </Border.Background>
 
-            <!-- Content grid -->
-            <Grid Margin="0, 100, 0,-100">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                </Grid.RowDefinitions>
+                        <Image Source="/Resources/adlm_studio_logo_small.png"
+                               Height="30"
+                               HorizontalAlignment="Center" />
 
-                <!-- Logos -->
-                <Image Source="/Resources/adlm_studio_logo_small.png"
-                       Height="30"
-                       HorizontalAlignment="Center" />
-                <Image Grid.Row="1"
-                       Source="/Resources/adlm_rate_generator_logo.png"
-                       Height="165"
-                       Margin="0,80,0,25"
-                       HorizontalAlignment="Center" />
+                        <Image Grid.Row="1"
+                               Source="/Resources/adlm_rate_generator_logo.png"
+                               Height="150"
+                               Margin="0,52,0,20"
+                               HorizontalAlignment="Center"
+                               Stretch="Uniform" />
 
-                <!-- Form -->
-                <StackPanel Grid.Row="2"
-                            Width="520"
-                            HorizontalAlignment="Center">
+                        <StackPanel Grid.Row="2"
+                                    MaxWidth="520"
+                                    Width="Auto"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="Username"
+                                       Foreground="{StaticResource BackgroundBrush}"
+                                       Margin="4,10" />
 
-                    <!-- E-mail -->
-                    <TextBlock Text="Username"
-                               Foreground="{StaticResource BackgroundBrush}"
-                               Margin="4,10" />
+                            <Border CornerRadius="12.5"
+                                    Background="{DynamicResource BackgroundBrush}"
+                                    Height="48"
+                                    Margin="0,0,0,14">
+                                <TextBox Style="{StaticResource HollowBox}"
+                                         Tag="Input Username..."
+                                         VerticalContentAlignment="Center"
+                                         Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+                            </Border>
 
-                    <Border CornerRadius="12.5"
-                            Background="{DynamicResource BackgroundBrush}"
-                            Height="48"
-                            Margin="0,0,0,14">
-                        <!--  E-mail  -->
-                        <TextBox Style="{StaticResource HollowBox}"
-                                 Tag="Input Username…"
-                                 VerticalContentAlignment="Center"
-                                 Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}">
-                            
-                        </TextBox>
+                            <TextBlock Text="Password"
+                                       Foreground="{StaticResource BackgroundBrush}"
+                                       Margin="4,10" />
 
-                    </Border>
+                            <Grid Height="48"
+                                  Margin="0,0,0,14">
+                                <Border CornerRadius="12.5"
+                                        Background="{DynamicResource BackgroundBrush}" />
 
-                    <!-- Password -->
-                    <TextBlock Text="Password"
-                               Foreground="{StaticResource BackgroundBrush}"
-                               Margin="4,10" />
+                                <PasswordBox x:Name="PasswordBox"
+                                             Padding="18,0,56,0"
+                                             BorderThickness="0"
+                                             Background="Transparent"
+                                             FontSize="14"
+                                             VerticalAlignment="Center"
+                                             PasswordChanged="PasswordBox_PasswordChanged" />
 
+                                <TextBox x:Name="PasswordPreviewTextBox"
+                                         Padding="18,0,56,0"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         FontSize="14"
+                                         VerticalContentAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Visibility="Collapsed"
+                                         TextChanged="PasswordPreviewTextBox_TextChanged" />
 
-                    <Grid Height="48"
-                          Margin="0,0,0,14">
-                        <Border CornerRadius="12.5"
-                                Background="{DynamicResource BackgroundBrush}" />
-                        <PasswordBox x:Name="PasswordBox"
-                                     Padding="18,0"
-                                     BorderThickness="0"
-                                     Background="Transparent"
-                                     FontSize="14"
-                                     VerticalAlignment="Center"
-                                     PasswordChanged="PasswordBox_PasswordChanged" />
-                        
-                        <Button Width="24"
-                                Height="24"
-                                HorizontalAlignment="Right"
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Click="TogglePwd_Click">
+                                <Button Width="32"
+                                        Height="32"
+                                        HorizontalAlignment="Right"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Focusable="False"
+                                        ToolTip="Show or hide password"
+                                        Click="TogglePwd_Click">
+                                    <fa:IconBlock x:Name="PasswordToggleIcon"
+                                                  Icon="Eye"
+                                                  Width="18"
+                                                  Height="18"
+                                                  Foreground="{DynamicResource SignInBrush}" />
+                                </Button>
+                            </Grid>
 
-                        </Button>
+                            <Button Style="{StaticResource LogBtnStyle}"
+                                    Command="{Binding LoginCommand}"
+                                    Margin="0,24,0,0"
+                                    Height="56">
+                                <TextBlock Text="Log in"
+                                           Style="{StaticResource BtnText}" />
+                            </Button>
+                        </StackPanel>
                     </Grid>
-
-                    <!-- Login button (no Content attr duplicated) -->
-                    <Button Style="{StaticResource LogBtnStyle}"
-                            Command="{Binding LoginCommand}"
-                            Margin="0,24,0,0" Height="56">
-                        <TextBlock Text="Log in"
-                                   Style="{StaticResource BtnText}" />
-
-                    </Button>
-                    
-                    
-                    <!--<Button Margin="0,24,0,0"
-                            Width="520"
-                            Height="56"
-                            BorderThickness="0"
-                            Command="{Binding LoginCommand}">
-                        <Button.Background>
-                            <LinearGradientBrush StartPoint="0,0"
-                                                 EndPoint="0,1">
-                                <GradientStop Color="{StaticResource SignInCol}"
-                                              Offset="0" />
-                                <GradientStop Color="{StaticResource SignInCol}"
-                                              Offset="1" />
-                            </LinearGradientBrush>
-                        </Button.Background>
-
-
-                       
-                    </Button>-->
-                </StackPanel>
-
-
-
-
+                </Border>
             </Grid>
-        </Border>
-
-        <!-- Decorative corner badges   (replace source as needed) -->
-        <Image Source="/Resources/bg_frame.png"
-               Width="160"
-               Height="160"
-               HorizontalAlignment="Right"
-               VerticalAlignment="Top"
-               Margin="0,10,0,0" />
-        <Image Source="/Resources/bg_frame.png"
-               Width="177"
-               Height="194"
-               HorizontalAlignment="Left"
-               VerticalAlignment="Bottom"
-               Margin="12,0,0,10" />
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

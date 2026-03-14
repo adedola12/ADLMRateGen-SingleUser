@@ -24,7 +24,7 @@ namespace ADLMRateGen
         private readonly LibraryShellViewModel _shellVm;
         private readonly PopupHost _popup;
 
-        // ✅ keep a reference so we can unsubscribe from the STATIC event
+        // keep a reference so we can unsubscribe from the STATIC event
         private Action<MaterialModel>? _materialPopupSavedHandler;
 
         public MainWindow()
@@ -52,14 +52,24 @@ namespace ADLMRateGen
             var customInputVM = new CustomRateEntryViewModel();
             var customViewVM = new CustomRateListViewModel();
 
-            // 2) Create the sign-in VM + Mongo service
-            var connectionString = "mongodb+srv://dolapo836:[REDACTED]@adlmratedb.zeur8.mongodb.net/?retryWrites=true&w=majority&appName=ADLMRateDB";
-            var databaseName = "ADLMRateDB";
-            var collectionName = "Users";
-            var matColName = "Materials";
-            var labColName = "labours";
+            // 2) Mongo service uses environment-provided connection info in public builds.
+            var srvConnectionString = AppEnvironment.MongoSrvConnectionString;
+            var standardConnectionString = AppEnvironment.MongoStandardConnectionString;
+            var databaseName = AppEnvironment.MongoDatabaseName;
+            var userColName = AppEnvironment.MongoUsersCollection;
+            var matColName = AppEnvironment.MongoMaterialsCollection;
+            var labColName = AppEnvironment.MongoLabourCollection;
 
-            var mongoDbService = new MongoDbService(connectionString, databaseName, collectionName, matColName, labColName);
+            var mongoDbService = new MongoDbService(
+                srvConnectionString,
+                databaseName,
+                userColName,
+                matColName,
+                labColName,
+                standardConnectionString
+            );
+
+            // 3) Sign-in VM (same as your existing pattern)
             var signInVM = new SignInViewModel(mongoDbService);
 
             // ───────── event wiring ─────────
@@ -69,13 +79,13 @@ namespace ADLMRateGen
 
             _popup = PopupHost;
 
-            // ✅ Carbon: open details in same popup host
+            // Carbon: open details in same popup host
             carbonVM.RequestShowDetails += item =>
             {
                 _popup.Show(new CarbonRateItemDetailControl { DataContext = item });
             };
 
-            // 3) Create the MainViewModel
+            // 4) MainViewModel
             var mainVM = new MainViewModel(
                 priceVM,
                 libraryVM,
@@ -89,31 +99,35 @@ namespace ADLMRateGen
                 windowAndDoorVM,
                 paintVM,
                 steelWorkVM,
-                  carbonVM,
+                carbonVM,
                 _shellVm,
                 customViewVM,
                 customInputVM,
                 mongoDbService,
                 signInVM);
 
-            // 4) Persisted token auto login
-            var config = ConfigManager.LoadConfig();
-            if (config.AuthToken != null && config.AuthExpiry is { } exp && exp > DateTime.Now)
-            {
-                mainVM.IsLoggedIn = true;
-                mainVM.SelectedViewModel = mainVM.MaterialLibraryViewModel;
-
-                var userId = JwtHelper.GetUserId(config.AuthToken);
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    var user = mongoDbService.GetUserById(userId);
-                    if (user != null)
-                        mainVM.CurrentUser = user;
-                }
-            }
-
             // 5) Set DataContext
             DataContext = mainVM;
+
+            // 6) Connect to Mongo after the window is up so startup does not block on DNS/network.
+            Loaded += async (_, __) =>
+            {
+                await mongoDbService.InitializeAsync();
+
+                if (mongoDbService.IsConfigured && !mongoDbService.IsAvailable)
+                {
+                    MessageBox.Show(
+                        this,
+                        "Cloud sync is not reachable on this network/PC.\n\n" +
+                        "RateGen will still open, but cloud features (login/sync) may not work until the network/DNS allows MongoDB Atlas.\n\n" +
+                        "Tip: Using a Standard (non-SRV) Mongo connection string fixes this on restricted networks.\n\n" +
+                        "Details: " + (mongoDbService.LastError ?? "Unknown"),
+                        "ADLM Rate Gen",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
+                }
+            };
         }
 
         // ========== MATERIAL POPUP ==========
@@ -140,10 +154,10 @@ namespace ADLMRateGen
                 vm.NewMaterialCategory = existing.MaterialCategory;
             }
 
-            // ✅ because MaterialSaved is STATIC, subscribe using the TYPE NAME
+            // because MaterialSaved is STATIC, subscribe using the TYPE NAME
             _materialPopupSavedHandler = mat =>
             {
-                // unsubscribe immediately after first save (important)
+                // unsubscribe immediately after first save
                 if (_materialPopupSavedHandler != null)
                 {
                     MaterialPriceViewModel.MaterialSaved -= _materialPopupSavedHandler;

@@ -28,7 +28,7 @@ namespace ADLMRateGen.Services
         public static string FilePath =>
             Path.Combine(UserLibrarySync.UserDataFolder, "rate-library.json");
 
-        private static string _apiBaseUrl = "https://adlmweb.onrender.com";
+        private static string _apiBaseUrl = AppEnvironment.ApiBaseUrl;
         private static string _ratesSyncPath = "/rategen-v2/library/rates/sync";
 
         public static void ConfigureApi(string baseUrl, string? ratesSyncPath = null)

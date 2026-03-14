@@ -26,6 +26,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -34,7 +35,7 @@ namespace ADLMRateGen.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
-        private const string API_BASE_URL = "https://adlmweb.onrender.com";
+        private static string API_BASE_URL => AppEnvironment.ApiBaseUrl;
 
         // ✅ New clean public base
         private const string RATEGEN_V2_BASE = "/rategen-v2";
@@ -246,7 +247,7 @@ namespace ADLMRateGen.ViewModel
         private readonly SearchIndex _index = new();
 
         /* ───────── View switching ───────── */
-        private ViewModelBase _selectedViewModel;
+        private ViewModelBase _selectedViewModel = null!;
         public ViewModelBase SelectedViewModel
         {
             get => _selectedViewModel;
@@ -436,11 +437,16 @@ namespace ADLMRateGen.ViewModel
                     Email = tokenUser.Email,
                     Username = !string.IsNullOrWhiteSpace(tokenUser.Username)
                         ? tokenUser.Username
-                        : (tokenUser.Email?.Split('@')[0] ?? string.Empty)
+                        : (tokenUser.Email?.Split('@')[0] ?? string.Empty),
+                    AvatarUrl = tokenUser.AvatarUrl,
+                    FirstName = tokenUser.FirstName,
+                    LastName = tokenUser.LastName,
+                    Zone = tokenUser.Zone
                 };
 
                 SelectedViewModel = LibraryShellViewModel;
                 _ = UserLibrarySync.Instance.LoadAsync();
+                _ = RefreshCurrentUserProfileAsync();
 
                 // ✅ optional: also check for updates on app start (auto-login path)
                 _ = TryCheckUpdatesAfterLoginAsync();
@@ -585,7 +591,7 @@ namespace ADLMRateGen.ViewModel
                 // ✅ 3) Optional: materials/labour update check
                 try
                 {
-                    var zone = cfg.Zone ?? "Lagos";
+                    var zone = ADLMRateGen.Properties.AppSettings.Zone ?? cfg.Zone ?? "Lagos";
 
                     await _rateSync.CheckAndPromptUpdateAsync(
                         token,
@@ -708,9 +714,10 @@ namespace ADLMRateGen.ViewModel
 
         private void RequireSignInAgain(bool manual)
         {
-            // preserve non-auth config (like Zone) if you have it
             try
             {
+                AuthProvider.Instance.Client.SignOut();
+
                 var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
                 cfg.AuthToken = null;
                 cfg.AuthExpiry = DateTime.MinValue;
@@ -747,8 +754,7 @@ namespace ADLMRateGen.ViewModel
             if (cfg.AuthExpiry < DateTime.Now)
                 return false;
 
-            var authTok = new AuthTok();
-            var decoded = authTok.ValidateToken(cfg.AuthToken);
+            var decoded = JwtHelper.TryReadUser(cfg.AuthToken);
             if (decoded == null)
                 return false;
 
@@ -805,23 +811,23 @@ namespace ADLMRateGen.ViewModel
             {
                 Id = e.LoggedInUser.Id,
                 Email = e.LoggedInUser.Email,
-                Username = ensuredUsername
+                Username = ensuredUsername,
+                AvatarUrl = e.LoggedInUser.AvatarUrl,
+                FirstName = e.LoggedInUser.FirstName,
+                LastName = e.LoggedInUser.LastName,
+                Zone = e.LoggedInUser.Zone
             };
 
-            // ✅ SAVE SERVER TOKEN (this fixes your 401)
-            var expiry = TryGetJwtExpiryLocal(e.AccessToken) ?? DateTime.Now.AddMinutes(25);
-
-            ConfigManager.SaveConfig(new AppConfig
-            {
-                AuthToken = e.AccessToken,
-                AuthExpiry = expiry
-                // Zone stays as-is if you already store it
-            });
+            var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
+            cfg.AuthToken = e.AccessToken;
+            cfg.AuthExpiry = JwtHelper.TryGetExpiryLocal(e.AccessToken) ?? DateTime.Now.AddMinutes(25);
+            ConfigManager.SaveConfig(cfg);
 
             SelectedViewModel = LibraryShellViewModel;
 
             // Load cached first
             _ = UserLibrarySync.Instance.LoadAsync();
+            await RefreshCurrentUserProfileAsync();
 
             // Now re-check APIs with valid token
             await TryCheckUpdatesAfterLoginAsync();
@@ -830,30 +836,13 @@ namespace ADLMRateGen.ViewModel
 
         }
 
-        // Reads JWT exp without validating signature (good enough for local expiry)
-        private static DateTime? TryGetJwtExpiryLocal(string jwt)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(jwt)) return null;
-                var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-                var token = handler.ReadJwtToken(jwt);
-                var exp = token.Payload.Exp;
-                if (exp == null) return null;
-                var utc = DateTimeOffset.FromUnixTimeSeconds((long)exp).UtcDateTime;
-                return utc.ToLocalTime();
-            }
-            catch { return null; }
-        }
-
-
         // ✅ This is the real “does it fetch rates + apply to library” flow
         private async Task TryCheckUpdatesAfterLoginAsync()
         {
             try
             {
                 var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
-                var zone = cfg.Zone ?? "Lagos";
+                var zone = ADLMRateGen.Properties.AppSettings.Zone ?? cfg.Zone ?? "Lagos";
                 var token = cfg.AuthToken;
 
                 if (string.IsNullOrWhiteSpace(token))
@@ -1265,8 +1254,14 @@ namespace ADLMRateGen.ViewModel
         {
             try
             {
-                ConfigManager.ClearConfig();
-                _currentUser = null;
+                AuthProvider.Instance.Client.SignOut();
+
+                var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
+                cfg.AuthToken = null;
+                cfg.AuthExpiry = DateTime.MinValue;
+                ConfigManager.SaveConfig(cfg);
+
+                CurrentUser = null;
 
                 IsLoggedIn = false;
                 SelectedViewModel = SignInViewModel;
@@ -1291,6 +1286,63 @@ namespace ADLMRateGen.ViewModel
             {
                 MessageBox.Show($"Unable to open browser.\n{ex.Message}");
             }
+        }
+
+        private async Task RefreshCurrentUserProfileAsync()
+        {
+            if (!IsLoggedIn || CurrentUser == null || !AuthProvider.Instance.Client.HasSession)
+                return;
+
+            try
+            {
+                using var profileDoc = await AuthProvider.Instance.Client.GetJsonAsync("/me/profile");
+                var root = profileDoc.RootElement;
+                var updated = new UserModel
+                {
+                    Id = TryReadProfileValue(root, "_id", "id") ?? CurrentUser.Id,
+                    Email = TryReadProfileValue(root, "email") ?? CurrentUser.Email,
+                    Username = TryReadProfileValue(root, "username") ?? CurrentUser.Username,
+                    FirstName = TryReadProfileValue(root, "firstName") ?? CurrentUser.FirstName,
+                    LastName = TryReadProfileValue(root, "lastName") ?? CurrentUser.LastName,
+                    AvatarUrl = TryReadProfileValue(root, "avatarUrl") ?? CurrentUser.AvatarUrl,
+                    Zone = TryReadProfileValue(root, "zone") ?? CurrentUser.Zone,
+                    Password = CurrentUser.Password,
+                    CreationAt = CurrentUser.CreationAt,
+                    SubscriptionDuration = CurrentUser.SubscriptionDuration,
+                    ExpirationDate = CurrentUser.ExpirationDate,
+                    UpdatedAt = CurrentUser.UpdatedAt,
+                    HardwareFingerprint = CurrentUser.HardwareFingerprint
+                };
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CurrentUser = updated;
+                    RaisePropertyChanged(nameof(CurrentUser));
+                    RaisePropertyChanged(nameof(CurrentUsername));
+                });
+            }
+            catch
+            {
+                // Keep the login flow resilient when profile enrichment is unavailable.
+            }
+        }
+
+        private static string? TryReadProfileValue(JsonElement root, params string[] names)
+        {
+            foreach (var name in names)
+            {
+                if (!root.TryGetProperty(name, out var element))
+                    continue;
+
+                if (element.ValueKind == JsonValueKind.String)
+                {
+                    var value = element.GetString();
+                    if (!string.IsNullOrWhiteSpace(value))
+                        return value;
+                }
+            }
+
+            return null;
         }
     }
 }

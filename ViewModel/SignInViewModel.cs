@@ -1,31 +1,30 @@
-﻿using ADLMRateGen.ADLM.Auth;
-using ADLMRateGen.Command;
-using ADLMRateGen.Helpers;
-using ADLMRateGen.Properties;
-using ADLMRateGen.Services;
-using ADLMRateGen.ViewModel.Model;
 using System;
 using System.Net.NetworkInformation;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using ADLMRateGen.ADLM.Auth;
+using ADLMRateGen.Command;
+using ADLMRateGen.Helpers;
+using ADLMRateGen.Properties;
+using ADLMRateGen.Services;
+using ADLMRateGen.ViewModel.Model;
 
 namespace ADLMRateGen.ViewModel
 {
     public class SignInViewModel : ViewModelBase
     {
-        private const string ProductKey = "rategen";
-        private const string HS256_SHARED = "[REDACTED-JWT-LICENSE-SECRET]";
+        private static string ProductKey => AppEnvironment.ProductKey;
 
         private AuthClient _auth { get { return AuthProvider.Instance.Client; } }
 
-        private string _email = "";
-        private string _password = "";
+        private string _email = string.Empty;
+        private string _password = string.Empty;
         private bool _isLoading;
 
-        public event Action<string> ZonePricesApplied;
-        public event EventHandler<LoginEventArgs> LoginSucceeded;
+        public event Action<string>? ZonePricesApplied;
+        public event EventHandler<LoginEventArgs>? LoginSucceeded;
 
         public ICommand LoginCommand { get; }
 
@@ -63,13 +62,17 @@ namespace ADLMRateGen.ViewModel
 
         private async Task LoginAsync()
         {
-            if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+            if (IsLoading) return;
+
+            var email = (Email ?? string.Empty).Trim();
+            var pass = Password ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pass))
             {
                 MessageBox.Show("Please enter your username/email and password.");
                 return;
             }
 
-            // Offline login
             if (!NetworkInterface.GetIsNetworkAvailable())
             {
                 var cached = _auth.GetCachedLicenseToken();
@@ -77,13 +80,11 @@ namespace ADLMRateGen.ViewModel
                 {
                     var user = BuildUserFromLicense(cached) ?? new UserModel
                     {
-                        Email = Email,
-                        Username = DeriveUsername(Email)
+                        Email = email,
+                        Username = DeriveUsername(email)
                     };
 
-                    var args = new LoginEventArgs(user) { AccessToken = "" };
-                    var ev = LoginSucceeded;
-                    if (ev != null) ev(this, args);
+                    LoginSucceeded?.Invoke(this, new LoginEventArgs(user) { AccessToken = string.Empty });
 
                     MessageBox.Show("Signed in (offline) via cached license.");
                     return;
@@ -93,16 +94,15 @@ namespace ADLMRateGen.ViewModel
                 return;
             }
 
-            // Online login
             IsLoading = true;
             try
             {
                 await _auth.PingAsync();
 
-                var ok = await _auth.LoginAsync(identifier: Email, password: Password);
+                var ok = await _auth.LoginAsync(identifier: email, password: pass);
                 if (!ok)
                 {
-                    MessageBox.Show("Invalid username/email or password.", "Sign in failed",
+                    MessageBox.Show("Sign in failed. Please verify your credentials.", "Sign in failed",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
@@ -111,25 +111,32 @@ namespace ADLMRateGen.ViewModel
 
                 var userOnline = new UserModel
                 {
-                    Email = Email,
-                    Username = DeriveUsername(Email)
+                    Id = JwtHelper.GetUserId(_auth.AccessToken) ?? string.Empty,
+                    Email = email,
+                    Username = DeriveUsername(email)
                 };
 
-                // ✅ server-issued token is now stored by AuthClient
-                var accessTokenFromServer = _auth.AccessToken;
-
-                var args2 = new LoginEventArgs(userOnline)
+                LoginSucceeded?.Invoke(this, new LoginEventArgs(userOnline)
                 {
-                    AccessToken = accessTokenFromServer ?? ""
-                };
-
-                var ev2 = LoginSucceeded;
-                if (ev2 != null) ev2(this, args2);
+                    AccessToken = _auth.AccessToken
+                });
 
                 MessageBox.Show("Sign in successful!");
 
-                // Fetch and sync zone-based pricing
-                await SyncZonePricesAsync();
+                try
+                {
+                    await SyncZonePricesAsync();
+                }
+                catch (Exception zx)
+                {
+                    MessageBox.Show("Signed in, but zone sync failed: " + zx.Message, "Zone Sync",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(ex.Message, "Sign in failed",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             catch (Exception ex)
             {
@@ -144,92 +151,100 @@ namespace ADLMRateGen.ViewModel
 
         private async Task SyncZonePricesAsync()
         {
-            try
+            using (var profDoc = await _auth.GetJsonAsync("/me/profile"))
             {
-                using (var profDoc = await _auth.GetJsonAsync("/me/profile"))
+                JsonElement profRoot = profDoc.RootElement;
+
+                string serverZone = profRoot.TryGetProperty("zone", out var zEl)
+                    ? (zEl.GetString() ?? string.Empty)
+                    : string.Empty;
+
+                if (string.IsNullOrWhiteSpace(serverZone))
                 {
-                    JsonElement profRoot = profDoc.RootElement;
+                    MessageBox.Show("Your profile does not have a zone assigned.");
+                    return;
+                }
 
-                    string serverZone = profRoot.TryGetProperty("zone", out var zEl)
-                        ? (zEl.GetString() ?? "")
-                        : "";
+                string localZone = AppSettings.Zone ?? string.Empty;
+                if (!string.Equals(serverZone, localZone, StringComparison.OrdinalIgnoreCase))
+                {
+                    var resp = MessageBox.Show(
+                        "Your account zone is '" + serverZone + "'. Update your RateGen prices to this zone now?",
+                        "Update prices for location",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
 
-                    if (string.IsNullOrWhiteSpace(serverZone))
+                    if (resp == MessageBoxResult.Yes)
                     {
-                        MessageBox.Show("Your profile does not have a zone assigned.");
-                        return;
+                        using (var masterDoc = await _auth.GetJsonAsync("/rategen/master?zone=" + Uri.EscapeDataString(serverZone)))
+                        {
+                            JsonElement root = masterDoc.RootElement;
+
+                            if (root.TryGetProperty("materials", out var mats))
+                                DataSourceCloudSync.SaveMaterialsFromDto(mats);
+
+                            if (root.TryGetProperty("labour", out var labs))
+                                DataSourceCloudSync.SaveLaboursFromDto(labs);
+                        }
+
+                        AppSettings.Zone = serverZone;
+                        ZonePricesApplied?.Invoke(serverZone);
+
+                        MessageBox.Show("Prices updated for zone: " + serverZone);
                     }
-
-                    string localZone = AppSettings.Zone ?? "";
-                    if (!string.Equals(serverZone, localZone, StringComparison.OrdinalIgnoreCase))
+                    else
                     {
-                        var resp = MessageBox.Show(
-                            "Your account zone is '" + serverZone + "'. Update your RateGen prices to this zone now?",
-                            "Update prices for location",
-                            MessageBoxButton.YesNo,
-                            MessageBoxImage.Question);
-
-                        if (resp == MessageBoxResult.Yes)
-                        {
-                            using (var masterDoc = await _auth.GetJsonAsync("/rategen/master?zone=" + Uri.EscapeDataString(serverZone)))
-                            {
-                                JsonElement root = masterDoc.RootElement;
-
-                                if (root.TryGetProperty("materials", out var mats))
-                                    DataSourceCloudSync.SaveMaterialsFromDto(mats);
-
-                                if (root.TryGetProperty("labour", out var labs))
-                                    DataSourceCloudSync.SaveLaboursFromDto(labs);
-                            }
-
-                            AppSettings.Zone = serverZone;
-                            var ev = ZonePricesApplied;
-                            if (ev != null) ev(serverZone);
-
-                            MessageBox.Show("Prices updated for zone: " + serverZone);
-                        }
-                        else
-                        {
-                            // Still store the server zone so next sessions are consistent
-                            AppSettings.Zone = serverZone;
-                        }
+                        AppSettings.Zone = serverZone;
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Zone sync failed: " + ex.Message, "Zone Sync",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
         private bool TryOfflineLicense(string jwt)
         {
-            JsonElement payload;
-            string err;
+            var sharedSecret = JwtLicenseValidator.LicenseSecrets.SharedSecret;
+            if (string.IsNullOrWhiteSpace(sharedSecret))
+            {
+                return false;
+            }
 
-            if (!JwtLicenseValidator.TryValidateHS256(jwt, HS256_SHARED, out payload, out err))
+            if (!JwtLicenseValidator.TryValidateHS256(jwt, sharedSecret, out var payload, out _))
                 return false;
 
-            var dfp = Helpers.DeviceFingerprint.Generate();
+            var dfp = ADLMRateGen.ADLM.Auth.DeviceFingerprint.Generate();
             return JwtLicenseValidator.IsEntitledForDevice(payload, ProductKey, dfp);
         }
 
-        private UserModel BuildUserFromLicense(string jwt)
+        private UserModel? BuildUserFromLicense(string jwt)
         {
-            JsonElement payload;
-            string err;
+            var sharedSecret = JwtLicenseValidator.LicenseSecrets.SharedSecret;
+            if (string.IsNullOrWhiteSpace(sharedSecret))
+            {
+                return null;
+            }
 
-            if (!JwtLicenseValidator.TryValidateHS256(jwt, HS256_SHARED, out payload, out err))
+            if (!JwtLicenseValidator.TryValidateHS256(jwt, sharedSecret, out var payload, out _))
                 return null;
 
             var user = new UserModel();
 
             if (payload.TryGetProperty("email", out var emailProp))
-                user.Email = emailProp.GetString();
+                user.Email = emailProp.GetString() ?? string.Empty;
 
             if (payload.TryGetProperty("username", out var unProp))
-                user.Username = unProp.GetString();
+                user.Username = unProp.GetString() ?? string.Empty;
+
+            if (payload.TryGetProperty("avatarUrl", out var avatarProp))
+                user.AvatarUrl = avatarProp.GetString() ?? string.Empty;
+
+            if (payload.TryGetProperty("firstName", out var firstNameProp))
+                user.FirstName = firstNameProp.GetString() ?? string.Empty;
+
+            if (payload.TryGetProperty("lastName", out var lastNameProp))
+                user.LastName = lastNameProp.GetString() ?? string.Empty;
+
+            if (payload.TryGetProperty("zone", out var zoneProp))
+                user.Zone = zoneProp.GetString() ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(user.Username))
                 user.Username = DeriveUsername(user.Email ?? Email);
@@ -239,14 +254,13 @@ namespace ADLMRateGen.ViewModel
 
         public class LoginEventArgs : EventArgs
         {
-            public UserModel LoggedInUser { get; private set; }
+            public UserModel LoggedInUser { get; }
             public string AccessToken { get; set; }
 
             public LoginEventArgs(UserModel user)
             {
-                if (user == null) throw new ArgumentNullException(nameof(user));
-                LoggedInUser = user;
-                AccessToken = "";
+                LoggedInUser = user ?? throw new ArgumentNullException(nameof(user));
+                AccessToken = string.Empty;
             }
         }
     }

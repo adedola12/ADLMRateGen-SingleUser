@@ -1,24 +1,28 @@
 ﻿using ADLMRateGen.ADLM.Auth;
+using ADLMRateGen.Helpers;
 
 namespace ADLMRateGen.Services
 {
     /// <summary>Single shared AuthClient for the whole app.</summary>
     public sealed class AuthProvider
     {
-        private static readonly Lazy<AuthProvider> _lazy = new(() => new AuthProvider());
-        public static AuthProvider Instance => _lazy.Value;
+        public static AuthProvider Instance { get; } = new AuthProvider();
+        public AuthClient Client { get; }
 
         private AuthProvider()
         {
             Client = new AuthClient(new AuthOptions
             {
-                BaseUrl = "https://adlmweb.onrender.com",
-                ProductKey = "rategen",
-                DeviceFingerprintProvider = DeviceFingerprint.Generate,
-                TimeoutMs = 90000
+                BaseUrl = AppEnvironment.ApiBaseUrl,
+                ProductKey = AppEnvironment.ProductKey,
+                TimeoutMs = 90000,
+
+                DeviceFingerprintProvider = () =>
+                {
+                    try { return ADLMRateGen.ADLM.Auth.DeviceFingerprint.Generate(); }
+                    catch { return System.Environment.MachineName; }
+                }
             });
         }
-
-        public AuthClient Client { get; private set; }
     }
 }

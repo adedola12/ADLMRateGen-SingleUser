@@ -37,7 +37,9 @@ namespace ADLMRateGen
             return Path.Combine(LogDir, $"crash_{DateTime.Now:yyyyMMdd_HHmmss}.log");
         }
 
-        protected override void OnStartup(StartupEventArgs e)
+        public bool IsDarkTheme => _isDark;
+
+        protected override async void OnStartup(StartupEventArgs e)
         {
             // 1) Global exception hooks
             DispatcherUnhandledException += OnDispatcherUnhandledException;
@@ -62,8 +64,14 @@ namespace ADLMRateGen
 
             base.OnStartup(e);
 
+            SplashWindow? splash = null;
+
             try
             {
+                splash = new SplashWindow();
+                splash.Show();
+                await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
+
                 // 2) ✅ EPPlus 8+ license MUST be set via ExcelPackage.License (NOT LicenseContext)
                 // Choose ONE of these based on your usage:
 
@@ -132,14 +140,22 @@ namespace ADLMRateGen
 
                 _darkDict.Source = _darkUri; // prepare but do not merge initially
                 _isDark = false;
+                ApplyTheme(ConfigManager.LoadConfig()?.IsDarkTheme == true, persist: false);
 
                 // 6) Show main window
                 var wnd = new MainWindow();
                 MainWindow = wnd;
                 wnd.Show();
+                await Task.Delay(650);
+                splash.Close();
             }
             catch (Exception ex)
             {
+                if (splash != null)
+                {
+                    splash.Close();
+                }
+
                 ReportFatal(ex, "OnStartup");
                 Shutdown(-1);
             }
@@ -156,24 +172,36 @@ namespace ADLMRateGen
             return null;
         }
 
-        public void ToggleTheme()
+        public bool ToggleTheme()
+        {
+            ApplyTheme(!_isDark, persist: true);
+            return _isDark;
+        }
+
+        private void ApplyTheme(bool useDark, bool persist)
         {
             if (_lightDict == null) return;
 
             var merged = Resources.MergedDictionaries;
 
-            if (_isDark) // dark -> light
-            {
-                if (merged.Contains(_darkDict)) merged.Remove(_darkDict);
-                if (!merged.Contains(_lightDict)) merged.Add(_lightDict);
-            }
-            else // light -> dark
+            if (useDark)
             {
                 if (merged.Contains(_lightDict)) merged.Remove(_lightDict);
                 if (!merged.Contains(_darkDict)) merged.Add(_darkDict);
             }
+            else
+            {
+                if (merged.Contains(_darkDict)) merged.Remove(_darkDict);
+                if (!merged.Contains(_lightDict)) merged.Add(_lightDict);
+            }
 
-            _isDark = !_isDark;
+            _isDark = useDark;
+
+            if (!persist) return;
+
+            var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
+            cfg.IsDarkTheme = _isDark;
+            ConfigManager.SaveConfig(cfg);
         }
 
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
