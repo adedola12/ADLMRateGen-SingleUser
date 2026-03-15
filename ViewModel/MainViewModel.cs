@@ -357,7 +357,7 @@ namespace ADLMRateGen.ViewModel
             _notificationPollTimer.Tick += async (_, _) => await CheckForServerNotificationsAsync();
             _userRatesSyncTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(3)
+                Interval = TimeSpan.FromSeconds(1)
             };
             _userRatesSyncTimer.Tick += async (_, _) =>
             {

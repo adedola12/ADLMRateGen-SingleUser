@@ -60,8 +60,43 @@ namespace ADLMRateGen.Services
             {
                 var snapshot = BuildSnapshot(vm);
                 var serverState = await GetServerStateAsync(auth, ct).ConfigureAwait(false);
+                var overrideChanges = CountRateOverrideChanges(snapshot.RateOverrides, serverState.RateOverrides);
+                var customChanges = CountCustomRateChanges(snapshot.CustomRates, serverState.CustomRates);
 
                 using var http = CreateHttpClient();
+
+                if (overrideChanges.Upserted == 0 &&
+                    overrideChanges.Deleted == 0 &&
+                    customChanges.Upserted == 0 &&
+                    customChanges.Deleted == 0)
+                {
+                    LastSyncUtc = DateTime.Now;
+                    LastStatus = "User rates sync already up to date.";
+                    return true;
+                }
+
+                string? bulkFailure = null;
+                try
+                {
+                    await PushWholeSnapshotAsync(
+                        auth,
+                        http,
+                        snapshot,
+                        serverState,
+                        overrideChanges,
+                        customChanges,
+                        ct).ConfigureAwait(false);
+
+                    LastSyncUtc = DateTime.Now;
+                    LastStatus =
+                        $"User rates synced live: {overrideChanges.Upserted} overrides updated, {overrideChanges.Deleted} removed, " +
+                        $"{customChanges.Upserted} custom rates updated, {customChanges.Deleted} removed.";
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    bulkFailure = ex.Message;
+                }
 
                 var overrideSync = await SyncRateOverridesAsync(
                     auth,
@@ -80,7 +115,8 @@ namespace ADLMRateGen.Services
                 LastSyncUtc = DateTime.Now;
                 LastStatus =
                     $"User rates synced: {overrideSync.Upserted} overrides updated, {overrideSync.Deleted} removed, " +
-                    $"{customSync.Upserted} custom rates updated, {customSync.Deleted} removed.";
+                    $"{customSync.Upserted} custom rates updated, {customSync.Deleted} removed." +
+                    (string.IsNullOrWhiteSpace(bulkFailure) ? string.Empty : $" Fallback mode was used after bulk sync failed: {bulkFailure}");
 
                 return true;
             }
@@ -99,11 +135,48 @@ namespace ADLMRateGen.Services
             ADLMRateGen.ADLM.Auth.AuthClient auth,
             CancellationToken ct)
         {
-            using var doc = await auth.GetJsonAsync("/rategen/library", ct).ConfigureAwait(false);
+            using var doc = await auth.GetJsonAsync("/rategen-v2/library/user-rates", ct).ConfigureAwait(false);
             return JsonSerializer.Deserialize<ServerLibraryState>(
                        doc.RootElement.GetRawText(),
                        ReadJsonOptions)
                    ?? new ServerLibraryState();
+        }
+
+        private static async Task PushWholeSnapshotAsync(
+            ADLMRateGen.ADLM.Auth.AuthClient auth,
+            HttpClient http,
+            UserRateSnapshot snapshot,
+            ServerLibraryState serverState,
+            SyncCounters overrideChanges,
+            SyncCounters customChanges,
+            CancellationToken ct)
+        {
+            var payload = new Dictionary<string, object>();
+
+            if (overrideChanges.Upserted > 0 || overrideChanges.Deleted > 0)
+            {
+                payload["rateOverrides"] = snapshot.RateOverrides;
+                payload["ratesBaseVersion"] = serverState.RatesVersion;
+            }
+
+            if (customChanges.Upserted > 0 || customChanges.Deleted > 0)
+            {
+                payload["customRates"] = snapshot.CustomRates;
+                payload["customRatesBaseVersion"] = serverState.CustomRatesVersion;
+            }
+
+            if (payload.Count == 0)
+            {
+                return;
+            }
+
+            await SendJsonAsync(
+                auth,
+                http,
+                HttpMethod.Put,
+                "/rategen-v2/library/user-rates",
+                payload,
+                ct).ConfigureAwait(false);
         }
 
         private static async Task<SyncCounters> SyncRateOverridesAsync(
@@ -252,6 +325,95 @@ namespace ADLMRateGen.Services
                     ct).ConfigureAwait(false);
 
                 deleted += 1;
+            }
+
+            return new SyncCounters(upserted, deleted);
+        }
+
+        private static SyncCounters CountRateOverrideChanges(
+            IReadOnlyList<RateOverridePayload> localOverrides,
+            IReadOnlyList<RateOverridePayload> serverOverrides)
+        {
+            var loadedSections = new HashSet<string>(
+                (localOverrides ?? Array.Empty<RateOverridePayload>())
+                    .Select(item => NormalizeText(item.SectionKey).ToLowerInvariant())
+                    .Where(section => !string.IsNullOrWhiteSpace(section)),
+                StringComparer.OrdinalIgnoreCase);
+
+            var localKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var upserted = 0;
+            var deleted = 0;
+
+            foreach (var local in localOverrides ?? Array.Empty<RateOverridePayload>())
+            {
+                var key = BuildRateIdentityKey(local);
+                if (string.IsNullOrWhiteSpace(key))
+                {
+                    continue;
+                }
+
+                localKeys.Add(key);
+                var server = FindServerOverride(serverOverrides, key);
+
+                if (server == null || !AreEquivalent(local, server))
+                {
+                    upserted += 1;
+                }
+            }
+
+            foreach (var server in serverOverrides ?? Array.Empty<RateOverridePayload>())
+            {
+                var key = BuildRateIdentityKey(server);
+                if (string.IsNullOrWhiteSpace(key) || localKeys.Contains(key))
+                {
+                    continue;
+                }
+
+                var sectionKey = NormalizeText(server.SectionKey).ToLowerInvariant();
+                if (loadedSections.Contains(sectionKey))
+                {
+                    deleted += 1;
+                }
+            }
+
+            return new SyncCounters(upserted, deleted);
+        }
+
+        private static SyncCounters CountCustomRateChanges(
+            IReadOnlyList<CustomRatePayload> localCustomRates,
+            IReadOnlyList<CustomRatePayload> serverCustomRates)
+        {
+            var serverById = (serverCustomRates ?? Array.Empty<CustomRatePayload>())
+                .Where(rate => !string.IsNullOrWhiteSpace(rate.CustomRateId))
+                .GroupBy(rate => rate.CustomRateId, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+
+            var localIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var upserted = 0;
+            var deleted = 0;
+
+            foreach (var local in localCustomRates ?? Array.Empty<CustomRatePayload>())
+            {
+                if (string.IsNullOrWhiteSpace(local.CustomRateId))
+                {
+                    continue;
+                }
+
+                localIds.Add(local.CustomRateId);
+                serverById.TryGetValue(local.CustomRateId, out var server);
+
+                if (server == null || !AreEquivalent(local, server))
+                {
+                    upserted += 1;
+                }
+            }
+
+            foreach (var server in serverCustomRates ?? Array.Empty<CustomRatePayload>())
+            {
+                if (!string.IsNullOrWhiteSpace(server.CustomRateId) && !localIds.Contains(server.CustomRateId))
+                {
+                    deleted += 1;
+                }
             }
 
             return new SyncCounters(upserted, deleted);
@@ -879,8 +1041,19 @@ namespace ADLMRateGen.Services
 
         private sealed class ServerLibraryState
         {
+            public ServerRatesMeta Meta { get; set; } = new ServerRatesMeta();
             public List<RateOverridePayload> RateOverrides { get; set; } = new List<RateOverridePayload>();
             public List<CustomRatePayload> CustomRates { get; set; } = new List<CustomRatePayload>();
+
+            public int RatesVersion => Meta?.RatesVersion ?? 0;
+            public int CustomRatesVersion => Meta?.CustomRatesVersion ?? 0;
+        }
+
+        private sealed class ServerRatesMeta
+        {
+            public int RatesVersion { get; set; }
+            public int CustomRatesVersion { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         }
 
         private sealed class RateOverridePayload

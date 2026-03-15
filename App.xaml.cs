@@ -9,7 +9,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.ComponentModel;
 using System.Windows.Threading;
+using ADLMRateGen.ViewModel;
 
 namespace ADLMRateGen
 {
@@ -23,6 +25,9 @@ namespace ADLMRateGen
         private bool _isDark; // false = light, true = dark
 
         private Mutex? _mutex;
+        private MainWindow? _mainWindow;
+        private MainViewModel? _mainViewModel;
+        private SignInWindow? _signInWindow;
 
         // use a stable unique name (include company + app)
         private const string MutexName = "Global\\ADLMStudio_ADLMRateGen_SingleInstance";
@@ -145,7 +150,23 @@ namespace ADLMRateGen
                 // 6) Show main window
                 var wnd = new MainWindow();
                 MainWindow = wnd;
-                wnd.Show();
+                _mainWindow = wnd;
+                _mainViewModel = wnd.DataContext as MainViewModel;
+
+                if (_mainViewModel != null)
+                {
+                    _mainViewModel.PropertyChanged += OnMainViewModelPropertyChanged;
+                }
+
+                if (_mainViewModel?.IsLoggedIn == true)
+                {
+                    ShowMainWindow();
+                }
+                else
+                {
+                    ShowSignInWindow();
+                }
+
                 await Task.Delay(650);
                 splash.Close();
             }
@@ -225,6 +246,98 @@ namespace ADLMRateGen
         {
             ReportFatal(e.Exception, "TaskScheduler.UnobservedTaskException");
             e.SetObserved();
+        }
+
+        private void OnMainViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(MainViewModel.IsLoggedIn))
+            {
+                return;
+            }
+
+            Dispatcher.Invoke(() =>
+            {
+                if (_mainViewModel?.IsLoggedIn == true)
+                {
+                    ShowMainWindow();
+                }
+                else
+                {
+                    ShowSignInWindow();
+                }
+            });
+        }
+
+        private void ShowMainWindow()
+        {
+            if (_mainWindow == null)
+            {
+                return;
+            }
+
+            if (_signInWindow != null)
+            {
+                _signInWindow.Closed -= OnSignInWindowClosed;
+                _signInWindow.Close();
+                _signInWindow = null;
+            }
+
+            if (!_mainWindow.IsVisible)
+            {
+                _mainWindow.Show();
+            }
+
+            if (_mainWindow.WindowState == WindowState.Minimized)
+            {
+                _mainWindow.WindowState = WindowState.Normal;
+            }
+
+            _mainWindow.Activate();
+        }
+
+        private void ShowSignInWindow()
+        {
+            if (_mainViewModel == null)
+            {
+                return;
+            }
+
+            if (_mainWindow != null && _mainWindow.IsVisible)
+            {
+                _mainWindow.Hide();
+            }
+
+            if (_signInWindow == null)
+            {
+                _signInWindow = new SignInWindow(_mainViewModel.SignInViewModel);
+                _signInWindow.Closed += OnSignInWindowClosed;
+            }
+
+            if (!_signInWindow.IsVisible)
+            {
+                _signInWindow.Show();
+            }
+
+            if (_signInWindow.WindowState == WindowState.Minimized)
+            {
+                _signInWindow.WindowState = WindowState.Normal;
+            }
+
+            _signInWindow.Activate();
+        }
+
+        private void OnSignInWindowClosed(object? sender, EventArgs e)
+        {
+            if (_signInWindow != null)
+            {
+                _signInWindow.Closed -= OnSignInWindowClosed;
+                _signInWindow = null;
+            }
+
+            if (_mainViewModel?.IsLoggedIn != true)
+            {
+                Shutdown();
+            }
         }
 
         public static void ReportFatal(Exception ex, string where)
