@@ -142,6 +142,7 @@ namespace ADLMRateGen
         private void ShowMaterialPopup(MaterialModel? existing)
         {
             // Always unsubscribe previous handler (prevents duplicates)
+
             if (_materialPopupSavedHandler != null)
             {
                 MaterialPriceViewModel.MaterialSaved -= _materialPopupSavedHandler;
