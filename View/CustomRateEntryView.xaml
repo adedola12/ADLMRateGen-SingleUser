@@ -10,25 +10,25 @@
              MinWidth="760">
 
     <UserControl.Resources>
-        <!-- ─── Figma label: Mont SemiBold 12.8px #354764 ─── -->
+        <!-- ─── Label ─── -->
         <Style x:Key="FLabel" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
             <Setter Property="FontSize" Value="12.8" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#354764" />
+            <Setter Property="Foreground" Value="{DynamicResource HintGrey}" />
         </Style>
 
-        <!-- ─── Figma input: bg:#EBEDF0, border:1px #DFE2E6, rounded:12, p:16 ─── -->
+        <!-- ─── Input ─── -->
         <Style x:Key="FInput" TargetType="TextBox">
-            <Setter Property="Background" Value="#EBEDF0" />
-            <Setter Property="BorderBrush" Value="#DFE2E6" />
+            <Setter Property="Background" Value="{DynamicResource BgInput}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushLight}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
             <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Foreground" Value="{DynamicResource Blue900Brush}" />
             <Setter Property="Padding" Value="18,12" />
-            <Setter Property="CaretBrush" Value="#091E39" />
+            <Setter Property="CaretBrush" Value="{DynamicResource Blue900Brush}" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -47,7 +47,7 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="BorderBrush" Value="#1245A8" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource ButCol}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -61,13 +61,13 @@
 
         <!-- ─── Overhead/Profit input with teal border ─── -->
         <Style x:Key="FInputOHP" TargetType="TextBox" BasedOn="{StaticResource FInput}">
-            <Setter Property="Background" Value="#F5F6F7" />
+            <Setter Property="Background" Value="{DynamicResource LighterGrayBrush}" />
             <Setter Property="BorderBrush" Value="#1D94CA" />
             <Setter Property="Padding" Value="14,10" />
             <Setter Property="Height" Value="44" />
         </Style>
 
-        <!-- ─── Small hint label for item rows ─── -->
+        <!-- ─── Small hint label ─── -->
         <Style x:Key="FLabelSmall" TargetType="TextBlock" BasedOn="{StaticResource FLabel}">
             <Setter Property="FontSize" Value="10" />
             <Setter Property="Margin" Value="0,0,0,4" />
@@ -75,12 +75,12 @@
 
         <!-- ─── Combo for material/labour name picker ─── -->
         <Style x:Key="FComboSmall" TargetType="ComboBox">
-            <Setter Property="Background" Value="#EBEDF0" />
-            <Setter Property="BorderBrush" Value="#DFE2E6" />
+            <Setter Property="Background" Value="{DynamicResource BgInput}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushLight}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Foreground" Value="{DynamicResource Blue900Brush}" />
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="MinHeight" Value="36" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -100,7 +100,6 @@
                                         <ColumnDefinition Width="28" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Editable text area -->
                                     <TextBox x:Name="PART_EditableTextBox"
                                              IsReadOnly="{TemplateBinding IsReadOnly}"
                                              Background="Transparent"
@@ -112,9 +111,8 @@
                                              TextWrapping="Wrap"
                                              VerticalContentAlignment="Center"
                                              HorizontalAlignment="Stretch"
-                                             CaretBrush="#091E39" />
+                                             CaretBrush="{DynamicResource Blue900Brush}" />
 
-                                    <!-- Dropdown arrow -->
                                     <ToggleButton Grid.Column="0" Grid.ColumnSpan="2"
                                                   IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                                   Background="Transparent"
@@ -126,7 +124,7 @@
                                                 <Grid Background="Transparent">
                                                     <Path x:Name="Arrow"
                                                           Data="M 0,0 L 5,5 L 10,0"
-                                                          Stroke="#5F6D7E"
+                                                          Stroke="{DynamicResource Grey700}"
                                                           StrokeThickness="1.5"
                                                           HorizontalAlignment="Right"
                                                           VerticalAlignment="Center"
@@ -138,7 +136,6 @@
                                 </Grid>
                             </Border>
 
-                            <!-- Dropdown popup -->
                             <Popup x:Name="PART_Popup"
                                    IsOpen="{TemplateBinding IsDropDownOpen}"
                                    Placement="Bottom"
@@ -146,8 +143,8 @@
                                    PopupAnimation="Slide"
                                    Focusable="False">
                                 <Border x:Name="DropDownBorder"
-                                        Background="White"
-                                        BorderBrush="#DFE2E6"
+                                        Background="{DynamicResource BackgroundBrush}"
+                                        BorderBrush="{DynamicResource BorderBrushLight}"
                                         BorderThickness="1"
                                         CornerRadius="10"
                                         Margin="0,4,0,0"
@@ -158,8 +155,7 @@
                                         <DropShadowEffect BlurRadius="12" ShadowDepth="2"
                                                           Color="#000000" Opacity="0.10" Direction="270" />
                                     </Border.Effect>
-                                    <ScrollViewer VerticalScrollBarVisibility="Auto"
-                                                  Margin="4">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">
                                         <StackPanel IsItemsHost="True"
                                                     KeyboardNavigation.DirectionalNavigation="Contained" />
                                     </ScrollViewer>
@@ -168,13 +164,13 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                <Setter TargetName="ComboBorder" Property="BorderBrush" Value="#1245A8" />
+                                <Setter TargetName="ComboBorder" Property="BorderBrush" Value="{DynamicResource ButCol}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ComboBorder" Property="BorderBrush" Value="#A6AEBB" />
+                                <Setter TargetName="ComboBorder" Property="BorderBrush" Value="{DynamicResource HintGrey}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                <Setter TargetName="ComboBorder" Property="BorderBrush" Value="#1245A8" />
+                                <Setter TargetName="ComboBorder" Property="BorderBrush" Value="{DynamicResource ButCol}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -186,7 +182,7 @@
         <Style x:Key="FComboItem" TargetType="ComboBoxItem">
             <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Foreground" Value="{DynamicResource Blue900Brush}" />
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -199,10 +195,10 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsHighlighted" Value="True">
-                                <Setter TargetName="ItemBg" Property="Background" Value="#F3F7FF" />
+                                <Setter TargetName="ItemBg" Property="Background" Value="{DynamicResource ActiveBgBrush}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBg" Property="Background" Value="#F3F7FF" />
+                                <Setter TargetName="ItemBg" Property="Background" Value="{DynamicResource ActiveBgBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -210,23 +206,23 @@
             </Setter>
         </Style>
 
-        <!-- ─── Section title: Mont Bold 16px #040E22 ─── -->
+        <!-- ─── Section title ─── -->
         <Style x:Key="FSectionTitle" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
             <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Foreground" Value="{DynamicResource Blue900Brush}" />
         </Style>
 
-        <!-- ─── Add Material/Labour outline button ─── -->
+        <!-- ─── Add button (outline) ─── -->
         <Style x:Key="FAddBtn" TargetType="Button">
-            <Setter Property="Background" Value="White" />
-            <Setter Property="BorderBrush" Value="#DFE2E6" />
+            <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushLight}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FontFamily" Value="{DynamicResource PoppinsFont}" />
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="#354764" />
+            <Setter Property="Foreground" Value="{DynamicResource HintGrey}" />
             <Setter Property="Padding" Value="12,6" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -247,14 +243,13 @@
             <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Foreground" Value="{DynamicResource Blue900Brush}" />
             <Setter Property="Margin" Value="0,3,0,0" />
         </Style>
     </UserControl.Resources>
 
-    <!-- ─── Figma: white bg, border:#DFE2E6, rounded:24, padding:44 ─── -->
-    <Border Background="White"
-            BorderBrush="#DFE2E6"
+    <Border Background="{DynamicResource BackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrushLight}"
             BorderThickness="1"
             CornerRadius="24"
             Padding="40"
@@ -262,9 +257,9 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />  <!-- header -->
-                <RowDefinition Height="*" />      <!-- scrollable content -->
-                <RowDefinition Height="Auto" />   <!-- save button -->
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <!-- ═══ HEADER ═══ -->
@@ -272,12 +267,12 @@
                 <TextBlock Text="Build New Custom Rate"
                            FontFamily="{DynamicResource AppFont}"
                            FontSize="28" FontWeight="Bold"
-                           Foreground="#040E22"
+                           Foreground="{DynamicResource Blue900Brush}"
                            HorizontalAlignment="Center" />
                 <TextBlock Text="Enter rate name, overhead, profit, and items"
                            FontFamily="{DynamicResource AppFont}"
                            FontSize="12.8" FontWeight="SemiBold"
-                           Foreground="#354764"
+                           Foreground="{DynamicResource HintGrey}"
                            HorizontalAlignment="Center"
                            Margin="0,2,0,0" />
             </StackPanel>
@@ -289,7 +284,7 @@
                           PanningMode="VerticalOnly">
                 <StackPanel>
 
-                    <!-- ── Name of Rate (full width) ── -->
+                    <!-- ── Name of Rate ── -->
                     <TextBlock Text="Name of Rate" Style="{StaticResource FLabel}" Margin="0,0,0,8" />
                     <TextBox Text="{Binding RateName, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource FInput}" />
@@ -307,11 +302,9 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <!-- Labels -->
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Overhead" Style="{StaticResource FLabel}" />
                         <TextBlock Grid.Row="0" Grid.Column="2" Text="Profit" Style="{StaticResource FLabel}" />
 
-                        <!-- Overhead -->
                         <Grid Grid.Row="2" Grid.Column="0">
                             <TextBox Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}"
                                      Style="{StaticResource FInputOHP}"
@@ -319,29 +312,28 @@
                             <TextBlock Text="%" VerticalAlignment="Center"
                                        HorizontalAlignment="Right" Margin="0,0,14,0"
                                        FontFamily="{DynamicResource AppFont}"
-                                       FontSize="13" Foreground="#797F8F"
+                                       FontSize="13" Foreground="{DynamicResource Grey700}"
                                        IsHitTestVisible="False" />
                         </Grid>
 
-                        <!-- Profit -->
                         <Grid Grid.Row="2" Grid.Column="2">
                             <TextBox Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}"
                                      Padding="14,10,32,10">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource FInputOHP}">
-                                        <Setter Property="BorderBrush" Value="#DFE2E6" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushLight}" />
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
                             <TextBlock Text="%" VerticalAlignment="Center"
                                        HorizontalAlignment="Right" Margin="0,0,14,0"
                                        FontFamily="{DynamicResource AppFont}"
-                                       FontSize="13" Foreground="#797F8F"
+                                       FontSize="13" Foreground="{DynamicResource Grey700}"
                                        IsHitTestVisible="False" />
                         </Grid>
                     </Grid>
 
-                    <!-- ── Description (multiline) ── -->
+                    <!-- ── Description ── -->
                     <TextBlock Text="Description" Style="{StaticResource FLabel}" Margin="0,18,0,8" />
                     <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource FInput}"
@@ -358,7 +350,7 @@
                             <TextBlock Text="Materials" Style="{StaticResource FSectionTitle}" />
                             <TextBlock Text="Click to add new material"
                                        FontFamily="{DynamicResource AppFont}"
-                                       FontSize="9" Foreground="#354764" />
+                                       FontSize="9" Foreground="{DynamicResource HintGrey}" />
                         </StackPanel>
                         <Button Grid.Column="1" Content="Add Material"
                                 Style="{StaticResource FAddBtn}"
@@ -366,21 +358,20 @@
                                 Command="{Binding AddMaterialItemCommand}" />
                     </Grid>
 
-                    <!-- Material item rows -->
                     <ItemsControl ItemsSource="{Binding MaterialItems}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid Margin="0,4,0,4">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />       <!-- Name (fills remaining) -->
+                                        <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="8" />
-                                        <ColumnDefinition Width="82" />      <!-- Rate fixed -->
+                                        <ColumnDefinition Width="82" />
                                         <ColumnDefinition Width="8" />
-                                        <ColumnDefinition Width="58" />      <!-- Unit fixed -->
+                                        <ColumnDefinition Width="58" />
                                         <ColumnDefinition Width="8" />
-                                        <ColumnDefinition Width="72" />      <!-- Quantity fixed -->
+                                        <ColumnDefinition Width="72" />
                                         <ColumnDefinition Width="8" />
-                                        <ColumnDefinition Width="96" />      <!-- Amount fixed -->
+                                        <ColumnDefinition Width="96" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -388,14 +379,12 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <!-- headers -->
                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Name of Material" Style="{StaticResource FLabelSmall}" />
                                     <TextBlock Grid.Row="0" Grid.Column="2" Text="Rate" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Center" />
                                     <TextBlock Grid.Row="0" Grid.Column="4" Text="Unit" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Center" />
                                     <TextBlock Grid.Row="0" Grid.Column="6" Text="Quantity" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Center" />
                                     <TextBlock Grid.Row="0" Grid.Column="8" Text="Amount" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Right" />
 
-                                    <!-- inputs -->
                                     <ComboBox Grid.Row="2" Grid.Column="0"
                                               IsEditable="True" IsTextSearchEnabled="True" StaysOpenOnEdit="True"
                                               Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
@@ -432,7 +421,7 @@
                             <TextBlock Text="Labour" Style="{StaticResource FSectionTitle}" />
                             <TextBlock Text="Click to add new Labour"
                                        FontFamily="{DynamicResource AppFont}"
-                                       FontSize="9" Foreground="#354764" />
+                                       FontSize="9" Foreground="{DynamicResource HintGrey}" />
                         </StackPanel>
                         <Button Grid.Column="1" Content="Add Labour"
                                 Style="{StaticResource FAddBtn}"
@@ -440,21 +429,20 @@
                                 Command="{Binding AddLabourItemCommand}" />
                     </Grid>
 
-                    <!-- Labour item rows -->
                     <ItemsControl ItemsSource="{Binding LabourItems}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid Margin="0,4,0,4">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />       <!-- Name (fills remaining) -->
+                                        <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="8" />
-                                        <ColumnDefinition Width="82" />      <!-- Rate fixed -->
+                                        <ColumnDefinition Width="82" />
                                         <ColumnDefinition Width="8" />
-                                        <ColumnDefinition Width="58" />      <!-- Unit fixed -->
+                                        <ColumnDefinition Width="58" />
                                         <ColumnDefinition Width="8" />
-                                        <ColumnDefinition Width="72" />      <!-- Quantity fixed -->
+                                        <ColumnDefinition Width="72" />
                                         <ColumnDefinition Width="8" />
-                                        <ColumnDefinition Width="96" />      <!-- Amount fixed -->
+                                        <ColumnDefinition Width="96" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -505,7 +493,7 @@
                 </StackPanel>
             </ScrollViewer>
 
-            <!-- ═══ SAVE BUTTON: bg:#091E39 when enabled, #DFE2E6 when disabled ═══ -->
+            <!-- ═══ SAVE BUTTON ═══ -->
             <Button Grid.Row="2"
                     Margin="0,24,0,0"
                     HorizontalAlignment="Stretch"
@@ -513,7 +501,7 @@
                     Command="{Binding SaveCustomRateCommand}">
                 <Button.Style>
                     <Style TargetType="Button">
-                        <Setter Property="Background" Value="#091E39" />
+                        <Setter Property="Background" Value="{DynamicResource DarkButtonBrush}" />
                         <Setter Property="Foreground" Value="White" />
                         <Setter Property="Content" Value="Save" />
                         <Setter Property="BorderThickness" Value="0" />
@@ -529,10 +517,10 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="SaveBg" Property="Background" Value="#0B2548" />
+                                            <Setter TargetName="SaveBg" Property="Background" Value="{DynamicResource DarkButtonHoverBrush}" />
                                         </Trigger>
                                         <Trigger Property="IsEnabled" Value="False">
-                                            <Setter TargetName="SaveBg" Property="Background" Value="#DFE2E6" />
+                                            <Setter TargetName="SaveBg" Property="Background" Value="{DynamicResource DisabledBgBrush}" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -543,7 +531,7 @@
                                 <Setter Property="Content" Value="Update" />
                             </DataTrigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Foreground" Value="#A6AEBB" />
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledFgBrush}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>

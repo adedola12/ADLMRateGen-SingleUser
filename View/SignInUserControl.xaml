@@ -27,9 +27,9 @@
                TargetType="TextBox"
                BasedOn="{StaticResource HollowBox}">
             <Setter Property="Background"
-                    Value="#F9FBFF" />
+                    Value="{DynamicResource BgInput}" />
             <Setter Property="BorderBrush"
-                    Value="#D8E6FF" />
+                    Value="{DynamicResource BorderBrushLight}" />
             <Setter Property="BorderThickness"
                     Value="1.2" />
             <Setter Property="Foreground"
@@ -47,9 +47,9 @@
         <Style x:Key="SignInPasswordBoxStyle"
                TargetType="PasswordBox">
             <Setter Property="Background"
-                    Value="#F9FBFF" />
+                    Value="{DynamicResource BgInput}" />
             <Setter Property="BorderBrush"
-                    Value="#D8E6FF" />
+                    Value="{DynamicResource BorderBrushLight}" />
             <Setter Property="BorderThickness"
                     Value="1.2" />
             <Setter Property="Foreground"

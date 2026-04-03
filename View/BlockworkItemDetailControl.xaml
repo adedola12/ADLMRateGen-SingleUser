@@ -7,8 +7,8 @@
              d:DesignHeight="700" d:DesignWidth="820">
 
     <!-- ─── Figma: white card, border #DFE2E6, rounded 24, padding 56h/54v ─── -->
-    <Border Background="White"
-            BorderBrush="#DFE2E6"
+    <Border Background="{DynamicResource BackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrushLight}"
             BorderThickness="1"
             CornerRadius="24"
             Padding="56,54"
@@ -30,7 +30,7 @@
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Path Data="M15,3 L6,12 L15,21"
-                                      Stroke="#949494" StrokeThickness="2.5"
+                                      Stroke="{DynamicResource HintGrey}" StrokeThickness="2.5"
                                       StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                                       StrokeLineJoin="Round"
                                       Width="26" Height="26"
@@ -41,14 +41,14 @@
                     <TextBlock Text="Rate Composition"
                                FontFamily="{DynamicResource Mont}"
                                FontSize="36" FontWeight="Bold"
-                               Foreground="#949494" />
+                               Foreground="{DynamicResource HintGrey}" />
                 </StackPanel>
 
                 <!-- Description -->
                 <TextBlock Text="{Binding Description}"
                            FontFamily="{DynamicResource Mont}"
                            FontSize="20" FontWeight="SemiBold"
-                           Foreground="#040E22"
+                           Foreground="{DynamicResource Blue900Brush}"
                            TextWrapping="Wrap"
                            MaxWidth="664"
                            HorizontalAlignment="Left" />
@@ -60,7 +60,7 @@
                           HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
                     <!-- Header row -->
-                    <Border Background="#F2F6FF" Padding="10">
+                    <Border Background="{DynamicResource HeaderBgBrush}" Padding="10">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -72,23 +72,23 @@
                             <TextBlock Grid.Column="0" Text="Component"
                                        FontFamily="{DynamicResource PoppinsFont}"
                                        FontSize="16" FontWeight="Medium"
-                                       Foreground="#040E22" Padding="10,0" />
+                                       Foreground="{DynamicResource Blue900Brush}" Padding="10,0" />
                             <TextBlock Grid.Column="1" Text="Quantity"
                                        FontFamily="{DynamicResource PoppinsFont}"
                                        FontSize="16" FontWeight="Medium"
-                                       Foreground="#040E22" TextAlignment="Right" Padding="10,0" />
+                                       Foreground="{DynamicResource Blue900Brush}" TextAlignment="Right" Padding="10,0" />
                             <TextBlock Grid.Column="2" Text="Unit"
                                        FontFamily="{DynamicResource PoppinsFont}"
                                        FontSize="16" FontWeight="Medium"
-                                       Foreground="#040E22" TextAlignment="Right" Padding="10,0" />
+                                       Foreground="{DynamicResource Blue900Brush}" TextAlignment="Right" Padding="10,0" />
                             <TextBlock Grid.Column="3" Text="Unit Price"
                                        FontFamily="{DynamicResource PoppinsFont}"
                                        FontSize="16" FontWeight="Medium"
-                                       Foreground="#040E22" TextAlignment="Right" Padding="10,0" />
+                                       Foreground="{DynamicResource Blue900Brush}" TextAlignment="Right" Padding="10,0" />
                             <TextBlock Grid.Column="4" Text="Total Cost"
                                        FontFamily="{DynamicResource PoppinsFont}"
                                        FontSize="16" FontWeight="Medium"
-                                       Foreground="#040E22" TextAlignment="Right" Padding="10,0" />
+                                       Foreground="{DynamicResource Blue900Brush}" TextAlignment="Right" Padding="10,0" />
                         </Grid>
                     </Border>
 
@@ -108,7 +108,7 @@
                                         <TextBlock Grid.Column="0"
                                                    Text="{Binding ComponentName}"
                                                    FontFamily="{DynamicResource PoppinsFont}"
-                                                   FontSize="16" Foreground="#040E22"
+                                                   FontSize="16" Foreground="{DynamicResource Blue900Brush}"
                                                    TextWrapping="Wrap" Padding="10,0">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
@@ -125,33 +125,33 @@
                                                    Text="{Binding Quantity}"
                                                    FontFamily="{DynamicResource PoppinsFont}"
                                                    FontSize="16" FontWeight="Medium"
-                                                   Foreground="#040E22"
+                                                   Foreground="{DynamicResource Blue900Brush}"
                                                    TextAlignment="Right" Padding="10,0"
                                                    VerticalAlignment="Center" />
                                         <TextBlock Grid.Column="2"
                                                    Text="{Binding Unit}"
                                                    FontFamily="{DynamicResource PoppinsFont}"
                                                    FontSize="16" FontWeight="Medium"
-                                                   Foreground="#040E22"
+                                                   Foreground="{DynamicResource Blue900Brush}"
                                                    TextAlignment="Right" Padding="10,0"
                                                    VerticalAlignment="Center" />
                                         <TextBlock Grid.Column="3"
                                                    Text="{Binding UnitPrice, Converter={StaticResource MoneyConv}, StringFormat=N2}"
                                                    FontFamily="{DynamicResource PoppinsFont}"
                                                    FontSize="16" FontWeight="Medium"
-                                                   Foreground="#040E22"
+                                                   Foreground="{DynamicResource Blue900Brush}"
                                                    TextAlignment="Right" Padding="10,0"
                                                    VerticalAlignment="Center" />
                                         <TextBlock Grid.Column="4"
                                                    Text="{Binding TotalPrice, Converter={StaticResource MoneyConv}, StringFormat=N2}"
                                                    FontFamily="{DynamicResource PoppinsFont}"
                                                    FontSize="16" FontWeight="Medium"
-                                                   Foreground="#040E22"
+                                                   Foreground="{DynamicResource Blue900Brush}"
                                                    TextAlignment="Right" Padding="10,0"
                                                    VerticalAlignment="Center" />
                                     </Grid>
                                     <!-- Row separator -->
-                                    <Rectangle Height="1.5" Fill="#D9D9D9" />
+                                    <Rectangle Height="1.5" Fill="{DynamicResource DivBrush}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

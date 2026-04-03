@@ -5,8 +5,8 @@
              Height="440">
 
     <!-- Figma: Cards/Pop-ups — white, border:#DFE2E6, rounded:40, shadow, px:56 py:48 -->
-    <Border Background="White"
-            BorderBrush="#DFE2E6"
+    <Border Background="{DynamicResource BackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrushLight}"
             BorderThickness="1"
             CornerRadius="32"
             Padding="48,40"
@@ -44,7 +44,7 @@
                        FontFamily="{DynamicResource AppFont}"
                        FontSize="22"
                        FontWeight="SemiBold"
-                       Foreground="#040E22"
+                       Foreground="{DynamicResource Blue900Brush}"
                        HorizontalAlignment="Center"
                        Margin="0,0,0,28" />
 
@@ -56,7 +56,7 @@
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="BtnBg"
-                                Background="#091E39"
+                                Background="{DynamicResource DarkButtonBrush}"
                                 CornerRadius="14"
                                 Height="58"
                                 MinWidth="280"
@@ -65,14 +65,14 @@
                                        FontFamily="{DynamicResource AppFont}"
                                        FontSize="20"
                                        FontWeight="SemiBold"
-                                       Foreground="White"
+                                       Foreground="{DynamicResource BackgroundBrush}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="BtnBg"
-                                        Property="Background" Value="#0B2548" />
+                                        Property="Background" Value="{DynamicResource DarkButtonHoverBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

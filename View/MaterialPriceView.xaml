@@ -14,15 +14,15 @@
 
         <!-- Figma input field style: bg:#EBEDF0, border:1px #DFE2E6, rounded:12, padding:16,24 -->
         <Style x:Key="FigmaInput" TargetType="TextBox">
-            <Setter Property="Background" Value="#EBEDF0" />
-            <Setter Property="BorderBrush" Value="#DFE2E6" />
+            <Setter Property="Background" Value="{DynamicResource BgInput}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushLight}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
             <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Foreground" Value="{DynamicResource Blue900Brush}" />
             <Setter Property="Padding" Value="20,14" />
-            <Setter Property="CaretBrush" Value="#091E39" />
+            <Setter Property="CaretBrush" Value="{DynamicResource DarkButtonBrush}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
@@ -40,7 +40,7 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="BorderBrush" Value="#1245A8" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource ButCol}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -57,8 +57,8 @@
     </UserControl.Resources>
 
     <!-- Figma: white bg, border 1px #DFE2E6, rounded:24, px:56 py:44 -->
-    <Border Background="White"
-            BorderBrush="#DFE2E6"
+    <Border Background="{DynamicResource BackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrushLight}"
             BorderThickness="1"
             CornerRadius="24"
             Padding="56,44"
@@ -73,7 +73,7 @@
                        FontFamily="{DynamicResource AppFont}"
                        FontSize="28"
                        FontWeight="Bold"
-                       Foreground="#040E22"
+                       Foreground="{DynamicResource Blue900Brush}"
                        HorizontalAlignment="Center"
                        Margin="0,0,0,4" />
 
@@ -82,7 +82,7 @@
                        FontFamily="{DynamicResource AppFont}"
                        FontSize="12.8"
                        FontWeight="SemiBold"
-                       Foreground="#354764"
+                       Foreground="{DynamicResource HintGrey}"
                        HorizontalAlignment="Center"
                        Margin="0,0,0,32" />
 
@@ -91,7 +91,7 @@
                        FontFamily="{DynamicResource AppFont}"
                        FontSize="12.8"
                        FontWeight="SemiBold"
-                       Foreground="#354764"
+                       Foreground="{DynamicResource HintGrey}"
                        Margin="0,0,0,8" />
             <TextBox Text="{Binding MaterialName}"
                      Style="{StaticResource FigmaInputReadOnly}" />
@@ -115,7 +115,7 @@
                            FontFamily="{DynamicResource AppFont}"
                            FontSize="12.8"
                            FontWeight="SemiBold"
-                           Foreground="#354764" />
+                           Foreground="{DynamicResource HintGrey}" />
 
                 <!-- Price label with currency hint -->
                 <StackPanel Grid.Row="0" Grid.Column="2"
@@ -124,7 +124,7 @@
                                FontFamily="{DynamicResource AppFont}"
                                FontSize="12.8"
                                FontWeight="SemiBold"
-                               Foreground="#354764" />
+                               Foreground="{DynamicResource HintGrey}" />
                     <TextBlock Text="{Binding CurrencyLabel, StringFormat=' ({0})'}"
                                FontSize="12"
                                FontWeight="Normal"
@@ -149,7 +149,7 @@
                        FontFamily="{DynamicResource AppFont}"
                        FontSize="12.8"
                        FontWeight="SemiBold"
-                       Foreground="#354764"
+                       Foreground="{DynamicResource HintGrey}"
                        Margin="0,18,0,8" />
             <TextBox Text="{Binding NewMaterialCategory}"
                      Style="{StaticResource FigmaInputReadOnly}" />
@@ -163,7 +163,7 @@
                               ConverterParameter='Update Library|Save to Database'}">
                 <Button.Style>
                     <Style TargetType="Button">
-                        <Setter Property="Background" Value="#091E39" />
+                        <Setter Property="Background" Value="{DynamicResource DarkButtonBrush}" />
                         <Setter Property="BorderThickness" Value="0" />
                         <Setter Property="Command" Value="{Binding SaveMaterialCommand}" />
                         <Setter Property="Template">
@@ -180,7 +180,7 @@
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Setter TargetName="BtnBorder"
-                                                    Property="Background" Value="#0B2548" />
+                                                    Property="Background" Value="{DynamicResource DarkButtonHoverBrush}" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -200,7 +200,7 @@
                                    FontFamily="{DynamicResource AppFont}"
                                    FontSize="18"
                                    FontWeight="Medium"
-                                   Foreground="White"
+                                   Foreground="{DynamicResource BackgroundBrush}"
                                    TextAlignment="Center" />
                     </DataTemplate>
                 </Button.ContentTemplate>
