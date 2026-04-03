@@ -21,4 +21,23 @@ namespace ADLMRateGen.Converters
 		public object ConvertBack(object v, Type t, object p, CultureInfo c)
 			=> (Visibility)v != Visibility.Visible;
 	}
+
+	/// <summary>
+	/// Converts a bool to a GridLength for sidebar collapse:
+	/// false (expanded) → parameter width (default 250), true (collapsed) → 60px.
+	/// </summary>
+	public class BoolToGridLengthConverter : IValueConverter
+	{
+		public object Convert(object value, Type t, object p, CultureInfo c)
+		{
+			bool collapsed = value is bool b && b;
+			double expanded = 250;
+			if (p is string s && double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out var v))
+				expanded = v;
+			return new GridLength(collapsed ? 60 : expanded);
+		}
+
+		public object ConvertBack(object v, Type t, object p, CultureInfo c)
+			=> Binding.DoNothing;
+	}
 }

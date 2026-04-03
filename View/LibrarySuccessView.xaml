@@ -1,0 +1,84 @@
+<UserControl x:Class="ADLMRateGen.View.LibrarySuccessView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="420"
+             Height="440">
+
+    <!-- Figma: Cards/Pop-ups — white, border:#DFE2E6, rounded:40, shadow, px:56 py:48 -->
+    <Border Background="White"
+            BorderBrush="#DFE2E6"
+            BorderThickness="1"
+            CornerRadius="32"
+            Padding="48,40"
+            SnapsToDevicePixels="True">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="0"
+                              Color="#000000" Opacity="0.10" Direction="0" />
+        </Border.Effect>
+
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+            <!-- Green checkmark circle -->
+            <Grid Width="140" Height="140"
+                  HorizontalAlignment="Center"
+                  Margin="0,0,0,24">
+                <Ellipse Fill="#4CD964" />
+                <!-- White checkmark — centered via Viewbox -->
+                <Viewbox Width="60" Height="60"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center">
+                    <Path Data="M 4,20 L 16,32 L 36,8"
+                          Stroke="White"
+                          StrokeThickness="5"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Stretch="None" />
+                </Viewbox>
+            </Grid>
+
+            <!-- Success message text -->
+            <TextBlock x:Name="MessageText"
+                       Text="Library Updated"
+                       FontFamily="{DynamicResource AppFont}"
+                       FontSize="22"
+                       FontWeight="SemiBold"
+                       Foreground="#040E22"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,28" />
+
+            <!-- "Back to Library" button: bg:#091E39, rounded:16, h:72 -->
+            <Button x:Name="BackBtn"
+                    Click="BackBtn_Click"
+                    Cursor="Hand"
+                    HorizontalAlignment="Stretch">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="BtnBg"
+                                Background="#091E39"
+                                CornerRadius="14"
+                                Height="58"
+                                MinWidth="280"
+                                Padding="38,16">
+                            <TextBlock Text="Back to Library"
+                                       FontFamily="{DynamicResource AppFont}"
+                                       FontSize="20"
+                                       FontWeight="SemiBold"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BtnBg"
+                                        Property="Background" Value="#0B2548" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+        </StackPanel>
+    </Border>
+</UserControl>

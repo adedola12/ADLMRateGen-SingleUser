@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <UserControl x:Class="ADLMRateGen.View.LabourPriceView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,205 +6,201 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             Width="700"
-             Height="770">
+             Width="660"
+             Height="680">
 
-    <!-- ─────────────── Resources ─────────────── -->
     <UserControl.Resources>
-
-        <!-- Converters -->
         <conv:BoolToStringConverter  x:Key="BoolToStringConverter" />
         <conv:BoolToCommandConverter x:Key="BoolToCommandConverter" />
 
+        <!-- Figma input field style -->
+        <Style x:Key="FigmaInput" TargetType="TextBox">
+            <Setter Property="Background" Value="#EBEDF0" />
+            <Setter Property="BorderBrush" Value="#DFE2E6" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Padding" Value="20,14" />
+            <Setter Property="CaretBrush" Value="#091E39" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12"
+                                SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#1245A8" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FigmaInputReadOnly" TargetType="TextBox" BasedOn="{StaticResource FigmaInput}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                    <Setter Property="IsReadOnly" Value="True" />
+                    <Setter Property="Opacity" Value="0.7" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
-    <!-- ─────────────── Layout ─────────────── -->
-    <Grid Background="Transparent"
-          Margin="10">
+    <Border Background="White"
+            BorderBrush="#DFE2E6"
+            BorderThickness="1"
+            CornerRadius="24"
+            Padding="56,44"
+            SnapsToDevicePixels="True">
 
-        <Border Background="{DynamicResource MainBg}"
-                CornerRadius="16"
-                Padding="24"
-                SnapsToDevicePixels="True">
+        <StackPanel>
 
-            <Grid>
+            <!-- Title -->
+            <TextBlock Text="{Binding IsEditing,
+                       Converter={StaticResource BoolToStringConverter},
+                       ConverterParameter='Update Library|Add New Labour'}"
+                       FontFamily="{DynamicResource AppFont}"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#040E22"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,4" />
 
-                <!-- Row layout -->
+            <!-- Subtitle -->
+            <TextBlock Text="Can't find your desired labour item in our library?"
+                       FontFamily="{DynamicResource AppFont}"
+                       FontSize="12.8"
+                       FontWeight="SemiBold"
+                       Foreground="#354764"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,32" />
+
+            <!-- Name of Labour Item -->
+            <TextBlock Text="Name of Labour Item"
+                       FontFamily="{DynamicResource AppFont}"
+                       FontSize="12.8"
+                       FontWeight="SemiBold"
+                       Foreground="#354764"
+                       Margin="0,0,0,8" />
+            <TextBox Text="{Binding LabourName, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource FigmaInputReadOnly}" />
+
+            <!-- Unit + Price row -->
+            <Grid Margin="0,18,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <!-- Title -->
+                    <RowDefinition Height="8" />
                     <RowDefinition Height="Auto" />
-                    <!-- Subtitle -->
-                    <RowDefinition Height="16" />
-                    <!-- Spacer -->
-                    <RowDefinition Height="Auto" />
-                    <!-- Form -->
-                    <RowDefinition Height="16" />
-                    <!-- Spacer -->
-                    <RowDefinition Height="Auto" />
-                    <!-- Save/Update Button -->
                 </Grid.RowDefinitions>
 
-                <!-- 1) Title -->
-                <TextBlock Grid.Row="0"
-                           Text="{Binding IsEditing,
-                                          Converter={StaticResource BoolToStringConverter},
-                                          ConverterParameter='Update Library|Add New Labour'}"
-                           FontSize="28"
-                           FontWeight="Bold"
-                           Foreground="{DynamicResource Blue900Brush}"
-                           HorizontalAlignment="Center" />
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Unit"
+                           FontFamily="{DynamicResource AppFont}"
+                           FontSize="12.8"
+                           FontWeight="SemiBold"
+                           Foreground="#354764" />
 
-                <!-- 2) Subtitle -->
-                <TextBlock Grid.Row="1"
-                           Text="Can’t find your desired labour item in our library?"
-                           FontSize="16"
-                           FontWeight="DemiBold"
-                           Foreground="{DynamicResource Grey700}"
-                           HorizontalAlignment="Center"
-                           Margin="0,8,0,0" />
+                <StackPanel Grid.Row="0" Grid.Column="2"
+                            Orientation="Horizontal">
+                    <TextBlock Text="Price"
+                               FontFamily="{DynamicResource AppFont}"
+                               FontSize="12.8"
+                               FontWeight="SemiBold"
+                               Foreground="#354764" />
+                    <TextBlock Text="{Binding CurrencyLabel, StringFormat=' ({0})'}"
+                               FontSize="12"
+                               FontWeight="Normal"
+                               Foreground="{DynamicResource OrangeAccentBrush}"
+                               VerticalAlignment="Center"
+                               Margin="2,0,0,0" />
+                </StackPanel>
 
-                <!-- 3) Input form -->
-                <Border Grid.Row="3"
-                        Background="{DynamicResource BgInput}"
-                        CornerRadius="8"
-                        Padding="16">
+                <TextBox Grid.Row="2" Grid.Column="0"
+                         Text="{Binding LabourUnit}"
+                         Style="{StaticResource FigmaInputReadOnly}" />
 
-                    <Grid>
-
-                        <!-- Form rows -->
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <!-- name -->
-                            <RowDefinition Height="16" />
-                            <RowDefinition Height="Auto" />
-                            <!-- unit/price -->
-                            <RowDefinition Height="16" />
-                            <RowDefinition Height="Auto" />
-                            <!-- category -->
-                        </Grid.RowDefinitions>
-
-
-
-                        <!-- Labour Name -->
-                        <StackPanel Grid.Row="0"
-                                    Grid.ColumnSpan="2"
-                                    Margin="4,10">
-                            <TextBlock Text="Name of Labour Item"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Grey700}"
-                                       Margin="0,10" />
-                            <TextBox Text="{Binding LabourName, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{DynamicResource ReadOnlyOnEditTextBox}" />
-
-
-                        </StackPanel>
-
-                        <!-- wrap both fields in one grid -->
-                        <Grid Grid.Row="2"
-                              Margin="4,0,4,0">
-                            <!-- two equal columns -->
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Row 0: labels -->
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <!-- Unit label -->
-                            <TextBlock Grid.Row="0"
-                                       Grid.Column="0"
-                                       Text="Unit"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Grey700}"
-                                       Margin="0,0,0,4" />
-
-                            <!-- Price label -->
-                            <TextBlock Grid.Row="0"
-                                       Grid.Column="1"
-                                       Text="Price"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Grey700}"
-                                       Margin="20,0,0,4" />
-
-                            <!-- Unit textbox -->
-                            <TextBox Grid.Row="1"
-                                     Grid.Column="0"
-                                     Text="{Binding LabourUnit}"
-                                     Style="{DynamicResource ReadOnlyOnEditTextBox}"
-                                     Margin="0,0,8,0" />
-
-                            <!-- Price textbox -->
-                            <TextBox Grid.Row="1"
-                                     Grid.Column="1"
-                                     Text="{Binding LabourPrice, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{DynamicResource TBInput}"
-                                     Margin="18,0,8,0" />
-                        </Grid>
-
-
-
-                        <!-- Category -->
-                        <StackPanel Grid.Row="4"
-                                    Grid.ColumnSpan="2"
-                                    Margin="4,10">
-                            <TextBlock Text="Category"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Grey700}"
-                                       Margin="0,10" />
-                            <TextBox Text="{Binding NewLabourCategory}"
-                                     Style="{DynamicResource ReadOnlyOnEditTextBox}" />
-
-
-                        </StackPanel>
-
-                    </Grid>
-                </Border>
-
-                <!-- 4) Save / Update Button -->
-                <Button Grid.Row="5"
-                        
-                        HorizontalAlignment="Stretch"
-                        Content="{Binding IsEditing,
-                                          Converter={StaticResource BoolToStringConverter},
-                                          ConverterParameter='Update Library|Save to Database'}">
-                    <Button.Style>
-                        <Style TargetType="Button"
-                               BasedOn="{StaticResource PrimaryButtonCus}">
-                            <Setter Property="Command"
-                                    Value="{Binding SaveLabourCommand}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsEditing}"
-                                             Value="True">
-                                    <Setter Property="Command"
-                                            Value="{Binding UpdateLabourCommand}" />
-                                </DataTrigger>
-
-
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-
-                    <Button.ContentTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}"
-                                       FontSize="19"
-                                       FontWeight="SemiBold"
-                                       Foreground="White"
-                                       TextAlignment="Center" />
-                        </DataTemplate>
-                    </Button.ContentTemplate>
-                </Button>
-
+                <TextBox Grid.Row="2" Grid.Column="2"
+                         Text="{Binding LabourPrice, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource FigmaInput}" />
             </Grid>
-        </Border>
-    </Grid>
+
+            <!-- Category -->
+            <TextBlock Text="Category"
+                       FontFamily="{DynamicResource AppFont}"
+                       FontSize="12.8"
+                       FontWeight="SemiBold"
+                       Foreground="#354764"
+                       Margin="0,18,0,8" />
+            <TextBox Text="{Binding NewLabourCategory}"
+                     Style="{StaticResource FigmaInputReadOnly}" />
+
+            <!-- Save / Update Button -->
+            <Button Margin="0,32,0,0"
+                    HorizontalAlignment="Stretch"
+                    Cursor="Hand"
+                    Content="{Binding IsEditing,
+                              Converter={StaticResource BoolToStringConverter},
+                              ConverterParameter='Update Library|Save to Database'}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#091E39" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Command" Value="{Binding SaveLabourCommand}" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="BtnBorder"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="13"
+                                            Height="58"
+                                            Padding="32,16">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="BtnBorder"
+                                                    Property="Background" Value="#0B2548" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                                <Setter Property="Command"
+                                        Value="{Binding UpdateLabourCommand}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}"
+                                   FontFamily="{DynamicResource AppFont}"
+                                   FontSize="18"
+                                   FontWeight="Medium"
+                                   Foreground="White"
+                                   TextAlignment="Center" />
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+
+        </StackPanel>
+    </Border>
 </UserControl>

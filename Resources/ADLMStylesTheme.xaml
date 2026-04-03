@@ -33,7 +33,7 @@
 
     <!-- Accent & states -->
     <Color x:Key="HoverLightCol">#F3F4F6</Color>
-    <Color x:Key="ActiveBgCol">#E8F0FF</Color>
+    <Color x:Key="ActiveBgCol">#F3F7FF</Color>
     <Color x:Key="PressedBgCol">#E5E9ED</Color>
     <Color x:Key="DisabledBgCol">#F4F4F4</Color>
     <Color x:Key="DisabledFgCol">#888888</Color>
@@ -171,9 +171,10 @@
     <SolidColorBrush x:Key="ScrollbarThumbPressedBrush"
                      Color="{DynamicResource ScrollbarThumbPressedCol}" />
 
-    <!-- ─── FONTS ─── -->
-    <FontFamily x:Key="Mont">Urbanist</FontFamily>
-    <FontFamily x:Key="PoppinsFont">Urbanist</FontFamily>
+    <!-- ─── FONTS (ADLM Design System: Lexend) ─── -->
+    <FontFamily x:Key="Mont">pack://application:,,,/Resources/Fonts/#Lexend</FontFamily>
+    <FontFamily x:Key="PoppinsFont">pack://application:,,,/Resources/Fonts/#Lexend</FontFamily>
+    <FontFamily x:Key="AppFont">pack://application:,,,/Resources/Fonts/#Lexend</FontFamily>
 
     <!-- ─── CONVERTERS ─── -->
     <conv:PercentConverter x:Key="PercentConverter" />
@@ -262,6 +263,7 @@
         </Setter>
     </Style>
 
+    <!-- Figma: Library button — bg:#091E39, rounded:10, px:24, py:11.5 -->
     <Style x:Key="NavPrimaryButton"
            TargetType="Button">
         <Setter Property="Background"
@@ -271,17 +273,17 @@
         <Setter Property="Cursor"
                 Value="Hand" />
         <Setter Property="FontSize"
-                Value="14" />
+                Value="12.8" />
         <Setter Property="FontWeight"
-                Value="SemiBold" />
+                Value="Medium" />
         <Setter Property="Foreground"
                 Value="{DynamicResource BackgroundBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border Background="{TemplateBinding Background}"
-                            CornerRadius="6"
-                            Padding="14,8">
+                            CornerRadius="10"
+                            Padding="14,10">
                         <ContentPresenter HorizontalAlignment="Center"
                                           VerticalAlignment="Center" />
                     </Border>
@@ -529,18 +531,19 @@
                 Value="{DynamicResource BackgroundBrush}" />
     </Style>
 
+    <!-- Figma: Poppins Medium 12.8px, #040E22 -->
     <Style x:Key="BtnSidebarText"
            TargetType="TextBlock">
         <Setter Property="FontFamily"
-                Value="Poppins" />
+                Value="{DynamicResource PoppinsFont}" />
         <Setter Property="FontSize"
-                Value="16" />
+                Value="12.8" />
         <Setter Property="FontWeight"
-                Value="Bold" />
+                Value="Medium" />
         <Setter Property="Foreground"
                 Value="{DynamicResource Blue900Brush}" />
         <Setter Property="MaxWidth"
-                Value="120" />
+                Value="140" />
         <Setter Property="TextWrapping"
                 Value="Wrap" />
         <Setter Property="VerticalAlignment"
@@ -1188,27 +1191,28 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Figma: Side Nav Button — px:24, py:11.5, rounded:10, Poppins Medium 12.8px -->
     <Style x:Key="SidebarSubButton"
            TargetType="Button">
         <Setter Property="Background"
-                Value="{DynamicResource BackgroundBrush}" />
+                Value="Transparent" />
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="Cursor"
                 Value="Hand" />
         <Setter Property="Foreground"
                 Value="{DynamicResource Navy}" />
-        <Setter Property="MaxWidth"
-                Value="180" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Stretch" />
         <Setter Property="MinHeight"
-                Value="40" />
+                Value="43" />
         <Setter Property="Padding"
-                Value="18,10" />
+                Value="14,10" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border Background="{TemplateBinding Background}"
-                            CornerRadius="8">
+                            CornerRadius="10">
                         <ContentPresenter HorizontalAlignment="Left"
                                           VerticalAlignment="Center"
                                           Margin="{TemplateBinding Padding}" />
@@ -1226,8 +1230,6 @@
                      Value="True">
                 <Setter Property="Background"
                         Value="{DynamicResource ActiveBgBrush}" />
-                <Setter Property="Foreground"
-                        Value="{DynamicResource BackgroundBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -14,43 +14,40 @@
         <Rectangle Fill="#88000000"
                    MouseDown="OnBackgroundClicked" />
 
-        <!-- popup card -->
+        <!-- popup card — transparent wrapper, child views provide their own styling -->
         <Border x:Name="Card"
-                Width="800"
-                Height="770"
                 MouseDown="OnCardMouseDown"
-                MaxWidth="{Binding ActualWidth, 
+                MaxWidth="{Binding ActualWidth,
                            RelativeSource={RelativeSource AncestorType=UserControl},
-                           Converter={StaticResource PercentConverter}, 
-                           ConverterParameter=0.8}"
-                MaxHeight="{Binding ActualHeight, 
+                           Converter={StaticResource PercentConverter},
+                           ConverterParameter=0.85}"
+                MaxHeight="{Binding ActualHeight,
                             RelativeSource={RelativeSource AncestorType=UserControl},
-                            Converter={StaticResource PercentConverter}, 
-                            ConverterParameter=0.8}"
-                Padding="24"
-                Background="{DynamicResource MainBg}"
-                CornerRadius="14"
+                            Converter={StaticResource PercentConverter},
+                            ConverterParameter=0.9}"
+                Background="Transparent"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
 
-            <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto">-->
                 <Grid>
-                    <!-- close button -->
-                    <Button Content="✕"
-                            Width="30"
-                            Height="30"
-                            FontSize="16"
+                    <!-- close button floats on top-right -->
+                    <Button Content="&#x2715;"
+                            Width="36"
+                            Height="36"
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Foreground="#5F6D7E"
                             Background="Transparent"
                             BorderBrush="Transparent"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
+                            Margin="0,-8,-8,0"
                             Cursor="Hand"
+                            Panel.ZIndex="10"
                             Click="OnClose" />
                     <!-- here we inject the view -->
-                    <ContentPresenter Margin="0,40,0,0" />
+                    <ContentPresenter />
                 </Grid>
-            <!--</ScrollViewer>-->
         </Border>
     </Grid>
 </UserControl>

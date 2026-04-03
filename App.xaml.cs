@@ -391,7 +391,9 @@ namespace ADLMRateGen
                 {
                     try
                     {
-                        mainVm.FlushUserRatesCloudSyncAsync().GetAwaiter().GetResult();
+                        // Use a timeout so the app doesn't hang on exit
+                        var flushTask = mainVm.FlushUserRatesCloudSyncAsync();
+                        flushTask.Wait(TimeSpan.FromSeconds(5));
                     }
                     catch
                     {

@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Windows.Input;
 
 using ADLMRateGen.Command;
+using ADLMRateGen.Services;
 using ADLMRateGen.ViewModel.Model;
 
 namespace ADLMRateGen.ViewModel
@@ -9,7 +10,7 @@ namespace ADLMRateGen.ViewModel
     public class MaterialPriceViewModel : ViewModelBase
     {
         private string? _materialName;
-        private decimal _materialPrice;
+        private decimal _materialPrice;      // displayed in current currency
         private string? _materialUnit;
         private string _newMaterialCategory = string.Empty;
         private MaterialModel? _editingMaterial;
@@ -29,6 +30,11 @@ namespace ADLMRateGen.ViewModel
                 }
             }
         }
+
+        /// <summary>
+        /// Price shown in the edit dialog – always in the CURRENT display currency.
+        /// Converted to/from NGN on load/save.
+        /// </summary>
         public decimal MaterialPrice
         {
             get => _materialPrice;
@@ -41,6 +47,10 @@ namespace ADLMRateGen.ViewModel
                 }
             }
         }
+
+        /// <summary>Current currency code for the price label hint.</summary>
+        public string CurrencyLabel => CurrencyService.Instance.Code;
+
         public string? MaterialUnit
         {
             get => _materialUnit;
@@ -88,54 +98,75 @@ namespace ADLMRateGen.ViewModel
 
         public MaterialPriceViewModel()
         {
-            //_newMaterialCategory = string.Empty;
-            //EditingMaterial = null;
             SaveMaterialCommand = new DelegateCommand(o => SaveMaterial(), o => !IsEditing);
             UpdateMaterialCommand = new DelegateCommand(o => UpdateMaterial(), o => IsEditing);
+
+            // Keep CurrencyLabel up to date when currency changes
+            CurrencyService.Instance.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName is nameof(CurrencyService.Code))
+                    RaisePropertyChanged(nameof(CurrencyLabel));
+            };
         }
 
+        /// <summary>
+        /// Call this when loading a material into the edit form.
+        /// Converts the stored NGN price → current display currency.
+        /// </summary>
+        public void LoadForEdit(MaterialModel material)
+        {
+            EditingMaterial = material;
+            MaterialName = material.MaterialName;
+            MaterialUnit = material.MaterialUnit;
+            MaterialPrice = CurrencyService.Instance.FromNgn(material.MaterialPrice); // NGN → display
+            NewMaterialCategory = material.MaterialCategory ?? string.Empty;
+        }
 
-		/* ───────── add new ───────── */
-		private void SaveMaterial()
-		{
-			if (string.IsNullOrWhiteSpace(MaterialName)) return;
+        /* ───────── add new ───────── */
+        private void SaveMaterial()
+        {
+            if (string.IsNullOrWhiteSpace(MaterialName)) return;
 
-			var mat = new MaterialModel
-			{
-				SerialNumber = 0,
-				MaterialName = MaterialName,
-				MaterialUnit = MaterialUnit,
-				MaterialPrice = MaterialPrice,
-				MaterialCategory = string.IsNullOrWhiteSpace(NewMaterialCategory)
-								 ? string.Empty
-								 : NewMaterialCategory
-			};
+            // User entered price in current currency – convert back to NGN for storage
+            var priceNgn = CurrencyService.Instance.ToNgn(MaterialPrice);
 
-			MaterialSaved?.Invoke(mat);
-			ClearInputs();
-		}
+            var mat = new MaterialModel
+            {
+                SerialNumber = 0,
+                MaterialName = MaterialName,
+                MaterialUnit = MaterialUnit,
+                MaterialPrice = priceNgn,
+                MaterialCategory = string.IsNullOrWhiteSpace(NewMaterialCategory)
+                                 ? string.Empty
+                                 : NewMaterialCategory
+            };
 
-
+            MaterialSaved?.Invoke(mat);
+            ClearInputs();
+        }
 
         /* ───────── update price only ───────── */
         private void UpdateMaterial()
         {
             if (EditingMaterial == null) return;
-            EditingMaterial.MaterialPrice = MaterialPrice;
+
+            // User edited price in current currency – convert back to NGN for storage
+            EditingMaterial.MaterialPrice = CurrencyService.Instance.ToNgn(MaterialPrice);
+
             if (!string.IsNullOrWhiteSpace(NewMaterialCategory))
-                EditingMaterial.MaterialCategory = NewMaterialCategory; // NEW (optional)
+                EditingMaterial.MaterialCategory = NewMaterialCategory;
+
             MaterialSaved?.Invoke(EditingMaterial);
             ClearInputs();
             EditingMaterial = null;
         }
 
-
         private void ClearInputs()
-		{
-			MaterialName = string.Empty;
-			MaterialUnit = string.Empty;
-			MaterialPrice = 0;
-			NewMaterialCategory = string.Empty;
-		}
-	}
+        {
+            MaterialName = string.Empty;
+            MaterialUnit = string.Empty;
+            MaterialPrice = 0;
+            NewMaterialCategory = string.Empty;
+        }
+    }
 }

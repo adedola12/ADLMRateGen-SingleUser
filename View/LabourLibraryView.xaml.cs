@@ -72,14 +72,9 @@ namespace ADLMRateGen.View
 		/* open the popup for editing */
 		private void OnEditLabourRequested(LabourModel labour)
 		{
-			var editVm = new LabourPriceViewModel
-			{
-				EditingLabour = labour,          // tells the VM it’s an edit
-				LabourName = labour.LabourName,
-				LabourUnit = labour.LabourUnit,
-				LabourPrice = labour.LabourPrice,
-				NewLabourCategory = labour.LabourCategory
-			};
+			// build a fresh ViewModel – converts price NGN → display currency
+			var editVm = new LabourPriceViewModel();
+			editVm.LoadForEdit(labour);
 
 			/* ❶ – ► PERSIST the change when the user clicks *Update Library* */
 			editVm.LabourSaved += saved =>

@@ -1,0 +1,15 @@
+metric,value
+raw_rows,1955
+rows_after_cleaning,1935
+corrected_date_rows,36
+missing_date_rows_before_cleaning,9
+missing_qty_rows_before_cleaning,19
+missing_location_rows_before_cleaning,8
+monthly_panel_rows,6279
+unique_series,897
+unique_months,7
+train_rows,4485
+test_rows,1794
+positive_test_rows,492
+date_min,2025-09-02
+date_max,2026-03-21

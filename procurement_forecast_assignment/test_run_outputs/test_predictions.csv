@@ -1,0 +1,1795 @@
+month,series_id,Location,item_group,UOM,actual_qty,naive_lag_1_prediction,random_forest_prediction,hist_gradient_boosting_prediction
+2026-02-01,abuja | 10mm tiger tmt | length,abuja,10mm tiger tmt,length,472.0,0.0,0.16000512855547377,0.3138290663751016
+2026-03-01,abuja | 10mm tiger tmt | length,abuja,10mm tiger tmt,length,0.0,472.0,0.20187121612117162,0.0
+2026-02-01,abuja | 120x120 italian tiles | pcs,abuja,120x120 italian tiles,pcs,24.0,0.0,0.07008743213475638,0.309893984948947
+2026-03-01,abuja | 120x120 italian tiles | pcs,abuja,120x120 italian tiles,pcs,0.0,24.0,0.12051154514855796,1.0314836483465348
+2026-02-01,abuja | 12mm tiger tmt | length,abuja,12mm tiger tmt,length,1786.0,0.0,0.22863952801108137,0.29102070206104447
+2026-03-01,abuja | 12mm tiger tmt | length,abuja,12mm tiger tmt,length,0.0,1786.0,7.418835834172425,38.35183753170823
+2026-02-01,abuja | 16mm real tmt | length,abuja,16mm real tmt,length,0.0,0.0,0.3672231604884868,0.29102070206104447
+2026-03-01,abuja | 16mm real tmt | length,abuja,16mm real tmt,length,2184.0,0.0,0.21987298838643177,0.29102070206104447
+2026-02-01,abuja | 16mm tiger tmt | length,abuja,16mm tiger tmt,length,371.0,0.0,0.14538342258355522,0.29102070206104447
+2026-03-01,abuja | 16mm tiger tmt | length,abuja,16mm tiger tmt,length,0.0,371.0,0.24163229341956013,0.0
+2026-02-01,abuja | 1x12x12 wood | pcs,abuja,1x12x12 wood,pcs,25.0,0.0,0.14852428670941412,0.28715393452219123
+2026-03-01,abuja | 1x12x12 wood | pcs,abuja,1x12x12 wood,pcs,0.0,25.0,0.12203443588470192,1.0314836483465348
+2026-02-01,abuja | 2 common nail | bag,abuja,2 common nail,bag,0.0,3.0,1.3201003891312713,1.5639644360908087
+2026-03-01,abuja | 2 common nail | bag,abuja,2 common nail,bag,2.0,0.0,0.46237454831647484,1.4944143301861255
+2026-02-01,abuja | 2 common nails | bag,abuja,2 common nails,bag,0.0,0.0,0.510226290387682,0.41087936136379566
+2026-03-01,abuja | 2 common nails | bag,abuja,2 common nails,bag,2.0,0.0,0.2284679565150837,0.41087936136379566
+2026-02-01,abuja | 2 concrete nail | packet,abuja,2 concrete nail,packet,0.0,10.0,0.08872295131736811,0.0
+2026-03-01,abuja | 2 concrete nail | packet,abuja,2 concrete nail,packet,0.0,0.0,0.1164033803625202,0.27448995092117556
+2026-02-01,abuja | 2 concrete nails | pkt,abuja,2 concrete nails,pkt,0.0,0.0,0.17055885713793997,0.3267906973110542
+2026-03-01,abuja | 2 concrete nails | pkt,abuja,2 concrete nails,pkt,10.0,0.0,0.07244126206717566,0.3267906973110542
+2026-02-01,abuja | 2 nails | bag,abuja,2 nails,bag,10.0,0.0,0.36267036253506274,0.3946968647535844
+2026-03-01,abuja | 2 nails | bag,abuja,2 nails,bag,0.0,10.0,0.5792248992190299,1.8465621018733223
+2026-02-01,abuja | 2 pvc cap plug | pcs,abuja,2 pvc cap plug,pcs,0.0,0.0,0.4439450119338039,0.3312121053929584
+2026-03-01,abuja | 2 pvc cap plug | pcs,abuja,2 pvc cap plug,pcs,200.0,0.0,0.20802784986689088,0.3312121053929584
+2026-02-01,abuja | 2 pvc rubber gasket | pcs,abuja,2 pvc rubber gasket,pcs,600.0,0.0,0.18274828402897667,0.3312121053929584
+2026-03-01,abuja | 2 pvc rubber gasket | pcs,abuja,2 pvc rubber gasket,pcs,0.0,600.0,0.29351416367917593,0.0
+2026-02-01,abuja | 2 pvc tee | pcs,abuja,2 pvc tee,pcs,90.0,0.0,0.1517460437192052,0.3312121053929584
+2026-03-01,abuja | 2 pvc tee | pcs,abuja,2 pvc tee,pcs,0.0,90.0,0.9176447214615908,0.23261160440130976
+2026-02-01,abuja | 2 pvc y tee | pcs,abuja,2 pvc y tee,pcs,90.0,0.0,0.2584784026107832,0.32393303451506944
+2026-03-01,abuja | 2 pvc y tee | pcs,abuja,2 pvc y tee,pcs,0.0,90.0,0.9176447214615908,0.22587168129138804
+2026-02-01,abuja | 200 watt flood light | pcs,abuja,200 watt flood light,pcs,0.0,8.0,0.05192171568001077,0.0
+2026-03-01,abuja | 200 watt flood light | pcs,abuja,200 watt flood light,pcs,0.0,0.0,0.09365189534528716,0.004340380993032461
+2026-02-01,abuja | 20m couplar | pcs,abuja,20m couplar,pcs,15.0,0.0,0.33070270631965165,0.31675073068046605
+2026-03-01,abuja | 20m couplar | pcs,abuja,20m couplar,pcs,0.0,15.0,0.05963353645009487,0.06684896102507762
+2026-02-01,abuja | 20mm tiger tmt | length,abuja,20mm tiger tmt,length,272.0,0.0,0.1311024930237891,0.17603526264319652
+2026-03-01,abuja | 20mm tiger tmt | length,abuja,20mm tiger tmt,length,0.0,272.0,0.3217138340298687,0.07927746427054236
+2026-02-01,abuja | 2x45 pvc band | pcs,abuja,2x45 pvc band,pcs,225.0,0.0,0.2056411902285385,0.5712855676427457
+2026-03-01,abuja | 2x45 pvc band | pcs,abuja,2x45 pvc band,pcs,0.0,225.0,0.4521832358354948,0.0
+2026-02-01,abuja | 2x4x12 wood | pcs,abuja,2x4x12 wood,pcs,4200.0,0.0,0.1176608316021774,0.26823887408309655
+2026-03-01,abuja | 2x4x12 wood | pcs,abuja,2x4x12 wood,pcs,7800.0,4200.0,84.23014011055903,140.57145935080518
+2026-02-01,abuja | 2x6 pvc pipe | length,abuja,2x6 pvc pipe,length,120.0,0.0,0.12198277357163699,0.30777569400081595
+2026-03-01,abuja | 2x6 pvc pipe | length,abuja,2x6 pvc pipe,length,0.0,120.0,0.6970868430839827,0.0
+2026-02-01,abuja | 2x90 pvc elbow | pcs,abuja,2x90 pvc elbow,pcs,225.0,0.0,0.06716017362030749,0.26823887408309655
+2026-03-01,abuja | 2x90 pvc elbow | pcs,abuja,2x90 pvc elbow,pcs,0.0,225.0,0.4438956768501784,0.0
+2026-02-01,abuja | 3 common nail | bag,abuja,3 common nail,bag,0.0,3.0,1.3356599935954376,1.5444719754728728
+2026-03-01,abuja | 3 common nail | bag,abuja,3 common nail,bag,2.0,0.0,0.47078825212538206,1.475450622105174
+2026-02-01,abuja | 3 common nails | bag,abuja,3 common nails,bag,0.0,0.0,0.5100955276426515,0.40015319449465975
+2026-03-01,abuja | 3 common nails | bag,abuja,3 common nails,bag,2.0,0.0,0.2270275741391731,0.40015319449465975
+2026-02-01,abuja | 3 concrete nail | packet,abuja,3 concrete nail,packet,0.0,10.0,0.10230156534207427,0.0016057874689186058
+2026-03-01,abuja | 3 concrete nail | packet,abuja,3 concrete nail,packet,0.0,0.0,0.12197369291475753,0.28052927486780266
+2026-02-01,abuja | 3 concrete nails | pkt,abuja,3 concrete nails,pkt,0.0,0.0,0.383496462854088,0.37911599928241846
+2026-03-01,abuja | 3 concrete nails | pkt,abuja,3 concrete nails,pkt,10.0,0.0,0.19096487197022755,0.37911599928241846
+2026-02-01,abuja | 3 nails | bag,abuja,3 nails,bag,10.0,0.0,0.30949538445178537,0.34427296060789114
+2026-03-01,abuja | 3 nails | bag,abuja,3 nails,bag,2.0,10.0,0.5630945874410564,1.762738401940394
+2026-02-01,abuja | 4 common nail | bag,abuja,4 common nail,bag,0.0,2.0,1.3233993997899116,1.43042978332929
+2026-03-01,abuja | 4 common nail | bag,abuja,4 common nail,bag,2.0,0.0,0.4672983422071762,1.3645019387597404
+2026-02-01,abuja | 4 common nails | bag,abuja,4 common nails,bag,0.0,0.0,0.25179292455267976,0.337398901589808
+2026-03-01,abuja | 4 common nails | bag,abuja,4 common nails,bag,2.0,0.0,0.11402962935477455,0.337398901589808
+2026-02-01,abuja | 4 concrete nail | packet,abuja,4 concrete nail,packet,0.0,10.0,0.0819906120097886,0.024176949401408916
+2026-03-01,abuja | 4 concrete nail | packet,abuja,4 concrete nail,packet,0.0,0.0,0.1164033803625202,0.3093859707694652
+2026-02-01,abuja | 4 concrete nails | pkt,abuja,4 concrete nails,pkt,0.0,0.0,0.2739668467086934,0.3788316484824148
+2026-03-01,abuja | 4 concrete nails | pkt,abuja,4 concrete nails,pkt,10.0,0.0,0.11087308881338884,0.3788316484824148
+2026-02-01,abuja | 4 elbow pvc pipe | length,abuja,4 elbow pvc pipe,length,45.0,0.0,0.08476546009784788,0.3380214548395425
+2026-03-01,abuja | 4 elbow pvc pipe | length,abuja,4 elbow pvc pipe,length,0.0,45.0,0.6580723755830442,0.0
+2026-02-01,abuja | 4 nails | bag,abuja,4 nails,bag,10.0,0.0,0.08225368178605999,0.337398901589808
+2026-03-01,abuja | 4 nails | bag,abuja,4 nails,bag,2.0,10.0,0.5594872410616774,1.7486108940733347
+2026-02-01,abuja | 4 nials | bag,abuja,4 nials,bag,5.0,0.0,0.08287899660682634,0.337398901589808
+2026-03-01,abuja | 4 nials | bag,abuja,4 nials,bag,0.0,5.0,0.4872561665280459,1.2196762080025723
+2026-02-01,abuja | 4 pvc cap plug | pcs,abuja,4 pvc cap plug,pcs,0.0,0.0,0.0754098428236724,0.3823805441159533
+2026-03-01,abuja | 4 pvc cap plug | pcs,abuja,4 pvc cap plug,pcs,200.0,0.0,0.03938384004472527,0.3823805441159533
+2026-02-01,abuja | 4 pvc rubber gasket | pcs,abuja,4 pvc rubber gasket,pcs,370.0,0.0,0.0754098428236724,0.3823805441159533
+2026-03-01,abuja | 4 pvc rubber gasket | pcs,abuja,4 pvc rubber gasket,pcs,0.0,370.0,0.2603256014696464,0.0
+2026-02-01,abuja | 4 pvc tee | pcs,abuja,4 pvc tee,pcs,60.0,0.0,0.0754098428236724,0.3823805441159533
+2026-03-01,abuja | 4 pvc tee | pcs,abuja,4 pvc tee,pcs,0.0,60.0,1.3059199176442462,1.3753239893353109
+2026-02-01,abuja | 4000 liters of geepee tank | pcs,abuja,4000 liters of geepee tank,pcs,0.0,0.0,0.07737538500123894,0.32822796837161144
+2026-03-01,abuja | 4000 liters of geepee tank | pcs,abuja,4000 liters of geepee tank,pcs,2.0,0.0,0.05372609197709744,0.32822796837161144
+2026-02-01,abuja | 40x40 rustic matt tiles | carton,abuja,40x40 rustic matt tiles,carton,31.0,0.0,0.09248515956818812,0.311622008408143
+2026-03-01,abuja | 40x40 rustic matt tiles | carton,abuja,40x40 rustic matt tiles,carton,0.0,31.0,0.5205832831378818,0.24993238757423303
+2026-02-01,abuja | 4x2 pvc socket | pcs,abuja,4x2 pvc socket,pcs,75.0,0.0,0.045721824629932156,0.3161232731155047
+2026-03-01,abuja | 4x2 pvc socket | pcs,abuja,4x2 pvc socket,pcs,0.0,75.0,0.9444020861559312,0.1729893834485269
+2026-02-01,abuja | 4x2 pvc tee | pcs,abuja,4x2 pvc tee,pcs,42.0,0.0,0.056651130320092884,0.3161232731155047
+2026-03-01,abuja | 4x2 pvc tee | pcs,abuja,4x2 pvc tee,pcs,0.0,42.0,0.34778651361691565,0.19839151106241357
+2026-02-01,abuja | 4x90 pvc elbow | pcs,abuja,4x90 pvc elbow,pcs,150.0,0.0,0.06926994018021586,0.3161232731155047
+2026-03-01,abuja | 4x90 pvc elbow | pcs,abuja,4x90 pvc elbow,pcs,0.0,150.0,2.126402423533851,0.42613475256398625
+2026-02-01,abuja | 6 block | pcs,abuja,6 block,pcs,4600.0,1000.0,0.6714543376488693,0.0
+2026-03-01,abuja | 6 block | pcs,abuja,6 block,pcs,2593.0,4600.0,91.48677223480257,126.00029528734218
+2026-02-01,abuja | 6 blocks | pcs,abuja,6 blocks,pcs,0.0,0.0,1.0625000817772232,1.242634333255081
+2026-03-01,abuja | 6 blocks | pcs,abuja,6 blocks,pcs,9074.0,0.0,0.5447418220218276,1.242634333255081
+2026-02-01,abuja | 9 block | pcs,abuja,9 block,pcs,1000.0,0.0,0.33609915839839993,0.6226281258959012
+2026-03-01,abuja | 9 block | pcs,abuja,9 block,pcs,0.0,1000.0,0.6371797962279555,0.0
+2026-02-01,abuja | 9 blocks | pcs,abuja,9 blocks,pcs,3995.0,0.0,0.42453972232558423,0.6226281258959012
+2026-03-01,abuja | 9 blocks | pcs,abuja,9 blocks,pcs,13105.0,3995.0,83.97386914049093,136.8338356551764
+2026-02-01,abuja | aluminium range | pcs,abuja,aluminium range,pcs,4.0,0.0,0.43273222687630825,0.8060180488864153
+2026-03-01,abuja | aluminium range | pcs,abuja,aluminium range,pcs,0.0,4.0,0.0425405791345514,0.16355585710426548
+2026-02-01,abuja | armor concrete bond | galon,abuja,armor concrete bond,galon,0.0,1.0,0.25346059003862964,0.15886965171081632
+2026-03-01,abuja | armor concrete bond | galon,abuja,armor concrete bond,galon,0.0,0.0,0.154695124650631,0.2563886782185425
+2026-02-01,abuja | binding wire | bundle,abuja,binding wire,bundle,0.0,2.0,0.7909771098784275,0.16292612469861908
+2026-03-01,abuja | binding wire | bundle,abuja,binding wire,bundle,0.0,0.0,0.3415281667843207,0.3066106122098222
+2026-02-01,abuja | binding wire | pcs,abuja,binding wire,pcs,2.0,0.0,0.4935330765950161,0.5248360057537154
+2026-03-01,abuja | binding wire | pcs,abuja,binding wire,pcs,0.0,2.0,0.0770026478908608,0.08773961900885759
+2026-02-01,abuja | binding wire | roll,abuja,binding wire,roll,38.0,0.0,1.143003532755451,0.6686353943081387
+2026-03-01,abuja | binding wire | roll,abuja,binding wire,roll,0.0,38.0,1.541511245376919,3.5899273130729616
+2026-02-01,abuja | binding wires 20kg | bundle,abuja,binding wires 20kg,bundle,0.0,0.0,0.8407090154725259,0.8271347586918296
+2026-03-01,abuja | binding wires 20kg | bundle,abuja,binding wires 20kg,bundle,2.0,0.0,0.2754187603798845,0.8271347586918296
+2026-02-01,abuja | blade | pcs,abuja,blade,pcs,0.0,0.0,0.5810559489789562,0.17492323349905883
+2026-03-01,abuja | blade | pcs,abuja,blade,pcs,0.0,0.0,0.1209195946673546,0.13164728338310294
+2026-02-01,abuja | block | pcs,abuja,block,pcs,0.0,15650.0,305.82633640356437,201.30418020152305
+2026-03-01,abuja | block | pcs,abuja,block,pcs,0.0,0.0,56.24017349893546,262.59051579332174
+2026-02-01,abuja | block | ton,abuja,block,ton,0.0,0.0,41.53433134163039,8.909674538634501
+2026-03-01,abuja | block | ton,abuja,block,ton,0.0,0.0,4.354581003521419,8.909674538634501
+2026-02-01,abuja | blocks | pcs,abuja,blocks,pcs,8915.0,1000.0,477.38644497191314,5651.241446952948
+2026-03-01,abuja | blocks | pcs,abuja,blocks,pcs,0.0,8915.0,407.53529002777606,517.4955311074684
+2026-02-01,abuja | blue power plumb | pcs,abuja,blue power plumb,pcs,2.0,0.0,0.8197867220200241,0.4563662194738389
+2026-03-01,abuja | blue power plumb | pcs,abuja,blue power plumb,pcs,0.0,2.0,0.03739989105204479,0.04270943020485361
+2026-02-01,abuja | brilliant white paint | bucket,abuja,brilliant white paint,bucket,0.0,25.0,4.047024773458735,4.274580574684345
+2026-03-01,abuja | brilliant white paint | bucket,abuja,brilliant white paint,bucket,0.0,0.0,0.9530412637558094,0.8977595257732145
+2026-02-01,abuja | bucket | pcs,abuja,bucket,pcs,0.0,0.0,0.2251277303249373,0.0
+2026-03-01,abuja | bucket | pcs,abuja,bucket,pcs,0.0,0.0,0.13511207347473472,0.33112930611203356
+2026-02-01,abuja | cable | set,abuja,cable,set,0.0,0.0,0.2605654320822265,0.2215662069010253
+2026-03-01,abuja | cable | set,abuja,cable,set,0.0,0.0,0.01829321241549846,0.1726314452157132
+2026-02-01,abuja | cable reel extension | roll,abuja,cable reel extension,roll,0.0,2.0,0.06902388111263823,0.2645978113733396
+2026-03-01,abuja | cable reel extension | roll,abuja,cable reel extension,roll,0.0,0.0,0.1086173540398023,0.41688110487429303
+2026-02-01,abuja | cables | roll,abuja,cables,roll,4.0,0.0,0.4978569319588189,0.8101577967997522
+2026-03-01,abuja | cables | roll,abuja,cables,roll,0.0,4.0,0.0036786431249469596,0.2645978113733396
+2026-02-01,abuja | caliper | set,abuja,caliper,set,0.0,0.0,0.05794873549054618,0.17527567159255683
+2026-03-01,abuja | caliper | set,abuja,caliper,set,0.0,0.0,0.018957635127093787,0.1726314452157132
+2026-02-01,abuja | cement | bag,abuja,cement,bag,4500.0,2400.0,120.8274187451685,98.03472338019077
+2026-03-01,abuja | cement | bag,abuja,cement,bag,1800.0,4500.0,746.4730296631076,619.5297456669531
+2026-02-01,abuja | cements | bag,abuja,cements,bag,0.0,0.0,15.199743411856183,1.1338508638164009
+2026-03-01,abuja | cements | bag,abuja,cements,bag,0.0,0.0,10.042653043050032,90.83138433030501
+2026-02-01,abuja | cements | pcs,abuja,cements,pcs,0.0,600.0,1.0374927576614392,0.9031666563767764
+2026-03-01,abuja | cements | pcs,abuja,cements,pcs,0.0,0.0,0.3138904003449461,0.0
+2026-02-01,abuja | chair | p s,abuja,chair,p s,0.0,0.0,0.29110853485004695,0.10263297801813816
+2026-03-01,abuja | chair | p s,abuja,chair,p s,0.0,0.0,0.10870294328559078,0.13634444059780362
+2026-02-01,abuja | chair | pcs,abuja,chair,pcs,0.0,0.0,2.306463514440007,0.8172823970653584
+2026-03-01,abuja | chair | pcs,abuja,chair,pcs,0.0,0.0,0.8284627615466997,0.8172823970653584
+2026-02-01,abuja | chair | set,abuja,chair,set,0.0,0.0,0.3518777202281835,0.05959280101614355
+2026-03-01,abuja | chair | set,abuja,chair,set,0.0,0.0,0.05218965911715247,0.017146537433969586
+2026-02-01,abuja | chemical | litre,abuja,chemical,litre,0.0,0.0,1.039120291504506,1.6115013441230217
+2026-03-01,abuja | chemical | litre,abuja,chemical,litre,0.0,0.0,0.716424765568372,1.5147749478009276
+2026-02-01,abuja | chicken net | roll,abuja,chicken net,roll,10.0,0.0,0.9659343445556647,0.8062854579519241
+2026-03-01,abuja | chicken net | roll,abuja,chicken net,roll,0.0,10.0,0.055746724258517025,0.07315949097893112
+2026-02-01,abuja | chisel | pcs,abuja,chisel,pcs,0.0,0.0,0.41132158951049796,0.35424201596283156
+2026-03-01,abuja | chisel | pcs,abuja,chisel,pcs,0.0,0.0,0.10688329420998316,0.15220225429101136
+2026-02-01,abuja | commo nails | bag,abuja,commo nails,bag,0.0,3.0,1.753377164251411,1.659611546634034
+2026-03-01,abuja | commo nails | bag,abuja,commo nails,bag,0.0,0.0,0.5489504401870022,1.5935407033136961
+2026-02-01,abuja | common nail | bag,abuja,common nail,bag,0.0,2.0,1.8829753288424675,1.7270589339557816
+2026-03-01,abuja | common nail | bag,abuja,common nail,bag,0.0,0.0,0.589535521938445,1.6593125430293498
+2026-02-01,abuja | common nails | bag,abuja,common nails,bag,49.0,0.0,0.8896266532390475,0.9952416751697288
+2026-03-01,abuja | common nails | bag,abuja,common nails,bag,0.0,49.0,1.581788779708274,5.5161774497340765
+2026-02-01,abuja | concrete cutting disc | pcs,abuja,concrete cutting disc,pcs,0.0,0.0,0.15182364932417464,0.12418422295911331
+2026-03-01,abuja | concrete cutting disc | pcs,abuja,concrete cutting disc,pcs,0.0,0.0,0.6512142875907845,0.8219695032326548
+2026-02-01,abuja | concrete nails | packets,abuja,concrete nails,packets,0.0,9.0,0.08069050266422136,0.011671751059154276
+2026-03-01,abuja | concrete nails | packets,abuja,concrete nails,packets,0.0,0.0,0.11651751287657738,0.30607211635931186
+2026-02-01,abuja | concrete rings | pcs,abuja,concrete rings,pcs,0.0,28.0,0.5092121136893581,1.4785479671895159
+2026-03-01,abuja | concrete rings | pcs,abuja,concrete rings,pcs,0.0,0.0,0.11396564664962767,0.0
+2026-02-01,abuja | cone | set,abuja,cone,set,0.0,0.0,0.045829112468932565,0.02206947697597302
+2026-03-01,abuja | cone | set,abuja,cone,set,0.0,0.0,0.01894188349156265,0.019769945780602906
+2026-02-01,abuja | cutting disc | pcs,abuja,cutting disc,pcs,20.0,0.0,1.0538524894760095,0.8965328305724558
+2026-03-01,abuja | cutting disc | pcs,abuja,cutting disc,pcs,0.0,20.0,0.18137342833800812,0.04791453856068769
+2026-02-01,abuja | cutting machine | set,abuja,cutting machine,set,1.0,0.0,0.3288257135209665,0.6218809737330453
+2026-03-01,abuja | cutting machine | set,abuja,cutting machine,set,0.0,1.0,0.028192765571811745,0.0
+2026-02-01,abuja | dangote 3x cement | bag,abuja,dangote 3x cement,bag,0.0,0.0,0.8643418712611133,1.0989583656687625
+2026-03-01,abuja | dangote 3x cement | bag,abuja,dangote 3x cement,bag,900.0,0.0,0.3778096149965064,1.0989583656687625
+2026-02-01,abuja | dangote cement | bag,abuja,dangote cement,bag,300.0,0.0,1.8306543579005687,1.0989583656687625
+2026-03-01,abuja | dangote cement | bag,abuja,dangote cement,bag,900.0,300.0,1.2667544357133567,3.0805069302597055
+2026-02-01,abuja | dangote cement | pcs,abuja,dangote cement,pcs,900.0,0.0,0.7988155058731345,0.8965328305724558
+2026-03-01,abuja | dangote cement | pcs,abuja,dangote cement,pcs,0.0,900.0,1.9509916792913033,1.964786348414278
+2026-02-01,abuja | disc | pcs,abuja,disc,pcs,0.0,0.0,0.5982630225590819,0.6652273254115764
+2026-03-01,abuja | disc | pcs,abuja,disc,pcs,0.0,0.0,0.12138579761259305,0.38788559408201
+2026-02-01,abuja | dpm | roll,abuja,dpm,roll,0.0,0.0,0.21369514001608608,0.6190081809399366
+2026-03-01,abuja | dpm | roll,abuja,dpm,roll,3.0,0.0,0.10686979926038229,0.6190081809399366
+2026-02-01,abuja | drilling bit | pcs,abuja,drilling bit,pcs,5.0,0.0,0.4071168674493478,0.6288649476605939
+2026-03-01,abuja | drilling bit | pcs,abuja,drilling bit,pcs,0.0,5.0,0.06483909651651254,0.024817230894565657
+2026-02-01,abuja | drilling bits | pcs,abuja,drilling bits,pcs,0.0,0.0,0.19229854420693346,0.1348245358403292
+2026-03-01,abuja | drilling bits | pcs,abuja,drilling bits,pcs,0.0,0.0,0.1982973581406305,0.6288649476605939
+2026-02-01,abuja | dust | tonnes,abuja,dust,tonnes,0.0,30.0,1.5422950930882542,1.4713750449655962
+2026-03-01,abuja | dust | tonnes,abuja,dust,tonnes,0.0,0.0,0.43556288199140414,0.0
+2026-02-01,abuja | extension | set,abuja,extension,set,0.0,0.0,0.03157530486289611,0.0
+2026-03-01,abuja | extension | set,abuja,extension,set,0.0,0.0,0.06953046731100586,0.31971311790323353
+2026-02-01,abuja | extension cable | set,abuja,extension cable,set,0.0,0.0,0.12319100846822134,0.31971311790323353
+2026-03-01,abuja | extension cable | set,abuja,extension cable,set,621.0,0.0,0.06409551315697325,0.31971311790323353
+2026-02-01,abuja | fire extinguisher 6 kg | pcs,abuja,fire extinguisher 6 kg,pcs,3.0,0.0,0.22492545154153587,0.5431953981677236
+2026-03-01,abuja | fire extinguisher 6 kg | pcs,abuja,fire extinguisher 6 kg,pcs,0.0,3.0,0.02675485930237919,0.07490807464536398
+2026-02-01,abuja | flood lamps | pcs,abuja,flood lamps,pcs,15.0,0.0,0.19672757814149214,0.5431953981677236
+2026-03-01,abuja | flood lamps | pcs,abuja,flood lamps,pcs,0.0,15.0,0.053429629593647096,0.158683186814342
+2026-02-01,abuja | flood light | pcs,abuja,flood light,pcs,0.0,0.0,0.19818929190652937,0.5431953981677236
+2026-03-01,abuja | flood light | pcs,abuja,flood light,pcs,6.0,0.0,0.09758187206029767,0.5431953981677236
+2026-02-01,abuja | gloves | dozens,abuja,gloves,dozens,4.0,0.0,0.6594930208946843,0.6456753940594864
+2026-03-01,abuja | gloves | dozens,abuja,gloves,dozens,0.0,4.0,0.0696846144220106,0.04510636143937355
+2026-02-01,abuja | gloves | ton,abuja,gloves,ton,300.0,0.0,4.050828133968945,2.509946279693584
+2026-03-01,abuja | gloves | ton,abuja,gloves,ton,0.0,300.0,7.170071450716396,11.410872917646248
+2026-02-01,abuja | granite | ton,abuja,granite,ton,360.0,0.0,3.233053093145271,0.0
+2026-03-01,abuja | granite | ton,abuja,granite,ton,240.0,360.0,3.6727701056308018,0.904180327698662
+2026-02-01,abuja | granite | tonnes,abuja,granite,tonnes,0.0,0.0,11.47917522197701,5.071495571008071
+2026-03-01,abuja | granite | tonnes,abuja,granite,tonnes,0.0,0.0,3.1045154108807864,5.071495571008071
+2026-02-01,abuja | gravel | trip,abuja,gravel,trip,0.0,0.0,0.9387237250366596,0.8820646610311891
+2026-03-01,abuja | gravel | trip,abuja,gravel,trip,4.0,0.0,0.5450407816684804,0.8820646610311891
+2026-02-01,abuja | greentoilet premium mobile toilet | nr,abuja,greentoilet premium mobile toilet,nr,0.0,0.0,0.275952700393814,0.36046929933852834
+2026-03-01,abuja | greentoilet premium mobile toilet | nr,abuja,greentoilet premium mobile toilet,nr,2.0,0.0,0.12541764685376158,0.36046929933852834
+2026-02-01,abuja | gum | pcs,abuja,gum,pcs,15.0,0.0,0.2584610669598716,0.4862522261389796
+2026-03-01,abuja | gum | pcs,abuja,gum,pcs,0.0,15.0,0.05624005402085552,0.1320621673122527
+2026-02-01,abuja | hammer | pcs,abuja,hammer,pcs,0.0,0.0,0.5723667538537776,0.3920504573629488
+2026-03-01,abuja | hammer | pcs,abuja,hammer,pcs,0.0,0.0,0.24060574859548328,0.13400760377772772
+2026-02-01,abuja | hardcore | ton,abuja,hardcore,ton,60.0,90.0,22.250681977840397,31.7779033286046
+2026-03-01,abuja | hardcore | ton,abuja,hardcore,ton,0.0,60.0,27.59439524564968,177.4818432941435
+2026-02-01,abuja | helmet | pcs,abuja,helmet,pcs,0.0,0.0,0.18294483798880054,0.17109971477293365
+2026-03-01,abuja | helmet | pcs,abuja,helmet,pcs,0.0,0.0,0.29744541140951464,0.586897454121347
+2026-02-01,abuja | hose | roll,abuja,hose,roll,0.0,0.0,0.321883307144655,0.06443974043780067
+2026-03-01,abuja | hose | roll,abuja,hose,roll,0.0,0.0,0.047670575348170034,0.0787467414273757
+2026-02-01,abuja | industrial extension | ton,abuja,industrial extension,ton,0.0,2.0,0.5749158506332623,0.9088485295307516
+2026-03-01,abuja | industrial extension | ton,abuja,industrial extension,ton,0.0,0.0,0.31462036168746216,0.8438618276543703
+2026-02-01,abuja | isreali white door | set,abuja,isreali white door,set,0.0,0.0,0.3462010741911227,0.3277246541803846
+2026-03-01,abuja | isreali white door | set,abuja,isreali white door,set,1.0,0.0,0.14678891746276537,0.3277246541803846
+2026-02-01,abuja | laser machine | set,abuja,laser machine,set,0.0,0.0,1.0145890036296485,0.34575110723685953
+2026-03-01,abuja | laser machine | set,abuja,laser machine,set,0.0,0.0,0.4090804468492244,0.34575110723685953
+2026-02-01,abuja | leather | roll,abuja,leather,roll,0.0,0.0,1.3496781232218846,0.5641201014865576
+2026-03-01,abuja | leather | roll,abuja,leather,roll,0.0,0.0,0.5021342962511695,0.5641201014865576
+2026-02-01,abuja | machine | set,abuja,machine,set,0.0,0.0,0.3055263134355603,0.03556347712483994
+2026-03-01,abuja | machine | set,abuja,machine,set,0.0,0.0,0.04419056709396628,0.02546105259863887
+2026-02-01,abuja | maker | pks,abuja,maker,pks,0.0,0.0,1.1173060717601282,0.6287267431495422
+2026-03-01,abuja | maker | pks,abuja,maker,pks,0.0,0.0,0.44009446007958053,0.6287267431495422
+2026-02-01,abuja | marine board | pcs,abuja,marine board,pcs,270.0,50.0,1.710841168965171,1.5149543986888396
+2026-03-01,abuja | marine board | pcs,abuja,marine board,pcs,330.0,270.0,4.527287138167137,5.146405105741186
+2026-02-01,abuja | marine boards | pcs,abuja,marine boards,pcs,250.0,0.0,0.589227414993768,0.5501372085059599
+2026-03-01,abuja | marine boards | pcs,abuja,marine boards,pcs,0.0,250.0,1.3787788282532425,2.940220488110542
+2026-02-01,abuja | marine boards | sheet,abuja,marine boards,sheet,315.0,0.0,0.36119025261815796,0.3238754768017316
+2026-03-01,abuja | marine boards | sheet,abuja,marine boards,sheet,0.0,315.0,3.1482442579669945,9.585057299080814
+2026-02-01,abuja | matt silver lining paint | bucket,abuja,matt silver lining paint,bucket,5.0,0.0,0.7401036401696144,0.7692174112006458
+2026-03-01,abuja | matt silver lining paint | bucket,abuja,matt silver lining paint,bucket,0.0,5.0,0.41496258135533604,0.14770349485864984
+2026-02-01,abuja | mobile toilet | set,abuja,mobile toilet,set,1.0,0.0,0.29755339284998855,0.32564963001067265
+2026-03-01,abuja | mobile toilet | set,abuja,mobile toilet,set,0.0,1.0,0.030080461952138062,0.0
+2026-02-01,abuja | nail | bag,abuja,nail,bag,0.0,10.0,4.530114286926298,3.036158886306488
+2026-03-01,abuja | nail | bag,abuja,nail,bag,0.0,0.0,1.0991412221424115,1.2541836844793588
+2026-02-01,abuja | nail | carton,abuja,nail,carton,0.0,1.0,0.912135107586898,0.24958010263048658
+2026-03-01,abuja | nail | carton,abuja,nail,carton,0.0,0.0,0.32266191812626055,0.22397599066223867
+2026-02-01,abuja | nail | pack,abuja,nail,pack,0.0,0.0,0.22072716713364288,0.23508868087455623
+2026-03-01,abuja | nail | pack,abuja,nail,pack,0.0,0.0,0.051355431238814093,0.17757448577305152
+2026-02-01,abuja | nail | pound,abuja,nail,pound,0.0,0.0,0.2292952058527968,0.23790468409493998
+2026-03-01,abuja | nail | pound,abuja,nail,pound,0.0,0.0,0.05124582378630792,0.18422580219090778
+2026-02-01,abuja | nails | bag,abuja,nails,bag,0.0,0.0,2.8915590974848686,1.66873416402508
+2026-03-01,abuja | nails | bag,abuja,nails,bag,0.0,0.0,0.5663875412815054,1.1092118657715235
+2026-02-01,abuja | nails | packs,abuja,nails,packs,45.0,0.0,0.3940831454274131,0.6096485553043827
+2026-03-01,abuja | nails | packs,abuja,nails,packs,0.0,45.0,1.0340003951717018,0.5549133017292129
+2026-02-01,abuja | net | roll,abuja,net,roll,0.0,0.0,0.521875542549856,0.5912429280902121
+2026-03-01,abuja | net | roll,abuja,net,roll,0.0,0.0,0.2111851349015083,0.5912429280902121
+2026-02-01,abuja | original reflective jacket md | pcs,abuja,original reflective jacket md,pcs,0.0,0.0,0.9211118059654568,0.7541068334938186
+2026-03-01,abuja | original reflective jacket md | pcs,abuja,original reflective jacket md,pcs,2.0,0.0,0.42233297899959027,0.7541068334938186
+2026-02-01,abuja | pair of safety joggers md | pcs,abuja,pair of safety joggers md,pcs,0.0,0.0,0.892008381147583,0.8264445151749555
+2026-03-01,abuja | pair of safety joggers md | pcs,abuja,pair of safety joggers md,pcs,2.0,0.0,0.41915732554267404,0.8264445151749555
+2026-02-01,abuja | pan | pcs,abuja,pan,pcs,0.0,0.0,0.5642596745301598,0.0
+2026-03-01,abuja | pan | pcs,abuja,pan,pcs,0.0,0.0,0.2578428417465509,0.08718722961883374
+2026-02-01,abuja | pegs | pcs,abuja,pegs,pcs,0.0,0.0,1.9795796839115312,0.8264445151749555
+2026-03-01,abuja | pegs | pcs,abuja,pegs,pcs,0.0,0.0,0.76832524812333,0.8264445151749555
+2026-02-01,abuja | pipe 3 | pcs,abuja,pipe 3,pcs,60.0,0.0,0.9679442879634867,0.8264445151749555
+2026-03-01,abuja | pipe 3 | pcs,abuja,pipe 3,pcs,0.0,60.0,2.0602606616740777,1.068409133407478
+2026-02-01,abuja | pipe electrical | pcs,abuja,pipe electrical,pcs,15.0,0.0,0.877326895565613,0.8264445151749555
+2026-03-01,abuja | pipe electrical | pcs,abuja,pipe electrical,pcs,0.0,15.0,0.12752657380881938,0.2752760646623462
+2026-02-01,abuja | plaster sand | ton,abuja,plaster sand,ton,60.0,30.0,4.872819636264072,5.765768373578122
+2026-03-01,abuja | plaster sand | ton,abuja,plaster sand,ton,60.0,60.0,18.013197460050364,33.42790686913182
+2026-02-01,abuja | plaster sand | trips,abuja,plaster sand,trips,0.0,0.0,0.20684303417413624,0.21511821004671716
+2026-03-01,abuja | plaster sand | trips,abuja,plaster sand,trips,0.0,0.0,0.7571374399164372,1.6717244639646935
+2026-02-01,abuja | plum | pcs,abuja,plum,pcs,2.0,6.0,1.0959024815947291,0.0
+2026-03-01,abuja | plum | pcs,abuja,plum,pcs,0.0,2.0,0.9030248807996317,1.074005163601743
+2026-02-01,abuja | plumbing mat | pcs,abuja,plumbing mat,pcs,0.0,0.0,2.302459761637059,8.820024400006337
+2026-03-01,abuja | plumbing mat | pcs,abuja,plumbing mat,pcs,0.0,0.0,0.7610599523043649,4.782373344781942
+2026-02-01,abuja | poker vibrator | set,abuja,poker vibrator,set,1.0,0.0,0.6885110048900447,0.5816698946099288
+2026-03-01,abuja | poker vibrator | set,abuja,poker vibrator,set,0.0,1.0,0.05464544921232979,0.07696202897661367
+2026-02-01,abuja | polystyrene sheet | pcs,abuja,polystyrene sheet,pcs,15.0,0.0,1.3898217066460665,0.8436600726165757
+2026-03-01,abuja | polystyrene sheet | pcs,abuja,polystyrene sheet,pcs,0.0,15.0,0.16362817383398945,0.28729646175774626
+2026-02-01,abuja | polystyrene sheets | pcs,abuja,polystyrene sheets,pcs,0.0,20.0,0.38887075679033994,0.11875641004808575
+2026-03-01,abuja | polystyrene sheets | pcs,abuja,polystyrene sheets,pcs,0.0,0.0,0.2582977890926417,0.7013289074829432
+2026-02-01,abuja | pop cement | bag,abuja,pop cement,bag,0.0,0.0,0.9829076634689693,0.7456602319823329
+2026-03-01,abuja | pop cement | bag,abuja,pop cement,bag,0.0,0.0,0.4513299020575526,0.9275202577034165
+2026-02-01,abuja | primer | kg,abuja,primer,kg,10.0,0.0,1.645101429425302,0.8625477918229931
+2026-03-01,abuja | primer | kg,abuja,primer,kg,0.0,10.0,0.28771799567247214,0.16175218167819122
+2026-02-01,abuja | profiles | pcs,abuja,profiles,pcs,0.0,0.0,2.168072143124396,0.8492085092060033
+2026-03-01,abuja | profiles | pcs,abuja,profiles,pcs,0.0,0.0,0.8305650692561579,0.8492085092060033
+2026-02-01,abuja | rain coats | nr,abuja,rain coats,nr,0.0,0.0,0.31806805987402936,0.6068430460863223
+2026-03-01,abuja | rain coats | nr,abuja,rain coats,nr,15.0,0.0,0.14703744044234285,0.6068430460863223
+2026-02-01,abuja | rainboots | nr,abuja,rainboots,nr,0.0,0.0,0.28239310122102357,0.6068430460863223
+2026-03-01,abuja | rainboots | nr,abuja,rainboots,nr,20.0,0.0,0.13111284544293436,0.6068430460863223
+2026-02-01,abuja | rainboots | pairs,abuja,rainboots,pairs,0.0,0.0,0.1918123908607117,0.08919622714635726
+2026-03-01,abuja | rainboots | pairs,abuja,rainboots,pairs,0.0,0.0,0.40762497099594047,0.8971710378531659
+2026-02-01,abuja | range | length,abuja,range,length,0.0,0.0,2.151509815530854,1.8161454873407132
+2026-03-01,abuja | range | length,abuja,range,length,0.0,0.0,0.6297446411954548,0.3906687572329579
+2026-02-01,abuja | range | pcs,abuja,range,pcs,6.0,0.0,0.988018407730636,0.8492085092060033
+2026-03-01,abuja | range | pcs,abuja,range,pcs,0.0,6.0,0.2809373148535963,0.08734363559209157
+2026-02-01,abuja | rechargeable fan | set,abuja,rechargeable fan,set,0.0,0.0,0.07450685878506715,0.10580036500586855
+2026-03-01,abuja | rechargeable fan | set,abuja,rechargeable fan,set,0.0,0.0,0.3427355876510713,0.5880561973150333
+2026-02-01,abuja | reflective jacket | pcs,abuja,reflective jacket,pcs,0.0,0.0,0.2638133319833071,0.07789726281456433
+2026-03-01,abuja | reflective jacket | pcs,abuja,reflective jacket,pcs,0.0,0.0,0.4720546707918488,0.8460873831150433
+2026-02-01,abuja | reflective jackets | nr,abuja,reflective jackets,nr,0.0,0.0,0.38102111965733704,1.5682517283535207
+2026-03-01,abuja | reflective jackets | nr,abuja,reflective jackets,nr,20.0,0.0,0.18500424480423763,1.5682517283535207
+2026-02-01,abuja | reinforcement | length,abuja,reinforcement,length,0.0,0.0,6.442654010019368,3.0750484918325816
+2026-03-01,abuja | reinforcement | length,abuja,reinforcement,length,0.0,0.0,1.100097838215261,0.9738976130156638
+2026-02-01,abuja | reinforcement | roll,abuja,reinforcement,roll,0.0,60.0,4.054521832491428,2.0307886827169535
+2026-03-01,abuja | reinforcement | roll,abuja,reinforcement,roll,0.0,0.0,0.33197595422444254,0.5159057903547006
+2026-02-01,abuja | reinforcement | tonnes,abuja,reinforcement,tonnes,0.0,56.0,12.43438383075101,36.177800511044
+2026-03-01,abuja | reinforcement | tonnes,abuja,reinforcement,tonnes,0.0,0.0,0.5715977311488809,2.2500688668946616
+2026-02-01,abuja | reinforcements | length,abuja,reinforcements,length,0.0,0.0,2.431178190133525,0.028314174361812997
+2026-03-01,abuja | reinforcements | length,abuja,reinforcements,length,0.0,0.0,4.727088363261222,4.2003554963340175
+2026-02-01,abuja | reinforcements | roll,abuja,reinforcements,roll,0.0,0.0,0.8331618310135782,0.2626287750984065
+2026-03-01,abuja | reinforcements | roll,abuja,reinforcements,roll,0.0,0.0,0.15536675124610103,0.8506508975055562
+2026-02-01,abuja | reinforcements | ton,abuja,reinforcements,ton,1.0,25.0,5.043246381862348,4.6330270664296105
+2026-03-01,abuja | reinforcements | ton,abuja,reinforcements,ton,0.0,1.0,1.1753020157965328,2.702526347904869
+2026-02-01,abuja | roll of nylon | roll,abuja,roll of nylon,roll,0.0,0.0,0.6633364904066477,0.53618464003288
+2026-03-01,abuja | roll of nylon | roll,abuja,roll of nylon,roll,3.0,0.0,0.2474695001626331,0.53618464003288
+2026-02-01,abuja | rope | carton,abuja,rope,carton,0.0,0.0,0.3483939469442713,0.15921936387659671
+2026-03-01,abuja | rope | carton,abuja,rope,carton,0.0,0.0,0.15555990106448642,0.15035845465936165
+2026-02-01,abuja | rope | cartons,abuja,rope,cartons,0.0,0.0,0.7480664628020595,0.7117322226020755
+2026-03-01,abuja | rope | cartons,abuja,rope,cartons,0.0,0.0,0.29164938040517985,0.7117322226020755
+2026-02-01,abuja | safery material | pcs,abuja,safery material,pcs,0.0,0.0,0.16636021103495463,0.22042048211284945
+2026-03-01,abuja | safery material | pcs,abuja,safery material,pcs,0.0,0.0,0.3195653675975603,0.756991956870191
+2026-02-01,abuja | safety helmet | nr,abuja,safety helmet,nr,0.0,0.0,0.41427957270715154,0.6082960714657988
+2026-03-01,abuja | safety helmet | nr,abuja,safety helmet,nr,20.0,0.0,0.16921039351057418,0.6082960714657988
+2026-02-01,abuja | safety helmet md | pcs,abuja,safety helmet md,pcs,0.0,0.0,0.7550500108098932,0.756991956870191
+2026-03-01,abuja | safety helmet md | pcs,abuja,safety helmet md,pcs,2.0,0.0,0.2910773495120982,0.756991956870191
+2026-02-01,abuja | safety material | pack,abuja,safety material,pack,0.0,4.0,0.04961556767581131,0.12427785896738903
+2026-03-01,abuja | safety material | pack,abuja,safety material,pack,0.0,0.0,0.09543484015148417,0.27021215282760913
+2026-02-01,abuja | safety material | pairs,abuja,safety material,pairs,0.0,0.0,0.45347295808287613,0.1135045571031635
+2026-03-01,abuja | safety material | pairs,abuja,safety material,pairs,0.0,0.0,0.1157099031465176,0.10829541877492706
+2026-02-01,abuja | safety material | pcs,abuja,safety material,pcs,0.0,0.0,0.6564478065587538,0.7377041858631037
+2026-03-01,abuja | safety material | pcs,abuja,safety material,pcs,0.0,0.0,0.12303727471993849,0.11243657084996671
+2026-02-01,abuja | safety material | pks,abuja,safety material,pks,0.0,0.0,0.29491972252447535,0.09381955270472796
+2026-03-01,abuja | safety material | pks,abuja,safety material,pks,0.0,0.0,0.06690754878468866,0.10852144406452108
+2026-02-01,abuja | safety material | roll,abuja,safety material,roll,0.0,0.0,0.09891689274111228,0.17949342251166264
+2026-03-01,abuja | safety material | roll,abuja,safety material,roll,0.0,0.0,0.04691142147749954,0.1768397067116132
+2026-02-01,abuja | safety material | set,abuja,safety material,set,0.0,0.0,0.4437760214183453,0.33618732406434093
+2026-03-01,abuja | safety material | set,abuja,safety material,set,0.0,0.0,0.059759565966227064,0.07827893461354765
+2026-02-01,abuja | safety materials | pairs,abuja,safety materials,pairs,0.0,0.0,1.8411279676822199,1.015812143800353
+2026-03-01,abuja | safety materials | pairs,abuja,safety materials,pairs,0.0,0.0,0.7349482180778231,1.015812143800353
+2026-02-01,abuja | safety materials | pcs,abuja,safety materials,pcs,0.0,0.0,1.8265971419371838,1.0048944514074716
+2026-03-01,abuja | safety materials | pcs,abuja,safety materials,pcs,0.0,0.0,0.7134282315522489,1.0048944514074716
+2026-02-01,abuja | safety materials | pks,abuja,safety materials,pks,0.0,0.0,1.6663922422156934,1.0048944514074716
+2026-03-01,abuja | safety materials | pks,abuja,safety materials,pks,0.0,0.0,0.6646582096505187,1.0048944514074716
+2026-02-01,abuja | safety net | roll,abuja,safety net,roll,0.0,3.0,0.6246576904633261,0.47058084670377304
+2026-03-01,abuja | safety net | roll,abuja,safety net,roll,0.0,0.0,0.27007936671409155,0.4962394175296052
+2026-02-01,abuja | sand | pcs,abuja,sand,pcs,1150.0,0.0,0.8278834869861722,1.0048944514074716
+2026-03-01,abuja | sand | pcs,abuja,sand,pcs,0.0,1150.0,40.51819155330359,15.482278320412117
+2026-02-01,abuja | sand | ton,abuja,sand,ton,240.0,240.0,60.5699426447544,20.81267948517595
+2026-03-01,abuja | sand | ton,abuja,sand,ton,0.0,240.0,39.82682760133054,29.268208927347263
+2026-02-01,abuja | sand | tonnes,abuja,sand,tonnes,0.0,420.0,18.67314511883869,17.786361207567733
+2026-03-01,abuja | sand | tonnes,abuja,sand,tonnes,0.0,0.0,0.9150251252987127,3.1701473595978564
+2026-02-01,abuja | satin white paint | bucket,abuja,satin white paint,bucket,0.0,35.0,1.3356447546856804,0.17480675971858306
+2026-03-01,abuja | satin white paint | bucket,abuja,satin white paint,bucket,0.0,0.0,0.24948702492000396,0.0
+2026-02-01,abuja | satin white paint | buckets,abuja,satin white paint,buckets,0.0,0.0,0.7570306231522661,1.0497701494173692
+2026-03-01,abuja | satin white paint | buckets,abuja,satin white paint,buckets,65.0,0.0,0.30292830336024595,1.0497701494173692
+2026-02-01,abuja | seed menegatti concrete mixer | pcs,abuja,seed menegatti concrete mixer,pcs,0.0,0.0,0.7502560408429562,0.6628042570206156
+2026-03-01,abuja | seed menegatti concrete mixer | pcs,abuja,seed menegatti concrete mixer,pcs,2.0,0.0,0.3246000907319386,0.6628042570206156
+2026-02-01,abuja | sharp sand | ton,abuja,sharp sand,ton,345.0,0.0,3.266618593351568,1.1719779057835367
+2026-03-01,abuja | sharp sand | ton,abuja,sharp sand,ton,930.0,345.0,19.200012911521547,110.43965578236411
+2026-02-01,abuja | sharp sand | trip,abuja,sharp sand,trip,0.0,0.0,1.4753908924263346,1.5753848270757618
+2026-03-01,abuja | sharp sand | trip,abuja,sharp sand,trip,12.0,0.0,0.653977164541788,1.5753848270757618
+2026-02-01,abuja | shovel | pcs,abuja,shovel,pcs,0.0,0.0,0.8440228364945999,0.0
+2026-03-01,abuja | shovel | pcs,abuja,shovel,pcs,0.0,0.0,0.2223913716824089,0.06370230520287336
+2026-02-01,abuja | silver linning paint | buckets,abuja,silver linning paint,buckets,50.0,0.0,0.2854759969667091,0.8046955958291162
+2026-03-01,abuja | silver linning paint | buckets,abuja,silver linning paint,buckets,0.0,50.0,0.582254621837494,0.0
+2026-02-01,abuja | solar flood light | pcs,abuja,solar flood light,pcs,0.0,7.0,0.39563598597306654,0.0935934461527017
+2026-03-01,abuja | solar flood light | pcs,abuja,solar flood light,pcs,0.0,0.0,0.27801034064272523,0.107552293393102
+2026-02-01,abuja | square | pcs,abuja,square,pcs,0.0,6.0,1.2380320682162633,0.6764872186212512
+2026-03-01,abuja | square | pcs,abuja,square,pcs,0.0,0.0,0.5223635659555714,0.44245001518302784
+2026-02-01,abuja | stone | ton,abuja,stone,ton,0.0,0.0,3.88229020519387,2.5739546964550937
+2026-03-01,abuja | stone | ton,abuja,stone,ton,0.0,0.0,1.0366204822965015,7.315267581712064
+2026-02-01,abuja | stone | tonnes,abuja,stone,tonnes,0.0,360.0,17.378241637481935,41.7916338591478
+2026-03-01,abuja | stone | tonnes,abuja,stone,tonnes,0.0,0.0,0.7296001579164539,3.1128856373069604
+2026-02-01,abuja | stone | trips,abuja,stone,trips,0.0,0.0,0.6010767536645736,0.4113321719456978
+2026-03-01,abuja | stone | trips,abuja,stone,trips,0.0,0.0,0.16048324395344474,0.39676603209241074
+2026-02-01,abuja | stone dust | ton,abuja,stone dust,ton,0.0,0.0,1.3466092742677214,0.04751471566943308
+2026-03-01,abuja | stone dust | ton,abuja,stone dust,ton,0.0,0.0,0.2980787617422909,0.4472407543755991
+2026-02-01,abuja | table | pcs,abuja,table,pcs,0.0,0.0,0.3957143563487659,0.26570010496560276
+2026-03-01,abuja | table | pcs,abuja,table,pcs,0.0,0.0,0.07779573763094493,0.21331893604940003
+2026-02-01,abuja | table | set,abuja,table,set,0.0,0.0,0.19071838552922168,0.11162103944470794
+2026-03-01,abuja | table | set,abuja,table,set,0.0,0.0,0.07155631253006936,0.10912002819721821
+2026-02-01,abuja | tank | set,abuja,tank,set,0.0,0.0,0.5552015233702172,0.15700274214752336
+2026-03-01,abuja | tank | set,abuja,tank,set,0.0,0.0,0.08494660520508893,0.11284739900133034
+2026-02-01,abuja | tape | pcs,abuja,tape,pcs,0.0,0.0,0.4112093501317204,0.26570010496560276
+2026-03-01,abuja | tape | pcs,abuja,tape,pcs,0.0,0.0,0.08667348392981333,0.21739648353148627
+2026-02-01,abuja | tape | set,abuja,tape,set,0.0,0.0,0.3661103166764364,0.15700274214752336
+2026-03-01,abuja | tape | set,abuja,tape,set,0.0,0.0,0.07206899805536181,0.10912002819721821
+2026-02-01,abuja | through box | pcs,abuja,through box,pcs,15.0,0.0,0.527562958076873,0.6934382237391599
+2026-03-01,abuja | through box | pcs,abuja,through box,pcs,0.0,15.0,0.0965958964195289,0.23614900424920734
+2026-02-01,abuja | tile gum | bag,abuja,tile gum,bag,0.0,0.0,1.1507422015973905,0.8159779817453825
+2026-03-01,abuja | tile gum | bag,abuja,tile gum,bag,0.0,0.0,0.2268221049893672,0.7367473792264101
+2026-02-01,abuja | tiles | carton,abuja,tiles,carton,0.0,0.0,0.3499966386622656,0.0
+2026-03-01,abuja | tiles | carton,abuja,tiles,carton,0.0,0.0,0.1890774465898703,0.7035093618882704
+2026-02-01,abuja | tiles fix | bag,abuja,tiles fix,bag,35.0,0.0,0.12144151819026715,0.5802543893650907
+2026-03-01,abuja | tiles fix | bag,abuja,tiles fix,bag,0.0,35.0,0.7267201180245919,1.058717208671733
+2026-02-01,abuja | tonardo nails | carton,abuja,tonardo nails,carton,2.0,0.0,0.15739004573911095,0.8395497378104901
+2026-03-01,abuja | tonardo nails | carton,abuja,tonardo nails,carton,0.0,2.0,0.10441287803084309,0.2065250024144883
+2026-02-01,abuja | toye pvc gum | pcs,abuja,toye pvc gum,pcs,30.0,0.0,0.24253728538539307,0.17367307957796024
+2026-03-01,abuja | toye pvc gum | pcs,abuja,toye pvc gum,pcs,0.0,30.0,0.17350163229028592,0.7797289521878301
+2026-02-01,abuja | vacumm cleaning | pcs,abuja,vacumm cleaning,pcs,0.0,0.0,0.28224466511959756,0.18236842080214163
+2026-03-01,abuja | vacumm cleaning | pcs,abuja,vacumm cleaning,pcs,1.0,0.0,0.12894199936731754,0.18236842080214163
+2026-02-01,abuja | wall tiles gum | bag,abuja,wall tiles gum,bag,15.0,0.0,0.2680111513383413,0.80299131474204
+2026-03-01,abuja | wall tiles gum | bag,abuja,wall tiles gum,bag,0.0,15.0,0.3779671377510067,1.5135567707190813
+2026-02-01,abuja | wheel barrow | pcs,abuja,wheel barrow,pcs,0.0,0.0,1.4667857152192232,1.081404183147106
+2026-03-01,abuja | wheel barrow | pcs,abuja,wheel barrow,pcs,10.0,0.0,0.5129689847873049,1.081404183147106
+2026-02-01,abuja | wheel barrow | set,abuja,wheel barrow,set,0.0,0.0,1.0884528380363432,0.9305286535269737
+2026-03-01,abuja | wheel barrow | set,abuja,wheel barrow,set,0.0,0.0,0.21642944385948779,0.2238687549991792
+2026-02-01,abuja | wire mesh | roll,abuja,wire mesh,roll,0.0,0.0,2.541875793277001,1.7215034915215996
+2026-03-01,abuja | wire mesh | roll,abuja,wire mesh,roll,0.0,0.0,0.7937815534041663,1.7215034915215996
+2026-02-01,abuja | wire mesh | sheet,abuja,wire mesh,sheet,78.0,0.0,1.3870504307920322,0.7510847490657868
+2026-03-01,abuja | wire mesh | sheet,abuja,wire mesh,sheet,0.0,78.0,6.106181334240766,26.927930739332762
+2026-02-01,abuja | wood | pcs,abuja,wood,pcs,0.0,20.0,39.193068178611554,78.12869690752196
+2026-03-01,abuja | wood | pcs,abuja,wood,pcs,0.0,0.0,6.061038612007814,21.857969586018687
+2026-02-01,abuja | woods | pcs,abuja,woods,pcs,1000.0,800.0,20.292889822365797,1.1979217592488465
+2026-03-01,abuja | woods | pcs,abuja,woods,pcs,0.0,1000.0,47.02926192182933,84.37920401033772
+2026-02-01,abuja | y10mm | ton,abuja,y10mm,ton,1.0,0.0,0.1912226412595721,0.3843879263234484
+2026-03-01,abuja | y10mm | ton,abuja,y10mm,ton,0.0,1.0,0.05412997486080469,0.0
+2026-02-01,abuja | y12mm | ton,abuja,y12mm,ton,1.0,0.0,0.14283890721794637,0.3843879263234484
+2026-03-01,abuja | y12mm | ton,abuja,y12mm,ton,0.0,1.0,0.03730649050864366,0.0
+2026-02-01,abuja | y12mm real tmt iron | ton,abuja,y12mm real tmt iron,ton,0.0,0.0,0.13263454501008254,0.3843879263234484
+2026-03-01,abuja | y12mm real tmt iron | ton,abuja,y12mm real tmt iron,ton,2.0,0.0,0.08580761252054901,0.3843879263234484
+2026-02-01,abuja | y16mm | ton,abuja,y16mm,ton,1.0,0.0,0.13263454501008254,0.3843879263234484
+2026-03-01,abuja | y16mm | ton,abuja,y16mm,ton,0.0,1.0,0.03730649050864366,0.0
+2026-02-01,abuja | zinc | bundle,abuja,zinc,bundle,0.0,0.0,0.9296425992384589,0.0
+2026-03-01,abuja | zinc | bundle,abuja,zinc,bundle,0.0,0.0,0.314444942989993,0.0
+2026-02-01,abuja | zinc nails | pks,abuja,zinc nails,pks,0.0,0.0,0.36486614786201066,0.0
+2026-03-01,abuja | zinc nails | pks,abuja,zinc nails,pks,0.0,0.0,0.08783233705786768,0.0
+2026-02-01,anambra | bamboo | pcs,anambra,bamboo,pcs,0.0,0.0,1.217646916874088,0.8228925288934312
+2026-03-01,anambra | bamboo | pcs,anambra,bamboo,pcs,40.0,0.0,0.45160496951830026,0.8228925288934312
+2026-02-01,anambra | bindig wire | roll,anambra,bindig wire,roll,0.0,0.0,2.100247912756154,0.598040265756465
+2026-03-01,anambra | bindig wire | roll,anambra,bindig wire,roll,0.0,0.0,0.6920787799129935,0.598040265756465
+2026-02-01,anambra | cement | bag,anambra,cement,bag,600.0,0.0,8.694989378131385,5.251906146806878
+2026-03-01,anambra | cement | bag,anambra,cement,bag,0.0,600.0,1.5074781735729568,2.8078893603785877
+2026-02-01,anambra | granite | ton,anambra,granite,ton,0.0,0.0,10.82279118448021,3.166903857566391
+2026-03-01,anambra | granite | ton,anambra,granite,ton,0.0,0.0,2.7912988862693706,3.166903857566391
+2026-02-01,anambra | iron | length,anambra,iron,length,0.0,0.0,14.924022249712424,2.5152436816019574
+2026-03-01,anambra | iron | length,anambra,iron,length,0.0,0.0,2.869758341355997,2.5152436816019574
+2026-02-01,anambra | nail | bag,anambra,nail,bag,0.0,0.0,3.014381503451877,1.0588074997860701
+2026-03-01,anambra | nail | bag,anambra,nail,bag,0.0,0.0,0.8380906257656604,1.0588074997860701
+2026-02-01,anambra | other | tin,anambra,other,tin,0.0,0.0,0.1537992604426528,0.02121870299184332
+2026-03-01,anambra | other | tin,anambra,other,tin,0.0,0.0,0.4235733673202319,0.5334504097818433
+2026-02-01,anambra | paint | bucket,anambra,paint,bucket,0.0,0.0,0.6415489310160583,0.0
+2026-03-01,anambra | paint | bucket,anambra,paint,bucket,0.0,0.0,0.48214329605466366,0.8937175983909917
+2026-02-01,anambra | pipes | pcs,anambra,pipes,pcs,0.0,100.0,4.443202346841709,0.4861902044355944
+2026-03-01,anambra | pipes | pcs,anambra,pipes,pcs,0.0,0.0,0.1205424432865164,0.0
+2026-02-01,anambra | sand | ton,anambra,sand,ton,0.0,204.0,24.263022366050325,35.61015552383547
+2026-03-01,anambra | sand | ton,anambra,sand,ton,0.0,0.0,1.3773175479098714,4.855739548944025
+2026-02-01,anambra | sharp sand | ton,anambra,sharp sand,ton,240.0,0.0,5.406833074384462,2.9747065751030304
+2026-03-01,anambra | sharp sand | ton,anambra,sharp sand,ton,0.0,240.0,20.895869030431566,20.64851572571043
+2026-02-01,anambra | tiles | carton,anambra,tiles,carton,0.0,0.0,0.28364180189289345,0.6807462233396102
+2026-03-01,anambra | tiles | carton,anambra,tiles,carton,109.0,0.0,0.12215772724241139,0.6807462233396102
+2026-02-01,anambra | wood | pcs,anambra,wood,pcs,0.0,0.0,3.074315317041381,2.2384824322655525
+2026-03-01,anambra | wood | pcs,anambra,wood,pcs,0.0,0.0,4.549056448809731,19.338914284071627
+2026-02-01,lagos | 1 4 copper pipe | roll,lagos,1 4 copper pipe,roll,5.0,0.0,0.15243102514659881,0.23066296802305128
+2026-03-01,lagos | 1 4 copper pipe | roll,lagos,1 4 copper pipe,roll,0.0,5.0,0.020954765013182365,0.0
+2026-02-01,lagos | 1 4 plywood | sheets,lagos,1 4 plywood,sheets,30.0,0.0,0.15766848534216799,0.03145119562104744
+2026-03-01,lagos | 1 4 plywood | sheets,lagos,1 4 plywood,sheets,0.0,30.0,0.14679160576140335,0.003922701008307621
+2026-02-01,lagos | 1 by adaptor | pcs,lagos,1 by adaptor,pcs,0.0,0.0,0.01745113176450799,0.0
+2026-03-01,lagos | 1 by adaptor | pcs,lagos,1 by adaptor,pcs,0.0,0.0,0.009188144900903852,0.0
+2026-02-01,lagos | 1 by elbow | nos,lagos,1 by elbow,nos,0.0,0.0,0.04302106277246401,0.0
+2026-03-01,lagos | 1 by elbow | nos,lagos,1 by elbow,nos,0.0,0.0,0.1380911140174106,0.19913180630914526
+2026-02-01,lagos | 1 el blow by 45 | pcs,lagos,1 el blow by 45,pcs,0.0,0.0,0.005406431389296286,0.0
+2026-03-01,lagos | 1 el blow by 45 | pcs,lagos,1 el blow by 45,pcs,0.0,0.0,0.03361452463101502,0.0
+2026-02-01,lagos | 1 elbow | pcs,lagos,1 elbow,pcs,0.0,0.0,0.01356146815247723,0.024084312525428607
+2026-03-01,lagos | 1 elbow | pcs,lagos,1 elbow,pcs,0.0,0.0,7.166326030394446e-05,0.0
+2026-02-01,lagos | 1 elbow by 90 | pcs,lagos,1 elbow by 90,pcs,0.0,0.0,0.005209244105268409,0.0
+2026-03-01,lagos | 1 elbow by 90 | pcs,lagos,1 elbow by 90,pcs,0.0,0.0,0.01106287833167045,0.0
+2026-02-01,lagos | 1 pipe | pcs,lagos,1 pipe,pcs,0.0,0.0,0.001469021614541876,0.0
+2026-03-01,lagos | 1 pipe | pcs,lagos,1 pipe,pcs,0.0,0.0,0.0545642510433171,0.0
+2026-02-01,lagos | 1 plastic extension | pcs,lagos,1 plastic extension,pcs,1.0,0.0,0.0955438202783174,0.2570149499157784
+2026-03-01,lagos | 1 plastic extension | pcs,lagos,1 plastic extension,pcs,0.0,1.0,2.7570349646498476e-05,0.0
+2026-02-01,lagos | 1 ppr socket | pcs,lagos,1 ppr socket,pcs,0.0,0.0,0.0014111761661375,0.0
+2026-03-01,lagos | 1 ppr socket | pcs,lagos,1 ppr socket,pcs,0.0,0.0,0.01106287833167045,0.0
+2026-02-01,lagos | 1 t | pcs,lagos,1 t,pcs,0.0,0.0,0.0012147724592798655,0.0
+2026-03-01,lagos | 1 t | pcs,lagos,1 t,pcs,0.0,0.0,0.029823215166648133,0.0
+2026-02-01,lagos | 1 thread plug | pcs,lagos,1 thread plug,pcs,0.0,0.0,0.0012147724592798655,0.0
+2026-03-01,lagos | 1 thread plug | pcs,lagos,1 thread plug,pcs,0.0,0.0,2.7570349646498476e-05,0.0
+2026-02-01,lagos | 10 meter tape role | pcs,lagos,10 meter tape role,pcs,0.0,0.0,0.0012147724592798655,0.0
+2026-03-01,lagos | 10 meter tape role | pcs,lagos,10 meter tape role,pcs,0.0,0.0,0.0749394059509018,0.2570149499157784
+2026-02-01,lagos | 100 measuring tape | pcs,lagos,100 measuring tape,pcs,0.0,0.0,0.0012147724592798655,0.0
+2026-03-01,lagos | 100 measuring tape | pcs,lagos,100 measuring tape,pcs,0.0,0.0,0.08632277713151514,0.24180215527262403
+2026-02-01,lagos | 100mm cap plyg | pcs,lagos,100mm cap plyg,pcs,0.0,0.0,0.10214149061568052,0.0
+2026-03-01,lagos | 100mm cap plyg | pcs,lagos,100mm cap plyg,pcs,0.0,0.0,0.10330915515205301,0.24180215527262403
+2026-02-01,lagos | 100mm upvc pipe | length,lagos,100mm upvc pipe,length,0.0,0.0,0.32221036548752974,0.0
+2026-03-01,lagos | 100mm upvc pipe | length,lagos,100mm upvc pipe,length,0.0,0.0,0.5510797160421204,0.21965807095033157
+2026-02-01,lagos | 10mm reinforcement | length,lagos,10mm reinforcement,length,133.0,0.0,1.6614493920848692,0.26020193296280775
+2026-03-01,lagos | 10mm reinforcement | length,lagos,10mm reinforcement,length,399.0,133.0,1.5742889402173352,0.18386666667897109
+2026-02-01,lagos | 10mm reinforcements | length,lagos,10mm reinforcements,length,0.0,0.0,0.49295861537019003,0.26020193296280775
+2026-03-01,lagos | 10mm reinforcements | length,lagos,10mm reinforcements,length,1197.0,0.0,0.21778061258037484,0.26020193296280775
+2026-02-01,lagos | 10mm rienforcement | length,lagos,10mm rienforcement,length,266.0,0.0,0.29753812558491877,0.26020193296280775
+2026-03-01,lagos | 10mm rienforcement | length,lagos,10mm rienforcement,length,0.0,266.0,0.2690786871989389,0.3281887827855525
+2026-02-01,lagos | 10mm rienforcement | ton,lagos,10mm rienforcement,ton,0.0,1.0,0.2695299385919713,0.148160359712887
+2026-03-01,lagos | 10mm rienforcement | ton,lagos,10mm rienforcement,ton,0.0,0.0,0.299564904333702,0.1802158875912915
+2026-02-01,lagos | 12 watt ressesd light | pcs,lagos,12 watt ressesd light,pcs,29.0,0.0,0.04240119189222245,0.2830821307258586
+2026-03-01,lagos | 12 watt ressesd light | pcs,lagos,12 watt ressesd light,pcs,0.0,29.0,0.0601135812567059,0.4668070925809374
+2026-02-01,lagos | 12mm reinfocement | length,lagos,12mm reinfocement,length,0.0,0.0,0.793579077682596,0.26020193296280775
+2026-03-01,lagos | 12mm reinfocement | length,lagos,12mm reinfocement,length,186.0,0.0,0.32225281157060204,0.26020193296280775
+2026-02-01,lagos | 12mm reinforcement | length,lagos,12mm reinforcement,length,186.0,0.0,1.3279875795389544,0.26020193296280775
+2026-03-01,lagos | 12mm reinforcement | length,lagos,12mm reinforcement,length,465.0,186.0,0.6839901740490624,0.0
+2026-02-01,lagos | 12mm reinforcements | length,lagos,12mm reinforcements,length,0.0,0.0,0.5538067590757423,0.26020193296280775
+2026-03-01,lagos | 12mm reinforcements | length,lagos,12mm reinforcements,length,930.0,0.0,0.29737170384730455,0.26020193296280775
+2026-02-01,lagos | 12mm rienforcement | length,lagos,12mm rienforcement,length,0.0,0.0,0.4151996779142192,0.2383245475921237
+2026-03-01,lagos | 12mm rienforcement | length,lagos,12mm rienforcement,length,4324.0,0.0,0.22388423038950866,0.2383245475921237
+2026-02-01,lagos | 12watt led swicht | pcs,lagos,12watt led swicht,pcs,2.0,0.0,0.03230352762950744,0.26080754004170276
+2026-03-01,lagos | 12watt led swicht | pcs,lagos,12watt led swicht,pcs,0.0,2.0,0.007038418354339143,0.0
+2026-02-01,lagos | 13 amp double switch | pcs,lagos,13 amp double switch,pcs,64.0,0.0,0.03419542805696715,0.26080754004170276
+2026-03-01,lagos | 13 amp double switch | pcs,lagos,13 amp double switch,pcs,0.0,64.0,1.3200059059572298,0.4238168014238243
+2026-02-01,lagos | 13 amp single switch | pcs,lagos,13 amp single switch,pcs,35.0,0.0,0.049805049246919766,0.26080754004170276
+2026-03-01,lagos | 13 amp single switch | pcs,lagos,13 amp single switch,pcs,0.0,35.0,0.15989137850678847,0.0
+2026-02-01,lagos | 15ltrs sweethome water heater | pcs,lagos,15ltrs sweethome water heater,pcs,0.0,0.0,0.3382657352666673,0.26080754004170276
+2026-03-01,lagos | 15ltrs sweethome water heater | pcs,lagos,15ltrs sweethome water heater,pcs,0.0,0.0,0.12851448373159954,0.26080754004170276
+2026-02-01,lagos | 16mm reinforcement | length,lagos,16mm reinforcement,length,0.0,0.0,1.0480398380744078,0.2383245475921237
+2026-03-01,lagos | 16mm reinforcement | length,lagos,16mm reinforcement,length,0.0,0.0,0.4199367861496041,0.2383245475921237
+2026-02-01,lagos | 16mm reinforcements | length,lagos,16mm reinforcements,length,0.0,0.0,0.5765590030917638,0.2383245475921237
+2026-03-01,lagos | 16mm reinforcements | length,lagos,16mm reinforcements,length,270.0,0.0,0.25157801636123006,0.2383245475921237
+2026-02-01,lagos | 16mm rienforcement | ton,lagos,16mm rienforcement,ton,0.0,1.0,0.32431759272678407,0.148160359712887
+2026-03-01,lagos | 16mm rienforcement | ton,lagos,16mm rienforcement,ton,0.0,0.0,0.3169859423380728,0.1802158875912915
+2026-02-01,lagos | 180cm plum | nr,lagos,180cm plum,nr,0.0,0.0,0.3226463441426966,0.2679044901311477
+2026-03-01,lagos | 180cm plum | nr,lagos,180cm plum,nr,0.0,0.0,0.11893468385561641,0.2679044901311477
+2026-02-01,lagos | 1by12 wood | pcs,lagos,1by12 wood,pcs,3.0,0.0,0.19950736051305695,0.26080754004170276
+2026-03-01,lagos | 1by12 wood | pcs,lagos,1by12 wood,pcs,0.0,3.0,0.01979694472643,0.0
+2026-02-01,lagos | 1by4 ppr elbow | pcs,lagos,1by4 ppr elbow,pcs,0.0,0.0,0.028946046333841135,0.0
+2026-03-01,lagos | 1by4 ppr elbow | pcs,lagos,1by4 ppr elbow,pcs,0.0,0.0,0.017984126959575176,0.0
+2026-02-01,lagos | 2 5m cable | roll,lagos,2 5m cable,roll,0.0,0.0,0.4041824486794505,0.28443683586757096
+2026-03-01,lagos | 2 5m cable | roll,lagos,2 5m cable,roll,0.0,0.0,0.1869412965433351,0.28443683586757096
+2026-02-01,lagos | 2 5mm cable | roll,lagos,2 5mm cable,roll,1.0,0.0,0.059361437053821894,0.010658310121856314
+2026-03-01,lagos | 2 5mm cable | roll,lagos,2 5mm cable,roll,0.0,1.0,0.061274266246634394,0.0
+2026-02-01,lagos | 2 5mm out door wire | roll,lagos,2 5mm out door wire,roll,1.0,0.0,0.10921555386220065,0.28443683586757096
+2026-03-01,lagos | 2 5mm out door wire | roll,lagos,2 5mm out door wire,roll,0.0,1.0,0.050511530373913094,0.0
+2026-02-01,lagos | 2 bend | pcs,lagos,2 bend,pcs,0.0,0.0,0.008243136809762616,0.0
+2026-03-01,lagos | 2 bend | pcs,lagos,2 bend,pcs,0.0,0.0,0.0909806439583991,0.30007362760438805
+2026-02-01,lagos | 2 by 4 by 12 inches wood | nos,lagos,2 by 4 by 12 inches wood,nos,0.0,0.0,0.07332039712166857,0.22985101170076247
+2026-03-01,lagos | 2 by 4 by 12 inches wood | nos,lagos,2 by 4 by 12 inches wood,nos,300.0,0.0,0.0315028386703883,0.22985101170076247
+2026-02-01,lagos | 2 by 45 elbow | nos,lagos,2 by 45 elbow,nos,0.0,0.0,0.08668956518252095,0.0
+2026-03-01,lagos | 2 by 45 elbow | nos,lagos,2 by 45 elbow,nos,0.0,0.0,0.04165065761557069,0.22985101170076247
+2026-02-01,lagos | 2 common nail | bag,lagos,2 common nail,bag,0.0,0.0,0.3153569082054798,0.2911948315033849
+2026-03-01,lagos | 2 common nail | bag,lagos,2 common nail,bag,1.0,0.0,0.14136854798944157,0.2911948315033849
+2026-02-01,lagos | 2 common nails | bag,lagos,2 common nails,bag,7.0,2.0,1.1571202395629276,1.384778120252466
+2026-03-01,lagos | 2 common nails | bag,lagos,2 common nails,bag,7.0,7.0,0.6873649927543479,1.9043634485011687
+2026-02-01,lagos | 2 concrete nail | pac,lagos,2 concrete nail,pac,0.0,0.0,0.015989162077693953,0.024822907984607786
+2026-03-01,lagos | 2 concrete nail | pac,lagos,2 concrete nail,pac,0.0,0.0,0.13796586916769973,0.33643881473484216
+2026-02-01,lagos | 2 elbow | nos,lagos,2 elbow,nos,0.0,0.0,0.09021962015278756,0.0
+2026-03-01,lagos | 2 elbow | nos,lagos,2 elbow,nos,0.0,0.0,0.06434003155096163,0.2532212832367247
+2026-02-01,lagos | 2 floor drip | pcs,lagos,2 floor drip,pcs,0.0,0.0,0.026987090177059928,0.018743636478007746
+2026-03-01,lagos | 2 floor drip | pcs,lagos,2 floor drip,pcs,0.0,0.0,0.10030961520235539,0.3140762671317641
+2026-02-01,lagos | 2 inches bed | nos,lagos,2 inches bed,nos,8.0,0.0,0.168509243685375,0.2532212832367247
+2026-03-01,lagos | 2 inches bed | nos,lagos,2 inches bed,nos,0.0,8.0,8.533587553675168e-05,0.0
+2026-02-01,lagos | 2 pvc bend | pcs,lagos,2 pvc bend,pcs,0.0,0.0,1.3349151460777913,0.3241422062257518
+2026-03-01,lagos | 2 pvc bend | pcs,lagos,2 pvc bend,pcs,0.0,0.0,0.5100864919013663,0.3241422062257518
+2026-02-01,lagos | 2 pvc pipe | length,lagos,2 pvc pipe,length,0.0,0.0,0.1856002250187718,0.0
+2026-03-01,lagos | 2 pvc pipe | length,lagos,2 pvc pipe,length,0.0,0.0,0.24635070689202818,0.27234581255379686
+2026-02-01,lagos | 2 pvc pipe | pcs,lagos,2 pvc pipe,pcs,0.0,0.0,1.829056127318279,0.3241422062257518
+2026-03-01,lagos | 2 pvc pipe | pcs,lagos,2 pvc pipe,pcs,0.0,0.0,0.6368978927918376,0.3241422062257518
+2026-02-01,lagos | 2 pvc rubber | pcs,lagos,2 pvc rubber,pcs,0.0,0.0,1.848102141533643,0.3241422062257518
+2026-03-01,lagos | 2 pvc rubber | pcs,lagos,2 pvc rubber,pcs,0.0,0.0,0.6456436396791729,0.3241422062257518
+2026-02-01,lagos | 2 reducer | pcs,lagos,2 reducer,pcs,0.0,0.0,0.007048700967702917,0.013794131800439532
+2026-03-01,lagos | 2 reducer | pcs,lagos,2 reducer,pcs,0.0,0.0,0.08103255441118927,0.3169017935728963
+2026-02-01,lagos | 2 rubber | pcs,lagos,2 rubber,pcs,0.0,0.0,0.11339836625428411,0.12455154687331944
+2026-03-01,lagos | 2 rubber | pcs,lagos,2 rubber,pcs,0.0,0.0,7.166326030394446e-05,0.0
+2026-02-01,lagos | 2 rubbers | pcs,lagos,2 rubbers,pcs,0.0,0.0,0.014282335298104373,0.12156916044575342
+2026-03-01,lagos | 2 rubbers | pcs,lagos,2 rubbers,pcs,0.0,0.0,0.11677551221869076,0.3169017935728963
+2026-02-01,lagos | 2 set of track light | pcs,lagos,2 set of track light,pcs,2.0,0.0,0.10319608087186377,0.3169017935728963
+2026-03-01,lagos | 2 set of track light | pcs,lagos,2 set of track light,pcs,0.0,2.0,2.7570349646498476e-05,0.0
+2026-02-01,lagos | 2 socket | nos,lagos,2 socket,nos,0.0,0.0,0.004207848139971172,0.0
+2026-03-01,lagos | 2 socket | nos,lagos,2 socket,nos,0.0,0.0,0.07523704011176376,0.25591595930762273
+2026-02-01,lagos | 2 t | nos,lagos,2 t,nos,0.0,0.0,3.540276778633805e-05,0.0
+2026-03-01,lagos | 2 t | nos,lagos,2 t,nos,0.0,0.0,0.07189205006010163,0.25591595930762273
+2026-02-01,lagos | 2 t | pcs,lagos,2 t,pcs,0.0,0.0,3.540276778633805e-05,0.015027172521909136
+2026-03-01,lagos | 2 t | pcs,lagos,2 t,pcs,0.0,0.0,2.7570349646498476e-05,0.013794131800439532
+2026-02-01,lagos | 2 tonado nails | packets,lagos,2 tonado nails,packets,25.0,0.0,0.0704829759829605,0.27913691509618255
+2026-03-01,lagos | 2 tonado nails | packets,lagos,2 tonado nails,packets,52.0,25.0,0.05270695923306129,0.46033905253713403
+2026-02-01,lagos | 2 tonado nails | pkt,lagos,2 tonado nails,pkt,31.0,0.0,0.0358213379537421,0.26815360185433473
+2026-03-01,lagos | 2 tonado nails | pkt,lagos,2 tonado nails,pkt,45.0,31.0,0.21837253813297763,0.02602593209492471
+2026-02-01,lagos | 2 tonardo nails | pkt,lagos,2 tonardo nails,pkt,25.0,0.0,0.036455136644418316,0.26815360185433473
+2026-03-01,lagos | 2 tonardo nails | pkt,lagos,2 tonardo nails,pkt,0.0,25.0,0.0656942065471158,0.48488238465595096
+2026-02-01,lagos | 2 tornado | carton,lagos,2 tornado,carton,0.0,0.0,0.0033008571826469222,0.0
+2026-03-01,lagos | 2 tornado | carton,lagos,2 tornado,carton,0.0,0.0,0.002713641768714761,0.0
+2026-02-01,lagos | 2 y t | pcs,lagos,2 y t,pcs,0.0,0.0,0.0002173558125307258,0.0
+2026-03-01,lagos | 2 y t | pcs,lagos,2 y t,pcs,0.0,0.0,0.04620154690561271,0.2762659759751428
+2026-02-01,lagos | 200 amp mccb control | pcs,lagos,200 amp mccb control,pcs,1.0,0.0,0.0927502128789797,0.2762659759751428
+2026-03-01,lagos | 200 amp mccb control | pcs,lagos,200 amp mccb control,pcs,0.0,1.0,2.7570349646498476e-05,0.0
+2026-02-01,lagos | 20m pvc cap plug | pcs,lagos,20m pvc cap plug,pcs,0.0,0.0,0.03032666681876954,0.2762659759751428
+2026-03-01,lagos | 20m pvc cap plug | pcs,lagos,20m pvc cap plug,pcs,8.0,0.0,0.016662741293716404,0.2762659759751428
+2026-02-01,lagos | 20m pvc pipe | pcs,lagos,20m pvc pipe,pcs,0.0,0.0,0.026560468555456775,0.2762659759751428
+2026-03-01,lagos | 20m pvc pipe | pcs,lagos,20m pvc pipe,pcs,12.0,0.0,0.012946489376780734,0.2762659759751428
+2026-02-01,lagos | 20mm 3ways junction box | pcs,lagos,20mm 3ways junction box,pcs,140.0,0.0,0.026560468555456775,0.2762659759751428
+2026-03-01,lagos | 20mm 3ways junction box | pcs,lagos,20mm 3ways junction box,pcs,0.0,140.0,1.7201728204835502,0.6203665489991403
+2026-02-01,lagos | 20mm 4 ways conduit | packets,lagos,20mm 4 ways conduit,packets,0.0,0.0,0.08668956518252095,0.0
+2026-03-01,lagos | 20mm 4 ways conduit | packets,lagos,20mm 4 ways conduit,packets,0.0,0.0,0.03603939606803031,0.27913691509618255
+2026-02-01,lagos | 20mm 4ways junction box | pcs,lagos,20mm 4ways junction box,pcs,60.0,0.0,0.034609454437326395,0.2762659759751428
+2026-03-01,lagos | 20mm 4ways junction box | pcs,lagos,20mm 4ways junction box,pcs,0.0,60.0,1.4320764984864467,1.482280213563992
+2026-02-01,lagos | 20mm bending spring | pcs,lagos,20mm bending spring,pcs,0.0,0.0,3.540276778633805e-05,0.002036542307571761
+2026-03-01,lagos | 20mm bending spring | pcs,lagos,20mm bending spring,pcs,0.0,0.0,0.026103007944560653,0.2925258052137826
+2026-02-01,lagos | 20mm conduits pipes | bundle,lagos,20mm conduits pipes,bundle,12.0,0.0,0.1520948329617652,0.2529592358716299
+2026-03-01,lagos | 20mm conduits pipes | bundle,lagos,20mm conduits pipes,bundle,0.0,12.0,0.04714260507074399,0.0
+2026-02-01,lagos | 20mm coupler | pkt,lagos,20mm coupler,pkt,0.0,0.0,0.0002893524331126703,0.0
+2026-03-01,lagos | 20mm coupler | pkt,lagos,20mm coupler,pkt,0.0,0.0,0.0545642510433171,0.0
+2026-02-01,lagos | 20mm coupling | packets,lagos,20mm coupling,packets,0.0,0.0,0.05278028075938659,0.0
+2026-03-01,lagos | 20mm coupling | packets,lagos,20mm coupling,packets,0.0,0.0,0.05100484945379034,0.27913691509618255
+2026-02-01,lagos | 20mm dignity pipe | bundle,lagos,20mm dignity pipe,bundle,0.0,0.0,0.08369644318670971,0.0
+2026-03-01,lagos | 20mm dignity pipe | bundle,lagos,20mm dignity pipe,bundle,0.0,0.0,0.12842436760448675,0.2529592358716299
+2026-02-01,lagos | 20mm ppr plug | nos,lagos,20mm ppr plug,nos,0.0,0.0,0.02050800177225569,0.22443532540075015
+2026-03-01,lagos | 20mm ppr plug | nos,lagos,20mm ppr plug,nos,200.0,0.0,0.012757274967489175,0.22443532540075015
+2026-02-01,lagos | 20mm pvc pipe | bundle,lagos,20mm pvc pipe,bundle,0.0,0.0,0.14862449315157966,0.09159160475563445
+2026-03-01,lagos | 20mm pvc pipe | bundle,lagos,20mm pvc pipe,bundle,0.0,0.0,0.003846864840271643,0.0
+2026-02-01,lagos | 20mm reinforcement | length,lagos,20mm reinforcement,length,0.0,0.0,0.005009658809476514,0.14713959387514397
+2026-03-01,lagos | 20mm reinforcement | length,lagos,20mm reinforcement,length,165.0,0.0,0.0014188516745184648,0.14713959387514397
+2026-02-01,lagos | 20mm reinforcements | length,lagos,20mm reinforcements,length,0.0,0.0,0.005009658809476514,0.14713959387514397
+2026-03-01,lagos | 20mm reinforcements | length,lagos,20mm reinforcements,length,254.0,0.0,0.0014188516745184648,0.14713959387514397
+2026-02-01,lagos | 20mm rienforcement | length,lagos,20mm rienforcement,length,99.0,0.0,0.005009658809476514,0.14713959387514397
+2026-03-01,lagos | 20mm rienforcement | length,lagos,20mm rienforcement,length,0.0,99.0,1.058494352728093,0.0
+2026-02-01,lagos | 20mm rienforcement | ton,lagos,20mm rienforcement,ton,0.0,5.0,0.22058167262108166,0.23543260930870896
+2026-03-01,lagos | 20mm rienforcement | ton,lagos,20mm rienforcement,ton,0.0,0.0,0.30095182950310523,0.13812764354400422
+2026-02-01,lagos | 20mm t ways conduit | packets,lagos,20mm t ways conduit,packets,0.0,0.0,0.01396099280239705,0.0
+2026-03-01,lagos | 20mm t ways conduit | packets,lagos,20mm t ways conduit,packets,0.0,0.0,0.046815719343277364,0.2299361716859361
+2026-02-01,lagos | 24mm bolts | pcs,lagos,24mm bolts,pcs,0.0,0.0,0.016934240739401776,0.2050556838568716
+2026-03-01,lagos | 24mm bolts | pcs,lagos,24mm bolts,pcs,48.0,0.0,0.007987826901485749,0.2050556838568716
+2026-02-01,lagos | 24mm nuts | pcs,lagos,24mm nuts,pcs,0.0,0.0,0.016934240739401776,0.2050556838568716
+2026-03-01,lagos | 24mm nuts | pcs,lagos,24mm nuts,pcs,48.0,0.0,0.007987826901485749,0.2050556838568716
+2026-02-01,lagos | 24mm washers | pcs,lagos,24mm washers,pcs,0.0,0.0,0.016934240739401776,0.2050556838568716
+2026-03-01,lagos | 24mm washers | pcs,lagos,24mm washers,pcs,96.0,0.0,0.007987826901485749,0.2050556838568716
+2026-02-01,lagos | 25 12m ppr pipes | length,lagos,25 12m ppr pipes,length,0.0,0.0,0.0025235340705845963,0.14713959387514397
+2026-03-01,lagos | 25 12m ppr pipes | length,lagos,25 12m ppr pipes,length,20.0,0.0,0.0009323273420909655,0.14713959387514397
+2026-02-01,lagos | 25m cap plug | pcs,lagos,25m cap plug,pcs,0.0,0.0,0.021006542461086394,0.2050556838568716
+2026-03-01,lagos | 25m cap plug | pcs,lagos,25m cap plug,pcs,2.0,0.0,0.007987826901485749,0.2050556838568716
+2026-02-01,lagos | 25m pvc pipe | pcs,lagos,25m pvc pipe,pcs,0.0,0.0,0.021006542461086394,0.2050556838568716
+2026-03-01,lagos | 25m pvc pipe | pcs,lagos,25m pvc pipe,pcs,3.0,0.0,0.007987826901485749,0.2050556838568716
+2026-02-01,lagos | 25mm 2ways junction box | pcs,lagos,25mm 2ways junction box,pcs,100.0,0.0,0.021006542461086394,0.2050556838568716
+2026-03-01,lagos | 25mm 2ways junction box | pcs,lagos,25mm 2ways junction box,pcs,0.0,100.0,1.3686370601598252,0.3543167816553279
+2026-02-01,lagos | 25mm 3ways junction box | pcs,lagos,25mm 3ways junction box,pcs,60.0,0.0,0.021006542461086394,0.2050556838568716
+2026-03-01,lagos | 25mm 3ways junction box | pcs,lagos,25mm 3ways junction box,pcs,0.0,60.0,1.4320764984864467,1.3144312503619497
+2026-02-01,lagos | 25mm 4 ways conduit | packets,lagos,25mm 4 ways conduit,packets,0.0,0.0,3.540276778633805e-05,0.0
+2026-03-01,lagos | 25mm 4 ways conduit | packets,lagos,25mm 4 ways conduit,packets,0.0,0.0,0.025103049381821153,0.2299361716859361
+2026-02-01,lagos | 25mm 4ways junction box | pcs,lagos,25mm 4ways junction box,pcs,20.0,0.0,0.025311226939163944,0.2050556838568716
+2026-03-01,lagos | 25mm 4ways junction box | pcs,lagos,25mm 4ways junction box,pcs,0.0,20.0,0.0002103520108376078,0.0
+2026-02-01,lagos | 25mm bending spring | pcs,lagos,25mm bending spring,pcs,0.0,0.0,3.540276778633805e-05,0.0
+2026-03-01,lagos | 25mm bending spring | pcs,lagos,25mm bending spring,pcs,0.0,0.0,0.017260314468812526,0.2050556838568716
+2026-02-01,lagos | 25mm conduits pipes | bundle,lagos,25mm conduits pipes,bundle,6.0,0.0,0.14135380669040412,0.2742675579150582
+2026-03-01,lagos | 25mm conduits pipes | bundle,lagos,25mm conduits pipes,bundle,0.0,6.0,1.3671635478835142e-05,0.0
+2026-02-01,lagos | 25mm coupler | packs,lagos,25mm coupler,packs,0.0,0.0,0.03714407543474805,0.21161783841987414
+2026-03-01,lagos | 25mm coupler | packs,lagos,25mm coupler,packs,2.0,0.0,0.018614913186348052,0.21161783841987414
+2026-02-01,lagos | 25mm coupler | pkt,lagos,25mm coupler,pkt,0.0,0.0,0.005378470621618497,0.0
+2026-03-01,lagos | 25mm coupler | pkt,lagos,25mm coupler,pkt,0.0,0.0,0.0053705963558186,0.0
+2026-02-01,lagos | 25mm coupling | packets,lagos,25mm coupling,packets,0.0,0.0,0.050827695173209994,0.0
+2026-03-01,lagos | 25mm coupling | packets,lagos,25mm coupling,packets,0.0,0.0,0.027085137572656372,0.2299361716859361
+2026-02-01,lagos | 25mm dignity ppipe | bundle,lagos,25mm dignity ppipe,bundle,0.0,0.0,0.09996031292742093,0.021402070824424985
+2026-03-01,lagos | 25mm dignity ppipe | bundle,lagos,25mm dignity ppipe,bundle,0.0,0.0,0.08937850757152123,0.2742675579150582
+2026-02-01,lagos | 25mm marine rope | roll,lagos,25mm marine rope,roll,0.0,0.0,0.09733564293127965,0.2178266189576032
+2026-03-01,lagos | 25mm marine rope | roll,lagos,25mm marine rope,roll,1.0,0.0,0.05856164430572004,0.2178266189576032
+2026-02-01,lagos | 25mm ppr bridge | nos,lagos,25mm ppr bridge,nos,0.0,0.0,0.007508849933813419,0.13837922555889015
+2026-03-01,lagos | 25mm ppr bridge | nos,lagos,25mm ppr bridge,nos,100.0,0.0,0.00408380539809268,0.13837922555889015
+2026-02-01,lagos | 25mm ppr control valve | nos,lagos,25mm ppr control valve,nos,0.0,0.0,0.006733202083641401,0.13837922555889015
+2026-03-01,lagos | 25mm ppr control valve | nos,lagos,25mm ppr control valve,nos,140.0,0.0,0.003310794376799187,0.13837922555889015
+2026-02-01,lagos | 25mm ppr elbow | nos,lagos,25mm ppr elbow,nos,0.0,0.0,0.006733202083641401,0.13837922555889015
+2026-03-01,lagos | 25mm ppr elbow | nos,lagos,25mm ppr elbow,nos,200.0,0.0,0.003310794376799187,0.13837922555889015
+2026-02-01,lagos | 25mm ppr tee | nos,lagos,25mm ppr tee,nos,0.0,0.0,0.006733202083641401,0.13837922555889015
+2026-03-01,lagos | 25mm ppr tee | nos,lagos,25mm ppr tee,nos,60.0,0.0,0.003310794376799187,0.13837922555889015
+2026-02-01,lagos | 25mm pvc pipe | bundle,lagos,25mm pvc pipe,bundle,0.0,0.0,0.022057182458741234,0.0
+2026-03-01,lagos | 25mm pvc pipe | bundle,lagos,25mm pvc pipe,bundle,0.0,0.0,0.013443412712171289,0.0
+2026-02-01,lagos | 25mm reinfocement | length,lagos,25mm reinfocement,length,0.0,0.0,0.009150404562762143,0.14713959387514397
+2026-03-01,lagos | 25mm reinfocement | length,lagos,25mm reinfocement,length,84.0,0.0,0.004020608176131602,0.14713959387514397
+2026-02-01,lagos | 25mm reinforcement | length,lagos,25mm reinforcement,length,0.0,0.0,0.010316894486837532,0.14713959387514397
+2026-03-01,lagos | 25mm reinforcement | length,lagos,25mm reinforcement,length,84.0,0.0,0.004020608176131602,0.14713959387514397
+2026-02-01,lagos | 25mm reinforcements | length,lagos,25mm reinforcements,length,0.0,0.0,0.007209246818908587,0.14713959387514397
+2026-03-01,lagos | 25mm reinforcements | length,lagos,25mm reinforcements,length,63.0,0.0,0.0009323273420909655,0.14713959387514397
+2026-02-01,lagos | 25mm rienforcement | length,lagos,25mm rienforcement,length,264.0,0.0,0.01610292896294944,0.14713959387514397
+2026-03-01,lagos | 25mm rienforcement | length,lagos,25mm rienforcement,length,0.0,264.0,0.2450620373676059,0.20748367275667565
+2026-02-01,lagos | 25mm rienforcement | ton,lagos,25mm rienforcement,ton,0.0,1.0,0.27802544508386956,0.24705216184446027
+2026-03-01,lagos | 25mm rienforcement | ton,lagos,25mm rienforcement,ton,0.0,0.0,0.34850415498783055,0.28186865328806476
+2026-02-01,lagos | 25mm t ways conduit | packets,lagos,25mm t ways conduit,packets,0.0,0.0,3.540276778633805e-05,0.0
+2026-03-01,lagos | 25mm t ways conduit | packets,lagos,25mm t ways conduit,packets,0.0,0.0,0.06290705614231598,0.2299361716859361
+2026-02-01,lagos | 2by 12 wood | pcs,lagos,2by 12 wood,pcs,0.0,0.0,0.139183757094629,0.5502805220576723
+2026-03-01,lagos | 2by 12 wood | pcs,lagos,2by 12 wood,pcs,10.0,0.0,0.08365013018263788,0.5502805220576723
+2026-02-01,lagos | 2by2 wood | pcs,lagos,2by2 wood,pcs,0.0,0.0,0.011179976822828393,0.03836713458707696
+2026-03-01,lagos | 2by2 wood | pcs,lagos,2by2 wood,pcs,0.0,0.0,0.5279622093546052,0.5502805220576723
+2026-02-01,lagos | 2by3 wood | pcs,lagos,2by3 wood,pcs,15.0,10.0,0.007754156037759643,0.048784200320123955
+2026-03-01,lagos | 2by3 wood | pcs,lagos,2by3 wood,pcs,0.0,15.0,0.0683994186877317,0.5769263904963566
+2026-02-01,lagos | 2by4 wood | pcs,lagos,2by4 wood,pcs,12.0,0.0,0.8014316584747125,0.5502805220576723
+2026-03-01,lagos | 2by4 wood | pcs,lagos,2by4 wood,pcs,1001.0,12.0,0.03245752160377908,0.06462856300269773
+2026-02-01,lagos | 2x12 wood | pcs,lagos,2x12 wood,pcs,0.0,0.0,1.9021958013608322,0.6666004804844368
+2026-03-01,lagos | 2x12 wood | pcs,lagos,2x12 wood,pcs,0.0,0.0,0.6791856214126506,0.6666004804844368
+2026-02-01,lagos | 2x4 wood | pcs,lagos,2x4 wood,pcs,0.0,0.0,0.2373872097877441,0.0
+2026-03-01,lagos | 2x4 wood | pcs,lagos,2x4 wood,pcs,600.0,0.0,0.1060866769980676,0.0
+2026-02-01,lagos | 3 4 by45 bend | pcs,lagos,3 4 by45 bend,pcs,20.0,0.0,0.08766824462414823,0.3472627123424611
+2026-03-01,lagos | 3 4 by45 bend | pcs,lagos,3 4 by45 bend,pcs,0.0,20.0,0.005951280820941603,0.0
+2026-02-01,lagos | 3 4 elbow | pcs,lagos,3 4 elbow,pcs,20.0,0.0,0.09443838968662992,0.3472627123424611
+2026-03-01,lagos | 3 4 elbow | pcs,lagos,3 4 elbow,pcs,0.0,20.0,0.005951280820941603,0.0
+2026-02-01,lagos | 3 4 pipe | pcs,lagos,3 4 pipe,pcs,10.0,0.0,0.17371075164115368,0.3472627123424611
+2026-03-01,lagos | 3 4 pipe | pcs,lagos,3 4 pipe,pcs,0.0,10.0,0.025827554948277407,0.0
+2026-02-01,lagos | 3 4 ppr cap plug | pcs,lagos,3 4 ppr cap plug,pcs,0.0,0.0,2.7572248652860636,0.3472627123424611
+2026-03-01,lagos | 3 4 ppr cap plug | pcs,lagos,3 4 ppr cap plug,pcs,0.0,0.0,1.0457951968246562,0.3472627123424611
+2026-02-01,lagos | 3 4 ppr elbow | pcs,lagos,3 4 ppr elbow,pcs,0.0,0.0,5.641263754657611,0.6775944453240053
+2026-03-01,lagos | 3 4 ppr elbow | pcs,lagos,3 4 ppr elbow,pcs,0.0,0.0,1.5426512154881502,0.6775944453240053
+2026-02-01,lagos | 3 4 ppr m f elbow | pcs,lagos,3 4 ppr m f elbow,pcs,0.0,0.0,6.218242076951095,0.6775944453240053
+2026-03-01,lagos | 3 4 ppr m f elbow | pcs,lagos,3 4 ppr m f elbow,pcs,0.0,0.0,1.6398898850907666,0.6775944453240053
+2026-02-01,lagos | 3 4 ppr m f socket | pcs,lagos,3 4 ppr m f socket,pcs,0.0,0.0,6.032949669926067,0.6775944453240053
+2026-03-01,lagos | 3 4 ppr m f socket | pcs,lagos,3 4 ppr m f socket,pcs,0.0,0.0,1.6141532052720398,0.6775944453240053
+2026-02-01,lagos | 3 4 ppr socket | pcs,lagos,3 4 ppr socket,pcs,0.0,0.0,0.5311672469585709,0.03960708673826469
+2026-03-01,lagos | 3 4 ppr socket | pcs,lagos,3 4 ppr socket,pcs,0.0,0.0,0.23545132047833378,0.03726809806798793
+2026-02-01,lagos | 3 4 ppr stopcock | pcs,lagos,3 4 ppr stopcock,pcs,0.0,0.0,3.0471712155028,0.46066855356557684
+2026-03-01,lagos | 3 4 ppr stopcock | pcs,lagos,3 4 ppr stopcock,pcs,0.0,0.0,0.996424766928125,0.46066855356557684
+2026-02-01,lagos | 3 4 ppr tee | pcs,lagos,3 4 ppr tee,pcs,0.0,0.0,2.4791429228696975,0.46066855356557684
+2026-03-01,lagos | 3 4 ppr tee | pcs,lagos,3 4 ppr tee,pcs,0.0,0.0,0.91009781928978,0.46066855356557684
+2026-02-01,lagos | 3 4 socket | pcs,lagos,3 4 socket,pcs,10.0,0.0,0.6304438602368065,0.46066855356557684
+2026-03-01,lagos | 3 4 socket | pcs,lagos,3 4 socket,pcs,0.0,10.0,0.10889520009400122,0.0
+2026-02-01,lagos | 3 common nail | bag,lagos,3 common nail,bag,2.0,0.0,0.4927363684492713,0.3995917803921444
+2026-03-01,lagos | 3 common nail | bag,lagos,3 common nail,bag,0.0,2.0,0.3968263668282977,1.395871555216531
+2026-02-01,lagos | 3 common nails | bag,lagos,3 common nails,bag,13.0,8.0,1.4467955739028082,1.7298500901561216
+2026-03-01,lagos | 3 common nails | bag,lagos,3 common nails,bag,20.0,13.0,0.8135693993310564,2.765973795614064
+2026-02-01,lagos | 3 common nails | packets,lagos,3 common nails,packets,0.0,0.0,0.2951152970371053,0.4700866114920134
+2026-03-01,lagos | 3 common nails | packets,lagos,3 common nails,packets,2.0,0.0,0.1369754893923115,0.4700866114920134
+2026-02-01,lagos | 3 concrete nail | pac,lagos,3 concrete nail,pac,0.0,0.0,0.026500326197848537,0.045787872673311525
+2026-03-01,lagos | 3 concrete nail | pac,lagos,3 concrete nail,pac,0.0,0.0,0.25706415081360856,0.48884282658029216
+2026-02-01,lagos | 3 in 1 droping light | pcs,lagos,3 in 1 droping light,pcs,1.0,0.0,0.31138159541237465,0.473386111015793
+2026-03-01,lagos | 3 in 1 droping light | pcs,lagos,3 in 1 droping light,pcs,0.0,1.0,0.012444603642366938,0.025975908632401547
+2026-02-01,lagos | 3 inches ordinary nail | bag,lagos,3 inches ordinary nail,bag,0.0,0.0,0.19062316035602833,0.3437339525902809
+2026-03-01,lagos | 3 inches ordinary nail | bag,lagos,3 inches ordinary nail,bag,10.0,0.0,0.08295300006031778,0.3437339525902809
+2026-02-01,lagos | 3 rubber | pcs,lagos,3 rubber,pcs,0.0,0.0,0.037160226169084765,0.049815499721577935
+2026-03-01,lagos | 3 rubber | pcs,lagos,3 rubber,pcs,0.0,0.0,0.2512976002427177,0.473386111015793
+2026-02-01,lagos | 3 t | pcs,lagos,3 t,pcs,0.0,0.0,0.013811343903113348,0.04629924794538813
+2026-03-01,lagos | 3 t | pcs,lagos,3 t,pcs,0.0,0.0,0.26826429884388553,0.473386111015793
+2026-02-01,lagos | 3 tonado nails | packets,lagos,3 tonado nails,packets,20.0,0.0,0.2989621972078437,0.4700866114920134
+2026-03-01,lagos | 3 tonado nails | packets,lagos,3 tonado nails,packets,48.0,20.0,0.008207201237738574,0.0
+2026-02-01,lagos | 3 tonado nails | pkt,lagos,3 tonado nails,pkt,29.0,10.0,0.00811892984712565,0.0
+2026-03-01,lagos | 3 tonado nails | pkt,lagos,3 tonado nails,pkt,10.0,29.0,0.23135376680566458,1.0359631727877052
+2026-02-01,lagos | 3 tonardo nails | pkt,lagos,3 tonardo nails,pkt,20.0,0.0,0.5128476366638137,0.4621802070684545
+2026-03-01,lagos | 3 tonardo nails | pkt,lagos,3 tonardo nails,pkt,0.0,20.0,0.0002103520108376078,0.0
+2026-02-01,lagos | 3 tornado | carton,lagos,3 tornado,carton,0.0,0.0,0.0033008571826469222,0.001281252265545377
+2026-03-01,lagos | 3 tornado | carton,lagos,3 tornado,carton,0.0,0.0,0.002713641768714761,0.0
+2026-02-01,lagos | 3 tornador nail | pkt,lagos,3 tornador nail,pkt,1.0,0.0,0.5610878169848426,0.4621802070684545
+2026-03-01,lagos | 3 tornador nail | pkt,lagos,3 tornador nail,pkt,0.0,1.0,0.01912781489346018,0.024748954530315927
+2026-02-01,lagos | 30by60cm simtex manhole | pcs,lagos,30by60cm simtex manhole,pcs,0.0,3.0,0.05125941283253736,0.025975908632401547
+2026-03-01,lagos | 30by60cm simtex manhole | pcs,lagos,30by60cm simtex manhole,pcs,0.0,0.0,0.028160153789211103,0.04583534664066412
+2026-02-01,lagos | 30ltrs sweethome water heater | pcs,lagos,30ltrs sweethome water heater,pcs,0.0,0.0,1.4882264751637235,0.473386111015793
+2026-03-01,lagos | 30ltrs sweethome water heater | pcs,lagos,30ltrs sweethome water heater,pcs,0.0,0.0,0.5754698575897157,0.473386111015793
+2026-02-01,lagos | 3by3 wood | pcs,lagos,3by3 wood,pcs,0.0,0.0,0.20900512899846926,0.35120329810001566
+2026-03-01,lagos | 3by3 wood | pcs,lagos,3by3 wood,pcs,0.0,0.0,0.6822383722791951,0.5714359214547944
+2026-02-01,lagos | 3by4 wood | pcs,lagos,3by4 wood,pcs,0.0,0.0,1.9942166840211546,0.5714359214547944
+2026-03-01,lagos | 3by4 wood | pcs,lagos,3by4 wood,pcs,1000.0,0.0,0.7357782022049406,0.5714359214547944
+2026-02-01,lagos | 3x3 machine wood | pcs,lagos,3x3 machine wood,pcs,0.0,0.0,10.921486628084402,0.5714359214547944
+2026-03-01,lagos | 3x3 machine wood | pcs,lagos,3x3 machine wood,pcs,0.0,0.0,2.110106109442147,0.5714359214547944
+2026-02-01,lagos | 4 blocks | pcs,lagos,4 blocks,pcs,0.0,0.0,11.91613584850717,0.50658883100492
+2026-03-01,lagos | 4 blocks | pcs,lagos,4 blocks,pcs,0.0,0.0,2.257234476868307,0.50658883100492
+2026-02-01,lagos | 4 by 45 elbow | nos,lagos,4 by 45 elbow,nos,0.0,0.0,0.2922612680127858,0.03184882114501608
+2026-03-01,lagos | 4 by 45 elbow | nos,lagos,4 by 45 elbow,nos,0.0,0.0,0.5243999018835546,0.4441614965064612
+2026-02-01,lagos | 4 common nail | bag,lagos,4 common nail,bag,1.0,0.0,0.14233973135333938,0.33686264983750464
+2026-03-01,lagos | 4 common nail | bag,lagos,4 common nail,bag,0.0,1.0,0.36873395261516295,1.2884895730665522
+2026-02-01,lagos | 4 common nails | bag,lagos,4 common nails,bag,5.0,0.0,0.0577803210317782,0.33686264983750464
+2026-03-01,lagos | 4 common nails | bag,lagos,4 common nails,bag,15.0,5.0,0.3963787010580366,1.3209304100422625
+2026-02-01,lagos | 4 elbow | nos,lagos,4 elbow,nos,0.0,0.0,0.09483278429117326,0.00380428585982643
+2026-03-01,lagos | 4 elbow | nos,lagos,4 elbow,nos,0.0,0.0,0.1476249463597569,0.40491074851283076
+2026-02-01,lagos | 4 inches ordinary nail | bag,lagos,4 inches ordinary nail,bag,0.0,0.0,0.03739624435891958,0.33686264983750464
+2026-03-01,lagos | 4 inches ordinary nail | bag,lagos,4 inches ordinary nail,bag,10.0,0.0,0.012787349891626634,0.33686264983750464
+2026-02-01,lagos | 4 non return valve | pcs,lagos,4 non return valve,pcs,0.0,0.0,3.540276778633805e-05,0.04033799735036233
+2026-03-01,lagos | 4 non return valve | pcs,lagos,4 non return valve,pcs,0.0,0.0,2.7570349646498476e-05,0.040799460195230786
+2026-02-01,lagos | 4 rubber | pcs,lagos,4 rubber,pcs,0.0,0.0,0.010620493660823684,0.07838023251825893
+2026-03-01,lagos | 4 rubber | pcs,lagos,4 rubber,pcs,0.0,0.0,7.166326030394446e-05,0.035116609381180414
+2026-02-01,lagos | 4 socket | nos,lagos,4 socket,nos,0.0,0.0,0.01851311610410796,0.010225920821049818
+2026-03-01,lagos | 4 socket | nos,lagos,4 socket,nos,0.0,0.0,0.16469819903221783,0.40491074851283076
+2026-02-01,lagos | 4 t | nos,lagos,4 t,nos,0.0,0.0,0.01851311610410796,0.0
+2026-03-01,lagos | 4 t | nos,lagos,4 t,nos,0.0,0.0,0.18216826010825948,0.40491074851283076
+2026-02-01,lagos | 4 thick pipe | nos,lagos,4 thick pipe,nos,0.0,0.0,0.0020504519827624582,0.0
+2026-03-01,lagos | 4 thick pipe | nos,lagos,4 thick pipe,nos,0.0,0.0,0.179437419924323,0.40491074851283076
+2026-02-01,lagos | 4 tonado nails | packets,lagos,4 tonado nails,packets,10.0,0.0,0.2902127859032422,0.4623592195881859
+2026-03-01,lagos | 4 tonado nails | packets,lagos,4 tonado nails,packets,20.0,10.0,8.533587553675168e-05,0.0
+2026-02-01,lagos | 4 tonado nails | pkt,lagos,4 tonado nails,pkt,15.0,5.0,0.004369164002773289,0.0
+2026-03-01,lagos | 4 tonado nails | pkt,lagos,4 tonado nails,pkt,10.0,15.0,0.024910756230631742,0.09434542453923234
+2026-02-01,lagos | 4 tonardo nails | pkt,lagos,4 tonardo nails,pkt,10.0,0.0,0.47111684378287716,0.4618787298092205
+2026-03-01,lagos | 4 tonardo nails | pkt,lagos,4 tonardo nails,pkt,0.0,10.0,0.004419313501029592,0.0
+2026-02-01,lagos | 4 tornado | carton,lagos,4 tornado,carton,0.0,0.0,0.016018248006403963,0.0
+2026-03-01,lagos | 4 tornado | carton,lagos,4 tornado,carton,0.0,0.0,0.006526980984495102,0.0
+2026-02-01,lagos | 4 vent cap | nos,lagos,4 vent cap,nos,0.0,0.0,3.540276778633805e-05,0.0013991356091555506
+2026-03-01,lagos | 4 vent cap | nos,lagos,4 vent cap,nos,0.0,0.0,0.13396438279701914,0.40491074851283076
+2026-02-01,lagos | 4 way box | pkt,lagos,4 way box,pkt,0.0,0.0,0.007617800997882269,0.025650131140208757
+2026-03-01,lagos | 4 way box | pkt,lagos,4 way box,pkt,0.0,0.0,0.041465998760866825,0.02137301545998601
+2026-02-01,lagos | 4 yt | nos,lagos,4 yt,nos,0.0,0.0,3.540276778633805e-05,0.0013991356091555506
+2026-03-01,lagos | 4 yt | nos,lagos,4 yt,nos,0.0,0.0,0.13057454929455783,0.40491074851283076
+2026-02-01,lagos | 40by40cm simtex manhole | pcs,lagos,40by40cm simtex manhole,pcs,0.0,3.0,3.540276778633805e-05,0.0
+2026-03-01,lagos | 40by40cm simtex manhole | pcs,lagos,40by40cm simtex manhole,pcs,0.0,0.0,2.7570349646498476e-05,0.010369199541020259
+2026-02-01,lagos | 4by3 pvc | pcs,lagos,4by3 pvc,pcs,0.0,0.0,3.540276778633805e-05,0.010817369122805363
+2026-03-01,lagos | 4by3 pvc | pcs,lagos,4by3 pvc,pcs,0.0,0.0,0.07270731195118987,0.23340505113450016
+2026-02-01,lagos | 4by4 wood | pcs,lagos,4by4 wood,pcs,5.0,0.0,0.061330750327300024,0.23340505113450016
+2026-03-01,lagos | 4by4 wood | pcs,lagos,4by4 wood,pcs,0.0,5.0,2.7570349646498476e-05,0.0
+2026-02-01,lagos | 4d 16lines hilda laser | nos,lagos,4d 16lines hilda laser,nos,0.0,0.0,0.02613899030452206,0.17152264840329198
+2026-03-01,lagos | 4d 16lines hilda laser | nos,lagos,4d 16lines hilda laser,nos,1.0,0.0,0.00771047446080707,0.17152264840329198
+2026-02-01,lagos | 4ways complete electrical | pcs,lagos,4ways complete electrical,pcs,1.0,0.0,0.059615601386729465,0.22216451665785505
+2026-03-01,lagos | 4ways complete electrical | pcs,lagos,4ways complete electrical,pcs,0.0,1.0,2.7570349646498476e-05,0.0
+2026-02-01,lagos | 5 common nail | bag,lagos,5 common nail,bag,1.0,0.0,0.029340170689516883,0.14625020270241126
+2026-03-01,lagos | 5 common nail | bag,lagos,5 common nail,bag,0.0,1.0,0.3651525578282865,1.240312364680658
+2026-02-01,lagos | 50 12m ppr pipes | length,lagos,50 12m ppr pipes,length,0.0,0.0,0.053224125548333834,0.1806511212010249
+2026-03-01,lagos | 50 12m ppr pipes | length,lagos,50 12m ppr pipes,length,4.0,0.0,0.01641596295758842,0.1806511212010249
+2026-02-01,lagos | 50 25mm tee | nos,lagos,50 25mm tee,nos,0.0,0.0,0.060568105496734276,0.17152264840329198
+2026-03-01,lagos | 50 25mm tee | nos,lagos,50 25mm tee,nos,100.0,0.0,0.023589144891890772,0.17152264840329198
+2026-02-01,lagos | 50ltrs sweethome water heater | pcs,lagos,50ltrs sweethome water heater,pcs,0.0,0.0,0.12083043496430136,0.22216451665785505
+2026-03-01,lagos | 50ltrs sweethome water heater | pcs,lagos,50ltrs sweethome water heater,pcs,0.0,0.0,0.04598121919993198,0.22216451665785505
+2026-02-01,lagos | 50m bend | pcs,lagos,50m bend,pcs,0.0,0.0,0.06419523981978546,0.22216451665785505
+2026-03-01,lagos | 50m bend | pcs,lagos,50m bend,pcs,50.0,0.0,0.022624648154268994,0.22216451665785505
+2026-02-01,lagos | 50m hose | roll,lagos,50m hose,roll,0.0,0.0,0.1588799360637439,0.216160328432408
+2026-03-01,lagos | 50m hose | roll,lagos,50m hose,roll,50.0,0.0,0.06851942355851508,0.216160328432408
+2026-02-01,lagos | 50m pipe | pcs,lagos,50m pipe,pcs,0.0,0.0,0.033382219954107346,0.22216451665785505
+2026-03-01,lagos | 50m pipe | pcs,lagos,50m pipe,pcs,20.0,0.0,0.008157574572131898,0.22216451665785505
+2026-02-01,lagos | 50m rubber | pcs,lagos,50m rubber,pcs,0.0,0.0,0.03278548733700189,0.22216451665785505
+2026-03-01,lagos | 50m rubber | pcs,lagos,50m rubber,pcs,250.0,0.0,0.008157574572131898,0.22216451665785505
+2026-02-01,lagos | 50m socket | pcs,lagos,50m socket,pcs,0.0,0.0,0.03159305566404464,0.22216451665785505
+2026-03-01,lagos | 50m socket | pcs,lagos,50m socket,pcs,80.0,0.0,0.008157574572131898,0.22216451665785505
+2026-02-01,lagos | 50m x 45 bend | pcs,lagos,50m x 45 bend,pcs,0.0,0.0,0.033979297357057195,0.22216451665785505
+2026-03-01,lagos | 50m x 45 bend | pcs,lagos,50m x 45 bend,pcs,60.0,0.0,0.010489606204529676,0.22216451665785505
+2026-02-01,lagos | 50m y tee | pcs,lagos,50m y tee,pcs,0.0,0.0,0.035972048045544255,0.22216451665785505
+2026-03-01,lagos | 50m y tee | pcs,lagos,50m y tee,pcs,40.0,0.0,0.011268148214519522,0.22216451665785505
+2026-02-01,lagos | 50mm 45 bend | pcs,lagos,50mm 45 bend,pcs,0.0,0.0,0.2776507295917128,1.5204316946229661
+2026-03-01,lagos | 50mm 45 bend | pcs,lagos,50mm 45 bend,pcs,0.0,0.0,0.0039301813489507394,0.45126926493233904
+2026-02-01,lagos | 50mm bend | pcs,lagos,50mm bend,pcs,0.0,0.0,0.0893340721761571,0.4087350636215756
+2026-03-01,lagos | 50mm bend | pcs,lagos,50mm bend,pcs,0.0,0.0,7.166326030394446e-05,0.6056712692505266
+2026-02-01,lagos | 50mm cap plug | pcs,lagos,50mm cap plug,pcs,0.0,0.0,0.0014283123614832831,0.24431730484762285
+2026-03-01,lagos | 50mm cap plug | pcs,lagos,50mm cap plug,pcs,0.0,0.0,0.7183760574021083,1.5254252752756408
+2026-02-01,lagos | 50mm elbow | pcs,lagos,50mm elbow,pcs,0.0,0.0,0.0014283123614832831,0.22919677656343593
+2026-03-01,lagos | 50mm elbow | pcs,lagos,50mm elbow,pcs,0.0,0.0,0.6343295367339816,1.5254252752756408
+2026-02-01,lagos | 50mm hdpe sockets | nos,lagos,50mm hdpe sockets,nos,0.0,0.0,0.12403488038765123,0.5303354220333656
+2026-03-01,lagos | 50mm hdpe sockets | nos,lagos,50mm hdpe sockets,nos,110.0,0.0,0.05636345350181725,0.5303354220333656
+2026-02-01,lagos | 50mm pipe | pcs,lagos,50mm pipe,pcs,0.0,0.0,0.1234146801412489,0.19917982494467495
+2026-03-01,lagos | 50mm pipe | pcs,lagos,50mm pipe,pcs,0.0,0.0,0.007571526105214256,0.0
+2026-02-01,lagos | 50mm ppr clips | nos,lagos,50mm ppr clips,nos,0.0,0.0,0.158495720281277,0.5303354220333656
+2026-03-01,lagos | 50mm ppr clips | nos,lagos,50mm ppr clips,nos,100.0,0.0,0.06784510367126644,0.5303354220333656
+2026-02-01,lagos | 50mm rubbers | pcs,lagos,50mm rubbers,pcs,0.0,0.0,0.05826728834656145,0.37815100830181503
+2026-03-01,lagos | 50mm rubbers | pcs,lagos,50mm rubbers,pcs,0.0,0.0,0.01728892855764357,0.47547333519972634
+2026-02-01,lagos | 50mm socket | pcs,lagos,50mm socket,pcs,0.0,0.0,0.13700613801975492,0.0
+2026-03-01,lagos | 50mm socket | pcs,lagos,50mm socket,pcs,0.0,0.0,0.011458980476642143,0.0
+2026-02-01,lagos | 50mm upvc socket | pcs,lagos,50mm upvc socket,pcs,0.0,0.0,0.02312596258237572,0.19922584435013313
+2026-03-01,lagos | 50mm upvc socket | pcs,lagos,50mm upvc socket,pcs,0.0,0.0,0.7550888309198709,1.0868320795223316
+2026-02-01,lagos | 50mm y | pcs,lagos,50mm y,pcs,0.0,0.0,0.022742108732832365,0.0
+2026-03-01,lagos | 50mm y | pcs,lagos,50mm y,pcs,0.0,0.0,0.018569689174380385,0.01572091262848667
+2026-02-01,lagos | 50mm y tee | pcs,lagos,50mm y tee,pcs,0.0,0.0,0.025840530121646978,0.23980409516011772
+2026-03-01,lagos | 50mm y tee | pcs,lagos,50mm y tee,pcs,0.0,0.0,0.8080662749635532,1.0868320795223316
+2026-02-01,lagos | 50mmupvc pipe | length,lagos,50mmupvc pipe,length,0.0,0.0,0.037308311141797064,0.168952714402778
+2026-03-01,lagos | 50mmupvc pipe | length,lagos,50mmupvc pipe,length,0.0,0.0,0.4842080380911205,1.3365830464718709
+2026-02-01,lagos | 5kegs solignum | litre,lagos,5kegs solignum,litre,0.0,5.0,0.06278233789272998,0.8432314489860804
+2026-03-01,lagos | 5kegs solignum | litre,lagos,5kegs solignum,litre,0.0,0.0,0.45014498400457365,0.9260771430190171
+2026-02-01,lagos | 6 inch nigeria block | pcs,lagos,6 inch nigeria block,pcs,996.0,0.0,0.3422834689594613,0.556592579567907
+2026-03-01,lagos | 6 inch nigeria block | pcs,lagos,6 inch nigeria block,pcs,500.0,996.0,0.451827908269355,0.0
+2026-02-01,lagos | 60by60cm simtex manhole | pcs,lagos,60by60cm simtex manhole,pcs,0.0,1.0,0.004951480962237355,0.05530095177037414
+2026-03-01,lagos | 60by60cm simtex manhole | pcs,lagos,60by60cm simtex manhole,pcs,0.0,0.0,0.000952219283526074,0.07863197453744611
+2026-02-01,lagos | 6by4 socket | pcs,lagos,6by4 socket,pcs,0.0,0.0,0.004884923206980613,0.07863197453744611
+2026-03-01,lagos | 6by4 socket | pcs,lagos,6by4 socket,pcs,0.0,0.0,0.001018516559260048,0.07620518464728011
+2026-02-01,lagos | 6watt cob fitting | pcs,lagos,6watt cob fitting,pcs,52.0,0.0,0.22979515723014207,0.556592579567907
+2026-03-01,lagos | 6watt cob fitting | pcs,lagos,6watt cob fitting,pcs,0.0,52.0,0.46579184487814196,0.38296790532711805
+2026-02-01,lagos | 9 blocks | pcs,lagos,9 blocks,pcs,100.0,0.0,0.014174120563488827,0.6153823902613698
+2026-03-01,lagos | 9 blocks | pcs,lagos,9 blocks,pcs,2997.0,100.0,1.499611256011431,0.7329331340502607
+2026-02-01,lagos | 9 expeller fan | pcs,lagos,9 expeller fan,pcs,0.0,0.0,0.37548644464587183,0.556592579567907
+2026-03-01,lagos | 9 expeller fan | pcs,lagos,9 expeller fan,pcs,2.0,0.0,0.18782479894876308,0.556592579567907
+2026-02-01,lagos | a3 paper | bundle,lagos,a3 paper,bundle,0.0,0.0,0.8980362295903426,0.7039842347662713
+2026-03-01,lagos | a3 paper | bundle,lagos,a3 paper,bundle,0.0,0.0,0.35821382393317663,0.7039842347662713
+2026-02-01,lagos | a4 paper | bundle,lagos,a4 paper,bundle,0.0,0.0,0.9394658851847062,0.7039842347662713
+2026-03-01,lagos | a4 paper | bundle,lagos,a4 paper,bundle,0.0,0.0,0.3790935802086521,0.7039842347662713
+2026-02-01,lagos | abro gum | litre,lagos,abro gum,litre,0.0,0.0,0.10819051691657415,1.0814585936417358
+2026-03-01,lagos | abro gum | litre,lagos,abro gum,litre,0.0,0.0,1.2055360888407618,4.439771943572998
+2026-02-01,lagos | ac unit | nos,lagos,ac unit,nos,0.0,0.0,0.5412273101981608,0.6741830452190984
+2026-03-01,lagos | ac unit | nos,lagos,ac unit,nos,1.0,0.0,0.22113664784949558,0.6741830452190984
+2026-02-01,lagos | acro prop | pcs,lagos,acro prop,pcs,0.0,300.0,0.47647194987934477,3.4075873318393635
+2026-03-01,lagos | acro prop | pcs,lagos,acro prop,pcs,0.0,0.0,0.055265094019142195,0.6431654989495519
+2026-02-01,lagos | acro props | pcs,lagos,acro props,pcs,3426.0,0.0,0.975127024986723,0.7465536112730826
+2026-03-01,lagos | acro props | pcs,lagos,acro props,pcs,0.0,3426.0,42.32354928993534,34.12699166869876
+2026-02-01,lagos | acroprops | nos,lagos,acroprops,nos,0.0,7.0,0.014959205910598515,0.03942881573966667
+2026-03-01,lagos | acroprops | nos,lagos,acroprops,nos,0.0,0.0,0.005925725712845242,0.08614687802378887
+2026-02-01,lagos | adaptor | nos,lagos,adaptor,nos,0.0,0.0,0.03208065488858373,0.10780395497935877
+2026-03-01,lagos | adaptor | nos,lagos,adaptor,nos,0.0,0.0,0.4174113640744109,0.6741830452190984
+2026-02-01,lagos | adaptor | pcs,lagos,adaptor,pcs,0.0,0.0,0.009745601047677419,0.14082456629440188
+2026-03-01,lagos | adaptor | pcs,lagos,adaptor,pcs,0.0,0.0,0.009651934774967593,0.14133060197818814
+2026-02-01,lagos | addictive chemical | gallons,lagos,addictive chemical,gallons,0.0,0.0,2.9386326005745698,1.106546334232362
+2026-03-01,lagos | addictive chemical | gallons,lagos,addictive chemical,gallons,0.0,0.0,0.9873512122625945,1.106546334232362
+2026-02-01,lagos | air valve | pcs,lagos,air valve,pcs,0.0,0.0,0.02184446643509674,0.14082456629440188
+2026-03-01,lagos | air valve | pcs,lagos,air valve,pcs,0.0,0.0,0.015010923977353745,0.14133060197818814
+2026-02-01,lagos | aluminium screw | pcs,lagos,aluminium screw,pcs,2.0,0.0,0.5498765093237505,0.7465536112730826
+2026-03-01,lagos | aluminium screw | pcs,lagos,aluminium screw,pcs,0.0,2.0,0.011052580187944125,0.11916137158081666
+2026-02-01,lagos | aquaseal | keg,lagos,aquaseal,keg,0.0,0.0,1.7246909466055245,1.020987141034722
+2026-03-01,lagos | aquaseal | keg,lagos,aquaseal,keg,0.0,0.0,0.7136352527167023,1.020987141034722
+2026-02-01,lagos | armflex | pcs,lagos,armflex,pcs,32.0,0.0,0.5850608278165979,0.7465536112730826
+2026-03-01,lagos | armflex | pcs,lagos,armflex,pcs,0.0,32.0,0.22551921799387634,0.6291565887266914
+2026-02-01,lagos | back covers | pcs,lagos,back covers,pcs,0.0,0.0,0.7250490298347128,0.7465536112730826
+2026-03-01,lagos | back covers | pcs,lagos,back covers,pcs,10.0,0.0,0.34875097339809263,0.7465536112730826
+2026-02-01,lagos | badin tap | nos,lagos,badin tap,nos,0.0,0.0,0.01075612216487576,0.0981245878536939
+2026-03-01,lagos | badin tap | nos,lagos,badin tap,nos,0.0,0.0,0.3655810193218113,0.6741830452190984
+2026-02-01,lagos | bamboo | pcs,lagos,bamboo,pcs,0.0,600.0,0.983744644791887,0.6251848705452963
+2026-03-01,lagos | bamboo | pcs,lagos,bamboo,pcs,0.0,0.0,0.09315954865858535,0.0
+2026-02-01,lagos | basin tap | pcs,lagos,basin tap,pcs,8.0,0.0,0.39364388096773845,0.47254983386616795
+2026-03-01,lagos | basin tap | pcs,lagos,basin tap,pcs,0.0,8.0,0.00015157573393628998,0.017179372758749464
+2026-02-01,lagos | bell | pcs,lagos,bell,pcs,2.0,0.0,0.21275295629967275,0.47254983386616795
+2026-03-01,lagos | bell | pcs,lagos,bell,pcs,0.0,2.0,9.380638199228108e-05,0.040794674675011376
+2026-02-01,lagos | bentonite | bag,lagos,bentonite,bag,0.0,0.0,1.0849045441560952,0.6582898402600579
+2026-03-01,lagos | bentonite | bag,lagos,bentonite,bag,1.0,0.0,0.36059407092781953,0.6582898402600579
+2026-02-01,lagos | big abro gum | pcs,lagos,big abro gum,pcs,0.0,0.0,0.00764404315354047,0.052472531286826114
+2026-03-01,lagos | big abro gum | pcs,lagos,big abro gum,pcs,2.0,0.0,9.380638199228108e-05,0.05293937664830527
+2026-02-01,lagos | big ward robe handle | pcs,lagos,big ward robe handle,pcs,40.0,0.0,0.19256320155454681,0.47254983386616795
+2026-03-01,lagos | big ward robe handle | pcs,lagos,big ward robe handle,pcs,0.0,40.0,0.2923066454877656,0.45085357067358933
+2026-02-01,lagos | binding wire | bundle,lagos,binding wire,bundle,15.0,0.0,0.41087592604000034,0.1876586768646573
+2026-03-01,lagos | binding wire | bundle,lagos,binding wire,bundle,10.0,15.0,0.24443888216668722,0.2861247994889194
+2026-02-01,lagos | binding wire | nos,lagos,binding wire,nos,5.0,0.0,0.4729446460152776,0.4898271292115935
+2026-03-01,lagos | binding wire | nos,lagos,binding wire,nos,0.0,5.0,0.053482055194573164,0.045632189901487846
+2026-02-01,lagos | binding wire | roll,lagos,binding wire,roll,21.0,45.0,14.867525937929411,45.69425852457639
+2026-03-01,lagos | binding wire | roll,lagos,binding wire,roll,20.0,21.0,1.9644147241833871,6.677162375611238
+2026-02-01,lagos | binding wires | packets,lagos,binding wires,packets,7.0,0.0,0.2846565865417692,0.4258769193308441
+2026-03-01,lagos | binding wires | packets,lagos,binding wires,packets,0.0,7.0,0.02323275797178056,0.04359456906838217
+2026-02-01,lagos | binding wires | roll,lagos,binding wires,roll,10.0,0.0,0.41834332486397297,0.10894644075518724
+2026-03-01,lagos | binding wires | roll,lagos,binding wires,roll,2.0,10.0,0.18652531084032345,0.09639039241403688
+2026-02-01,lagos | biro | pac,lagos,biro,pac,0.0,0.0,0.42862622958482927,0.4594878024055476
+2026-03-01,lagos | biro | pac,lagos,biro,pac,0.0,0.0,0.20044392594823834,0.4594878024055476
+2026-02-01,lagos | bits | pcs,lagos,bits,pcs,10.0,0.0,0.17527101924043215,0.4290771935048435
+2026-03-01,lagos | bits | pcs,lagos,bits,pcs,0.0,10.0,0.010169422034667426,0.016371239793657764
+2026-02-01,lagos | bits hammer binding wire | unknown,lagos,bits hammer binding wire,,15.0,0.0,0.17162413088094253,0.4290771935048435
+2026-03-01,lagos | bits hammer binding wire | unknown,lagos,bits hammer binding wire,,0.0,15.0,0.032547665160566716,0.11095603647744647
+2026-02-01,lagos | black tape | pcs,lagos,black tape,pcs,0.0,0.0,0.055771851333043874,0.028454413789464027
+2026-03-01,lagos | black tape | pcs,lagos,black tape,pcs,0.0,0.0,0.13933725241338835,0.5714783639951508
+2026-02-01,lagos | block | nos,lagos,block,nos,0.0,0.0,8.935509671888846,2.7203515904606554
+2026-03-01,lagos | block | nos,lagos,block,nos,0.0,0.0,1.9580291819625684,2.7203515904606554
+2026-02-01,lagos | block | pcs,lagos,block,pcs,0.0,0.0,1.3716005507419662,1.0300282611974647
+2026-03-01,lagos | block | pcs,lagos,block,pcs,0.0,0.0,1.983486732503322,2.776998578001141
+2026-02-01,lagos | block | unknown,lagos,block,,800.0,0.0,8.752757600677823,2.776998578001141
+2026-03-01,lagos | block | unknown,lagos,block,,0.0,800.0,1.3468304982453936,0.0
+2026-02-01,lagos | blocks | pcs,lagos,blocks,pcs,1750.0,0.0,12.946526278098046,31.550007775797503
+2026-03-01,lagos | blocks | pcs,lagos,blocks,pcs,0.0,1750.0,10.977287359392003,2.6757678590680607
+2026-02-01,lagos | blower | pcs,lagos,blower,pcs,0.0,0.0,0.7924961558736892,0.20690974430260925
+2026-03-01,lagos | blower | pcs,lagos,blower,pcs,1.0,0.0,0.33857135137697936,0.20690974430260925
+2026-02-01,lagos | blue chalk line | packets,lagos,blue chalk line,packets,0.0,0.0,0.33400667697053,0.20420699171331982
+2026-03-01,lagos | blue chalk line | packets,lagos,blue chalk line,packets,2.0,0.0,0.11274827090867681,0.20420699171331982
+2026-02-01,lagos | bolt | pcs,lagos,bolt,pcs,100.0,0.0,0.14568823355409402,0.20690974430260925
+2026-03-01,lagos | bolt | pcs,lagos,bolt,pcs,0.0,100.0,4.384415296685844,4.83436363640878
+2026-02-01,lagos | bonding agent | litre,lagos,bonding agent,litre,0.0,20.0,0.4138879928667515,0.621486262339846
+2026-03-01,lagos | bonding agent | litre,lagos,bonding agent,litre,0.0,0.0,2.1116339148859216,3.898276794047441
+2026-02-01,lagos | boots | pairs,lagos,boots,pairs,11.0,0.0,0.21230113648355228,0.46236098080792326
+2026-03-01,lagos | boots | pairs,lagos,boots,pairs,0.0,11.0,0.03540841446661393,0.0
+2026-02-01,lagos | bosch cutting machine | nos,lagos,bosch cutting machine,nos,0.0,0.0,0.04795740804022984,0.058426313588868115
+2026-03-01,lagos | bosch cutting machine | nos,lagos,bosch cutting machine,nos,0.0,0.0,0.1257204939175996,0.43262725998240803
+2026-02-01,lagos | bosch grinding machine | nos,lagos,bosch grinding machine,nos,0.0,0.0,0.018948350229400623,0.058426313588868115
+2026-03-01,lagos | bosch grinding machine | nos,lagos,bosch grinding machine,nos,0.0,0.0,0.11995048671588428,0.43262725998240803
+2026-02-01,lagos | broken glass | pcs,lagos,broken glass,pcs,3.0,0.0,0.17179686828976803,0.45444079469092075
+2026-03-01,lagos | broken glass | pcs,lagos,broken glass,pcs,0.0,3.0,0.019477045021786498,0.04212937580060131
+2026-02-01,lagos | broom | pcs,lagos,broom,pcs,0.0,0.0,0.18987382426191288,0.45444079469092075
+2026-03-01,lagos | broom | pcs,lagos,broom,pcs,0.0,0.0,0.09577077835162547,0.45444079469092075
+2026-02-01,lagos | brooms | unknown,lagos,brooms,,2.0,0.0,0.14731665361817073,0.45444079469092075
+2026-03-01,lagos | brooms | unknown,lagos,brooms,,0.0,2.0,0.005048971630878841,0.04212937580060131
+2026-02-01,lagos | brush | pcs,lagos,brush,pcs,0.0,0.0,0.007211898901615011,0.09251577786432424
+2026-03-01,lagos | brush | pcs,lagos,brush,pcs,0.0,0.0,0.001957527639506711,0.09300038521328292
+2026-02-01,lagos | buck hew fitting | pcs,lagos,buck hew fitting,pcs,51.0,0.0,0.13202327645011222,0.47542127344483104
+2026-03-01,lagos | buck hew fitting | pcs,lagos,buck hew fitting,pcs,0.0,51.0,1.1154039529514912,2.897536569036768
+2026-02-01,lagos | bum bum shower | nos,lagos,bum bum shower,nos,0.0,0.0,0.015982756349350025,0.07369423708626277
+2026-03-01,lagos | bum bum shower | nos,lagos,bum bum shower,nos,0.0,0.0,0.15939238711383205,0.4532930759441509
+2026-02-01,lagos | bunker shovels | pcs,lagos,bunker shovels,pcs,0.0,0.0,0.12969039119824605,0.09667358344354958
+2026-03-01,lagos | bunker shovels | pcs,lagos,bunker shovels,pcs,0.0,0.0,0.10324006695928135,0.47542127344483104
+2026-02-01,lagos | by elbow | nos,lagos,by elbow,nos,0.0,0.0,0.10801700117678353,0.05388880874622738
+2026-03-01,lagos | by elbow | nos,lagos,by elbow,nos,0.0,0.0,0.16463064823472667,0.4532930759441509
+2026-02-01,lagos | by t | pcs,lagos,by t,pcs,0.0,0.0,0.016501329764293162,0.09251577786432424
+2026-03-01,lagos | by t | pcs,lagos,by t,pcs,0.0,0.0,0.042089675254940756,0.09667358344354958
+2026-02-01,lagos | c clamp | pcs,lagos,c clamp,pcs,0.0,0.0,0.16736652665979526,0.5196755033379259
+2026-03-01,lagos | c clamp | pcs,lagos,c clamp,pcs,300.0,0.0,0.08524352037850269,0.5196755033379259
+2026-02-01,lagos | cable | meters,lagos,cable,meters,0.0,0.0,6.3769214378550165,2.930798921159645
+2026-03-01,lagos | cable | meters,lagos,cable,meters,0.0,0.0,1.7630674330385303,2.930798921159645
+2026-02-01,lagos | cable | roll,lagos,cable,roll,1.0,0.0,0.6525477814097782,0.848816819451401
+2026-03-01,lagos | cable | roll,lagos,cable,roll,0.0,1.0,0.15944576011113518,0.0
+2026-02-01,lagos | carpenter saw | nos,lagos,carpenter saw,nos,0.0,0.0,0.5061240556638036,0.4968835860190893
+2026-03-01,lagos | carpenter saw | nos,lagos,carpenter saw,nos,0.0,0.0,0.19177848121814,0.4968835860190893
+2026-02-01,lagos | cement | bag,lagos,cement,bag,2590.0,3220.0,707.393310997786,1036.826712544951
+2026-03-01,lagos | cement | bag,lagos,cement,bag,1980.0,2590.0,159.58491759135487,200.7790727033336
+2026-02-01,lagos | cement | ton,lagos,cement,ton,0.0,0.0,13.11899465797382,2.326698154991987
+2026-03-01,lagos | cement | ton,lagos,cement,ton,0.0,0.0,3.533171945731687,2.326698154991987
+2026-02-01,lagos | cement chemical | bag,lagos,cement chemical,bag,45.0,0.0,2.1617446566048724,0.7200036473564617
+2026-03-01,lagos | cement chemical | bag,lagos,cement chemical,bag,0.0,45.0,2.2801944545889916,4.870691734206141
+2026-02-01,lagos | cement supaset | bag,lagos,cement supaset,bag,0.0,0.0,0.786387567434603,0.7200036473564617
+2026-03-01,lagos | cement supaset | bag,lagos,cement supaset,bag,50.0,0.0,0.3995345104750288,0.7200036473564617
+2026-02-01,lagos | cements | bag,lagos,cements,bag,470.0,0.0,1.7002525754708424,1.8049295901976068
+2026-03-01,lagos | cements | bag,lagos,cements,bag,0.0,470.0,6.750923739808976,5.184169320941328
+2026-02-01,lagos | centre light | pcs,lagos,centre light,pcs,1.0,0.0,0.5288331700490754,0.7405024518750938
+2026-03-01,lagos | centre light | pcs,lagos,centre light,pcs,0.0,1.0,0.022503741560068558,0.05977005429341524
+2026-02-01,lagos | chandeller fitting | pcs,lagos,chandeller fitting,pcs,3.0,0.0,0.37046851648558127,0.7405024518750938
+2026-03-01,lagos | chandeller fitting | pcs,lagos,chandeller fitting,pcs,0.0,3.0,0.0267977843224096,0.05977005429341524
+2026-02-01,lagos | charcoal | bag,lagos,charcoal,bag,0.0,0.0,0.6151169715291047,0.9065633866166947
+2026-03-01,lagos | charcoal | bag,lagos,charcoal,bag,1.0,0.0,0.33934083715401964,0.9065633866166947
+2026-02-01,lagos | chisel | nos,lagos,chisel,nos,0.0,0.0,0.04327995614107107,0.06894765133346366
+2026-03-01,lagos | chisel | nos,lagos,chisel,nos,0.0,0.0,0.28974156383206817,0.7143985975395881
+2026-02-01,lagos | chisel | pcs,lagos,chisel,pcs,0.0,0.0,0.05086125332176678,0.08816845087196029
+2026-03-01,lagos | chisel | pcs,lagos,chisel,pcs,0.0,0.0,0.1661450501486408,0.7405024518750938
+2026-02-01,lagos | circular blade | pcs,lagos,circular blade,pcs,0.0,0.0,0.34326877697653285,0.7405024518750938
+2026-03-01,lagos | circular blade | pcs,lagos,circular blade,pcs,4.0,0.0,0.16298031325591353,0.7405024518750938
+2026-02-01,lagos | circular saw | pcs,lagos,circular saw,pcs,0.0,0.0,0.34320362583957714,0.7405024518750938
+2026-03-01,lagos | circular saw | pcs,lagos,circular saw,pcs,1.0,0.0,0.16075853945860938,0.7405024518750938
+2026-02-01,lagos | coated hand glove | dozens,lagos,coated hand glove,dozens,0.0,0.0,0.5274110146709994,0.8095736000173137
+2026-03-01,lagos | coated hand glove | dozens,lagos,coated hand glove,dozens,4.0,0.0,0.2567919428689529,0.8095736000173137
+2026-02-01,lagos | coleman cable | roll,lagos,coleman cable,roll,0.0,0.0,0.6377224883255428,0.7299701320105743
+2026-03-01,lagos | coleman cable | roll,lagos,coleman cable,roll,0.0,0.0,0.28954447907219677,0.7299701320105743
+2026-02-01,lagos | common nail | bag,lagos,common nail,bag,3.0,21.0,5.010274196919375,3.869629390987911
+2026-03-01,lagos | common nail | bag,lagos,common nail,bag,0.0,3.0,1.2108026416245043,3.09678017399764
+2026-02-01,lagos | common nail | bagg,lagos,common nail,bagg,0.0,2.0,1.6821797466265997,0.17007004483502447
+2026-03-01,lagos | common nail | bagg,lagos,common nail,bagg,0.0,0.0,0.5201775823917434,0.22023024805512872
+2026-02-01,lagos | common nail | roll,lagos,common nail,roll,0.0,0.0,0.1628135364675935,0.05267016785634033
+2026-03-01,lagos | common nail | roll,lagos,common nail,roll,0.0,0.0,0.2715542154443601,0.7344320437575209
+2026-02-01,lagos | common nails | bag,lagos,common nails,bag,0.0,9.0,6.300624753571886,3.12228531133424
+2026-03-01,lagos | common nails | bag,lagos,common nails,bag,0.0,0.0,1.335141544292318,4.051789029133585
+2026-02-01,lagos | common nails 2 | bag,lagos,common nails 2,bag,2.0,0.0,0.7450617244623663,1.0055793851351096
+2026-03-01,lagos | common nails 2 | bag,lagos,common nails 2,bag,0.0,2.0,0.5104130230478521,0.9966567790888776
+2026-02-01,lagos | common nails 3 | bag,lagos,common nails 3,bag,5.0,7.0,1.5365015262786805,1.062918457817561
+2026-03-01,lagos | common nails 3 | bag,lagos,common nails 3,bag,0.0,5.0,0.8270811570223449,1.9607141187043973
+2026-02-01,lagos | common nails 4 | bag,lagos,common nails 4,bag,2.0,3.0,1.3678584840567116,0.9966567790888776
+2026-03-01,lagos | common nails 4 | bag,lagos,common nails 4,bag,0.0,2.0,0.7954085527753665,1.5491593528022043
+2026-02-01,lagos | common nails 5 | bag,lagos,common nails 5,bag,0.0,1.0,1.2966387266868256,0.9966567790888776
+2026-03-01,lagos | common nails 5 | bag,lagos,common nails 5,bag,0.0,0.0,0.4343468741039299,0.8529003002363045
+2026-02-01,lagos | concrete disks | pcs,lagos,concrete disks,pcs,2.0,0.0,0.5746666770275697,0.7449915284157307
+2026-03-01,lagos | concrete disks | pcs,lagos,concrete disks,pcs,0.0,2.0,0.020758142057710274,0.06250339654413874
+2026-02-01,lagos | concrete nail | packs,lagos,concrete nail,packs,0.0,0.0,0.041287102819279706,0.0
+2026-03-01,lagos | concrete nail | packs,lagos,concrete nail,packs,0.0,0.0,0.3878630773152216,0.8262958318493336
+2026-02-01,lagos | concrete nails | carton,lagos,concrete nails,carton,0.0,3.0,0.03078488215155503,0.09220667859274559
+2026-03-01,lagos | concrete nails | carton,lagos,concrete nails,carton,0.0,0.0,0.03265357867222352,0.13902892585768753
+2026-02-01,lagos | concrete nails | packs,lagos,concrete nails,packs,0.0,10.0,0.03272059580860473,0.0
+2026-03-01,lagos | concrete nails | packs,lagos,concrete nails,packs,0.0,0.0,0.04458683295207988,0.1422233136563872
+2026-02-01,lagos | concrete nails | pkt,lagos,concrete nails,pkt,0.0,0.0,0.3158033308172774,0.3207281754328454
+2026-03-01,lagos | concrete nails | pkt,lagos,concrete nails,pkt,0.0,0.0,0.03184450764545203,0.0
+2026-02-01,lagos | concrete nails 2 | packets,lagos,concrete nails 2,packets,5.0,50.0,1.095651552606839,1.598306963916372
+2026-03-01,lagos | concrete nails 2 | packets,lagos,concrete nails 2,packets,0.0,5.0,0.33478026453640014,0.8125487361916734
+2026-02-01,lagos | concrete nails 3 | packets,lagos,concrete nails 3,packets,5.0,40.0,0.2940614792314856,0.004238341416368509
+2026-03-01,lagos | concrete nails 3 | packets,lagos,concrete nails 3,packets,0.0,5.0,0.22785675218451157,0.23235364016679994
+2026-02-01,lagos | concrete nails 4 | packets,lagos,concrete nails 4,packets,0.0,20.0,0.03855425962728241,0.0
+2026-03-01,lagos | concrete nails 4 | packets,lagos,concrete nails 4,packets,0.0,0.0,0.1474532276435747,0.3242733655605161
+2026-02-01,lagos | concrete rigs | nos,lagos,concrete rigs,nos,0.0,0.0,0.03171741208136958,0.09948020680001358
+2026-03-01,lagos | concrete rigs | nos,lagos,concrete rigs,nos,0.0,0.0,0.821793078232766,0.835532348115021
+2026-02-01,lagos | cooper nails | packs,lagos,cooper nails,packs,1.0,0.0,0.7620526700327246,0.8262958318493336
+2026-03-01,lagos | cooper nails | packs,lagos,cooper nails,packs,0.0,1.0,0.018075692983301004,0.045845263726065455
+2026-02-01,lagos | copper cable | meters,lagos,copper cable,meters,0.0,105.0,3.5884587481029993,2.1169117826013
+2026-03-01,lagos | copper cable | meters,lagos,copper cable,meters,0.0,0.0,0.4025917629562629,0.36568639713578677
+2026-02-01,lagos | copper pipe | roll,lagos,copper pipe,roll,5.0,0.0,0.30055478097431204,0.8054129377833947
+2026-03-01,lagos | copper pipe | roll,lagos,copper pipe,roll,0.0,5.0,0.03050813779314148,0.02201485827290377
+2026-02-01,lagos | correction pen | packets,lagos,correction pen,packets,0.0,0.0,0.5645457700174763,0.859307537901354
+2026-03-01,lagos | correction pen | packets,lagos,correction pen,packets,2.0,0.0,0.23973947420010572,0.859307537901354
+2026-02-01,lagos | couplier pipes | pack,lagos,couplier pipes,pack,6.0,0.0,0.5646283567924963,0.8400357043433018
+2026-03-01,lagos | couplier pipes | pack,lagos,couplier pipes,pack,0.0,6.0,0.041518015481787886,0.003540214532251537
+2026-02-01,lagos | cromer socket | pcs,lagos,cromer socket,pcs,0.0,0.0,1.313440838434237,0.8164045648620533
+2026-03-01,lagos | cromer socket | pcs,lagos,cromer socket,pcs,0.0,0.0,0.4549051227425239,0.8164045648620533
+2026-02-01,lagos | cross tee tape | pcs,lagos,cross tee tape,pcs,0.0,0.0,1.386740571750869,0.8164045648620533
+2026-03-01,lagos | cross tee tape | pcs,lagos,cross tee tape,pcs,0.0,0.0,0.474229373762383,0.8164045648620533
+2026-02-01,lagos | curing sack | pcs,lagos,curing sack,pcs,0.0,0.0,1.1736201298197475,0.8164045648620533
+2026-03-01,lagos | curing sack | pcs,lagos,curing sack,pcs,100.0,0.0,0.4105291462197411,0.8164045648620533
+2026-02-01,lagos | cutting disc | carton,lagos,cutting disc,carton,0.0,0.0,0.03678240573791289,0.14960346566094143
+2026-03-01,lagos | cutting disc | carton,lagos,cutting disc,carton,0.0,0.0,0.021804925875414306,0.14081605901257835
+2026-02-01,lagos | cutting disc | pcs,lagos,cutting disc,pcs,130.0,1.0,1.0077160597693027,0.3151395758677468
+2026-03-01,lagos | cutting disc | pcs,lagos,cutting disc,pcs,200.0,130.0,7.808104062700767,6.526697700830155
+2026-02-01,lagos | cutting discs | packets,lagos,cutting discs,packets,50.0,0.0,0.8095877994340648,0.8761084571143756
+2026-03-01,lagos | cutting discs | packets,lagos,cutting discs,packets,0.0,50.0,0.8980457326625846,1.6926010376314418
+2026-02-01,lagos | cutting discs | pcs,lagos,cutting discs,pcs,0.0,0.0,0.892139582057399,0.8328178078196204
+2026-03-01,lagos | cutting discs | pcs,lagos,cutting discs,pcs,5.0,0.0,0.33230770410213756,0.8328178078196204
+2026-02-01,lagos | cutting disk | carton,lagos,cutting disk,carton,0.0,0.0,0.022879318486135204,0.14081605901257835
+2026-03-01,lagos | cutting disk | carton,lagos,cutting disk,carton,0.0,0.0,0.6939072292232966,1.1288981511745577
+2026-02-01,lagos | cutting disk | pack,lagos,cutting disk,pack,0.0,0.0,1.2770536218695625,0.8566624810263248
+2026-03-01,lagos | cutting disk | pack,lagos,cutting disk,pack,0.0,0.0,0.5472825580715257,0.8566624810263248
+2026-02-01,lagos | cutting disk | packs,lagos,cutting disk,packs,0.0,0.0,1.3528357881763013,0.842798453446088
+2026-03-01,lagos | cutting disk | packs,lagos,cutting disk,packs,0.0,0.0,0.5391552919231499,0.842798453446088
+2026-02-01,lagos | cutting disk | pcs,lagos,cutting disk,pcs,0.0,50.0,1.1985508846558495,1.9490616750678837
+2026-03-01,lagos | cutting disk | pcs,lagos,cutting disk,pcs,0.0,0.0,0.29326944389805387,0.27630577451454136
+2026-02-01,lagos | cutting disk | pkt,lagos,cutting disk,pkt,1.0,0.0,0.8597352467185044,0.8328178078196204
+2026-03-01,lagos | cutting disk | pkt,lagos,cutting disk,pkt,0.0,1.0,0.09026703650975389,0.06250339654413874
+2026-02-01,lagos | cutting disks | pcs,lagos,cutting disks,pcs,0.0,0.0,1.9111380998353091,0.8328178078196204
+2026-03-01,lagos | cutting disks | pcs,lagos,cutting disks,pcs,0.0,0.0,0.6684214444378749,0.8328178078196204
+2026-02-01,lagos | cutting machine | pcs,lagos,cutting machine,pcs,0.0,0.0,0.21024918328560688,0.10331554007020807
+2026-03-01,lagos | cutting machine | pcs,lagos,cutting machine,pcs,0.0,0.0,0.08905430444408789,0.10083321517950232
+2026-02-01,lagos | cutting machine | set,lagos,cutting machine,set,0.0,1.0,0.1339558669042287,0.0
+2026-03-01,lagos | cutting machine | set,lagos,cutting machine,set,0.0,0.0,0.043927326679594196,0.0
+2026-02-01,lagos | cuttng disk | pcs,lagos,cuttng disk,pcs,0.0,0.0,1.7347965661674927,0.8328178078196204
+2026-03-01,lagos | cuttng disk | pcs,lagos,cuttng disk,pcs,0.0,0.0,0.6637902132537634,0.8328178078196204
+2026-02-01,lagos | dangote cement | bag,lagos,dangote cement,bag,0.0,900.0,2.503638671911173,4.213203725443085
+2026-03-01,lagos | dangote cement | bag,lagos,dangote cement,bag,0.0,0.0,0.5398377795036997,1.1282907681823149
+2026-02-01,lagos | detergent | pac,lagos,detergent,pac,0.0,0.0,1.3396413048811677,0.8566624810263248
+2026-03-01,lagos | detergent | pac,lagos,detergent,pac,0.0,0.0,0.6129356285200609,0.8566624810263248
+2026-02-01,lagos | diesel | liters,lagos,diesel,liters,30.0,1000.0,2.419821011051431,10.008087381698735
+2026-03-01,lagos | diesel | liters,lagos,diesel,liters,0.0,30.0,1.7355434684052269,9.432731038767473
+2026-02-01,lagos | diesel | litre,lagos,diesel,litre,2175.0,175.0,60.84940248599539,120.19555898353016
+2026-03-01,lagos | diesel | litre,lagos,diesel,litre,3055.0,2175.0,47.49329810004055,46.91600306233288
+2026-02-01,lagos | diesel | lits,lagos,diesel,lits,0.0,0.0,5.805286324015384,3.2988602700686345
+2026-03-01,lagos | diesel | lits,lagos,diesel,lits,75.0,0.0,1.4317022609241303,3.2988602700686345
+2026-02-01,lagos | digger | nr,lagos,digger,nr,0.0,0.0,1.6715649777151746,0.8566624810263248
+2026-03-01,lagos | digger | nr,lagos,digger,nr,0.0,0.0,0.6605901829500584,0.8566624810263248
+2026-02-01,lagos | disc | pcs,lagos,disc,pcs,0.0,50.0,1.0835515793498023,2.051429753319269
+2026-03-01,lagos | disc | pcs,lagos,disc,pcs,0.0,0.0,0.21364746504360607,0.2695950774373835
+2026-02-01,lagos | discharge hose | length,lagos,discharge hose,length,0.0,0.0,0.3668898224739914,0.28497964074826243
+2026-03-01,lagos | discharge hose | length,lagos,discharge hose,length,0.0,0.0,2.1020229838116338,2.5368269177185865
+2026-02-01,lagos | dispenser machine with water | nos,lagos,dispenser machine with water,nos,0.0,0.0,0.6467115868622948,0.6296305183209856
+2026-03-01,lagos | dispenser machine with water | nos,lagos,dispenser machine with water,nos,1.0,0.0,0.26141111259063843,0.6296305183209856
+2026-02-01,lagos | dpm nylon | roll,lagos,dpm nylon,roll,5.0,0.0,0.28892641117962325,0.547690286678254
+2026-03-01,lagos | dpm nylon | roll,lagos,dpm nylon,roll,0.0,5.0,0.058773670369215235,0.04006655666832108
+2026-02-01,lagos | dpm nylon 60kg | roll,lagos,dpm nylon 60kg,roll,0.0,0.0,0.3203834628381166,0.547690286678254
+2026-03-01,lagos | dpm nylon 60kg | roll,lagos,dpm nylon 60kg,roll,0.0,0.0,0.14727354896660896,0.547690286678254
+2026-02-01,lagos | drilling bit | pcs,lagos,drilling bit,pcs,0.0,5.0,0.2359601118612482,0.03927667399738078
+2026-03-01,lagos | drilling bit | pcs,lagos,drilling bit,pcs,0.0,0.0,0.13961987174293608,0.08848789851211926
+2026-02-01,lagos | drilling machine bits | pcs,lagos,drilling machine bits,pcs,2.0,0.0,0.42595669897333704,0.5571128592700483
+2026-03-01,lagos | drilling machine bits | pcs,lagos,drilling machine bits,pcs,0.0,2.0,0.06646874571962055,0.04470226192110739
+2026-02-01,lagos | duct o tape | nos,lagos,duct o tape,nos,10.0,10.0,0.07207412791578392,0.0
+2026-03-01,lagos | duct o tape | nos,lagos,duct o tape,nos,0.0,10.0,0.10970521919000424,0.5264222047184668
+2026-02-01,lagos | duct tape | pcs,lagos,duct tape,pcs,0.0,0.0,0.11974541032384171,0.02288236973058099
+2026-03-01,lagos | duct tape | pcs,lagos,duct tape,pcs,0.0,0.0,0.1450903133478784,0.5571128592700483
+2026-02-01,lagos | duct tape | roll,lagos,duct tape,roll,1.0,0.0,0.23616616441177138,0.547690286678254
+2026-03-01,lagos | duct tape | roll,lagos,duct tape,roll,0.0,1.0,0.04099720199453891,0.04733701283509878
+2026-02-01,lagos | earth clamp | length m,lagos,earth clamp,length m,0.0,0.0,21.06274982594342,8.048430960209133
+2026-03-01,lagos | earth clamp | length m,lagos,earth clamp,length m,0.0,0.0,3.5126257190235517,8.048430960209133
+2026-02-01,lagos | earth clamp | meters,lagos,earth clamp,meters,0.0,0.0,0.20731982109694272,0.1448741947854506
+2026-03-01,lagos | earth clamp | meters,lagos,earth clamp,meters,0.0,0.0,1.3675833937200759,3.251115395273499
+2026-02-01,lagos | earth clamp | metre,lagos,earth clamp,metre,0.0,0.0,0.2814287063071907,0.0
+2026-03-01,lagos | earth clamp | metre,lagos,earth clamp,metre,0.0,0.0,0.12728723529014246,0.0
+2026-02-01,lagos | earth clamp | metres,lagos,earth clamp,metres,0.0,0.0,0.2569783660196927,0.22195582297819924
+2026-03-01,lagos | earth clamp | metres,lagos,earth clamp,metres,0.0,0.0,0.1113673979809948,0.1686179656181913
+2026-02-01,lagos | earth clamp | pcs,lagos,earth clamp,pcs,0.0,0.0,0.32627540996222953,0.5214315573827071
+2026-03-01,lagos | earth clamp | pcs,lagos,earth clamp,pcs,4.0,0.0,0.148195590538802,0.5214315573827071
+2026-02-01,lagos | earth clamp clip | pcs,lagos,earth clamp clip,pcs,0.0,0.0,0.35332057494895186,0.5214315573827071
+2026-03-01,lagos | earth clamp clip | pcs,lagos,earth clamp clip,pcs,0.0,0.0,0.15662079043990368,0.5214315573827071
+2026-02-01,lagos | elbow | pcs,lagos,elbow,pcs,0.0,0.0,0.14546095040305854,0.07235097147677229
+2026-03-01,lagos | elbow | pcs,lagos,elbow,pcs,0.0,0.0,0.12410151040240061,0.5214315573827071
+2026-02-01,lagos | emulsion of white | drum,lagos,emulsion of white,drum,0.0,0.0,5.980216564819523,1.1891756696648619
+2026-03-01,lagos | emulsion of white | drum,lagos,emulsion of white,drum,0.0,0.0,1.5792435716264204,1.1891756696648619
+2026-02-01,lagos | emulsion white | drum,lagos,emulsion white,drum,0.0,0.0,5.963452470976802,1.1891756696648619
+2026-03-01,lagos | emulsion white | drum,lagos,emulsion white,drum,0.0,0.0,1.6458409966308118,1.1891756696648619
+2026-02-01,lagos | epoxy chemical | pcs,lagos,epoxy chemical,pcs,2.0,0.0,0.18888408875746512,0.5214315573827071
+2026-03-01,lagos | epoxy chemical | pcs,lagos,epoxy chemical,pcs,0.0,2.0,0.03312086421907019,0.03154620181233946
+2026-02-01,lagos | epoxy chemicals | pcs,lagos,epoxy chemicals,pcs,0.0,0.0,0.18953384333216755,0.45342153843883626
+2026-03-01,lagos | epoxy chemicals | pcs,lagos,epoxy chemicals,pcs,2.0,0.0,0.08767331914886116,0.45342153843883626
+2026-02-01,lagos | evostic | pcs,lagos,evostic,pcs,0.0,0.0,0.1900756907138222,0.45342153843883626
+2026-03-01,lagos | evostic | pcs,lagos,evostic,pcs,0.0,0.0,0.08568882184666587,0.45342153843883626
+2026-02-01,lagos | expeller fan banker | pcs,lagos,expeller fan banker,pcs,0.0,0.0,0.17651871789242296,0.45342153843883626
+2026-03-01,lagos | expeller fan banker | pcs,lagos,expeller fan banker,pcs,4.0,0.0,0.08008037391631843,0.45342153843883626
+2026-02-01,lagos | extension | pcs,lagos,extension,pcs,0.0,0.0,0.04859459214979316,0.023364026497468014
+2026-03-01,lagos | extension | pcs,lagos,extension,pcs,0.0,0.0,0.0784179775266185,0.45342153843883626
+2026-02-01,lagos | extension cable | pcs,lagos,extension cable,pcs,0.0,0.0,0.1655703651878903,0.45342153843883626
+2026-03-01,lagos | extension cable | pcs,lagos,extension cable,pcs,1.0,0.0,0.07532331119004243,0.45342153843883626
+2026-02-01,lagos | extension spray paint tower | pcs,lagos,extension spray paint tower,pcs,4.0,0.0,0.16778714715521353,0.45342153843883626
+2026-03-01,lagos | extension spray paint tower | pcs,lagos,extension spray paint tower,pcs,0.0,4.0,0.04187643842571537,0.0
+2026-02-01,lagos | extension wire | nr,lagos,extension wire,nr,0.0,0.0,0.5530079223682796,0.48843260303966896
+2026-03-01,lagos | extension wire | nr,lagos,extension wire,nr,0.0,0.0,0.21055383546231177,0.48843260303966896
+2026-02-01,lagos | flat band | pcs,lagos,flat band,pcs,0.0,0.0,0.1879578244170945,0.45342153843883626
+2026-03-01,lagos | flat band | pcs,lagos,flat band,pcs,0.0,0.0,0.08441243191144804,0.45342153843883626
+2026-02-01,lagos | flexible connector | nos,lagos,flexible connector,nos,0.0,0.0,0.07792514856335764,0.08018427624243248
+2026-03-01,lagos | flexible connector | nos,lagos,flexible connector,nos,0.0,0.0,0.29164331259745335,0.5248420408871226
+2026-02-01,lagos | floor drail | pcs,lagos,floor drail,pcs,0.0,0.0,0.05444481364709721,0.07568271413008769
+2026-03-01,lagos | floor drail | pcs,lagos,floor drail,pcs,0.0,0.0,0.020008654983907817,0.023364026497468014
+2026-02-01,lagos | fuel | liters,lagos,fuel,liters,0.0,0.0,21.196855160334533,6.946126501546945
+2026-03-01,lagos | fuel | liters,lagos,fuel,liters,0.0,0.0,3.592609348611787,6.946126501546945
+2026-02-01,lagos | fuel | litre,lagos,fuel,litre,50.0,50.0,5.956603272720705,12.332749022187288
+2026-03-01,lagos | fuel | litre,lagos,fuel,litre,0.0,50.0,8.735585570194964,55.09813043276998
+2026-02-01,lagos | gar screw | pcs,lagos,gar screw,pcs,4.0,0.0,0.15459816563341613,0.45342153843883626
+2026-03-01,lagos | gar screw | pcs,lagos,gar screw,pcs,0.0,4.0,0.03275386131679342,0.0
+2026-02-01,lagos | gas | pcs,lagos,gas,pcs,0.0,0.0,0.03641900002616568,0.025671662168520425
+2026-03-01,lagos | gas | pcs,lagos,gas,pcs,0.0,0.0,0.01822085818077389,0.023364026497468014
+2026-02-01,lagos | gas flame | ten,lagos,gas flame,ten,0.0,0.0,0.052856349008268605,0.0
+2026-03-01,lagos | gas flame | ten,lagos,gas flame,ten,0.0,0.0,0.05228662475843985,0.2643872908559271
+2026-02-01,lagos | gloves | unknown,lagos,gloves,,12.0,0.0,0.14265285753182277,0.45342153843883626
+2026-03-01,lagos | gloves | unknown,lagos,gloves,,0.0,12.0,0.043942230938453876,0.0014395547484006817
+2026-02-01,lagos | granite | bag,lagos,granite,bag,0.0,0.0,1.4384897859868566,0.48795998555851017
+2026-03-01,lagos | granite | bag,lagos,granite,bag,0.0,0.0,1.1932673180120523,1.092258400991807
+2026-02-01,lagos | granite | ton,lagos,granite,ton,150.0,454.6,130.2596730695482,553.8006199945567
+2026-03-01,lagos | granite | ton,lagos,granite,ton,305.0,150.0,20.828288375275527,17.010201565109682
+2026-02-01,lagos | granite | unknown,lagos,granite,,20.0,0.0,0.15472435792814715,0.5244064194326612
+2026-03-01,lagos | granite | unknown,lagos,granite,,0.0,20.0,0.036395960989026845,0.0038686672349992697
+2026-02-01,lagos | granite 1 2 inch | ton,lagos,granite 1 2 inch,ton,0.0,0.0,0.9924308872613676,1.3813757772611401
+2026-03-01,lagos | granite 1 2 inch | ton,lagos,granite 1 2 inch,ton,30.0,0.0,0.7700414166393779,1.3813757772611401
+2026-02-01,lagos | granites | ton,lagos,granites,ton,238.55,0.0,0.49743204602132135,1.3813757772611401
+2026-03-01,lagos | granites | ton,lagos,granites,ton,0.0,238.55,10.425146872720264,8.81667653222133
+2026-02-01,lagos | grinder | pcs,lagos,grinder,pcs,2.0,0.0,0.145838942513072,0.3782077076260737
+2026-03-01,lagos | grinder | pcs,lagos,grinder,pcs,0.0,2.0,0.022064584998159935,0.0
+2026-02-01,lagos | grinder cutting machine | nos,lagos,grinder cutting machine,nos,0.0,0.0,0.6317012483627489,0.44593223513134556
+2026-03-01,lagos | grinder cutting machine | nos,lagos,grinder cutting machine,nos,1.0,0.0,0.2697982846497537,0.44593223513134556
+2026-02-01,lagos | grinding disc | pcs,lagos,grinding disc,pcs,10.0,0.0,0.145838942513072,0.3782077076260737
+2026-03-01,lagos | grinding disc | pcs,lagos,grinding disc,pcs,0.0,10.0,0.019214656452054647,0.0
+2026-02-01,lagos | grouting cement | pcs,lagos,grouting cement,pcs,5.0,0.0,0.145838942513072,0.3782077076260737
+2026-03-01,lagos | grouting cement | pcs,lagos,grouting cement,pcs,0.0,5.0,0.023651517856674513,0.0
+2026-02-01,lagos | gum | pcs,lagos,gum,pcs,2.0,0.0,0.1553231306167711,0.3782077076260737
+2026-03-01,lagos | gum | pcs,lagos,gum,pcs,0.0,2.0,0.022064584998159935,0.0
+2026-02-01,lagos | gum | ten,lagos,gum,ten,0.0,0.0,0.061085979013790974,0.0
+2026-03-01,lagos | gum | ten,lagos,gum,ten,0.0,0.0,0.06256636558985361,0.19895588691623173
+2026-02-01,lagos | gum tape | pcs,lagos,gum tape,pcs,10.0,0.0,0.1850116964620875,0.5445541561048226
+2026-03-01,lagos | gum tape | pcs,lagos,gum tape,pcs,0.0,10.0,0.035601160277083585,0.00897058286012058
+2026-02-01,lagos | h beam | pcs,lagos,h beam,pcs,0.0,0.0,1.412325285824188,0.5445541561048226
+2026-03-01,lagos | h beam | pcs,lagos,h beam,pcs,0.0,0.0,0.5368217659101662,0.5445541561048226
+2026-02-01,lagos | hand glove | dozen,lagos,hand glove,dozen,0.0,0.0,1.7883458670809342,0.8776453395830581
+2026-03-01,lagos | hand glove | dozen,lagos,hand glove,dozen,0.0,0.0,0.7156442783342964,0.8776453395830581
+2026-02-01,lagos | hand gloves | dozen,lagos,hand gloves,dozen,0.0,0.0,0.15394494604716755,0.17889535194344425
+2026-03-01,lagos | hand gloves | dozen,lagos,hand gloves,dozen,0.0,0.0,0.06857708763935079,0.12154708307373034
+2026-02-01,lagos | hand trowel | pcs,lagos,hand trowel,pcs,0.0,0.0,0.9839677762565799,0.5272481281720272
+2026-03-01,lagos | hand trowel | pcs,lagos,hand trowel,pcs,0.0,0.0,0.3969060016754406,0.5272481281720272
+2026-02-01,lagos | hard cover note | pcs,lagos,hard cover note,pcs,0.0,0.0,0.7511232501815608,0.5272481281720272
+2026-03-01,lagos | hard cover note | pcs,lagos,hard cover note,pcs,0.0,0.0,0.32109224740266645,0.5272481281720272
+2026-02-01,lagos | hard hat | nos,lagos,hard hat,nos,0.0,0.0,0.1018007901727043,0.14776998355450957
+2026-03-01,lagos | hard hat | nos,lagos,hard hat,nos,0.0,0.0,0.04225680779558437,0.0
+2026-02-01,lagos | hb pencils | dozen,lagos,hb pencils,dozen,0.0,0.0,1.712535061490322,0.8776453395830581
+2026-03-01,lagos | hb pencils | dozen,lagos,hb pencils,dozen,0.0,0.0,0.7087384114053743,0.8776453395830581
+2026-02-01,lagos | hbeams | nos,lagos,hbeams,nos,0.0,50.0,1.2562876619026833,0.9891510214204948
+2026-03-01,lagos | hbeams | nos,lagos,hbeams,nos,0.0,0.0,0.09987835505995653,0.12019405890188892
+2026-02-01,lagos | head pan chisel | pcs,lagos,head pan chisel,pcs,8.0,0.0,0.3278142094783494,0.4715364350799771
+2026-03-01,lagos | head pan chisel | pcs,lagos,head pan chisel,pcs,0.0,8.0,0.04788996100159918,0.0
+2026-02-01,lagos | heat detector | pcs,lagos,heat detector,pcs,1.0,0.0,0.3044956537853533,0.4715364350799771
+2026-03-01,lagos | heat detector | pcs,lagos,heat detector,pcs,0.0,1.0,0.04063646677494871,0.00880343655508471
+2026-02-01,lagos | hilti chemicals | pcs,lagos,hilti chemicals,pcs,0.0,0.0,0.321215165846333,0.4715364350799771
+2026-03-01,lagos | hilti chemicals | pcs,lagos,hilti chemicals,pcs,0.0,0.0,0.1569675815977742,0.4715364350799771
+2026-02-01,lagos | hilti gum | nos,lagos,hilti gum,nos,0.0,0.0,0.5226927418875373,0.5438470956728159
+2026-03-01,lagos | hilti gum | nos,lagos,hilti gum,nos,1.0,0.0,0.21756359200728342,0.5438470956728159
+2026-02-01,lagos | hisense airconditioner | nos,lagos,hisense airconditioner,nos,0.0,0.0,0.5448430498085788,0.5438470956728159
+2026-03-01,lagos | hisense airconditioner | nos,lagos,hisense airconditioner,nos,0.0,0.0,0.2258696684061679,0.5438470956728159
+2026-02-01,lagos | hp printer | nos,lagos,hp printer,nos,0.0,0.0,0.5300804605028968,0.5407656407397485
+2026-03-01,lagos | hp printer | nos,lagos,hp printer,nos,0.0,0.0,0.21068013172066882,0.5407656407397485
+2026-02-01,lagos | indoor air conditioner | nos,lagos,indoor air conditioner,nos,1.0,0.0,0.4996217918925983,0.5407656407397485
+2026-03-01,lagos | indoor air conditioner | nos,lagos,indoor air conditioner,nos,0.0,1.0,0.03448947478157116,0.044902244072164844
+2026-02-01,lagos | inks | pcs,lagos,inks,pcs,0.0,4.0,0.09665363059200972,0.0
+2026-03-01,lagos | inks | pcs,lagos,inks,pcs,0.0,0.0,0.04138703919160293,0.06428253100094071
+2026-02-01,lagos | installation tape | roll,lagos,installation tape,roll,3.0,0.0,0.15696030359944557,0.43098647004038293
+2026-03-01,lagos | installation tape | roll,lagos,installation tape,roll,0.0,3.0,0.04694126630783633,0.0
+2026-02-01,lagos | insulation tape | roll,lagos,insulation tape,roll,0.0,0.0,0.13611714014419937,0.43098647004038293
+2026-03-01,lagos | insulation tape | roll,lagos,insulation tape,roll,1.0,0.0,0.06652735240643329,0.43098647004038293
+2026-02-01,lagos | insulator tape black | pcs,lagos,insulator tape black,pcs,4.0,0.0,0.1989399144362637,0.4396985321421422
+2026-03-01,lagos | insulator tape black | pcs,lagos,insulator tape black,pcs,0.0,4.0,0.03950977046915484,0.0
+2026-02-01,lagos | insulator tape green | pcs,lagos,insulator tape green,pcs,3.0,0.0,0.19700265525379745,0.4396985321421422
+2026-03-01,lagos | insulator tape green | pcs,lagos,insulator tape green,pcs,0.0,3.0,0.028750568699338737,0.0
+2026-02-01,lagos | insulator tape red | pcs,lagos,insulator tape red,pcs,3.0,0.0,0.19700265525379745,0.4396985321421422
+2026-03-01,lagos | insulator tape red | pcs,lagos,insulator tape red,pcs,0.0,3.0,0.028750568699338737,0.0
+2026-02-01,lagos | insulator tape yellow | pcs,lagos,insulator tape yellow,pcs,3.0,0.0,0.19523216386300896,0.4396985321421422
+2026-03-01,lagos | insulator tape yellow | pcs,lagos,insulator tape yellow,pcs,0.0,3.0,0.028750568699338737,0.0
+2026-02-01,lagos | iron cutting disk | pcs,lagos,iron cutting disk,pcs,1.0,0.0,0.19281754034814694,0.4396985321421422
+2026-03-01,lagos | iron cutting disk | pcs,lagos,iron cutting disk,pcs,0.0,1.0,0.026947449707204394,0.0
+2026-02-01,lagos | jack h bits | pcs,lagos,jack h bits,pcs,5.0,0.0,0.19281754034814694,0.4396985321421422
+2026-03-01,lagos | jack h bits | pcs,lagos,jack h bits,pcs,0.0,5.0,0.034380474819711876,0.0
+2026-02-01,lagos | jack hammer | pcs,lagos,jack hammer,pcs,0.0,0.0,0.07115986735250096,0.06428253100094071
+2026-03-01,lagos | jack hammer | pcs,lagos,jack hammer,pcs,0.0,0.0,0.10217919692613799,0.015921047278482096
+2026-02-01,lagos | jack hammer | ton,lagos,jack hammer,ton,0.0,0.0,0.23995292474540816,0.36012934887709647
+2026-03-01,lagos | jack hammer | ton,lagos,jack hammer,ton,0.0,0.0,0.6445345130500681,1.619570347033095
+2026-02-01,lagos | jack hammer bit | pcs,lagos,jack hammer bit,pcs,2.0,0.0,0.21959170372181536,0.4492923892819582
+2026-03-01,lagos | jack hammer bit | pcs,lagos,jack hammer bit,pcs,0.0,2.0,0.028750568699338737,0.0
+2026-02-01,lagos | jack hammer bits | pcs,lagos,jack hammer bits,pcs,0.0,0.0,0.07752877790863089,0.09438067202696702
+2026-03-01,lagos | jack hammer bits | pcs,lagos,jack hammer bits,pcs,0.0,0.0,0.05929908552139146,0.0318883692500185
+2026-02-01,lagos | jacket | nos,lagos,jacket,nos,0.0,0.0,0.1349427938685725,0.0
+2026-03-01,lagos | jacket | nos,lagos,jacket,nos,0.0,0.0,0.03532910442421695,0.0
+2026-02-01,lagos | jackhammer | nos,lagos,jackhammer,nos,0.0,0.0,1.0526913134391664,0.5205099871360379
+2026-03-01,lagos | jackhammer | nos,lagos,jackhammer,nos,0.0,0.0,0.44809858440750844,0.5205099871360379
+2026-02-01,lagos | jaguar rod | pcs,lagos,jaguar rod,pcs,0.0,0.0,1.208399802806396,0.4492923892819582
+2026-03-01,lagos | jaguar rod | pcs,lagos,jaguar rod,pcs,0.0,0.0,0.5163330825354249,0.4492923892819582
+2026-02-01,lagos | jute sacks | pcs,lagos,jute sacks,pcs,0.0,0.0,0.6957158804884023,0.4492923892819582
+2026-03-01,lagos | jute sacks | pcs,lagos,jute sacks,pcs,128.0,0.0,0.27931504215634373,0.4492923892819582
+2026-02-01,lagos | led light | nos,lagos,led light,nos,0.0,0.0,0.48262838199623176,0.5263008400255427
+2026-03-01,lagos | led light | nos,lagos,led light,nos,2.0,0.0,0.2165043263596775,0.5263008400255427
+2026-02-01,lagos | line | bundle,lagos,line,bundle,3.0,0.0,0.38042181382244405,0.08877189394083332
+2026-03-01,lagos | line | bundle,lagos,line,bundle,0.0,3.0,0.14265613454158702,0.24482133993592403
+2026-02-01,lagos | line | roll,lagos,line,roll,0.0,12.0,0.39666196542042953,0.12277692994144115
+2026-03-01,lagos | line | roll,lagos,line,roll,0.0,0.0,0.19620781753854222,0.097431569333566
+2026-02-01,lagos | litres | litre,lagos,litres,litre,50.0,0.0,3.996082364201265,6.034403506603661
+2026-03-01,lagos | litres | litre,lagos,litres,litre,0.0,50.0,2.012734098664931,4.176059128210017
+2026-02-01,lagos | long plum | pcs,lagos,long plum,pcs,0.0,0.0,0.4480362478275508,0.43010942165521593
+2026-03-01,lagos | long plum | pcs,lagos,long plum,pcs,1.0,0.0,0.19249773717088287,0.43010942165521593
+2026-02-01,lagos | long range | pcs,lagos,long range,pcs,0.0,0.0,0.47962552699611166,0.5057364836730611
+2026-03-01,lagos | long range | pcs,lagos,long range,pcs,0.0,0.0,0.2051976266281947,0.5057364836730611
+2026-02-01,lagos | magic waste | pcs,lagos,magic waste,pcs,0.0,0.0,0.19045842078865674,0.0589618195354875
+2026-03-01,lagos | magic waste | pcs,lagos,magic waste,pcs,0.0,0.0,0.22418447859816126,0.5057364836730611
+2026-02-01,lagos | male to female | nos,lagos,male to female,nos,0.0,0.0,0.11321484038307522,0.0
+2026-03-01,lagos | male to female | nos,lagos,male to female,nos,0.0,0.0,0.27260875959787695,0.5797277197835142
+2026-02-01,lagos | manson line | pcs,lagos,manson line,pcs,0.0,1.0,0.12169379328585392,0.0826889186798612
+2026-03-01,lagos | manson line | pcs,lagos,manson line,pcs,0.0,0.0,0.050422610839629685,0.06134972648332736
+2026-02-01,lagos | marine board | pcs,lagos,marine board,pcs,0.0,150.0,19.882432639471286,27.32046449017939
+2026-03-01,lagos | marine board | pcs,lagos,marine board,pcs,0.0,0.0,0.188679180017274,1.6916602347760943
+2026-02-01,lagos | marine boards | pcs,lagos,marine boards,pcs,329.0,0.0,0.3308098303313064,0.43308149102592136
+2026-03-01,lagos | marine boards | pcs,lagos,marine boards,pcs,80.0,329.0,1.653937080261756,7.564783349781507
+2026-02-01,lagos | marker | pce,lagos,marker,pce,0.0,0.0,0.4149130098968642,0.43308149102592136
+2026-03-01,lagos | marker | pce,lagos,marker,pce,0.0,0.0,0.18269111134473634,0.43308149102592136
+2026-02-01,lagos | marker | pcs,lagos,marker,pcs,0.0,0.0,0.36018528232796476,0.43308149102592136
+2026-03-01,lagos | marker | pcs,lagos,marker,pcs,0.0,0.0,0.15442907659557506,0.43308149102592136
+2026-02-01,lagos | marker | pqck,lagos,marker,pqck,0.0,0.0,0.41708351362113516,0.4258593370175825
+2026-03-01,lagos | marker | pqck,lagos,marker,pqck,0.0,0.0,0.18097330689070912,0.4258593370175825
+2026-02-01,lagos | markers | packs,lagos,markers,packs,2.0,0.0,0.31552928404534275,0.4408853646323192
+2026-03-01,lagos | markers | packs,lagos,markers,packs,0.0,2.0,0.03678172916906207,0.02609742843916177
+2026-02-01,lagos | marson tape | pcs,lagos,marson tape,pcs,0.0,0.0,0.2806534436909365,0.43308149102592136
+2026-03-01,lagos | marson tape | pcs,lagos,marson tape,pcs,2.0,0.0,0.1190220981905406,0.43308149102592136
+2026-02-01,lagos | mcb breaker 10 amph | pcs,lagos,mcb breaker 10 amph,pcs,0.0,0.0,0.27179496557159716,0.43308149102592136
+2026-03-01,lagos | mcb breaker 10 amph | pcs,lagos,mcb breaker 10 amph,pcs,4.0,0.0,0.11446364635636547,0.43308149102592136
+2026-02-01,lagos | mcb breaker 20 amph | pcs,lagos,mcb breaker 20 amph,pcs,0.0,0.0,0.27179496557159716,0.43308149102592136
+2026-03-01,lagos | mcb breaker 20 amph | pcs,lagos,mcb breaker 20 amph,pcs,5.0,0.0,0.11446364635636547,0.43308149102592136
+2026-02-01,lagos | mcb breaker 25 amph | pcs,lagos,mcb breaker 25 amph,pcs,0.0,0.0,0.27179496557159716,0.43308149102592136
+2026-03-01,lagos | mcb breaker 25 amph | pcs,lagos,mcb breaker 25 amph,pcs,5.0,0.0,0.11446364635636547,0.43308149102592136
+2026-02-01,lagos | mcb breaker 6 amph | pcs,lagos,mcb breaker 6 amph,pcs,0.0,0.0,0.27179496557159716,0.43308149102592136
+2026-03-01,lagos | mcb breaker 6 amph | pcs,lagos,mcb breaker 6 amph,pcs,4.0,0.0,0.11446364635636547,0.43308149102592136
+2026-02-01,lagos | mcb main switch 10amph | pcs,lagos,mcb main switch 10amph,pcs,0.0,0.0,0.27179496557159716,0.43308149102592136
+2026-03-01,lagos | mcb main switch 10amph | pcs,lagos,mcb main switch 10amph,pcs,1.0,0.0,0.11446364635636547,0.43308149102592136
+2026-02-01,lagos | measuring tape | nos,lagos,measuring tape,nos,0.0,0.0,0.5586391327849161,0.5035024923882305
+2026-03-01,lagos | measuring tape | nos,lagos,measuring tape,nos,0.0,0.0,0.25592573974438854,0.5035024923882305
+2026-02-01,lagos | measuring tape | pcs,lagos,measuring tape,pcs,0.0,0.0,0.1692179004255095,0.023022463140040455
+2026-03-01,lagos | measuring tape | pcs,lagos,measuring tape,pcs,0.0,0.0,0.1281507586010826,0.43308149102592136
+2026-02-01,lagos | mop bucket | pcs,lagos,mop bucket,pcs,0.0,0.0,0.3018760688543866,0.43308149102592136
+2026-03-01,lagos | mop bucket | pcs,lagos,mop bucket,pcs,0.0,0.0,0.12945480256400047,0.43308149102592136
+2026-02-01,lagos | mosquito net | nos,lagos,mosquito net,nos,4.0,0.0,0.495137260734662,0.5144282871556976
+2026-03-01,lagos | mosquito net | nos,lagos,mosquito net,nos,0.0,4.0,0.07162747289098079,0.04591937237079155
+2026-02-01,lagos | mtn wifi broadband | pcs,lagos,mtn wifi broadband,pcs,0.0,0.0,0.2980664968872031,0.4434955437696143
+2026-03-01,lagos | mtn wifi broadband | pcs,lagos,mtn wifi broadband,pcs,0.0,0.0,0.12815733056082493,0.4434955437696143
+2026-02-01,lagos | multi color chalk | pcs,lagos,multi color chalk,pcs,15.0,0.0,0.2918081231695294,0.4434955437696143
+2026-03-01,lagos | multi color chalk | pcs,lagos,multi color chalk,pcs,0.0,15.0,0.063205593049175,0.09318690345547473
+2026-02-01,lagos | nigeria block | pcs,lagos,nigeria block,pcs,500.0,0.0,0.3081454881711259,0.4479900457075735
+2026-03-01,lagos | nigeria block | pcs,lagos,nigeria block,pcs,0.0,500.0,1.0957204616469554,0.0
+2026-02-01,lagos | nigeria block | unknown,lagos,nigeria block,,547.0,0.0,0.3081454881711259,0.4479900457075735
+2026-03-01,lagos | nigeria block | unknown,lagos,nigeria block,,0.0,547.0,1.1108041214965199,0.0
+2026-02-01,lagos | nose mask | pack,lagos,nose mask,pack,0.0,0.0,0.5296797066324297,0.4999293710438131
+2026-03-01,lagos | nose mask | pack,lagos,nose mask,pack,0.0,0.0,0.23918976707696388,0.4999293710438131
+2026-02-01,lagos | nose mask | pks,lagos,nose mask,pks,0.0,0.0,0.11630140311431723,0.03236923897826863
+2026-03-01,lagos | nose mask | pks,lagos,nose mask,pks,0.0,0.0,0.08686714859804986,0.04095681512361789
+2026-02-01,lagos | notice board | pcs,lagos,notice board,pcs,0.0,0.0,0.4460197520101156,0.4751776260286706
+2026-03-01,lagos | notice board | pcs,lagos,notice board,pcs,0.0,0.0,0.1976062835390644,0.4751776260286706
+2026-02-01,lagos | nut | pcs,lagos,nut,pcs,100.0,0.0,0.4368420515989425,0.4751776260286706
+2026-03-01,lagos | nut | pcs,lagos,nut,pcs,0.0,100.0,4.5764585247399685,2.98269077788193
+2026-02-01,lagos | office cabinet | pcs,lagos,office cabinet,pcs,0.0,0.0,0.6280209441635503,0.5830749947837275
+2026-03-01,lagos | office cabinet | pcs,lagos,office cabinet,pcs,0.0,0.0,0.2609152887400662,0.5830749947837275
+2026-02-01,lagos | office chair | pcs,lagos,office chair,pcs,0.0,0.0,0.7723969941587328,0.5830749947837275
+2026-03-01,lagos | office chair | pcs,lagos,office chair,pcs,0.0,0.0,0.3296743977463249,0.5830749947837275
+2026-02-01,lagos | office chairs | pcs,lagos,office chairs,pcs,0.0,0.0,0.8028174624426234,0.5830749947837275
+2026-03-01,lagos | office chairs | pcs,lagos,office chairs,pcs,0.0,0.0,0.34354461284872867,0.5830749947837275
+2026-02-01,lagos | office document files | dozen,lagos,office document files,dozen,0.0,0.0,1.3899824169041972,0.8102057049644573
+2026-03-01,lagos | office document files | dozen,lagos,office document files,dozen,0.0,0.0,0.5157831405254152,0.8102057049644573
+2026-02-01,lagos | office items maker extension | pcs,lagos,office items maker extension,pcs,0.0,4.0,0.2387232522326181,0.05769579111762606
+2026-03-01,lagos | office items maker extension | pcs,lagos,office items maker extension,pcs,0.0,0.0,0.09329283326279007,0.06598787775549779
+2026-02-01,lagos | office table long | pcs,lagos,office table long,pcs,0.0,0.0,0.7527447038650275,0.5830749947837275
+2026-03-01,lagos | office table long | pcs,lagos,office table long,pcs,0.0,0.0,0.32497545579234705,0.5830749947837275
+2026-02-01,lagos | office table short | pcs,lagos,office table short,pcs,0.0,0.0,0.7578530947712987,0.5830749947837275
+2026-03-01,lagos | office table short | pcs,lagos,office table short,pcs,0.0,0.0,0.3292419222413354,0.5830749947837275
+2026-02-01,lagos | office tables | pcs,lagos,office tables,pcs,0.0,0.0,0.7973635293312735,0.5830749947837275
+2026-03-01,lagos | office tables | pcs,lagos,office tables,pcs,0.0,0.0,0.3464661790736582,0.5830749947837275
+2026-02-01,lagos | one gang switch | pcs,lagos,one gang switch,pcs,15.0,0.0,0.7828554224455782,0.5830749947837275
+2026-03-01,lagos | one gang switch | pcs,lagos,one gang switch,pcs,0.0,15.0,0.10277217561846072,0.11805146897704392
+2026-02-01,lagos | original flexible | pcs,lagos,original flexible,pcs,0.0,0.0,1.2091282475769707,0.5830749947837275
+2026-03-01,lagos | original flexible | pcs,lagos,original flexible,pcs,0.0,0.0,0.5001719117461982,0.5830749947837275
+2026-02-01,lagos | original tee tap | pcs,lagos,original tee tap,pcs,0.0,0.0,1.3108188176886029,0.5830749947837275
+2026-03-01,lagos | original tee tap | pcs,lagos,original tee tap,pcs,0.0,0.0,0.5253199057988887,0.5830749947837275
+2026-02-01,lagos | outdoor air conditioner | nos,lagos,outdoor air conditioner,nos,1.0,0.0,0.47426034311138476,0.604465898353296
+2026-03-01,lagos | outdoor air conditioner | nos,lagos,outdoor air conditioner,nos,0.0,1.0,0.029847641012213898,0.07357168798310663
+2026-02-01,lagos | padlock | pcs,lagos,padlock,pcs,0.0,1.0,0.20794738082460412,0.05769579111762606
+2026-03-01,lagos | padlock | pcs,lagos,padlock,pcs,0.0,0.0,0.09675667227038241,0.08031461501870842
+2026-02-01,lagos | paint | bucket,lagos,paint,bucket,25.0,0.0,1.152803836524921,0.8102057049644573
+2026-03-01,lagos | paint | bucket,lagos,paint,bucket,0.0,25.0,0.27091211334910875,0.9509216323858947
+2026-02-01,lagos | paint bucket | pcs,lagos,paint bucket,pcs,0.0,7.0,0.2224394033045131,0.0896886783101841
+2026-03-01,lagos | paint bucket | pcs,lagos,paint bucket,pcs,15.0,0.0,0.10913500956718501,0.12257387512991252
+2026-02-01,lagos | paints bucket | pcs,lagos,paints bucket,pcs,0.0,0.0,0.9562863028763235,0.6483594876455114
+2026-03-01,lagos | paints bucket | pcs,lagos,paints bucket,pcs,0.0,0.0,0.4051222828772281,0.6483594876455114
+2026-02-01,lagos | pan connector | nos,lagos,pan connector,nos,0.0,0.0,0.08939354512852543,0.10247126373495347
+2026-03-01,lagos | pan connector | nos,lagos,pan connector,nos,0.0,0.0,0.26146702776017405,0.6416347791570316
+2026-02-01,lagos | permanent marker | packets,lagos,permanent marker,packets,0.0,0.0,0.47454351367987563,0.6192199322165655
+2026-03-01,lagos | permanent marker | packets,lagos,permanent marker,packets,2.0,0.0,0.21518328169227016,0.6192199322165655
+2026-02-01,lagos | permanent marker | pcack,lagos,permanent marker,pcack,0.0,0.0,1.030868263883562,0.6819535266473153
+2026-03-01,lagos | permanent marker | pcack,lagos,permanent marker,pcack,0.0,0.0,0.4160198907820111,0.6819535266473153
+2026-02-01,lagos | petrol | litre,lagos,petrol,litre,280.0,134.0,43.0234594909113,51.83851842907409
+2026-03-01,lagos | petrol | litre,lagos,petrol,litre,40.0,280.0,21.18786955472116,0.581677537385898
+2026-02-01,lagos | petrol fuel | litre,lagos,petrol fuel,litre,0.0,50.0,2.1798011070361376,4.011929014312008
+2026-03-01,lagos | petrol fuel | litre,lagos,petrol fuel,litre,0.0,0.0,1.29722945054985,1.8807428285326528
+2026-02-01,lagos | petrol fuel | unknown,lagos,petrol fuel,,25.0,0.0,0.6828553664162216,0.6483594876455114
+2026-03-01,lagos | petrol fuel | unknown,lagos,petrol fuel,,0.0,25.0,0.3723648249844801,0.8679162713864912
+2026-02-01,lagos | pinches | nr,lagos,pinches,nr,0.0,0.0,0.581833288171753,0.6024366210152461
+2026-03-01,lagos | pinches | nr,lagos,pinches,nr,0.0,0.0,0.34855978951920885,0.6024366210152461
+2026-02-01,lagos | pipe | length,lagos,pipe,length,0.0,0.0,0.6101203482606805,0.1911060538794584
+2026-03-01,lagos | pipe | length,lagos,pipe,length,0.0,0.0,2.0233906879328387,2.0770383219506385
+2026-02-01,lagos | planks 2by4by12 softwood | nos,lagos,planks 2by4by12 softwood,nos,206.0,0.0,0.6106716435891792,0.6416347791570316
+2026-03-01,lagos | planks 2by4by12 softwood | nos,lagos,planks 2by4by12 softwood,nos,0.0,206.0,1.7017403835065155,0.0
+2026-02-01,lagos | plaster sand | ton,lagos,plaster sand,ton,10.0,0.0,4.2587873467165425,1.9382972869425044
+2026-03-01,lagos | plaster sand | ton,lagos,plaster sand,ton,60.0,10.0,0.3395063613539414,0.6551426125855815
+2026-02-01,lagos | plastic chair | pcs,lagos,plastic chair,pcs,0.0,3.0,0.11899575181203531,0.07589658463339281
+2026-03-01,lagos | plastic chair | pcs,lagos,plastic chair,pcs,0.0,0.0,0.061101913633984636,0.08433136121858036
+2026-02-01,lagos | plastic extension | pcs,lagos,plastic extension,pcs,0.0,0.0,0.11193413163207895,0.09643223160495527
+2026-03-01,lagos | plastic extension | pcs,lagos,plastic extension,pcs,0.0,0.0,0.3107006247608088,0.6483594876455114
+2026-02-01,lagos | plastic t tap | pcs,lagos,plastic t tap,pcs,0.0,0.0,0.2163394889221006,0.05828874745878819
+2026-03-01,lagos | plastic t tap | pcs,lagos,plastic t tap,pcs,0.0,0.0,0.30272370801318405,0.6483594876455114
+2026-02-01,lagos | plastic table | pcs,lagos,plastic table,pcs,0.0,3.0,0.11500077972153133,0.07589658463339281
+2026-03-01,lagos | plastic table | pcs,lagos,plastic table,pcs,0.0,0.0,0.05731363068180752,0.08433136121858036
+2026-02-01,lagos | plier | nr,lagos,plier,nr,0.0,0.0,0.6231245115521897,0.6024366210152461
+2026-03-01,lagos | plier | nr,lagos,plier,nr,0.0,0.0,0.25927500980576174,0.6024366210152461
+2026-02-01,lagos | plum | nr,lagos,plum,nr,0.0,0.0,0.592911908825519,0.6024366210152461
+2026-03-01,lagos | plum | nr,lagos,plum,nr,0.0,0.0,0.2500406695737233,0.6024366210152461
+2026-02-01,lagos | plum | pcs,lagos,plum,pcs,0.0,2.0,0.47128367279347233,0.26810504446988376
+2026-03-01,lagos | plum | pcs,lagos,plum,pcs,0.0,0.0,0.10114724939191407,0.08433136121858036
+2026-02-01,lagos | plum long | nos,lagos,plum long,nos,0.0,1.0,0.08456930508613457,0.07309065520411957
+2026-03-01,lagos | plum long | nos,lagos,plum long,nos,0.0,0.0,0.04556832358382629,0.11096331049046548
+2026-02-01,lagos | plum short | nos,lagos,plum short,nos,0.0,1.0,0.08030059131097672,0.07309065520411957
+2026-03-01,lagos | plum short | nos,lagos,plum short,nos,0.0,0.0,0.04476337499955427,0.11096331049046548
+2026-02-01,lagos | plumb bob | pcs,lagos,plumb bob,pcs,0.0,0.0,0.5281078764792799,0.6483594876455114
+2026-03-01,lagos | plumb bob | pcs,lagos,plumb bob,pcs,1.0,0.0,0.23398987442601363,0.6483594876455114
+2026-02-01,lagos | poker hose | pcs,lagos,poker hose,pcs,0.0,0.0,0.5003698358261839,0.6483594876455114
+2026-03-01,lagos | poker hose | pcs,lagos,poker hose,pcs,2.0,0.0,0.2316851012784846,0.6483594876455114
+2026-02-01,lagos | poker machine | pcs,lagos,poker machine,pcs,0.0,0.0,0.481527617468666,0.6483594876455114
+2026-03-01,lagos | poker machine | pcs,lagos,poker machine,pcs,2.0,0.0,0.2162171286014604,0.6483594876455114
+2026-02-01,lagos | polysteryne | sheets,lagos,polysteryne,sheets,0.0,0.0,0.38401462129687847,0.4192491196162155
+2026-03-01,lagos | polysteryne | sheets,lagos,polysteryne,sheets,10.0,0.0,0.18037312943672396,0.4192491196162155
+2026-02-01,lagos | polystrene | pcs,lagos,polystrene,pcs,0.0,0.0,0.69006079037976,0.6483594876455114
+2026-03-01,lagos | polystrene | pcs,lagos,polystrene,pcs,0.0,0.0,0.3323204454990555,0.6483594876455114
+2026-02-01,lagos | pop paint | bucket,lagos,pop paint,bucket,0.0,0.0,1.620762193361755,0.8557304504629506
+2026-03-01,lagos | pop paint | bucket,lagos,pop paint,bucket,0.0,0.0,0.5815046517166833,0.8557304504629506
+2026-02-01,lagos | power trowel | pcs,lagos,power trowel,pcs,0.0,0.0,0.15774466891931715,0.09855727721764367
+2026-03-01,lagos | power trowel | pcs,lagos,power trowel,pcs,0.0,0.0,0.3017006946157702,0.6515542487957076
+2026-02-01,lagos | pressing shower | pcs,lagos,pressing shower,pcs,0.0,0.0,0.8334767675047827,0.6515542487957076
+2026-03-01,lagos | pressing shower | pcs,lagos,pressing shower,pcs,0.0,0.0,0.39197773841239675,0.6515542487957076
+2026-02-01,lagos | presure pump | pcs,lagos,presure pump,pcs,1.0,0.0,0.8026418652576301,0.6515542487957076
+2026-03-01,lagos | presure pump | pcs,lagos,presure pump,pcs,0.0,1.0,0.09843746045878643,0.07798182916650444
+2026-02-01,lagos | pvc bend | pcs,lagos,pvc bend,pcs,0.0,0.0,0.18282483287844095,0.0
+2026-03-01,lagos | pvc bend | pcs,lagos,pvc bend,pcs,0.0,0.0,0.08423842760660864,0.0
+2026-02-01,lagos | pvc gum | pcs,lagos,pvc gum,pcs,10.0,0.0,0.10850788368391241,0.10221175117660575
+2026-03-01,lagos | pvc gum | pcs,lagos,pvc gum,pcs,0.0,10.0,0.11683410921041178,0.16376569678919514
+2026-02-01,lagos | pvc gum big | pcs,lagos,pvc gum big,pcs,0.0,0.0,0.10158505925211049,0.09973190967577819
+2026-03-01,lagos | pvc gum big | pcs,lagos,pvc gum big,pcs,0.0,0.0,0.20727036859234055,0.6533201733107397
+2026-02-01,lagos | pvc gum medium | pcs,lagos,pvc gum medium,pcs,0.0,0.0,0.21890911836068888,0.05942032278819848
+2026-03-01,lagos | pvc gum medium | pcs,lagos,pvc gum medium,pcs,0.0,0.0,0.21127300614251127,0.6533201733107397
+2026-02-01,lagos | pvc junction box | pack,lagos,pvc junction box,pack,3.0,0.0,0.3221202277908793,0.6072591032679868
+2026-03-01,lagos | pvc junction box | pack,lagos,pvc junction box,pack,0.0,3.0,0.03846825715813551,0.05062023910962041
+2026-02-01,lagos | pvc pipe | nos,lagos,pvc pipe,nos,0.0,0.0,0.04200289264683821,0.10578911608168141
+2026-03-01,lagos | pvc pipe | nos,lagos,pvc pipe,nos,0.0,0.0,0.21405037872384922,0.6465752270250729
+2026-02-01,lagos | pvc pipes | pcs,lagos,pvc pipes,pcs,0.0,0.0,0.1055722327572288,0.08759462210327831
+2026-03-01,lagos | pvc pipes | pcs,lagos,pvc pipes,pcs,0.0,0.0,0.053374647348470396,0.09973190967577819
+2026-02-01,lagos | pvc plug | pcs,lagos,pvc plug,pcs,0.0,0.0,0.12710328682928515,0.08759462210327831
+2026-03-01,lagos | pvc plug | pcs,lagos,pvc plug,pcs,0.0,0.0,0.10093383580601178,0.10342773024367359
+2026-02-01,lagos | pvc tee | pcs,lagos,pvc tee,pcs,0.0,0.0,0.15245299986088512,0.2191820397765692
+2026-03-01,lagos | pvc tee | pcs,lagos,pvc tee,pcs,0.0,0.0,0.05686938094637154,0.02050087588592039
+2026-02-01,lagos | rainboot | pairs,lagos,rainboot,pairs,0.0,0.0,0.8137645164545853,0.6962019877630183
+2026-03-01,lagos | rainboot | pairs,lagos,rainboot,pairs,0.0,0.0,0.30250952297428246,0.6962019877630183
+2026-02-01,lagos | rainboots | pairs,lagos,rainboots,pairs,0.0,0.0,0.22122480740635256,0.2675264101831504
+2026-03-01,lagos | rainboots | pairs,lagos,rainboots,pairs,0.0,0.0,0.0799487484649213,0.0
+2026-02-01,lagos | range | nos,lagos,range,nos,0.0,0.0,0.13511572391353055,0.03554333305121448
+2026-03-01,lagos | range | nos,lagos,range,nos,0.0,0.0,0.4899898441726698,0.6465752270250729
+2026-02-01,lagos | range | pcs,lagos,range,pcs,0.0,0.0,0.15319411381352843,0.08759462210327831
+2026-03-01,lagos | range | pcs,lagos,range,pcs,6.0,0.0,0.4200706552724347,0.10342773024367359
+2026-02-01,lagos | received | unknown,lagos,received,,25.0,0.0,0.4803294562370391,0.6260048892621279
+2026-03-01,lagos | received | unknown,lagos,received,,0.0,25.0,0.27786156295100894,0.8370555437696652
+2026-02-01,lagos | refliective jacket | pcs,lagos,refliective jacket,pcs,0.0,0.0,1.7958335062733384,1.6471895039085371
+2026-03-01,lagos | refliective jacket | pcs,lagos,refliective jacket,pcs,0.0,0.0,0.7677342928818243,1.6471895039085371
+2026-02-01,lagos | reinforcement | length,lagos,reinforcement,length,0.0,0.0,4.183251985974553,0.0
+2026-03-01,lagos | reinforcement | length,lagos,reinforcement,length,0.0,0.0,0.8980234967535228,1.9953874987901155
+2026-02-01,lagos | reinforcement | pcs,lagos,reinforcement,pcs,0.0,0.0,1.8658722445509208,1.6471895039085371
+2026-03-01,lagos | reinforcement | pcs,lagos,reinforcement,pcs,0.0,0.0,0.8159556859875838,1.6471895039085371
+2026-02-01,lagos | reinforcement | ton,lagos,reinforcement,ton,0.0,31.0,11.628749499544341,53.33229040427258
+2026-03-01,lagos | reinforcement | ton,lagos,reinforcement,ton,0.0,0.0,0.5938300745403731,1.24840262134102
+2026-02-01,lagos | reinforcement 16mm | ton,lagos,reinforcement 16mm,ton,15.0,0.0,0.6611465159988086,1.2898817954310022
+2026-03-01,lagos | reinforcement 16mm | ton,lagos,reinforcement 16mm,ton,0.0,15.0,0.19840593264034567,0.6343614435084246
+2026-02-01,lagos | reinforcement 20mm | length,lagos,reinforcement 20mm,length,66.0,0.0,4.5166320649648215,2.861828998005087
+2026-03-01,lagos | reinforcement 20mm | length,lagos,reinforcement 20mm,length,0.0,66.0,1.5109975010286751,0.0
+2026-02-01,lagos | reinforcement 25mm | length,lagos,reinforcement 25mm,length,0.0,635.0,1.1640059887601484,0.0
+2026-03-01,lagos | reinforcement 25mm | length,lagos,reinforcement 25mm,length,0.0,0.0,0.6676171521741858,0.9518656225366973
+2026-02-01,lagos | reinforcement 32mm | length,lagos,reinforcement 32mm,length,0.0,0.0,3.5057266170732895,3.485548455517863
+2026-03-01,lagos | reinforcement 32mm | length,lagos,reinforcement 32mm,length,26.0,0.0,0.9729380484315775,3.485548455517863
+2026-02-01,lagos | reinforcements | length,lagos,reinforcements,length,2101.0,0.0,81.23245685296585,674.0288226008862
+2026-03-01,lagos | reinforcements | length,lagos,reinforcements,length,0.0,2101.0,6.054535303457932,4.133852588485011
+2026-02-01,lagos | reinforcements 16mm | ton,lagos,reinforcements 16mm,ton,5.0,0.0,0.31062564787620234,0.7143477622905579
+2026-03-01,lagos | reinforcements 16mm | ton,lagos,reinforcements 16mm,ton,0.0,5.0,0.11034643800503775,0.009740071409415766
+2026-02-01,lagos | reinforcements 25mm | ton,lagos,reinforcements 25mm,ton,30.0,0.0,0.358414420870847,0.7143477622905579
+2026-03-01,lagos | reinforcements 25mm | ton,lagos,reinforcements 25mm,ton,0.0,30.0,0.33508402570972534,0.3515295311756386
+2026-02-01,lagos | robber hose | roll,lagos,robber hose,roll,0.0,0.0,0.4124460902152703,0.3655188667624939
+2026-03-01,lagos | robber hose | roll,lagos,robber hose,roll,0.0,0.0,0.18484587514224576,0.3655188667624939
+2026-02-01,lagos | robe light green color | pcs,lagos,robe light green color,pcs,12.0,0.0,0.5005796959515474,0.4232594713974223
+2026-03-01,lagos | robe light green color | pcs,lagos,robe light green color,pcs,0.0,12.0,0.09342130009478969,0.0
+2026-02-01,lagos | robe light multicolor | pcs,lagos,robe light multicolor,pcs,12.0,0.0,0.4851379050349915,0.4232594713974223
+2026-03-01,lagos | robe light multicolor | pcs,lagos,robe light multicolor,pcs,0.0,12.0,0.08838027702598823,0.0
+2026-02-01,lagos | robe light warn white | pcs,lagos,robe light warn white,pcs,3.0,0.0,0.4827366486126896,0.4232594713974223
+2026-03-01,lagos | robe light warn white | pcs,lagos,robe light warn white,pcs,0.0,3.0,0.07683280105516536,0.0
+2026-02-01,lagos | roofing nails | box,lagos,roofing nails,box,11.0,0.0,1.0357764497447843,0.6421653166472274
+2026-03-01,lagos | roofing nails | box,lagos,roofing nails,box,0.0,11.0,0.08789123067024589,0.054641563242071624
+2026-02-01,lagos | roofing sheets | bundle,lagos,roofing sheets,bundle,16.0,0.0,1.3945411714128872,0.6800184618335097
+2026-03-01,lagos | roofing sheets | bundle,lagos,roofing sheets,bundle,0.0,16.0,0.2041233537205885,0.0
+2026-02-01,lagos | roofing strap band | roll,lagos,roofing strap band,roll,12.0,0.0,0.4078911943023459,0.3655188667624939
+2026-03-01,lagos | roofing strap band | roll,lagos,roofing strap band,roll,0.0,12.0,0.08861469792905696,0.0
+2026-02-01,lagos | round nuts | pcs,lagos,round nuts,pcs,0.0,0.0,0.7702865076533225,0.561795114553969
+2026-03-01,lagos | round nuts | pcs,lagos,round nuts,pcs,0.0,0.0,0.35190808856019984,0.561795114553969
+2026-02-01,lagos | rubber adaptor | nos,lagos,rubber adaptor,nos,0.0,0.0,0.05357462023577459,0.09199924787268607
+2026-03-01,lagos | rubber adaptor | nos,lagos,rubber adaptor,nos,0.0,0.0,0.30160876864820113,0.6385410474115052
+2026-02-01,lagos | rubber hose | roll,lagos,rubber hose,roll,1.0,0.0,0.37460493837929715,0.49843421933949233
+2026-03-01,lagos | rubber hose | roll,lagos,rubber hose,roll,0.0,1.0,0.053272753869277364,0.001021847909466253
+2026-02-01,lagos | safety boots | pcs,lagos,safety boots,pcs,0.0,0.0,0.4404146761015138,0.561795114553969
+2026-03-01,lagos | safety boots | pcs,lagos,safety boots,pcs,5.0,0.0,0.2024878286527013,0.561795114553969
+2026-02-01,lagos | safety handgloves | dozen,lagos,safety handgloves,dozen,0.0,3.0,0.04860045067850742,0.07247739114129768
+2026-03-01,lagos | safety handgloves | dozen,lagos,safety handgloves,dozen,0.0,0.0,0.023272812205220615,0.10415892944875947
+2026-02-01,lagos | safety items | pcs,lagos,safety items,pcs,52.0,0.0,0.42851379287457564,0.561795114553969
+2026-03-01,lagos | safety items | pcs,lagos,safety items,pcs,0.0,52.0,0.542778606667166,0.0
+2026-02-01,lagos | safety signage | pcs,lagos,safety signage,pcs,0.0,4.0,0.2862325159958956,0.12255846470539565
+2026-03-01,lagos | safety signage | pcs,lagos,safety signage,pcs,0.0,0.0,0.10219743075335028,0.14019356081965303
+2026-02-01,lagos | sand | ton,lagos,sand,ton,270.07,0.0,3.04553627834908,0.016325147273347888
+2026-03-01,lagos | sand | ton,lagos,sand,ton,0.0,270.07,16.08615355357934,0.0
+2026-02-01,lagos | saw blade | pcs,lagos,saw blade,pcs,0.0,0.0,0.49550438447827644,0.5966714114949283
+2026-03-01,lagos | saw blade | pcs,lagos,saw blade,pcs,0.0,0.0,0.23608458465021298,0.5966714114949283
+2026-02-01,lagos | screeding paint | bag,lagos,screeding paint,bag,0.0,0.0,0.8681906155254913,0.8103177154502288
+2026-03-01,lagos | screeding paint | bag,lagos,screeding paint,bag,6.0,0.0,0.3948185680441179,0.8103177154502288
+2026-02-01,lagos | screeding paints | bucket,lagos,screeding paints,bucket,0.0,15.0,0.30587829441021525,0.2838293568622526
+2026-03-01,lagos | screeding paints | bucket,lagos,screeding paints,bucket,0.0,0.0,0.08596969032343774,0.6543410328946955
+2026-02-01,lagos | screw | pcs,lagos,screw,pcs,0.0,0.0,0.415981160842087,0.47807140204581283
+2026-03-01,lagos | screw | pcs,lagos,screw,pcs,12.0,0.0,0.1906469967095867,0.47807140204581283
+2026-02-01,lagos | seat cover | pcs,lagos,seat cover,pcs,1.0,0.0,0.415981160842087,0.47807140204581283
+2026-03-01,lagos | seat cover | pcs,lagos,seat cover,pcs,0.0,1.0,0.06284417325109833,0.0
+2026-02-01,lagos | securities touchlight | nos,lagos,securities touchlight,nos,4.0,0.0,0.5568374110758993,0.5507031880739361
+2026-03-01,lagos | securities touchlight | nos,lagos,securities touchlight,nos,0.0,4.0,0.04568478288199275,0.03759705679021434
+2026-02-01,lagos | set of spanners | set,lagos,set of spanners,set,0.0,0.0,0.58218018565637,0.37231068614498963
+2026-03-01,lagos | set of spanners | set,lagos,set of spanners,set,0.0,0.0,0.2959185113725241,0.37231068614498963
+2026-02-01,lagos | sewage pump | nos,lagos,sewage pump,nos,0.0,0.0,0.0344915891718544,0.0822220969851797
+2026-03-01,lagos | sewage pump | nos,lagos,sewage pump,nos,0.0,0.0,0.22713088783508864,0.5742926955874599
+2026-02-01,lagos | sharp sand | toin,lagos,sharp sand,toin,30.0,0.0,0.5384601063460017,0.31484225116742753
+2026-03-01,lagos | sharp sand | toin,lagos,sharp sand,toin,0.0,30.0,0.41385113640388005,0.4283251985746712
+2026-02-01,lagos | sharp sand | ton,lagos,sharp sand,ton,294.98,152.36,22.208090286526115,5.205222776553152
+2026-03-01,lagos | sharp sand | ton,lagos,sharp sand,ton,380.0,294.98,12.454823974151727,0.27633472966891637
+2026-02-01,lagos | short plum | pcs,lagos,short plum,pcs,0.0,0.0,0.4280203866941466,0.500556024965426
+2026-03-01,lagos | short plum | pcs,lagos,short plum,pcs,2.0,0.0,0.1950669993449865,0.500556024965426
+2026-02-01,lagos | shovel | nos,lagos,shovel,nos,0.0,0.0,0.05395883965344187,0.0
+2026-03-01,lagos | shovel | nos,lagos,shovel,nos,0.0,0.0,0.24861083790929825,0.5742926955874599
+2026-02-01,lagos | shovels | pcs,lagos,shovels,pcs,0.0,0.0,0.45393454974230457,0.500556024965426
+2026-03-01,lagos | shovels | pcs,lagos,shovels,pcs,10.0,0.0,0.20174550269246663,0.500556024965426
+2026-02-01,lagos | shrinck nylon | roll,lagos,shrinck nylon,roll,0.0,0.0,0.49741482263519277,0.4783359025408757
+2026-03-01,lagos | shrinck nylon | roll,lagos,shrinck nylon,roll,0.0,0.0,0.23846427618945826,0.4783359025408757
+2026-02-01,lagos | silant silicon | nos,lagos,silant silicon,nos,0.0,0.0,0.040484337983117014,0.0822220969851797
+2026-03-01,lagos | silant silicon | nos,lagos,silant silicon,nos,0.0,0.0,0.2488638471417696,0.5742926955874599
+2026-02-01,lagos | silicone sealant | pcs,lagos,silicone sealant,pcs,0.0,0.0,0.4960854514413416,0.500556024965426
+2026-03-01,lagos | silicone sealant | pcs,lagos,silicone sealant,pcs,0.0,0.0,0.22469647565061268,0.500556024965426
+2026-02-01,lagos | silk emulsion white | drum,lagos,silk emulsion white,drum,0.0,0.0,3.35887290921589,0.807635097195317
+2026-03-01,lagos | silk emulsion white | drum,lagos,silk emulsion white,drum,0.0,0.0,1.1642143483242653,0.807635097195317
+2026-02-01,lagos | single color chalk | pcs,lagos,single color chalk,pcs,12.0,0.0,0.38493783351748295,0.500556024965426
+2026-03-01,lagos | single color chalk | pcs,lagos,single color chalk,pcs,0.0,12.0,0.0682095223036731,0.01889102864556149
+2026-02-01,lagos | siren | pcs,lagos,siren,pcs,1.0,0.0,0.38493783351748295,0.500556024965426
+2026-03-01,lagos | siren | pcs,lagos,siren,pcs,0.0,1.0,0.05047426940771903,0.01495952338162212
+2026-02-01,lagos | sledge hammer | nos,lagos,sledge hammer,nos,0.0,0.0,0.03431453624846921,0.0822220969851797
+2026-03-01,lagos | sledge hammer | nos,lagos,sledge hammer,nos,0.0,0.0,0.22012530134759647,0.5742926955874599
+2026-02-01,lagos | small hammer | nos,lagos,small hammer,nos,0.0,0.0,0.03447528909508355,0.0822220969851797
+2026-03-01,lagos | small hammer | nos,lagos,small hammer,nos,0.0,0.0,0.22012530134759647,0.5742926955874599
+2026-02-01,lagos | small hammer | pcs,lagos,small hammer,pcs,0.0,0.0,0.1233994675773795,0.03433206416321816
+2026-03-01,lagos | small hammer | pcs,lagos,small hammer,pcs,0.0,0.0,0.1600169494566233,0.500556024965426
+2026-02-01,lagos | small rectangular floodrain | pcs,lagos,small rectangular floodrain,pcs,0.0,0.0,0.4084326311546481,0.500556024965426
+2026-03-01,lagos | small rectangular floodrain | pcs,lagos,small rectangular floodrain,pcs,0.0,0.0,0.16655793159971316,0.500556024965426
+2026-02-01,lagos | small ward robe handle | pcs,lagos,small ward robe handle,pcs,40.0,0.0,0.3891470229268628,0.500556024965426
+2026-03-01,lagos | small ward robe handle | pcs,lagos,small ward robe handle,pcs,0.0,40.0,0.18811149785869502,0.0
+2026-02-01,lagos | smoke detector | pcs,lagos,smoke detector,pcs,22.0,0.0,0.37411114908313664,0.5331219985854221
+2026-03-01,lagos | smoke detector | pcs,lagos,smoke detector,pcs,0.0,22.0,0.10929073444258702,0.7219600430322997
+2026-02-01,lagos | smoke detector machine | pcs,lagos,smoke detector machine,pcs,1.0,0.0,0.37411114908313664,0.5331219985854221
+2026-03-01,lagos | smoke detector machine | pcs,lagos,smoke detector machine,pcs,0.0,1.0,0.04571242200351513,0.061583830715652293
+2026-02-01,lagos | smoothing disks | pcs,lagos,smoothing disks,pcs,0.0,0.0,0.4363619307912702,0.5331219985854221
+2026-03-01,lagos | smoothing disks | pcs,lagos,smoothing disks,pcs,0.0,0.0,0.19014725888885192,0.5331219985854221
+2026-02-01,lagos | socket | pcs,lagos,socket,pcs,0.0,0.0,0.36763374510559416,0.9941831172742039
+2026-03-01,lagos | socket | pcs,lagos,socket,pcs,0.0,0.0,0.15954579837680616,0.0
+2026-02-01,lagos | solignum | kg,lagos,solignum,kg,0.0,0.0,0.5399851484278171,0.6194107226919432
+2026-03-01,lagos | solignum | kg,lagos,solignum,kg,1.0,0.0,0.23710142220176209,0.6194107226919432
+2026-02-01,lagos | sound switch | pcs,lagos,sound switch,pcs,4.0,0.0,0.5478517823030999,0.6504117433343677
+2026-03-01,lagos | sound switch | pcs,lagos,sound switch,pcs,0.0,4.0,0.20585796901435624,0.14279908732871524
+2026-02-01,lagos | spray gum | pcs,lagos,spray gum,pcs,0.0,0.0,1.0886716400455732,0.6504117433343677
+2026-03-01,lagos | spray gum | pcs,lagos,spray gum,pcs,0.0,0.0,0.419331222748478,0.6504117433343677
+2026-02-01,lagos | spray paint | nos,lagos,spray paint,nos,0.0,0.0,0.17905175280010713,0.19280394122300007
+2026-03-01,lagos | spray paint | nos,lagos,spray paint,nos,8.0,0.0,0.14195857044933194,0.20079199166759337
+2026-02-01,lagos | spray paint | pcs,lagos,spray paint,pcs,0.0,0.0,0.5261784045365856,0.11781291686307452
+2026-03-01,lagos | spray paint | pcs,lagos,spray paint,pcs,0.0,0.0,0.46010227607211884,0.6504117433343677
+2026-02-01,lagos | standing fan | nos,lagos,standing fan,nos,0.0,2.0,0.18762043937952957,0.18606009357978742
+2026-03-01,lagos | standing fan | nos,lagos,standing fan,nos,0.0,0.0,0.0951797506189655,0.19280394122300007
+2026-02-01,lagos | stones bricks | pkt,lagos,stones bricks,pkt,0.0,0.0,1.2569263709657532,0.5543478795920755
+2026-03-01,lagos | stones bricks | pkt,lagos,stones bricks,pkt,0.0,0.0,0.47366857539164353,0.5543478795920755
+2026-02-01,lagos | submassive machine pump | pcs,lagos,submassive machine pump,pcs,0.0,0.0,0.8959344720945857,0.5543478795920755
+2026-03-01,lagos | submassive machine pump | pcs,lagos,submassive machine pump,pcs,0.0,0.0,0.3573146813279792,0.5543478795920755
+2026-02-01,lagos | suction hose | yards,lagos,suction hose,yards,0.0,0.0,0.12670777452352933,0.0
+2026-03-01,lagos | suction hose | yards,lagos,suction hose,yards,0.0,0.0,1.507429307937418,0.7831576923111143
+2026-02-01,lagos | supaset cement | bag,lagos,supaset cement,bag,0.0,0.0,0.3027435806630494,0.637973931969696
+2026-03-01,lagos | supaset cement | bag,lagos,supaset cement,bag,600.0,0.0,0.14286220327414278,0.637973931969696
+2026-02-01,lagos | t way box | pkt,lagos,t way box,pkt,0.0,0.0,0.2522127314338543,0.05530000249125648
+2026-03-01,lagos | t way box | pkt,lagos,t way box,pkt,0.0,0.0,0.11793891608016294,0.05089924237730157
+2026-02-01,lagos | tape | roll,lagos,tape,roll,0.0,0.0,0.341708743978569,0.06791164449230654
+2026-03-01,lagos | tape | roll,lagos,tape,roll,0.0,0.0,0.05889271363357283,0.07146249094382463
+2026-02-01,lagos | tb coavias cable | pcs,lagos,tb coavias cable,pcs,2.0,0.0,0.5683480002800516,0.5543478795920755
+2026-03-01,lagos | tb coavias cable | pcs,lagos,tb coavias cable,pcs,0.0,2.0,0.07425353431889492,0.05058199341631704
+2026-02-01,lagos | threaded tape | pcs,lagos,threaded tape,pcs,0.0,0.0,0.751655395957594,0.5543478795920755
+2026-03-01,lagos | threaded tape | pcs,lagos,threaded tape,pcs,0.0,0.0,0.33711979141812,0.5543478795920755
+2026-02-01,lagos | three gang switch | pcs,lagos,three gang switch,pcs,19.0,0.0,0.5099558366979673,0.5543478795920755
+2026-03-01,lagos | three gang switch | pcs,lagos,three gang switch,pcs,0.0,19.0,0.09526740034414784,0.0
+2026-02-01,lagos | through box | pkt,lagos,through box,pkt,0.0,0.0,0.16384798047156265,0.06786007143282606
+2026-03-01,lagos | through box | pkt,lagos,through box,pkt,0.0,0.0,0.08609888975312689,0.07141074640197842
+2026-02-01,lagos | tiles | ctn,lagos,tiles,ctn,0.0,0.0,0.06869820238376009,0.04672035443722913
+2026-03-01,lagos | tiles | ctn,lagos,tiles,ctn,0.0,0.0,0.065309936545951,0.05997691506076075
+2026-02-01,lagos | tiles | pcs,lagos,tiles,pcs,55.0,0.0,0.17852857506976874,0.5139610344913346
+2026-03-01,lagos | tiles | pcs,lagos,tiles,pcs,0.0,55.0,0.5581964926193759,0.4829072587991596
+2026-02-01,lagos | tiles | pkt,lagos,tiles,pkt,33.0,0.0,0.3037089275661127,0.5139610344913346
+2026-03-01,lagos | tiles | pkt,lagos,tiles,pkt,0.0,33.0,0.26939439053576697,0.10921691600575631
+2026-02-01,lagos | tipex | pcs,lagos,tipex,pcs,0.0,0.0,0.05139247068656084,0.02656456798641226
+2026-03-01,lagos | tipex | pcs,lagos,tipex,pcs,0.0,0.0,0.024588765952114743,0.024254923386584425
+2026-02-01,lagos | tonado nails | pkt,lagos,tonado nails,pkt,0.0,0.0,0.08785722073024284,0.11565168275984616
+2026-03-01,lagos | tonado nails | pkt,lagos,tonado nails,pkt,0.0,0.0,0.29237464843093774,0.5952065257952186
+2026-02-01,lagos | tonardo nail | carton,lagos,tonardo nail,carton,0.0,0.0,0.025619523062730697,0.07295635926520215
+2026-03-01,lagos | tonardo nail | carton,lagos,tonardo nail,carton,0.0,0.0,0.2634808232093395,0.6601787828064494
+2026-02-01,lagos | tonardo nail | pack,lagos,tonardo nail,pack,0.0,0.0,0.0649375964403199,0.0
+2026-03-01,lagos | tonardo nail | pack,lagos,tonardo nail,pack,0.0,0.0,0.23144474441904736,0.5870445690099046
+2026-02-01,lagos | tonardo nail | pkt,lagos,tonardo nail,pkt,0.0,0.0,0.11957986937191059,0.10078075321035676
+2026-03-01,lagos | tonardo nail | pkt,lagos,tonardo nail,pkt,0.0,0.0,0.32821793786252684,0.5952065257952186
+2026-02-01,lagos | top bond | bucket,lagos,top bond,bucket,0.0,8.0,0.10738338734812965,0.3046080756436618
+2026-03-01,lagos | top bond | bucket,lagos,top bond,bucket,10.0,0.0,0.03328520597897665,0.35167305542267574
+2026-02-01,lagos | topgit gum | pcs,lagos,topgit gum,pcs,0.0,0.0,0.2839179845995555,0.21136488443381915
+2026-03-01,lagos | topgit gum | pcs,lagos,topgit gum,pcs,0.0,0.0,0.142655525940896,0.21136488443381915
+2026-02-01,lagos | trade tape | nos,lagos,trade tape,nos,0.0,0.0,0.02557362244328424,0.0
+2026-03-01,lagos | trade tape | nos,lagos,trade tape,nos,0.0,0.0,0.1956982914574184,0.7272582633240241
+2026-02-01,lagos | tv socket | roll,lagos,tv socket,roll,5.0,0.0,0.1411808174443831,0.17837708365774516
+2026-03-01,lagos | tv socket | roll,lagos,tv socket,roll,0.0,5.0,0.021939871018616476,0.0
+2026-02-01,lagos | two gang switch | pcs,lagos,two gang switch,pcs,22.0,0.0,0.14247409298747712,0.08113191290152202
+2026-03-01,lagos | two gang switch | pcs,lagos,two gang switch,pcs,0.0,22.0,0.08881926105232317,0.8392673041042571
+2026-02-01,lagos | under coat white | drum,lagos,under coat white,drum,0.0,0.0,1.1535433690268855,0.9750551155822782
+2026-03-01,lagos | under coat white | drum,lagos,under coat white,drum,0.0,0.0,0.48219082184076634,0.9750551155822782
+2026-02-01,lagos | union | pcs,lagos,union,pcs,0.0,0.0,0.046105462912094296,0.0
+2026-03-01,lagos | union | pcs,lagos,union,pcs,0.0,0.0,0.02090565845132247,0.0
+2026-02-01,lagos | upvc 2 sockets | pcs,lagos,upvc 2 sockets,pcs,40.0,0.0,0.13457996841725156,0.06878567304766131
+2026-03-01,lagos | upvc 2 sockets | pcs,lagos,upvc 2 sockets,pcs,0.0,40.0,0.15081253379893536,0.2829066889628334
+2026-02-01,lagos | upvc 2 y | pcs,lagos,upvc 2 y,pcs,70.0,0.0,0.14136294263792154,0.06878567304766131
+2026-03-01,lagos | upvc 2 y | pcs,lagos,upvc 2 y,pcs,0.0,70.0,2.1642030897904574,0.5866281426243332
+2026-02-01,lagos | upvc pipes | length,lagos,upvc pipes,length,30.0,0.0,1.1369760601172128,1.355128422099681
+2026-03-01,lagos | upvc pipes | length,lagos,upvc pipes,length,0.0,30.0,0.25451258367389684,0.0
+2026-02-01,lagos | vibrator | set,lagos,vibrator,set,0.0,0.0,0.23633955786303346,0.09568625042684498
+2026-03-01,lagos | vibrator | set,lagos,vibrator,set,2.0,0.0,0.12032371978899806,0.09568625042684498
+2026-02-01,lagos | vitrified tiles | pkt,lagos,vitrified tiles,pkt,0.0,0.0,0.9750138642207693,0.21886925056990006
+2026-03-01,lagos | vitrified tiles | pkt,lagos,vitrified tiles,pkt,0.0,0.0,0.36274458838235013,0.21886925056990006
+2026-02-01,lagos | walking talking | pcs,lagos,walking talking,pcs,0.0,0.0,0.3628218164148963,0.0891416483675609
+2026-03-01,lagos | walking talking | pcs,lagos,walking talking,pcs,4.0,0.0,0.16997311147760163,0.0891416483675609
+2026-02-01,lagos | wall putty | bag,lagos,wall putty,bag,0.0,0.0,0.31221017601150075,0.7632013229447678
+2026-03-01,lagos | wall putty | bag,lagos,wall putty,bag,40.0,0.0,0.17470750495449677,0.7632013229447678
+2026-02-01,lagos | wash hand basin | nos,lagos,wash hand basin,nos,0.0,0.0,0.0363738800656566,0.15350267599598236
+2026-03-01,lagos | wash hand basin | nos,lagos,wash hand basin,nos,0.0,0.0,0.3571705775765398,1.6531566686253854
+2026-02-01,lagos | water | litre,lagos,water,litre,0.0,10000.0,16.304089313937336,4.026347371682503
+2026-03-01,lagos | water | litre,lagos,water,litre,0.0,0.0,11.985458267792405,7.474219935387172
+2026-02-01,lagos | water closet | nos,lagos,water closet,nos,0.0,0.0,0.04424656182129479,0.15350267599598236
+2026-03-01,lagos | water closet | nos,lagos,water closet,nos,0.0,0.0,0.4267016363700446,1.6531566686253854
+2026-02-01,lagos | water dispenser | pcs,lagos,water dispenser,pcs,0.0,0.0,0.5200780040681545,0.4645726782299474
+2026-03-01,lagos | water dispenser | pcs,lagos,water dispenser,pcs,0.0,0.0,0.2517627242640978,0.4645726782299474
+2026-02-01,lagos | water hose | roll,lagos,water hose,roll,0.0,0.0,0.10110453995652154,0.0
+2026-03-01,lagos | water hose | roll,lagos,water hose,roll,0.0,0.0,0.13496817832636754,0.484696970494194
+2026-02-01,lagos | water hose new | bag,lagos,water hose new,bag,1.0,0.0,1.0232943837601454,1.4839291887118944
+2026-03-01,lagos | water hose new | bag,lagos,water hose new,bag,0.0,1.0,0.17645288274531798,1.3352506438793665
+2026-02-01,lagos | water hose new | roll,lagos,water hose new,roll,1.0,0.0,0.19553481919216792,0.484696970494194
+2026-03-01,lagos | water hose new | roll,lagos,water hose new,roll,0.0,1.0,0.04019067512316262,0.0
+2026-02-01,lagos | water host | roll,lagos,water host,roll,0.0,0.0,0.26431115970211005,0.0
+2026-03-01,lagos | water host | roll,lagos,water host,roll,0.0,0.0,0.03051990490314985,0.0
+2026-02-01,lagos | water level | roll,lagos,water level,roll,1.0,0.0,0.16263359355181914,0.484696970494194
+2026-03-01,lagos | water level | roll,lagos,water level,roll,0.0,1.0,0.029662289276048703,0.0
+2026-02-01,lagos | water leveling hose 8mm x 100mm | roll,lagos,water leveling hose 8mm x 100mm,roll,1.0,0.0,0.1637590062257197,0.484696970494194
+2026-03-01,lagos | water leveling hose 8mm x 100mm | roll,lagos,water leveling hose 8mm x 100mm,roll,0.0,1.0,0.027325372580476584,0.0
+2026-02-01,lagos | water proofing chemicals | pcs,lagos,water proofing chemicals,pcs,0.0,0.0,0.37508105523578644,0.8825132036028258
+2026-03-01,lagos | water proofing chemicals | pcs,lagos,water proofing chemicals,pcs,14.0,0.0,0.18703351426220988,0.8825132036028258
+2026-02-01,lagos | water pump | pcs,lagos,water pump,pcs,0.0,0.0,0.10322619693909897,0.0
+2026-03-01,lagos | water pump | pcs,lagos,water pump,pcs,0.0,0.0,0.06724055699287906,0.0
+2026-02-01,lagos | water supply | litre,lagos,water supply,litre,0.0,0.0,83.43315878299299,25.65030566533384
+2026-03-01,lagos | water supply | litre,lagos,water supply,litre,0.0,0.0,9.69657605300034,25.65030566533384
+2026-02-01,lagos | wheel barrows | nos,lagos,wheel barrows,nos,0.0,0.0,0.700198499527211,0.41108257493226275
+2026-03-01,lagos | wheel barrows | nos,lagos,wheel barrows,nos,0.0,0.0,1.0647159308773202,3.606584272467164
+2026-02-01,lagos | white board | pcs,lagos,white board,pcs,0.0,0.0,4.403307256098274,1.3301501121824844
+2026-03-01,lagos | white board | pcs,lagos,white board,pcs,0.0,0.0,1.1188846830655144,1.3301501121824844
+2026-02-01,lagos | white cement | bag,lagos,white cement,bag,0.0,20.0,2.1089785325274937,1.8343530407883777
+2026-03-01,lagos | white cement | bag,lagos,white cement,bag,0.0,0.0,0.640907607338556,2.172761546482514
+2026-02-01,lagos | wire mesh | roll,lagos,wire mesh,roll,0.0,3.0,0.44173688141417294,0.08143519273833516
+2026-03-01,lagos | wire mesh | roll,lagos,wire mesh,roll,0.0,0.0,0.2537610714620022,0.11355357013476342
+2026-02-01,lagos | wood | length,lagos,wood,length,0.0,0.0,47.66699287302032,17.125504569600007
+2026-03-01,lagos | wood | length,lagos,wood,length,0.0,0.0,5.238938213297781,17.125504569600007
+2026-02-01,lagos | wood | pcs,lagos,wood,pcs,415.0,1600.0,18.132259986503577,8.194832057071885
+2026-03-01,lagos | wood | pcs,lagos,wood,pcs,0.0,415.0,221.56936971325715,135.5592327186649
+2026-02-01,lagos | woods | pcs,lagos,woods,pcs,1061.0,0.0,9.08551369594714,31.597423984064932
+2026-03-01,lagos | woods | pcs,lagos,woods,pcs,0.0,1061.0,18.99036199214606,0.12626712648478805
+2026-02-01,lagos | working talking phone | pcs,lagos,working talking phone,pcs,0.0,0.0,7.002736382479785,1.3974146237906804
+2026-03-01,lagos | working talking phone | pcs,lagos,working talking phone,pcs,0.0,0.0,1.7510831593877736,1.3974146237906804
+2026-02-01,lagos | zinc nails | pacs,lagos,zinc nails,pacs,0.0,0.0,1.6877006854126475,0.962165742806049
+2026-03-01,lagos | zinc nails | pacs,lagos,zinc nails,pacs,0.0,0.0,0.6767864529962409,0.962165742806049
+2026-02-01,lagos | zink nail | packs,lagos,zink nail,packs,0.0,0.0,1.4298927793394411,0.8468642138885094
+2026-03-01,lagos | zink nail | packs,lagos,zink nail,packs,2.0,0.0,0.5929937430732128,0.8468642138885094
+2026-02-01,ogun | 1 5 concrete nail | packs,ogun,1 5 concrete nail,packs,0.0,0.0,0.5203268670542835,0.06668167927847586
+2026-03-01,ogun | 1 5 concrete nail | packs,ogun,1 5 concrete nail,packs,0.0,0.0,0.20838027913598045,0.06668167927847586
+2026-02-01,ogun | 1 5mm wire | roll,ogun,1 5mm wire,roll,1.0,0.0,0.14285223223442786,0.04936859859897119
+2026-03-01,ogun | 1 5mm wire | roll,ogun,1 5mm wire,roll,0.0,1.0,0.03589491994761252,0.0
+2026-02-01,ogun | 10m measuring tapes | nos,ogun,10m measuring tapes,nos,4.0,0.0,0.21867794240884617,0.015159439479587498
+2026-03-01,ogun | 10m measuring tapes | nos,ogun,10m measuring tapes,nos,0.0,4.0,0.02692880429967269,0.0
+2026-02-01,ogun | 13 amps plug | nos,ogun,13 amps plug,nos,3.0,0.0,0.03522123232081303,0.015159439479587498
+2026-03-01,ogun | 13 amps plug | nos,ogun,13 amps plug,nos,0.0,3.0,0.009014500380365383,0.0
+2026-02-01,ogun | 16mm drilling bit | nos,ogun,16mm drilling bit,nos,0.0,0.0,0.19156918462117156,0.015159439479587498
+2026-03-01,ogun | 16mm drilling bit | nos,ogun,16mm drilling bit,nos,1.0,0.0,0.08503048546694884,0.015159439479587498
+2026-02-01,ogun | 2 5mm wire | roll,ogun,2 5mm wire,roll,1.0,0.0,0.08573765382237951,0.07871146772160799
+2026-03-01,ogun | 2 5mm wire | roll,ogun,2 5mm wire,roll,0.0,1.0,0.040168244007731585,0.0
+2026-02-01,ogun | 25 20mm m f sockets | nos,ogun,25 20mm m f sockets,nos,0.0,0.0,0.006423636394107976,0.0
+2026-03-01,ogun | 25 20mm m f sockets | nos,ogun,25 20mm m f sockets,nos,200.0,0.0,0.0027364087561171906,0.0
+2026-02-01,ogun | 3 3 patress | nos,ogun,3 3 patress,nos,0.0,0.0,0.003099383376509066,0.0
+2026-03-01,ogun | 3 3 patress | nos,ogun,3 3 patress,nos,0.0,0.0,0.07334236252027074,0.16125881749763074
+2026-02-01,ogun | 3 3 patress | pcs,ogun,3 3 patress,pcs,9.0,0.0,0.09126182773113412,0.13147466442434794
+2026-03-01,ogun | 3 3 patress | pcs,ogun,3 3 patress,pcs,0.0,9.0,1.3898524152107437e-05,0.0
+2026-02-01,ogun | 3 3 socket | pcs,ogun,3 3 socket,pcs,9.0,0.0,0.06142139246876395,0.13147466442434794
+2026-03-01,ogun | 3 3 socket | pcs,ogun,3 3 socket,pcs,0.0,9.0,1.3898524152107437e-05,0.0
+2026-02-01,ogun | 3 3 sockets | nos,ogun,3 3 sockets,nos,0.0,0.0,0.003099383376509066,0.0
+2026-03-01,ogun | 3 3 sockets | nos,ogun,3 3 sockets,nos,0.0,0.0,0.0692916496210783,0.16125881749763074
+2026-02-01,ogun | 3 concrete nails | packs,ogun,3 concrete nails,packs,0.0,0.0,0.5296840352526937,0.23739716111532155
+2026-03-01,ogun | 3 concrete nails | packs,ogun,3 concrete nails,packs,0.0,0.0,0.21734021324392638,0.23739716111532155
+2026-02-01,ogun | 4 inches pvc pipes | length,ogun,4 inches pvc pipes,length,0.0,0.0,0.041978472897518854,0.05158207627136577
+2026-03-01,ogun | 4 inches pvc pipes | length,ogun,4 inches pvc pipes,length,10.0,0.0,0.014548501352577634,0.05158207627136577
+2026-02-01,ogun | 45 degree 4 pvc bends | nos,ogun,45 degree 4 pvc bends,nos,0.0,0.0,0.014206420007051891,0.011423044604349706
+2026-03-01,ogun | 45 degree 4 pvc bends | nos,ogun,45 degree 4 pvc bends,nos,70.0,0.0,0.011805952174964628,0.011423044604349706
+2026-02-01,ogun | 45 degree pvc bends | nos,ogun,45 degree pvc bends,nos,0.0,0.0,0.01949260589909258,0.011423044604349706
+2026-03-01,ogun | 45 degree pvc bends | nos,ogun,45 degree pvc bends,nos,14.0,0.0,0.013443713929948935,0.011423044604349706
+2026-02-01,ogun | 50m measuring tapes | nos,ogun,50m measuring tapes,nos,1.0,0.0,0.009363128631242104,0.002205524704547658
+2026-03-01,ogun | 50m measuring tapes | nos,ogun,50m measuring tapes,nos,0.0,1.0,1.3898524152107437e-05,0.0
+2026-02-01,ogun | 50mm hdpe elbow | nos,ogun,50mm hdpe elbow,nos,0.0,0.0,0.06163100120407278,0.2555278398870335
+2026-03-01,ogun | 50mm hdpe elbow | nos,ogun,50mm hdpe elbow,nos,100.0,0.0,0.03998099203648546,0.2555278398870335
+2026-02-01,ogun | 50mm hdpe sockets | nos,ogun,50mm hdpe sockets,nos,0.0,0.0,0.04052140290814363,0.2555278398870335
+2026-03-01,ogun | 50mm hdpe sockets | nos,ogun,50mm hdpe sockets,nos,50.0,0.0,0.030134208819777956,0.2555278398870335
+2026-02-01,ogun | 75 12m hdpe pipes | length,ogun,75 12m hdpe pipes,length,0.0,0.0,0.48654411507575246,0.6005711035031551
+2026-03-01,ogun | 75 12m hdpe pipes | length,ogun,75 12m hdpe pipes,length,10.0,0.0,0.21918725008837867,0.6005711035031551
+2026-02-01,ogun | 75 50mm hdpe y tee | nos,ogun,75 50mm hdpe y tee,nos,0.0,0.0,0.09276682707809099,0.25335132346145356
+2026-03-01,ogun | 75 50mm hdpe y tee | nos,ogun,75 50mm hdpe y tee,nos,100.0,0.0,0.057240988860008474,0.25335132346145356
+2026-02-01,ogun | 75mm hdpe sockets | nos,ogun,75mm hdpe sockets,nos,0.0,0.0,0.09066482842752512,0.25335132346145356
+2026-03-01,ogun | 75mm hdpe sockets | nos,ogun,75mm hdpe sockets,nos,100.0,0.0,0.055207326163778186,0.25335132346145356
+2026-02-01,ogun | a4 paper | packs,ogun,a4 paper,packs,1.0,0.0,0.2289533677396117,0.30102418267009273
+2026-03-01,ogun | a4 paper | packs,ogun,a4 paper,packs,0.0,1.0,0.0035039998777221617,0.0
+2026-02-01,ogun | bits | nos,ogun,bits,nos,2.0,0.0,0.05835697434035886,0.03237487311551898
+2026-03-01,ogun | bits | nos,ogun,bits,nos,0.0,2.0,0.015129530908132603,0.003386432203643463
+2026-02-01,ogun | black oil | cans,ogun,black oil,cans,0.0,0.0,0.9525889952390925,0.4539400810605218
+2026-03-01,ogun | black oil | cans,ogun,black oil,cans,0.0,0.0,0.207751316182582,0.30237503081167566
+2026-02-01,ogun | black oil | litre,ogun,black oil,litre,0.0,0.0,0.18833807754691018,0.5504070369912253
+2026-03-01,ogun | black oil | litre,ogun,black oil,litre,0.0,0.0,0.8752547329887583,1.8784264752304414
+2026-02-01,ogun | black screw | packs,ogun,black screw,packs,1.0,0.0,0.16926698504851712,0.18535846112444182
+2026-03-01,ogun | black screw | packs,ogun,black screw,packs,0.0,1.0,0.007442991059834055,0.0
+2026-02-01,ogun | bolts | nos,ogun,bolts,nos,355.0,0.0,0.1260650402539549,0.3021449529779474
+2026-03-01,ogun | bolts | nos,ogun,bolts,nos,0.0,355.0,1.127673726631552,2.3788242686941947
+2026-02-01,ogun | bonding agent | litre,ogun,bonding agent,litre,40.0,0.0,0.290732492271416,0.46589663574457924
+2026-03-01,ogun | bonding agent | litre,ogun,bonding agent,litre,0.0,40.0,0.6576139196814088,0.8785730378134555
+2026-02-01,ogun | carpenter bar | nos,ogun,carpenter bar,nos,0.0,0.0,0.11495418696444823,0.3021449529779474
+2026-03-01,ogun | carpenter bar | nos,ogun,carpenter bar,nos,2.0,0.0,0.0583495099863692,0.3021449529779474
+2026-02-01,ogun | carpenter hammer | nos,ogun,carpenter hammer,nos,0.0,0.0,0.11378907024607268,0.3021449529779474
+2026-03-01,ogun | carpenter hammer | nos,ogun,carpenter hammer,nos,2.0,0.0,0.0564296076750171,0.3021449529779474
+2026-02-01,ogun | carpenter hand saw | nos,ogun,carpenter hand saw,nos,0.0,0.0,0.122084760163343,0.3021449529779474
+2026-03-01,ogun | carpenter hand saw | nos,ogun,carpenter hand saw,nos,2.0,0.0,0.058475815974331505,0.3021449529779474
+2026-02-01,ogun | cartridge | nos,ogun,cartridge,nos,1.0,0.0,0.19457532834821042,0.31738799683320446
+2026-03-01,ogun | cartridge | nos,ogun,cartridge,nos,0.0,1.0,0.03590205632734109,0.0
+2026-02-01,ogun | circuit breaker | nos,ogun,circuit breaker,nos,0.0,1.0,0.03868831282352932,0.0
+2026-03-01,ogun | circuit breaker | nos,ogun,circuit breaker,nos,1.0,0.0,0.09154813541608775,0.10748403348957636
+2026-02-01,ogun | clips | packs,ogun,clips,packs,4.0,7.0,0.04759865664565005,0.011862230806690148
+2026-03-01,ogun | clips | packs,ogun,clips,packs,0.0,4.0,0.07881893142706281,0.26157808985271325
+2026-02-01,ogun | common nail | bag,ogun,common nail,bag,0.0,0.0,0.7129481612669468,0.5614156811500182
+2026-03-01,ogun | common nail | bag,ogun,common nail,bag,1.0,0.0,0.31983858522983494,0.5614156811500182
+2026-02-01,ogun | common nails | bag,ogun,common nails,bag,0.0,0.0,0.6185501893158603,0.5614156811500182
+2026-03-01,ogun | common nails | bag,ogun,common nails,bag,3.0,0.0,0.28040168673706006,0.5614156811500182
+2026-02-01,ogun | concrete nails | packs,ogun,concrete nails,packs,1.0,0.0,1.0438029078673652,0.5570020836919614
+2026-03-01,ogun | concrete nails | packs,ogun,concrete nails,packs,10.0,1.0,0.023252029653874035,0.0008680600006225286
+2026-02-01,ogun | correction pens | nos,ogun,correction pens,nos,0.0,0.0,0.04247264148160959,0.118099068464645
+2026-03-01,ogun | correction pens | nos,ogun,correction pens,nos,0.0,0.0,0.257841100685069,0.7449361008618254
+2026-02-01,ogun | digital caliper | nos,ogun,digital caliper,nos,0.0,0.0,0.38041703780780184,0.22140202873005377
+2026-03-01,ogun | digital caliper | nos,ogun,digital caliper,nos,0.0,0.0,0.04881324089179127,0.1282023417201455
+2026-02-01,ogun | discs | pcs,ogun,discs,pcs,25.0,0.0,0.2133240113643673,0.11261607367679216
+2026-03-01,ogun | discs | pcs,ogun,discs,pcs,0.0,25.0,0.15395082342843,0.8273670229016901
+2026-02-01,ogun | dispenser gun | nos,ogun,dispenser gun,nos,1.0,0.0,0.5688576327571522,0.5731363220877688
+2026-03-01,ogun | dispenser gun | nos,ogun,dispenser gun,nos,0.0,1.0,0.03791332555056774,0.11690884629998742
+2026-02-01,ogun | drilling bits | nos,ogun,drilling bits,nos,2.0,0.0,0.7539928899260131,0.3627328276944918
+2026-03-01,ogun | drilling bits | nos,ogun,drilling bits,nos,0.0,2.0,0.11812172317099406,0.24854077453540552
+2026-02-01,ogun | fuel | litre,ogun,fuel,litre,23.0,10.0,0.4167550024846511,1.1933167482690794
+2026-03-01,ogun | fuel | litre,ogun,fuel,litre,0.0,23.0,0.7928611544829467,3.6021587807965503
+2026-02-01,ogun | fuel tap | nos,ogun,fuel tap,nos,0.0,0.0,0.05278089705936115,0.10906660851190526
+2026-03-01,ogun | fuel tap | nos,ogun,fuel tap,nos,0.0,0.0,0.29799440777186376,0.49687965613342344
+2026-02-01,ogun | ink | nos,ogun,ink,nos,0.0,0.0,0.3763897468979195,0.09357442009537172
+2026-03-01,ogun | ink | nos,ogun,ink,nos,0.0,0.0,0.05563664561348447,0.046012895789597004
+2026-02-01,ogun | insulation tape | roll,ogun,insulation tape,roll,0.0,0.0,0.1520868471738861,0.3564345801408188
+2026-03-01,ogun | insulation tape | roll,ogun,insulation tape,roll,1.0,0.0,0.07734411822409633,0.3564345801408188
+2026-02-01,ogun | l and key tool | nos,ogun,l and key tool,nos,1.0,0.0,0.5909652875267113,0.49007406200818293
+2026-03-01,ogun | l and key tool | nos,ogun,l and key tool,nos,0.0,1.0,0.07460834679125886,0.0662424700851516
+2026-02-01,ogun | led light | nos,ogun,led light,nos,0.0,0.0,0.586219592070506,0.49007406200818293
+2026-03-01,ogun | led light | nos,ogun,led light,nos,0.0,0.0,0.2435627972733948,0.49007406200818293
+2026-02-01,ogun | led solar light | nos,ogun,led solar light,nos,2.0,0.0,0.5589901817306635,0.49007406200818293
+2026-03-01,ogun | led solar light | nos,ogun,led solar light,nos,0.0,2.0,0.05439312292098101,0.0662424700851516
+2026-02-01,ogun | lights | nos,ogun,lights,nos,8.0,16.0,0.2066796972337261,0.0
+2026-03-01,ogun | lights | nos,ogun,lights,nos,0.0,8.0,0.2887226126735016,0.8122237002744912
+2026-02-01,ogun | masking tape | pcs,ogun,masking tape,pcs,0.0,0.0,0.3211705445047279,0.3584204542007076
+2026-03-01,ogun | masking tape | pcs,ogun,masking tape,pcs,2.0,0.0,0.15354934183451827,0.3584204542007076
+2026-02-01,ogun | masking tapes | nos,ogun,masking tapes,nos,0.0,0.0,0.9925461755914418,0.5266541849874249
+2026-03-01,ogun | masking tapes | nos,ogun,masking tapes,nos,0.0,0.0,0.44096066933668726,0.5266541849874249
+2026-02-01,ogun | masking tapes | roll,ogun,masking tapes,roll,0.0,0.0,0.08731897967952312,0.0
+2026-03-01,ogun | masking tapes | roll,ogun,masking tapes,roll,0.0,0.0,0.2252041674156136,0.4043229277701269
+2026-02-01,ogun | mason hammer | nos,ogun,mason hammer,nos,0.0,0.0,0.805745102475623,0.5266541849874249
+2026-03-01,ogun | mason hammer | nos,ogun,mason hammer,nos,2.0,0.0,0.3436765897243044,0.5266541849874249
+2026-02-01,ogun | mortar | pcs,ogun,mortar,pcs,20.0,0.0,0.3453648017198505,0.41287265819302355
+2026-03-01,ogun | mortar | pcs,ogun,mortar,pcs,0.0,20.0,0.05184377327296683,0.0
+2026-02-01,ogun | nails | packs,ogun,nails,packs,10.0,2.0,0.15549715920704765,0.0
+2026-03-01,ogun | nails | packs,ogun,nails,packs,0.0,10.0,0.13769046671036705,0.1782515884218445
+2026-02-01,ogun | nylon | packs,ogun,nylon,packs,0.0,0.0,0.8343522707340059,0.5687012312625384
+2026-03-01,ogun | nylon | packs,ogun,nylon,packs,0.0,0.0,0.3426716406662813,0.5687012312625384
+2026-02-01,ogun | nylon bags | packs,ogun,nylon bags,packs,0.0,0.0,0.10416822081016211,0.0645891201762518
+2026-03-01,ogun | nylon bags | packs,ogun,nylon bags,packs,0.0,0.0,0.30560205733399914,0.5687012312625384
+2026-02-01,ogun | patress | nos,ogun,patress,nos,12.0,4.0,0.1474134946552337,0.12974547194820857
+2026-03-01,ogun | patress | nos,ogun,patress,nos,0.0,12.0,0.2013749699195773,0.24913843638758415
+2026-02-01,ogun | pens | packs,ogun,pens,packs,0.5,0.0,0.6257838641783553,0.6050415917160152
+2026-03-01,ogun | pens | packs,ogun,pens,packs,0.0,0.5,0.19250478671531315,0.6050415917160152
+2026-02-01,ogun | plug | nos,ogun,plug,nos,4.0,4.0,0.12610519495841752,0.12974547194820857
+2026-03-01,ogun | plug | nos,ogun,plug,nos,0.0,4.0,0.20026817720304327,0.29938813100208705
+2026-02-01,ogun | poly bag | roll,ogun,poly bag,roll,0.0,0.0,0.6101249201350005,0.6152808030831933
+2026-03-01,ogun | poly bag | roll,ogun,poly bag,roll,0.0,0.0,0.26034311787554104,0.6152808030831933
+2026-02-01,ogun | red oxide paint | bucket,ogun,red oxide paint,bucket,0.0,0.0,1.0580717212486284,0.4928851654711318
+2026-03-01,ogun | red oxide paint | bucket,ogun,red oxide paint,bucket,1.0,0.0,0.3857931380297373,0.4928851654711318
+2026-02-01,ogun | rubber bands | bundle,ogun,rubber bands,bundle,0.0,0.0,0.1867521944928546,0.05607201803891942
+2026-03-01,ogun | rubber bands | bundle,ogun,rubber bands,bundle,0.0,0.0,0.3761546664342332,0.513732090528225
+2026-02-01,ogun | satchet water | bag,ogun,satchet water,bag,0.0,5.0,0.5254828850975897,0.8310551624094094
+2026-03-01,ogun | satchet water | bag,ogun,satchet water,bag,0.0,0.0,0.2168629875571903,0.792956583207159
+2026-02-01,ogun | slump cone | nos,ogun,slump cone,nos,0.0,0.0,0.5182407714783575,0.2352452494615492
+2026-03-01,ogun | slump cone | nos,ogun,slump cone,nos,0.0,0.0,0.06487266478102445,0.1393590166701586
+2026-02-01,ogun | sockets | nos,ogun,sockets,nos,8.0,12.0,0.42159821935108377,0.07590992352846342
+2026-03-01,ogun | sockets | nos,ogun,sockets,nos,0.0,8.0,0.30582834433094486,0.7178162970839126
+2026-02-01,ogun | steel h beams | length,ogun,steel h beams,length,11.0,0.0,0.47274950262467424,0.5371554610434448
+2026-03-01,ogun | steel h beams | length,ogun,steel h beams,length,0.0,11.0,0.16637683935299913,0.0
+2026-02-01,ogun | steel plates | length,ogun,steel plates,length,4.0,0.0,0.44740381218398284,0.5371554610434448
+2026-03-01,ogun | steel plates | length,ogun,steel plates,length,0.0,4.0,0.17757542778558194,0.0
+2026-02-01,ogun | switch | nos,ogun,switch,nos,1.0,9.0,0.40894600247512014,0.2870071991122894
+2026-03-01,ogun | switch | nos,ogun,switch,nos,0.0,1.0,0.2936770258524634,0.762048339049139
+2026-02-01,ogun | tapes | roll,ogun,tapes,roll,0.0,0.0,0.42663939023077974,0.07810803698110931
+2026-03-01,ogun | tapes | roll,ogun,tapes,roll,0.0,0.0,0.08668460195810412,0.07051657269068382
+2026-02-01,ogun | tie rod | nos,ogun,tie rod,nos,0.0,0.0,2.103892185347535,0.9145958481843699
+2026-03-01,ogun | tie rod | nos,ogun,tie rod,nos,0.0,0.0,0.6200438404316175,0.9145958481843699
+2026-02-01,ogun | tower clips | pack,ogun,tower clips,pack,0.0,0.0,0.224793040103202,0.0
+2026-03-01,ogun | tower clips | pack,ogun,tower clips,pack,0.0,0.0,0.2770721796634192,0.16420933700619145
+2026-02-01,ogun | tower clips | packs,ogun,tower clips,packs,1.0,0.0,0.4376380816885386,0.09833827283098408
+2026-03-01,ogun | tower clips | packs,ogun,tower clips,packs,0.0,1.0,0.10909946635575174,0.0
+2026-02-01,ogun | wall putty | bag,ogun,wall putty,bag,0.0,0.0,0.26909379866819993,0.6205423716232727
+2026-03-01,ogun | wall putty | bag,ogun,wall putty,bag,50.0,0.0,0.151356198015894,0.6205423716232727
+2026-02-01,ogun | wheel nuts | nos,ogun,wheel nuts,nos,0.0,0.0,13.434232267170518,4.360130083422957
+2026-03-01,ogun | wheel nuts | nos,ogun,wheel nuts,nos,0.0,0.0,2.1124676226383117,4.360130083422957
+2026-02-01,ogun | wire | roll,ogun,wire,roll,3.0,5.0,0.26605002814721734,0.09038227885077645
+2026-03-01,ogun | wire | roll,ogun,wire,roll,0.0,3.0,0.2883444283435879,0.43750416923700153

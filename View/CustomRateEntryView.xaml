@@ -1,475 +1,563 @@
-﻿<UserControl x:Class="ADLMRateGen.View.CustomRateEntryView"
+<UserControl x:Class="ADLMRateGen.View.CustomRateEntryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ADLMRateGen.View"
              mc:Ignorable="d"
-             d:DesignHeight="450"
-             d:DesignWidth="800">
+             d:DesignHeight="800"
+             d:DesignWidth="860"
+             MinWidth="760">
+
     <UserControl.Resources>
-        <Style TargetType="TextBlock">
-            <Setter Property="Foreground"
-                    Value="{DynamicResource CellTextBrush}" />
-            <Setter Property="FontFamily"
-                    Value="{DynamicResource Mont}" />
+        <!-- ─── Figma label: Mont SemiBold 12.8px #354764 ─── -->
+        <Style x:Key="FLabel" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
+            <Setter Property="FontSize" Value="12.8" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#354764" />
         </Style>
 
-        <Style x:Key="FormLabelTextStyle"
-               TargetType="TextBlock">
-            <Setter Property="Foreground"
-                    Value="{DynamicResource Blue900Brush}" />
-            <Setter Property="FontFamily"
-                    Value="{DynamicResource Mont}" />
-            <Setter Property="FontSize"
-                    Value="14" />
-            <Setter Property="FontWeight"
-                    Value="SemiBold" />
-            <Setter Property="Margin"
-                    Value="0,0,0,8" />
+        <!-- ─── Figma input: bg:#EBEDF0, border:1px #DFE2E6, rounded:12, p:16 ─── -->
+        <Style x:Key="FInput" TargetType="TextBox">
+            <Setter Property="Background" Value="#EBEDF0" />
+            <Setter Property="BorderBrush" Value="#DFE2E6" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Padding" Value="18,12" />
+            <Setter Property="CaretBrush" Value="#091E39" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12" SnapsToDevicePixels="True"
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Focusable="False"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#1245A8" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
-        <Style x:Key="InlineHintTextStyle"
-               TargetType="TextBlock">
-            <Setter Property="Foreground"
-                    Value="{DynamicResource HintGrey}" />
-            <Setter Property="FontFamily"
-                    Value="{DynamicResource Mont}" />
-            <Setter Property="FontSize"
-                    Value="11" />
+        <!-- ─── Small input for item rows ─── -->
+        <Style x:Key="FInputSmall" TargetType="TextBox" BasedOn="{StaticResource FInput}">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="8,8" />
+            <Setter Property="MinHeight" Value="36" />
         </Style>
 
-        <Style x:Key="FormEditorComboStyle"
-               TargetType="ComboBox">
-            <Setter Property="Foreground"
-                    Value="{DynamicResource CellTextBrush}" />
-            <Setter Property="TextElement.Foreground"
-                    Value="{DynamicResource CellTextBrush}" />
-            <Setter Property="Background"
-                    Value="{DynamicResource BackgroundBrush}" />
-            <Setter Property="BorderBrush"
-                    Value="{DynamicResource BorderBrushLight}" />
-            <Setter Property="BorderThickness"
-                    Value="1" />
-            <Setter Property="Padding"
-                    Value="10,0" />
-            <Setter Property="FontFamily"
-                    Value="{DynamicResource Mont}" />
-            <Setter Property="FontSize"
-                    Value="14" />
-            <Setter Property="Height"
-                    Value="46" />
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center" />
+        <!-- ─── Overhead/Profit input with teal border ─── -->
+        <Style x:Key="FInputOHP" TargetType="TextBox" BasedOn="{StaticResource FInput}">
+            <Setter Property="Background" Value="#F5F6F7" />
+            <Setter Property="BorderBrush" Value="#1D94CA" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="Height" Value="44" />
         </Style>
 
-        <Style x:Key="TotalsTextStyle"
-               TargetType="TextBlock">
-            <Setter Property="FontWeight"
-                    Value="SemiBold" />
-            <Setter Property="Foreground"
-                    Value="{DynamicResource Blue900Brush}" />
-            <Setter Property="Margin"
-                    Value="0,4,0,0" />
+        <!-- ─── Small hint label for item rows ─── -->
+        <Style x:Key="FLabelSmall" TargetType="TextBlock" BasedOn="{StaticResource FLabel}">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
+
+        <!-- ─── Combo for material/labour name picker ─── -->
+        <Style x:Key="FComboSmall" TargetType="ComboBox">
+            <Setter Property="Background" Value="#EBEDF0" />
+            <Setter Property="BorderBrush" Value="#DFE2E6" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border x:Name="ComboBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="12"
+                                    SnapsToDevicePixels="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="28" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Editable text area -->
+                                    <TextBox x:Name="PART_EditableTextBox"
+                                             IsReadOnly="{TemplateBinding IsReadOnly}"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             Foreground="{TemplateBinding Foreground}"
+                                             FontFamily="{TemplateBinding FontFamily}"
+                                             FontSize="{TemplateBinding FontSize}"
+                                             Padding="{TemplateBinding Padding}"
+                                             TextWrapping="Wrap"
+                                             VerticalContentAlignment="Center"
+                                             HorizontalAlignment="Stretch"
+                                             CaretBrush="#091E39" />
+
+                                    <!-- Dropdown arrow -->
+                                    <ToggleButton Grid.Column="0" Grid.ColumnSpan="2"
+                                                  IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                                  Background="Transparent"
+                                                  BorderThickness="0"
+                                                  Focusable="False"
+                                                  ClickMode="Press">
+                                        <ToggleButton.Template>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Grid Background="Transparent">
+                                                    <Path x:Name="Arrow"
+                                                          Data="M 0,0 L 5,5 L 10,0"
+                                                          Stroke="#5F6D7E"
+                                                          StrokeThickness="1.5"
+                                                          HorizontalAlignment="Right"
+                                                          VerticalAlignment="Center"
+                                                          Margin="0,0,12,0" />
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </ToggleButton.Template>
+                                    </ToggleButton>
+                                </Grid>
+                            </Border>
+
+                            <!-- Dropdown popup -->
+                            <Popup x:Name="PART_Popup"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   AllowsTransparency="True"
+                                   PopupAnimation="Slide"
+                                   Focusable="False">
+                                <Border x:Name="DropDownBorder"
+                                        Background="White"
+                                        BorderBrush="#DFE2E6"
+                                        BorderThickness="1"
+                                        CornerRadius="10"
+                                        Margin="0,4,0,0"
+                                        MinWidth="{TemplateBinding ActualWidth}"
+                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                        SnapsToDevicePixels="True">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="12" ShadowDepth="2"
+                                                          Color="#000000" Opacity="0.10" Direction="270" />
+                                    </Border.Effect>
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                                  Margin="4">
+                                        <StackPanel IsItemsHost="True"
+                                                    KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="ComboBorder" Property="BorderBrush" Value="#1245A8" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ComboBorder" Property="BorderBrush" Value="#A6AEBB" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="ComboBorder" Property="BorderBrush" Value="#1245A8" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ─── ComboBox item hover style ─── -->
+        <Style x:Key="FComboItem" TargetType="ComboBoxItem">
+            <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="ItemBg"
+                                Background="Transparent"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ItemBg" Property="Background" Value="#F3F7FF" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBg" Property="Background" Value="#F3F7FF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ─── Section title: Mont Bold 16px #040E22 ─── -->
+        <Style x:Key="FSectionTitle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#040E22" />
+        </Style>
+
+        <!-- ─── Add Material/Labour outline button ─── -->
+        <Style x:Key="FAddBtn" TargetType="Button">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#DFE2E6" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontFamily" Value="{DynamicResource PoppinsFont}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="#354764" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ─── Totals label ─── -->
+        <Style x:Key="FTotals" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#040E22" />
+            <Setter Property="Margin" Value="0,3,0,0" />
         </Style>
     </UserControl.Resources>
 
-    <Border Background="{DynamicResource BackgroundBrush}"
-            Margin="25,-20"
-            CornerRadius="20">
+    <!-- ─── Figma: white bg, border:#DFE2E6, rounded:24, padding:44 ─── -->
+    <Border Background="White"
+            BorderBrush="#DFE2E6"
+            BorderThickness="1"
+            CornerRadius="24"
+            Padding="40"
+            SnapsToDevicePixels="True">
 
         <Grid>
             <Grid.RowDefinitions>
-                <!-- 1. Header -->
-                <RowDefinition Height="Auto" />
-                <!-- 2. Top Input Row (Rate Name, Description, Overhead, Profit) -->
-                <RowDefinition Height="Auto" />
-                <!-- 3. Materials and Labour items -->
-                <RowDefinition Height="*" />
-                <!-- 4. Save Button -->
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />  <!-- header -->
+                <RowDefinition Height="*" />      <!-- scrollable content -->
+                <RowDefinition Height="Auto" />   <!-- save button -->
             </Grid.RowDefinitions>
 
-            <!-- Header -->
-            <StackPanel Grid.Row="0"
-                        Margin="0,30,0,20"
-                        HorizontalAlignment="Center">
+            <!-- ═══ HEADER ═══ -->
+            <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,28">
                 <TextBlock Text="Build New Custom Rate"
-                           Style="{StaticResource EstHeader}"
+                           FontFamily="{DynamicResource AppFont}"
+                           FontSize="28" FontWeight="Bold"
+                           Foreground="#040E22"
                            HorizontalAlignment="Center" />
                 <TextBlock Text="Enter rate name, overhead, profit, and items"
-                           Style="{StaticResource SubheadingText}"
-                           HorizontalAlignment="Center" />
+                           FontFamily="{DynamicResource AppFont}"
+                           FontSize="12.8" FontWeight="SemiBold"
+                           Foreground="#354764"
+                           HorizontalAlignment="Center"
+                           Margin="0,2,0,0" />
             </StackPanel>
 
-
-            <ScrollViewer  Grid.Row="2"
-                           Margin="20,20,20,10"
-                           VerticalScrollBarVisibility="Auto"
-                           HorizontalScrollBarVisibility="Disabled"
-                           PanningMode="VerticalOnly"
-                           CanContentScroll="True">
+            <!-- ═══ SCROLLABLE FORM BODY ═══ -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          PanningMode="VerticalOnly">
                 <StackPanel>
-                    <!-- Top Inputs -->
-                    <StackPanel Grid.Row="1"
-                                Margin="20,0,20,0">
-                        
-                        <Grid Margin="0,10,0,10">
 
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="2*"/>
-                            </Grid.ColumnDefinitions>
-                            <!-- Name of Rate -->
-                            <StackPanel>
-                                <TextBlock Text="Name of Rate"
-                                           Style="{StaticResource FormLabelTextStyle}" />
-                                <TextBox Style="{StaticResource OPTextBox}"
-                                         Text="{Binding RateName, UpdateSourceTrigger=PropertyChanged}" />
-                            </StackPanel>
+                    <!-- ── Name of Rate (full width) ── -->
+                    <TextBlock Text="Name of Rate" Style="{StaticResource FLabel}" Margin="0,0,0,8" />
+                    <TextBox Text="{Binding RateName, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource FInput}" />
 
-                            <!-- Description -->
-                            <StackPanel Grid.Column="1"
-                                        Margin="10,0">
-                                <TextBlock Text="Description"
-                                           Style="{StaticResource FormLabelTextStyle}" />
-                                <TextBox Style="{StaticResource OPTextBox}"
-                                         Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
-                                         TextWrapping="Wrap"
-                                         AcceptsReturn="True"
-                                         Height="50" />
-                            </StackPanel>
+                    <!-- ── Overhead + Profit row ── -->
+                    <Grid Margin="0,18,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="8" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Labels -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Overhead" Style="{StaticResource FLabel}" />
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Profit" Style="{StaticResource FLabel}" />
+
+                        <!-- Overhead -->
+                        <Grid Grid.Row="2" Grid.Column="0">
+                            <TextBox Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FInputOHP}"
+                                     Padding="14,10,32,10" />
+                            <TextBlock Text="%" VerticalAlignment="Center"
+                                       HorizontalAlignment="Right" Margin="0,0,14,0"
+                                       FontFamily="{DynamicResource AppFont}"
+                                       FontSize="13" Foreground="#797F8F"
+                                       IsHitTestVisible="False" />
                         </Grid>
-                        <!-- Overhead & Profit -->
-                        <StackPanel Orientation="Horizontal"
-                                    Margin="0,10,0,10">
-                            <StackPanel Width="180">
-                                <TextBlock Text="Overhead"
-                                           Style="{StaticResource FormLabelTextStyle}" />
-                                <Grid>
-                                    <TextBox Style="{StaticResource HollowBox}"
-                                             Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}" />
-                                    <TextBlock Text="%"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Right"
-                                               Margin="0,0,12,0"
-                                               FontFamily="{StaticResource Mont}"
-                                               Foreground="{DynamicResource Grey700}" />
-                                </Grid>
-                            </StackPanel>
 
-                            <StackPanel Width="180"
-                                        Margin="20,0,0,0">
-                                <TextBlock Text="Profit"
-                                           Style="{StaticResource FormLabelTextStyle}" />
-                                <Grid>
-                                    <TextBox Style="{StaticResource OPTextBox}"
-                                             Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}" />
-                                    <TextBlock Text="%"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Right"
-                                               Margin="0,0,12,0"
-                                               FontFamily="{StaticResource Mont}"
-                                               Foreground="{DynamicResource Grey700}" />
-                                </Grid>
-                            </StackPanel>
+                        <!-- Profit -->
+                        <Grid Grid.Row="2" Grid.Column="2">
+                            <TextBox Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}"
+                                     Padding="14,10,32,10">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" BasedOn="{StaticResource FInputOHP}">
+                                        <Setter Property="BorderBrush" Value="#DFE2E6" />
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <TextBlock Text="%" VerticalAlignment="Center"
+                                       HorizontalAlignment="Right" Margin="0,0,14,0"
+                                       FontFamily="{DynamicResource AppFont}"
+                                       FontSize="13" Foreground="#797F8F"
+                                       IsHitTestVisible="False" />
+                        </Grid>
+                    </Grid>
+
+                    <!-- ── Description (multiline) ── -->
+                    <TextBlock Text="Description" Style="{StaticResource FLabel}" Margin="0,18,0,8" />
+                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource FInput}"
+                             TextWrapping="Wrap" AcceptsReturn="True"
+                             MinHeight="100" VerticalContentAlignment="Top" />
+
+                    <!-- ════════════ MATERIALS SECTION ════════════ -->
+                    <Grid Margin="0,28,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Materials" Style="{StaticResource FSectionTitle}" />
+                            <TextBlock Text="Click to add new material"
+                                       FontFamily="{DynamicResource AppFont}"
+                                       FontSize="9" Foreground="#354764" />
                         </StackPanel>
+                        <Button Grid.Column="1" Content="Add Material"
+                                Style="{StaticResource FAddBtn}"
+                                VerticalAlignment="Center"
+                                Command="{Binding AddMaterialItemCommand}" />
+                    </Grid>
 
+                    <!-- Material item rows -->
+                    <ItemsControl ItemsSource="{Binding MaterialItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />       <!-- Name (fills remaining) -->
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="82" />      <!-- Rate fixed -->
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="58" />      <!-- Unit fixed -->
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="72" />      <!-- Quantity fixed -->
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="96" />      <!-- Amount fixed -->
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="4" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
 
-                    </StackPanel>
+                                    <!-- headers -->
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Name of Material" Style="{StaticResource FLabelSmall}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Rate" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Center" />
+                                    <TextBlock Grid.Row="0" Grid.Column="4" Text="Unit" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Center" />
+                                    <TextBlock Grid.Row="0" Grid.Column="6" Text="Quantity" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Center" />
+                                    <TextBlock Grid.Row="0" Grid.Column="8" Text="Amount" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Right" />
 
-                    <!-- 3. Materials and Labour items -->
+                                    <!-- inputs -->
+                                    <ComboBox Grid.Row="2" Grid.Column="0"
+                                              IsEditable="True" IsTextSearchEnabled="True" StaysOpenOnEdit="True"
+                                              Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                              ItemsSource="{Binding DataContext.AvailableMaterials, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              Style="{StaticResource FComboSmall}"
+                                              ItemContainerStyle="{StaticResource FComboItem}" />
+                                    <TextBox Grid.Row="2" Grid.Column="2"
+                                             Text="{Binding UnitPrice, StringFormat=N0, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
+                                             Style="{StaticResource FInputSmall}"
+                                             HorizontalContentAlignment="Center" />
+                                    <TextBox Grid.Row="2" Grid.Column="4"
+                                             Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                             Style="{StaticResource FInputSmall}" HorizontalContentAlignment="Center" />
+                                    <TextBox Grid.Row="2" Grid.Column="6"
+                                             Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                             Style="{StaticResource FInputSmall}"
+                                             HorizontalContentAlignment="Center" />
+                                    <TextBox Grid.Row="2" Grid.Column="8"
+                                             Text="{Binding TotalCost, StringFormat=N0, Mode=OneWay}"
+                                             Style="{StaticResource FInputSmall}" IsReadOnly="True"
+                                             HorizontalContentAlignment="Right" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
+                    <!-- ════════════ LABOUR SECTION ════════════ -->
+                    <Grid Margin="0,28,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Labour" Style="{StaticResource FSectionTitle}" />
+                            <TextBlock Text="Click to add new Labour"
+                                       FontFamily="{DynamicResource AppFont}"
+                                       FontSize="9" Foreground="#354764" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Add Labour"
+                                Style="{StaticResource FAddBtn}"
+                                VerticalAlignment="Center"
+                                Command="{Binding AddLabourItemCommand}" />
+                    </Grid>
 
-                    <StackPanel>
-                        <!-- Materials Section Header with Button -->
-                        <Grid Margin="0,10,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                    <!-- Labour item rows -->
+                    <ItemsControl ItemsSource="{Binding LabourItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />       <!-- Name (fills remaining) -->
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="82" />      <!-- Rate fixed -->
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="58" />      <!-- Unit fixed -->
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="72" />      <!-- Quantity fixed -->
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="96" />      <!-- Amount fixed -->
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="4" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
 
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Materials"
-                                           Style="{StaticResource Body}" />
-                                <TextBlock Text="Click to add new material"
-                                           Margin="0,2,0,0"
-                                           Style="{StaticResource InlineHintTextStyle}" />
-                            </StackPanel>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Name of Labour" Style="{StaticResource FLabelSmall}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Rate" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Center" />
+                                    <TextBlock Grid.Row="0" Grid.Column="4" Text="Unit" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Center" />
+                                    <TextBlock Grid.Row="0" Grid.Column="6" Text="Quantity" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Center" />
+                                    <TextBlock Grid.Row="0" Grid.Column="8" Text="Amount" Style="{StaticResource FLabelSmall}" HorizontalAlignment="Right" />
 
-                            <Button Grid.Column="1"
-                                    Content="Add Material"
-                                    Style="{StaticResource PrimaryButtonStyle}"
-                                    Height="30"
-                                    Margin="10,0,0,0"
-                                    VerticalAlignment="Bottom"
-                                    Command="{Binding AddMaterialItemCommand}" />
-                        </Grid>
+                                    <ComboBox Grid.Row="2" Grid.Column="0"
+                                              IsEditable="True" IsTextSearchEnabled="True" StaysOpenOnEdit="True"
+                                              Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                              ItemsSource="{Binding DataContext.AvailableLabourItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              Style="{StaticResource FComboSmall}"
+                                              ItemContainerStyle="{StaticResource FComboItem}" />
+                                    <TextBox Grid.Row="2" Grid.Column="2"
+                                             Text="{Binding UnitPrice, StringFormat=N0, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
+                                             Style="{StaticResource FInputSmall}"
+                                             HorizontalContentAlignment="Center" />
+                                    <TextBox Grid.Row="2" Grid.Column="4"
+                                             Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                             Style="{StaticResource FInputSmall}" HorizontalContentAlignment="Center" />
+                                    <TextBox Grid.Row="2" Grid.Column="6"
+                                             Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                             Style="{StaticResource FInputSmall}"
+                                             HorizontalContentAlignment="Center" />
+                                    <TextBox Grid.Row="2" Grid.Column="8"
+                                             Text="{Binding TotalCost, StringFormat=N0, Mode=OneWay}"
+                                             Style="{StaticResource FInputSmall}" IsReadOnly="True"
+                                             HorizontalContentAlignment="Right" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-                        <!-- Material Items -->
-                        <ItemsControl ItemsSource="{Binding MaterialItems}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Margin="0,10"
-                                            Padding="8"
-                                            CornerRadius="12"
-                                            Background="{DynamicResource LightGrayBrush}">
-                                        <Grid VerticalAlignment="Center">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="3*" />
-                                                <ColumnDefinition Width="1.5*" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="1.5*" />
-                                                <ColumnDefinition Width="2*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Name -->
-                                            <StackPanel Grid.Column="0"
-                                                        Margin="0,0,8,0">
-                                                <TextBlock Text="Name"
-                                                           Style="{StaticResource InlineHintTextStyle}" />
-                                                <ComboBox IsEditable="True"
-                                                          Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                          ItemsSource="{Binding DataContext.AvailableMaterials, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                          HorizontalContentAlignment="Left"
-                                                          MinWidth="180"
-                                                          Style="{StaticResource FormEditorComboStyle}" />
-                                            </StackPanel>
-
-                                            <!-- Rate -->
-                                            <StackPanel Grid.Column="1"
-                                                        Margin="8,0">
-                                                <TextBlock Text="Rate"
-                                                           Style="{StaticResource InlineHintTextStyle}" />
-                                                <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                         Style="{StaticResource OPTextBox}" />
-                                            </StackPanel>
-
-                                            <!-- Unit -->
-                                            <StackPanel Grid.Column="2"
-                                                        Margin="8,0">
-                                                <TextBlock Text="Unit"
-                                                           Style="{StaticResource InlineHintTextStyle}" />
-                                                <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                         Width="50"
-                                                         FontFamily="{DynamicResource Mont}"
-                                                         Style="{StaticResource OPTextBox}"
-                                                         FontSize="14"
-                                                         Padding="10,0"
-                                                         Background="{DynamicResource BackgroundBrush}"
-                                                         Foreground="{DynamicResource CellTextBrush}"
-                                                         BorderBrush="{DynamicResource BorderBrushLight}"
-                                                         BorderThickness="1"
-                                                         VerticalContentAlignment="Center"
-                                                         HorizontalContentAlignment="Center"
-                                                         Height="46" />
-                                            </StackPanel>
-
-                                            <!-- Quantity -->
-                                            <StackPanel Grid.Column="3"
-                                                        Margin="8,0">
-                                                <TextBlock Text="Quantity"
-                                                           Style="{StaticResource InlineHintTextStyle}" />
-                                                <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                         Style="{StaticResource OPTextBox}" />
-                                            </StackPanel>
-
-                                            <!-- Amount -->
-                                            <StackPanel Grid.Column="4"
-                                                        Margin="8,0">
-                                                <TextBlock Text="Amount"
-                                                           Style="{StaticResource InlineHintTextStyle}" />
-                                                <TextBlock Text="{Binding TotalCost, StringFormat=N2}"
-                                                           Style="{StaticResource CenterCellText}"
-                                                           Margin="0,12,0,0" />
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-
-
-
-                        <!-- Labour Section -->
-                       
-
-                        <Grid Margin="0,10,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Labour"
-                                           Style="{StaticResource Body}" />
-                                <TextBlock Text="Click to add new labour"
-                                           Margin="10,0"
-                                           Style="{StaticResource InlineHintTextStyle}"
-                                           VerticalAlignment="Center" />
-                            </StackPanel>
-
-                            <Button Content="Add Labour"
-                                    Grid.Column="1"
-                                    Height="30"
-                                    Margin="10,0,0,0"
-                                    VerticalAlignment="Bottom"
-                                    Style="{StaticResource PrimaryButtonStyle}"
-                                    Command="{Binding AddLabourItemCommand}" />
-
-
-                        </Grid>
-
-
-                        <ItemsControl ItemsSource="{Binding LabourItems}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Margin="0,10"
-                                            Padding="8"
-                                            CornerRadius="12"
-                                            Background="{DynamicResource LightGrayBrush}">
-                                        <Grid VerticalAlignment="Center">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="3*" />
-                                                <ColumnDefinition Width="1.5*" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="1.5*" />
-                                                <ColumnDefinition Width="2*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Name -->
-                                            <StackPanel Grid.Column="0"
-                                                        Margin="0,0,8,0">
-                                                <TextBlock Text="Name"
-                                                           Style="{StaticResource InlineHintTextStyle}" />
-                                                <ComboBox IsEditable="True"
-                                                          IsTextSearchEnabled="True"
-                                                          StaysOpenOnEdit="True"
-                                                          Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                          ItemsSource="{Binding DataContext.AvailableLabourItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                          HorizontalContentAlignment="Left"
-                                                          MinWidth="180"
-                                                          Style="{StaticResource FormEditorComboStyle}" />
-                                                <!--<TextBlock Text="{Binding DataContext.AvailableLabourItems.Count, RelativeSource={RelativeSource AncestorType=UserControl}}" />-->
-
-
-                                            </StackPanel>
-
-                                            <!-- Rate -->
-                                            <StackPanel Grid.Column="1"
-                                                        Margin="8,0">
-                                                <TextBlock Text="Rate"
-                                                           Style="{StaticResource InlineHintTextStyle}" />
-                                                <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                         Style="{StaticResource OPTextBox}" />
-                                            </StackPanel>
-
-                                            <!-- Unit -->
-                                            <StackPanel Grid.Column="2"
-                                                        Margin="8,0">
-                                                <TextBlock Text="Unit"
-                                                           Style="{StaticResource InlineHintTextStyle}" />
-                                                <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                         Width="50"
-                                                         FontFamily="{DynamicResource Mont}"
-                                                         Style="{StaticResource OPTextBox}"
-                                                         FontSize="14"
-                                                         Padding="10,0"
-                                                         Background="{DynamicResource BackgroundBrush}"
-                                                         Foreground="{DynamicResource CellTextBrush}"
-                                                         BorderBrush="{DynamicResource BorderBrushLight}"
-                                                         BorderThickness="1"
-                                                         VerticalContentAlignment="Center"
-                                                         HorizontalContentAlignment="Center"
-                                                         Height="46" />
-                                            </StackPanel>
-
-                                            <!-- Quantity -->
-                                            <StackPanel Grid.Column="3"
-                                                        Margin="8,0">
-                                                <TextBlock Text="Quantity"
-                                                           Style="{StaticResource InlineHintTextStyle}" />
-                                                <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                         Style="{StaticResource OPTextBox}" />
-                                            </StackPanel>
-
-                                            <!-- Amount -->
-                                            <StackPanel Grid.Column="4"
-                                                        Margin="8,0">
-                                                <TextBlock Text="Amount"
-                                                           Style="{StaticResource InlineHintTextStyle}" />
-                                                <TextBlock Text="{Binding TotalCost, StringFormat=N2}"
-                                                           Style="{StaticResource CenterCellText}"
-                                                           Margin="0,12,0,0" />
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                       
-                        <!-- Totals -->
-                        <TextBlock Text="{Binding TotalMaterialCost, StringFormat='Material Total: {0:N2}'}"
-                                   Style="{StaticResource TotalsTextStyle}"
-                                   Margin="0,20,0,0" />
-                        <TextBlock Text="{Binding TotalLabourCost, StringFormat='Labour Total: {0:N2}'}"
-                                   Style="{StaticResource TotalsTextStyle}" />
-                        <TextBlock Text="{Binding OverallTotal, StringFormat='Overall Total: {0:N2}'}"
-                                   Style="{StaticResource TotalsTextStyle}" />
-
-                    </StackPanel>
+                    <!-- Totals -->
+                    <TextBlock Text="{Binding TotalMaterialCost, StringFormat='Material Total: {0:N2}'}"
+                               Style="{StaticResource FTotals}" Margin="0,16,0,0" />
+                    <TextBlock Text="{Binding TotalLabourCost, StringFormat='Labour Total: {0:N2}'}"
+                               Style="{StaticResource FTotals}" />
+                    <TextBlock Text="{Binding OverallTotal, StringFormat='Overall Total: {0:N2}'}"
+                               Style="{StaticResource FTotals}" />
 
                 </StackPanel>
             </ScrollViewer>
-            
-            
-            <!-- Save Button -->
-            <Button Grid.Row="3"
-                    Margin="0,20,0,0"
-                    Height="50"
-                    FontSize="16"
-                    FontFamily="{DynamicResource Mont}"
-                    Foreground="White"
-                    Background="#061E3D"
-                    Command="{Binding SaveCustomRateCommand}"
+
+            <!-- ═══ SAVE BUTTON: bg:#091E39 when enabled, #DFE2E6 when disabled ═══ -->
+            <Button Grid.Row="2"
+                    Margin="0,24,0,0"
                     HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    BorderThickness="0"
-                    Padding="0"
-                    Cursor="Hand">
+                    Cursor="Hand"
+                    Command="{Binding SaveCustomRateCommand}">
                 <Button.Style>
                     <Style TargetType="Button">
+                        <Setter Property="Background" Value="#091E39" />
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Content" Value="Save" />
+                        <Setter Property="BorderThickness" Value="0" />
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="10"
-                                            SnapsToDevicePixels="True">
+                                    <Border x:Name="SaveBg"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="13" Height="58"
+                                            Padding="32,16">
                                         <ContentPresenter HorizontalAlignment="Center"
-                                                          VerticalAlignment="Center"
-                                                          RecognizesAccessKey="True" />
+                                                          VerticalAlignment="Center" />
                                     </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="SaveBg" Property="Background" Value="#0B2548" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="SaveBg" Property="Background" Value="#DFE2E6" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
-
-                        <Setter Property="Content"
-                                Value="Save" />
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsEditing}"
-                                         Value="True">
-                                <Setter Property="Content"
-                                        Value="Update" />
+                            <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                                <Setter Property="Content" Value="Update" />
                             </DataTrigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#A6AEBB" />
+                            </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}"
+                                   FontFamily="{DynamicResource AppFont}"
+                                   FontSize="18" FontWeight="Medium"
+                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                   TextAlignment="Center" />
+                    </DataTemplate>
+                </Button.ContentTemplate>
             </Button>
-
-
-
         </Grid>
     </Border>
 </UserControl>

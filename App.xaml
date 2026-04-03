@@ -23,6 +23,7 @@
 
             <conv:BoolToVis        x:Key="BoolVis" />
             <conv:InverseBoolToVis x:Key="InvBoolVis" />
+            <conv:BoolToGridLengthConverter x:Key="BoolToGridLength" />
             <conv:CurrencyDisplayConverter x:Key="CurrencyFmt" />
             <conv:CurrencyDisplayConverter x:Key="MoneyConv" />
             <conv:CurrencyToFlagConverter x:Key="CurrencyToFlagConverter" />

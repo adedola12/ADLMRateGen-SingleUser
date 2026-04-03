@@ -155,6 +155,21 @@ namespace ADLMRateGen.Services
 
             if (overrideChanges.Upserted > 0 || overrideChanges.Deleted > 0)
             {
+                // Resolve RateIds before bulk push so the server can match
+                // existing records instead of creating duplicates.
+                var masterRateIds = BuildMasterRateLookup();
+                var serverLookup = (serverState.RateOverrides ?? new List<RateOverridePayload>())
+                    .Where(r => !string.IsNullOrWhiteSpace(BuildRateIdentityKey(r)))
+                    .GroupBy(r => BuildRateIdentityKey(r), StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+                foreach (var local in snapshot.RateOverrides)
+                {
+                    var key = BuildRateIdentityKey(local);
+                    serverLookup.TryGetValue(key, out var server);
+                    local.RateId = ResolveRateId(local, server, masterRateIds);
+                }
+
                 payload["rateOverrides"] = snapshot.RateOverrides;
                 payload["ratesBaseVersion"] = serverState.RatesVersion;
             }

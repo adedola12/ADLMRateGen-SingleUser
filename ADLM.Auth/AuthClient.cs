@@ -441,6 +441,8 @@ namespace ADLMRateGen.ADLM.Auth
             catch { }
         }
 
+        private int _refreshFailCount;
+
         private async Task<string> GetAccessTokenAsync(CancellationToken ct)
         {
             if (!string.IsNullOrWhiteSpace(_accessToken) &&
@@ -449,42 +451,80 @@ namespace ADLMRateGen.ADLM.Auth
                 return _accessToken;
             }
 
-            try
+            // Retry refresh up to 2 times with a short delay between attempts
+            // to handle transient network / server issues before signing out.
+            const int maxAttempts = 2;
+            for (int attempt = 1; attempt <= maxAttempts; attempt++)
             {
-                string resText = await PostJsonAsync("/auth/refresh", "{}", null, ct).ConfigureAwait(false);
-                if (string.IsNullOrWhiteSpace(resText)) return null;
-
-                JsonElement root = JsonDocument.Parse(resText).RootElement;
-                if (!root.TryGetProperty("accessToken", out var atProp))
-                    throw new InvalidOperationException("Refresh failed: accessToken missing in server response.");
-
-                string token = atProp.GetString();
-                if (string.IsNullOrWhiteSpace(token)) return null;
-
-                _accessToken = token.Trim();
-                _accessExpiryUtc = TryGetJwtExpiryUtc(_accessToken) ?? DateTimeOffset.UtcNow.AddMinutes(14);
-
-                SaveSession();
-
-                try { _cookieVault.Save(_cookies); } catch { }
-
-                _http.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _accessToken);
-
-                if (root.TryGetProperty("licenseToken", out var licProp))
+                try
                 {
-                    string lic = licProp.GetString();
-                    if (!string.IsNullOrWhiteSpace(lic))
-                        _licenseStore.Save(lic);
-                }
+                    string resText = await PostJsonAsync("/auth/refresh", "{}", null, ct).ConfigureAwait(false);
+                    if (string.IsNullOrWhiteSpace(resText))
+                    {
+                        if (attempt < maxAttempts) { await Task.Delay(1500, ct).ConfigureAwait(false); continue; }
+                        return null;
+                    }
 
-                return _accessToken;
+                    JsonElement root = JsonDocument.Parse(resText).RootElement;
+                    if (!root.TryGetProperty("accessToken", out var atProp))
+                        throw new InvalidOperationException("Refresh failed: accessToken missing in server response.");
+
+                    string token = atProp.GetString();
+                    if (string.IsNullOrWhiteSpace(token))
+                    {
+                        if (attempt < maxAttempts) { await Task.Delay(1500, ct).ConfigureAwait(false); continue; }
+                        return null;
+                    }
+
+                    _accessToken = token.Trim();
+                    _accessExpiryUtc = TryGetJwtExpiryUtc(_accessToken) ?? DateTimeOffset.UtcNow.AddMinutes(14);
+
+                    SaveSession();
+
+                    try { _cookieVault.Save(_cookies); } catch { }
+
+                    _http.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", _accessToken);
+
+                    if (root.TryGetProperty("licenseToken", out var licProp))
+                    {
+                        string lic = licProp.GetString();
+                        if (!string.IsNullOrWhiteSpace(lic))
+                            _licenseStore.Save(lic);
+                    }
+
+                    _refreshFailCount = 0;
+                    return _accessToken;
+                }
+                catch (UnauthorizedAccessException) when (attempt < maxAttempts)
+                {
+                    // First failure may be transient — wait and retry once.
+                    await Task.Delay(1500, ct).ConfigureAwait(false);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Second consecutive 401/403 from refresh — session is truly invalid.
+                    _refreshFailCount++;
+                    if (_refreshFailCount >= 2)
+                    {
+                        SignOut();
+                    }
+                    return null;
+                }
+                catch (Exception) when (attempt < maxAttempts)
+                {
+                    // Transient network / timeout — retry once.
+                    await Task.Delay(1500, ct).ConfigureAwait(false);
+                }
+                catch (Exception)
+                {
+                    // Non-auth failure (network, timeout) — don't sign out,
+                    // just return null so caller can show an error or retry later.
+                    return null;
+                }
             }
-            catch (UnauthorizedAccessException)
-            {
-                SignOut();
-                return null;
-            }
+
+            return null;
         }
 
         private async Task<string> GetJsonRawAsync(string path, string bearer, CancellationToken ct)

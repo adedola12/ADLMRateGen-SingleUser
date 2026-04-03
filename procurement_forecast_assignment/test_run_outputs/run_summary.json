@@ -1,0 +1,9 @@
+{
+  "output_dir": "procurement_forecast_assignment\\test_run_outputs",
+  "test_start_month": "2026-02-01",
+  "champion_model": "hist_gradient_boosting",
+  "enable_search": false,
+  "random_search_iter": 4,
+  "top_feature": "rolling_mean_3",
+  "top_wmape_model": "hist_gradient_boosting"
+}

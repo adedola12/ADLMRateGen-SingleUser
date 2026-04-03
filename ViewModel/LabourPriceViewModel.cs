@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System;
 using System.Windows.Input;
 using ADLMRateGen.Command;
 using ADLMRateGen.Services;
@@ -6,17 +6,16 @@ using ADLMRateGen.ViewModel.Model;
 
 namespace ADLMRateGen.ViewModel
 {
-    public class LabourPriceViewModel: ViewModelBase
+    public class LabourPriceViewModel : ViewModelBase
     {
         private string _labourName;
-        private decimal _labourPrice;
+        private decimal _labourPrice;      // displayed in current currency
         private string _labourUnit;
         private string _newLabourCategory;
         private LabourModel? _editingLabour;
 
         public event Action<LabourModel> LabourSaved;
         public event Action<bool, string?>? BusyChanged;
-
 
         public string LabourName
         {
@@ -30,6 +29,11 @@ namespace ADLMRateGen.ViewModel
                 }
             }
         }
+
+        /// <summary>
+        /// Price shown in the edit dialog – always in the CURRENT display currency.
+        /// Converted to/from NGN on load/save.
+        /// </summary>
         public decimal LabourPrice
         {
             get => _labourPrice;
@@ -42,6 +46,10 @@ namespace ADLMRateGen.ViewModel
                 }
             }
         }
+
+        /// <summary>Current currency code for the price label hint.</summary>
+        public string CurrencyLabel => CurrencyService.Instance.Code;
+
         public string LabourUnit
         {
             get => _labourUnit;
@@ -92,19 +100,42 @@ namespace ADLMRateGen.ViewModel
             EditingLabour = null;
             SaveLabourCommand = new DelegateCommand(o => SaveLabour(), o => !IsEditing);
             UpdateLabourCommand = new DelegateCommand(o => UpdateLabour(), o => IsEditing);
+
+            // Keep CurrencyLabel up to date when currency changes
+            CurrencyService.Instance.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName is nameof(CurrencyService.Code))
+                    RaisePropertyChanged(nameof(CurrencyLabel));
+            };
+        }
+
+        /// <summary>
+        /// Call this when loading a labour item into the edit form.
+        /// Converts the stored NGN price → current display currency.
+        /// </summary>
+        public void LoadForEdit(LabourModel labour)
+        {
+            EditingLabour = labour;
+            LabourName = labour.LabourName;
+            LabourUnit = labour.LabourUnit;
+            LabourPrice = CurrencyService.Instance.FromNgn(labour.LabourPrice); // NGN → display
+            NewLabourCategory = labour.LabourCategory ?? string.Empty;
         }
 
         private void SaveLabour()
         {
-           if(!string.IsNullOrEmpty(LabourName))
+            if (!string.IsNullOrEmpty(LabourName))
             {
-                string categoryToUse = !string.IsNullOrEmpty(NewLabourCategory)? NewLabourCategory : string.Empty;
+                // User entered price in current currency – convert back to NGN for storage
+                var priceNgn = CurrencyService.Instance.ToNgn(LabourPrice);
+
+                string categoryToUse = !string.IsNullOrEmpty(NewLabourCategory) ? NewLabourCategory : string.Empty;
                 var newLabour = new LabourModel
                 {
                     SerialNumber = 0,
                     LabourName = this.LabourName,
                     LabourUnit = this.LabourUnit,
-                    LabourPrice = this.LabourPrice,
+                    LabourPrice = priceNgn,
                     LabourCategory = categoryToUse,
                 };
                 LabourSaved?.Invoke(newLabour);
@@ -114,13 +145,13 @@ namespace ADLMRateGen.ViewModel
 
         private void UpdateLabour()
         {
-           if(EditingLabour != null)
+            if (EditingLabour != null)
             {
-                //EditingLabour.LabourName = LabourName;
                 EditingLabour.LabourUnit = LabourUnit;
-                EditingLabour.LabourPrice = LabourPrice;
+                // User edited price in current currency – convert back to NGN for storage
+                EditingLabour.LabourPrice = CurrencyService.Instance.ToNgn(LabourPrice);
 
-                string categoryToUse = !string.IsNullOrEmpty(NewLabourCategory) 
+                string categoryToUse = !string.IsNullOrEmpty(NewLabourCategory)
                     ? NewLabourCategory : EditingLabour.LabourCategory;
                 EditingLabour.LabourCategory = categoryToUse;
 
@@ -129,6 +160,7 @@ namespace ADLMRateGen.ViewModel
                 EditingLabour = null;
             }
         }
+
         private void ClearInputFields()
         {
             LabourName = string.Empty;

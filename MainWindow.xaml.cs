@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
 using ADLMRateGen.View;
@@ -109,7 +111,10 @@ namespace ADLMRateGen
             // 5) Set DataContext
             DataContext = mainVM;
 
-            // 6) Connect to Mongo after the window is up so startup does not block on DNS/network.
+            // 6) React to ToggleSidebarCommand by snapping the column width
+            mainVM.PropertyChanged += OnMainVmPropertyChanged;
+
+            // 7) Connect to Mongo after the window is up so startup does not block on DNS/network.
             Loaded += async (_, __) =>
             {
                 await mongoDbService.InitializeAsync();
@@ -165,7 +170,9 @@ namespace ADLMRateGen
                 }
 
                 _shellVm.MaterialLibraryViewModel.AddOrUpdateMaterial(mat);
-                _popup.Hide();
+
+                // Show success popup instead of immediately hiding
+                _popup.Show(new View.LibrarySuccessView());
             };
 
             MaterialPriceViewModel.MaterialSaved += _materialPopupSavedHandler;
@@ -192,7 +199,9 @@ namespace ADLMRateGen
             vm.LabourSaved += lab =>
             {
                 _shellVm.LabourLibraryViewModel.AddOrUpdateLabour(lab);
-                _popup.Hide();
+
+                // Show success popup instead of immediately hiding
+                _popup.Show(new View.LibrarySuccessView());
             };
 
             _popup.Show(new LabourPriceView { DataContext = vm });
@@ -224,6 +233,72 @@ namespace ADLMRateGen
         public void ShowPopup(UserControl content)
         {
             PopupHost.Show(content);
+        }
+
+        // ========== SIDEBAR DRAG & COLLAPSE ==========
+
+        /// <summary>Width to restore when un-collapsing. Defaults to 250.</summary>
+        private double _sidebarExpandedWidth = MainViewModel.SidebarExpandedWidth;
+
+        /// <summary>Guard: true while a GridSplitter drag is active.</summary>
+        private bool _isDraggingSidebar;
+
+        /// <summary>Called while the user is dragging — updates icon-only state live.</summary>
+        private void SidebarSplitter_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            _isDraggingSidebar = true;
+            if (DataContext is not MainViewModel vm) return;
+
+            bool shouldCollapse = SidebarColumn.ActualWidth <= MainViewModel.SidebarCollapseThreshold;
+            if (vm.IsSidebarCollapsed != shouldCollapse)
+                vm.IsSidebarCollapsed = shouldCollapse;
+        }
+
+        /// <summary>Called when the user finishes dragging the GridSplitter.</summary>
+        private void SidebarSplitter_DragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            if (DataContext is not MainViewModel vm) { _isDraggingSidebar = false; return; }
+
+            var currentWidth = SidebarColumn.ActualWidth;
+
+            if (currentWidth <= MainViewModel.SidebarCollapseThreshold)
+            {
+                // Snap to fully collapsed
+                SidebarColumn.Width = new GridLength(MainViewModel.SidebarCollapsedWidth);
+                vm.IsSidebarCollapsed = true;
+            }
+            else
+            {
+                // Remember this width for restore, ensure text is visible
+                _sidebarExpandedWidth = currentWidth;
+                vm.IsSidebarCollapsed = false;
+            }
+
+            _isDraggingSidebar = false;
+        }
+
+        /// <summary>Reacts to the collapse toggle button in the ViewModel.</summary>
+        private void OnMainVmPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(MainViewModel.IsSidebarCollapsed)) return;
+            if (sender is not MainViewModel vm) return;
+
+            // Don't fight with the GridSplitter while it's being dragged
+            if (_isDraggingSidebar) return;
+
+            if (vm.IsSidebarCollapsed)
+            {
+                // Save current width before collapsing
+                if (SidebarColumn.ActualWidth > MainViewModel.SidebarCollapseThreshold)
+                    _sidebarExpandedWidth = SidebarColumn.ActualWidth;
+
+                SidebarColumn.Width = new GridLength(MainViewModel.SidebarCollapsedWidth);
+            }
+            else
+            {
+                // Restore to previous expanded width
+                SidebarColumn.Width = new GridLength(_sidebarExpandedWidth);
+            }
         }
     }
 }

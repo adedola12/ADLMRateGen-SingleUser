@@ -234,13 +234,15 @@ namespace ADLMRateGen.ViewModel.CustomRate
             {
                 newRate.Id = Guid.NewGuid();
                 CustomRateServices.SaveCustomRate(newRate);
-                MessageBox.Show("New Custom Rate saved successfully!", "Save", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
                 CustomRateServices.UpdateCustomRate(newRate);
-                MessageBox.Show("Existing Custom Rate updated successfully!", "Update", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+
+            // Show success popup
+            if (System.Windows.Application.Current.MainWindow is MainWindow mw)
+                mw.PopupHost.Show(new View.LibrarySuccessView("New Rate Saved"));
 
             Saved?.Invoke();
             ClearForm();

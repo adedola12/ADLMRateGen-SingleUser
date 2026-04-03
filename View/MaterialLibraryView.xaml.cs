@@ -69,15 +69,9 @@ namespace ADLMRateGen.View
 
 		private void OnEditMaterialRequested(MaterialModel mat)
 		{
-			// build a fresh ViewModel for the popup – populate with the row’s data
-			var editVm = new MaterialPriceViewModel
-			{
-				EditingMaterial = mat,
-				MaterialName = mat.MaterialName,
-				MaterialUnit = mat.MaterialUnit,
-				MaterialPrice = mat.MaterialPrice,
-				NewMaterialCategory = mat.MaterialCategory
-			};
+			// build a fresh ViewModel for the popup – converts price NGN → display currency
+			var editVm = new MaterialPriceViewModel();
+			editVm.LoadForEdit(mat);
 
 			// listen ONCE for the static save event – will fire when user clicks Update
 			MaterialPriceViewModel.MaterialSaved += OnMaterialSaved;

@@ -221,6 +221,20 @@ namespace ADLMRateGen.ViewModel
         private bool _isCustomRateInputActive;
         public bool IsCustomRateInputActive { get => _isCustomRateInputActive; set { _isCustomRateInputActive = value; RaisePropertyChanged(); } }
 
+        /* ───────── sidebar collapse ───────── */
+        public const double SidebarExpandedWidth = 250;
+        public const double SidebarCollapsedWidth = 62;
+        public const double SidebarCollapseThreshold = 120;
+
+        private bool _isSidebarCollapsed;
+        public bool IsSidebarCollapsed
+        {
+            get => _isSidebarCollapsed;
+            set { _isSidebarCollapsed = value; RaisePropertyChanged(); }
+        }
+
+        public ICommand ToggleSidebarCommand { get; }
+
         private bool _isCarbonOthersActive;
         public bool IsCarbonOthersActive
         {
@@ -357,7 +371,7 @@ namespace ADLMRateGen.ViewModel
             _notificationPollTimer.Tick += async (_, _) => await CheckForServerNotificationsAsync();
             _userRatesSyncTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(1)
+                Interval = TimeSpan.FromSeconds(3)
             };
             _userRatesSyncTimer.Tick += async (_, _) =>
             {
@@ -522,6 +536,11 @@ namespace ADLMRateGen.ViewModel
 
 
             LogoutCommand = new RelayCommand(_ => Logout());
+            ToggleSidebarCommand = new RelayCommand(_ =>
+            {
+                IsSidebarCollapsed = !IsSidebarCollapsed;
+                // Actual column width change is handled in MainWindow code-behind
+            });
             OpenYoutubeCommand = new RelayCommand(_ => OpenYoutube());
             HelpCommand = new RelayCommand(_ => SendHelpEmail());
             ExportAllRatesCommand = new RelayCommand(_ => ExportAllToExcel());
@@ -1543,37 +1562,41 @@ namespace ADLMRateGen.ViewModel
             return null;
         }
 
-        private void Logout()
+        private async void Logout()
         {
             try
             {
                 try
                 {
-                    FlushUserRatesCloudSyncAsync().GetAwaiter().GetResult();
+                    await FlushUserRatesCloudSyncAsync().ConfigureAwait(false);
                 }
                 catch
                 {
                     // best-effort on logout
                 }
 
-                StopNotificationPolling();
-                AuthProvider.Instance.Client.SignOut();
+                Application.Current?.Dispatcher?.Invoke(() =>
+                {
+                    StopNotificationPolling();
+                    AuthProvider.Instance.Client.SignOut();
 
-                var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
-                cfg.AuthToken = null;
-                cfg.AuthExpiry = DateTime.MinValue;
-                ConfigManager.SaveConfig(cfg);
+                    var cfg = ConfigManager.LoadConfig() ?? new AppConfig();
+                    cfg.AuthToken = null;
+                    cfg.AuthExpiry = DateTime.MinValue;
+                    ConfigManager.SaveConfig(cfg);
 
-                CurrentUser = null;
+                    CurrentUser = null;
 
-                IsLoggedIn = false;
-                HasPriceNotifications = false;
-                IsNotificationsOpen = false;
-                SelectedViewModel = SignInViewModel;
+                    IsLoggedIn = false;
+                    HasPriceNotifications = false;
+                    IsNotificationsOpen = false;
+                    SelectedViewModel = SignInViewModel;
+                });
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Log-out failed\n{ex.Message}");
+                Application.Current?.Dispatcher?.Invoke(() =>
+                    MessageBox.Show($"Log-out failed\n{ex.Message}"));
             }
         }
 
