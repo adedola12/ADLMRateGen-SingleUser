@@ -76,9 +76,15 @@ namespace ADLMRateGen.ViewModel
             if (!NetworkInterface.GetIsNetworkAvailable())
             {
                 var cached = _auth.GetCachedLicenseToken();
-                if (!string.IsNullOrEmpty(cached) && TryOfflineLicense(cached))
+                // Validate once and reuse the parsed payload for BuildUserFromLicensePayload
+                // so we don't parse / verify the JWT twice on the offline path.
+                var offline = string.IsNullOrEmpty(cached)
+                    ? (ok: false, payload: default(JsonElement))
+                    : await ValidateCachedLicenseAsync(cached);
+
+                if (offline.ok)
                 {
-                    var user = BuildUserFromLicense(cached) ?? new UserModel
+                    var user = BuildUserFromLicensePayload(offline.payload) ?? new UserModel
                     {
                         Email = email,
                         Username = DeriveUsername(email)
@@ -200,32 +206,22 @@ namespace ADLMRateGen.ViewModel
             }
         }
 
-        private bool TryOfflineLicense(string jwt)
+        // Validate a cached license JWT via the new dual-algo path
+        // (RS256 preferred, HS256 fallback) AND check the product is
+        // entitled on this device. Returns the parsed payload on
+        // success so the caller can pull profile fields without
+        // re-parsing.
+        private async System.Threading.Tasks.Task<(bool ok, JsonElement payload)> ValidateCachedLicenseAsync(string jwt)
         {
-            var sharedSecret = JwtLicenseValidator.LicenseSecrets.SharedSecret;
-            if (string.IsNullOrWhiteSpace(sharedSecret))
-            {
-                return false;
-            }
-
-            if (!JwtLicenseValidator.TryValidateHS256(jwt, sharedSecret, out var payload, out _))
-                return false;
+            var (ok, payload, _) = await JwtLicenseValidator.TryValidateAsync(jwt).ConfigureAwait(false);
+            if (!ok) return (false, default);
 
             var dfp = ADLMRateGen.ADLM.Auth.DeviceFingerprint.Generate();
-            return JwtLicenseValidator.IsEntitledForDevice(payload, ProductKey, dfp);
+            return (JwtLicenseValidator.IsEntitledForDevice(payload, ProductKey, dfp), payload);
         }
 
-        private UserModel? BuildUserFromLicense(string jwt)
+        private UserModel? BuildUserFromLicensePayload(JsonElement payload)
         {
-            var sharedSecret = JwtLicenseValidator.LicenseSecrets.SharedSecret;
-            if (string.IsNullOrWhiteSpace(sharedSecret))
-            {
-                return null;
-            }
-
-            if (!JwtLicenseValidator.TryValidateHS256(jwt, sharedSecret, out var payload, out _))
-                return null;
-
             var user = new UserModel();
 
             if (payload.TryGetProperty("email", out var emailProp))
