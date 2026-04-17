@@ -2,13 +2,21 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ADLM Rate Gen "
-#define MyAppVersion "2.1"
+#define MyAppVersion "2.2"
 #define MyAppPublisher "ADLM Studio"
 #define MyAppURL "https://www.adlmstudios.net"
 #define MyAppExeName "ADLMRateGen.exe"
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
+
+; ── Self-contained publish output (includes .NET runtime) ──
+#define BuildOutput "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\win-x64"
+
+; ── Shared ADLM env-var registration (reads ADLM_SHARED_* from the build
+;    machine's environment at compile time; generates per-machine local
+;    secrets at install time). ──
+#include "..\ADLMInstallerScripts\AdlmEnvVars.iss"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -37,13 +45,23 @@ LicenseFile=C:\Users\ADLM\OneDrive\Documentos\ADLM LICENSE FILE.txt
 InfoBeforeFile=C:\Users\ADLM\OneDrive\Documentos\README.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-OutputDir=C:\Users\ADLM\OneDrive\Documentos\Installer        ; ← typo fixed\NOV 2025
+OutputDir=C:\Users\ADLM\OneDrive\Documentos\Installer
 OutputBaseFilename=ADLM Rate Gen
-SetupIconFile=C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Resources\ADLM Rate Generator Plugin.ico
-Password=[REDACTED-INSTALLER-PASSWORD]
+SetupIconFile={#BuildOutput}\Resources\ADLM Rate Generator Plugin.ico
+; Installer password comes from the ADLM_INSTALLER_PASSWORD environment
+; variable at compile time. Set it in the build machine/CI environment;
+; never commit the actual password to source control. If unset, the
+; installer is built without a password (Encryption falls back below).
+#define InstallerPassword GetEnv("ADLM_INSTALLER_PASSWORD")
+#if InstallerPassword != ""
+Password={#InstallerPassword}
 Encryption=yes
+#endif
 SolidCompression=yes
 WizardStyle=modern
+; Broadcasts WM_SETTINGCHANGE after install so our env vars become
+; visible to Explorer and newly-launched processes without a reboot.
+ChangesEnvironment=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -52,65 +70,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\ADLMRateGen.deps.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\ADLMRateGen.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\ADLMRateGen.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\ADLMRateGen.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\ADLMRateGen.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\app.config.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\ClosedXML.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\ClosedXML.Parser.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\DnsClient.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\DocumentFormat.OpenXml.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\DocumentFormat.OpenXml.Framework.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\EPPlus.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\EPPlus.Interfaces.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\ExcelNumberFormat.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\FontAwesome.Sharp.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\labour.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\MahApps.Metro.IconPacks.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\MahApps.Metro.IconPacks.PixelartIcons.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\MahApps.Metro.IconPacks.RadixIcons.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\MahApps.Metro.IconPacks.SimpleIcons.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\materials.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Bcl.Memory.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.FileExtensions.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Extensions.FileProviders.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Extensions.FileProviders.Physical.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Extensions.FileSystemGlobbing.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Extensions.Logging.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Extensions.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.IdentityModel.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.IdentityModel.JsonWebTokens.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.IdentityModel.Logging.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.IdentityModel.Tokens.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.IO.RecyclableMemoryStream.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Microsoft.Xaml.Behaviors.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\MongoDB.Bson.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\MongoDB.Driver.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\RBush.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\SharpCompress.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\SixLabors.Fonts.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Snappier.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\System.IdentityModel.Tokens.Jwt.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\System.IO.Packaging.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\System.Security.Cryptography.Pkcs.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\System.Security.Cryptography.Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\ZstdSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Data\defaultLabours.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Data\defaultMaterials.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Data\labour.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Data\materials.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Resources\ADLM Rate Generator Plugin.ico"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Resources\ADLMRate.png"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\Data\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; ── Ship the entire self-contained build (includes .NET runtime + all DLLs) ──
+Source: "{#BuildOutput}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
@@ -119,6 +80,22 @@ Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; Value
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 
+; ── ADLM RateGen environment variables ────────────────────────────────────
+; Shared secrets are read from the build-machine environment at compile time
+; via the AdlmEnvVars.iss include. Uninstaller removes them so we don't
+; leave live credentials in the registry after uninstall.
+;
+; Non-secret config:
+Root: HKCU; Subkey: "Environment"; ValueType: string; ValueName: "ADLM_RATEGEN_API_BASE_URL"; ValueData: "{#AdlmApiBaseUrl}"; Flags: uninsdeletevalue
+Root: HKCU; Subkey: "Environment"; ValueType: string; ValueName: "ADLM_RATEGEN_PRODUCT_KEY"; ValueData: "rategen"; Flags: uninsdeletevalue
+
+; Shared secret: license JWT signing key (must match server's JWT_LICENSE_SECRET).
+; Build fails loudly (empty string) if ADLM_SHARED_LICENSE_SECRET isn't set.
+Root: HKCU; Subkey: "Environment"; ValueType: string; ValueName: "ADLM_RATEGEN_OFFLINE_LICENSE_SECRET"; ValueData: "{#AdlmSharedLicenseSecret}"; Flags: uninsdeletevalue; Check: AdlmCheckHasSharedLicenseSecret
+
+; Shared secret: MongoDB connection string for the RateGen cluster.
+Root: HKCU; Subkey: "Environment"; ValueType: string; ValueName: "ADLM_RATEGEN_MONGO_SRV"; ValueData: "{#AdlmSharedMongoSrv}"; Flags: uninsdeletevalue; Check: AdlmCheckHasSharedMongo
+
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
@@ -126,3 +103,30 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
+[Code]
+{ Guards — skip writing empty ADLM_* env vars when the build machine has
+  not provided the matching secret. Avoids overwriting an existing value
+  with blank during upgrade reinstalls. }
+function AdlmCheckHasSharedLicenseSecret: Boolean;
+begin
+  Result := '{#AdlmSharedLicenseSecret}' <> '';
+end;
+
+function AdlmCheckHasSharedMongo: Boolean;
+begin
+  Result := '{#AdlmSharedMongoSrv}' <> '';
+end;
+
+{ Called by Inno Setup after files are installed. We generate the two
+  per-machine local secrets here (so each user's machine gets unique
+  values, never baked into the installer) and AdlmEnsureLocalSecret
+  preserves any existing values on reinstall. }
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+  begin
+    { Local-only secrets — 32 random bytes (64 hex chars) is plenty. }
+    AdlmEnsureLocalSecret('ADLM_RATEGEN_LOCAL_JWT_SECRET', 32);
+    AdlmEnsureLocalSecret('ADLM_RATEGEN_ENCRYPTION_KEY', 32);
+  end;
+end;
