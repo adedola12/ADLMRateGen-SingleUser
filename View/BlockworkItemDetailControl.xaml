@@ -121,13 +121,39 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-                                        <TextBlock Grid.Column="1"
-                                                   Text="{Binding Quantity}"
-                                                   FontFamily="{DynamicResource PoppinsFont}"
-                                                   FontSize="16" FontWeight="Medium"
-                                                   Foreground="{DynamicResource Blue900Brush}"
-                                                   TextAlignment="Right" Padding="10,0"
-                                                   VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1"
+                                                 Text="{Binding Quantity, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}"
+                                                 IsEnabled="{Binding IsEditableQuantity}"
+                                                 IsReadOnly="True"
+                                                 MouseDoubleClick="QuantityTextBox_MouseDoubleClick"
+                                                 LostFocus="QuantityTextBox_LostFocus"
+                                                 FontFamily="{DynamicResource PoppinsFont}"
+                                                 FontSize="16" FontWeight="Medium"
+                                                 Foreground="{DynamicResource Blue900Brush}"
+                                                 TextAlignment="Right" Padding="10,4"
+                                                 VerticalAlignment="Center"
+                                                 ToolTip="Double-click to edit quantity. Click out to save.">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="Background" Value="Transparent" />
+                                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                                    <Setter Property="BorderThickness" Value="0" />
+                                                    <Setter Property="Cursor" Value="Arrow" />
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsReadOnly" Value="False">
+                                                            <Setter Property="Background" Value="#FFFBE5" />
+                                                            <Setter Property="BorderBrush" Value="{DynamicResource Blue900Brush}" />
+                                                            <Setter Property="BorderThickness" Value="1.5" />
+                                                            <Setter Property="Cursor" Value="IBeam" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Opacity" Value="0.55" />
+                                                            <Setter Property="Cursor" Value="Arrow" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
                                         <TextBlock Grid.Column="2"
                                                    Text="{Binding Unit}"
                                                    FontFamily="{DynamicResource PoppinsFont}"
@@ -156,6 +182,45 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+
+                    <!-- Save / Reset / Cancel footer for user Quantity edits -->
+                    <Border Margin="0,16,0,0" Padding="10,12"
+                            Background="{DynamicResource HeaderBgBrush}"
+                            CornerRadius="8">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock Text="Edit any Quantity field above. Sub-totals refresh automatically."
+                                       VerticalAlignment="Center" Margin="0,0,16,0"
+                                       FontFamily="{DynamicResource PoppinsFont}" FontSize="12"
+                                       Foreground="{DynamicResource HintGrey}" />
+                            <Button Content="Reset This Rate"
+                                    Click="ResetThisRateButton_Click"
+                                    Cursor="Hand"
+                                    Padding="14,6" Margin="0,0,8,0"
+                                    Background="Transparent"
+                                    BorderBrush="{DynamicResource HintGrey}" BorderThickness="1"
+                                    Foreground="{DynamicResource HintGrey}"
+                                    FontFamily="{DynamicResource PoppinsFont}" FontSize="13"
+                                    ToolTip="Restore the shipped default Quantities for this item." />
+                            <Button Content="Cancel"
+                                    Click="CancelButton_Click"
+                                    Cursor="Hand"
+                                    Padding="14,6" Margin="0,0,8,0"
+                                    Background="Transparent"
+                                    BorderBrush="{DynamicResource HintGrey}" BorderThickness="1"
+                                    Foreground="{DynamicResource HintGrey}"
+                                    FontFamily="{DynamicResource PoppinsFont}" FontSize="13"
+                                    ToolTip="Discard unsaved edits in this session." />
+                            <Button Content="Save"
+                                    Click="SaveButton_Click"
+                                    Cursor="Hand"
+                                    Padding="18,6"
+                                    Background="{DynamicResource Blue900Brush}"
+                                    BorderThickness="0"
+                                    Foreground="White"
+                                    FontFamily="{DynamicResource PoppinsFont}" FontSize="13" FontWeight="SemiBold"
+                                    ToolTip="Persist changes locally + sync to QUIV / HERON." />
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </ScrollViewer>
         </Grid>

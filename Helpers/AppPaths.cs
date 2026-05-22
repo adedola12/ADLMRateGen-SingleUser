@@ -42,6 +42,12 @@ namespace ADLMRateGen.Helpers
         /// <summary>%AppData%\ADLMRateGen\custom-rates.json</summary>
         public static string CustomRatesFile => Path.Combine(UserDataDir, "custom-rates.json");
 
+        /// <summary>%AppData%\ADLMRateGen\user-rate-edits.json
+        /// Local cache of per-user breakdown Quantity overrides.
+        /// Backend (/rategen/library/user-rates) is the canonical source;
+        /// this file exists for offline resilience and instant boot.</summary>
+        public static string UserRateEditsFile => Path.Combine(UserDataDir, "user-rate-edits.json");
+
         /// <summary>%AppData%\ADLMRateGen\materials.json</summary>
         public static string MaterialLibraryFile => Path.Combine(UserDataDir, "materials.json");
 

@@ -7,6 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -134,6 +135,21 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
                     RecomputeAll();
             };
+
+            // Rebuild items when the user-rate-edit store mutates (e.g. global Reset, per-item
+            // Reset, cloud pull from QUIV/HERON). Iterate existing item *instances* in place so
+            // the open popup's DataContext stays valid and re-renders via PropertyChanged.
+            UserRateEditStore.Current.OverridesChanged += (_, __) =>
+            {
+                void Refresh()
+                {
+                    var nos = ConcreteWorkItems.Select(i => i.ItemNo).ToList();
+                    foreach (var n in nos) RecomputeItemInPlace(n);
+                }
+                var disp = System.Windows.Application.Current?.Dispatcher;
+                if (disp == null || disp.CheckAccess()) Refresh();
+                else disp.BeginInvoke((Action)Refresh);
+            };
         }
 
         private async Task LoadRateLibraryAsync()
@@ -210,6 +226,48 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         {
             ConcreteWorkItems.Clear();
             BuildConcreteWorkItem();
+            ConcreteworkCollectionView?.Refresh();
+        }
+
+        /// <summary>
+        /// Re-runs the matching ComputeItemN method for the supplied ItemNo and updates the
+        /// existing Item instance in place so the open popup keeps its DataContext binding live.
+        /// Called by the breakdown popup after a user edits a Quantity.
+        /// </summary>
+        public void RecomputeItemInPlace(int itemNo)
+        {
+            var existing = ConcreteWorkItems.FirstOrDefault(i => i.ItemNo == itemNo);
+            if (existing == null) return;
+
+            Func<ConcreteworkItem>[] all =
+            {
+                ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6,
+                ComputeItem7, ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12,
+                ComputeItem13, ComputeItem14, ComputeItem15, ComputeItem16, ComputeItem17, ComputeItem18,
+                ComputeItem19, ComputeItem20, ComputeItem21, ComputeItem22, ComputeItem23, ComputeItem24,
+                ComputeItem25, ComputeItem26, ComputeItem27, ComputeItem28, ComputeItem29, ComputeItem30, ComputeItem31
+            };
+
+            ConcreteworkItem? fresh = null;
+            foreach (var fn in all)
+            {
+                var candidate = fn();
+                if (candidate.ItemNo == itemNo) { fresh = candidate; break; }
+            }
+            if (fresh == null) return;
+
+            // Update parent-level properties in place — popup re-renders via PropertyChanged.
+            existing.NetCost = fresh.NetCost;
+            existing.OverheadValue = fresh.OverheadValue;
+            existing.ProfitValue = fresh.ProfitValue;
+            existing.TotalCost = fresh.TotalCost;
+
+            // Replace breakdown line contents in place — keeps the ObservableCollection instance,
+            // so the ItemsControl in the popup picks up the new rows automatically.
+            existing.ConcreteBreakdownLine.Clear();
+            foreach (var line in fresh.ConcreteBreakdownLine)
+                existing.ConcreteBreakdownLine.Add(line);
+
             ConcreteworkCollectionView?.Refresh();
         }
 
@@ -543,34 +601,43 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         #region ComputeItem Method
         private ConcreteworkItem ComputeItem1()
         {
+            // All user-editable quantities are declared as locals via Qty() so a single override
+            // flows through every downstream formula (breakdown TotalPrice, sub-totals, NetCost).
+            double mixerQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Concrete 10/14 mixer.", 1);
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
+            double mixerLineTotal = mixerCost * mixerQty;
+
             double dieselPrice = GetLabourRate("Labourer") / 8;
-            double literPerDay = 30;
+            double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 1, "Fuel (Diesel)", 30);
             double fuelCost = dieselPrice * literPerDay;
-            double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
 
-            double totalPlantDay = mixerCost + fuelCost +
-                (0.03 * fuelCost) + (2 * operatorCost);
+            double oilPct = UserRateEditStore.Current.Qty(SectionKey, 1, "Oil and consumables (per day)", 3);
+            double oilCost = (oilPct / 100.0) * fuelCost;
 
-            double workHr = 8;
+            double operatorQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Operator (per day)", 2);
+            double operatorRate = GetLabourRate("Heavy plant operator") * 1.4;
+            double operatorTotal = operatorRate * operatorQty;
+
+            double totalPlantDay = mixerLineTotal + fuelCost + oilCost + operatorTotal;
+
+            double workHr = UserRateEditStore.Current.Qty(SectionKey, 1, "Cost per hour (8 hour Working Day)", 8);
             double costPerHr = totalPlantDay / workHr;
 
             double volPerHr = 5.66;
             double netCostPerm3 = costPerHr / volPerHr;
-            //double netCostPerm3 = ComputePlantCost("Concrete mixer 10/7", 1.0,30,1.4,5.66);
             var ohp = ApplyOHP(netCostPerm3);
 
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
-                new ConcreteworkBreakdownLine { ComponentName="Concrete 10/14 mixer.", Quantity=1, Unit="N/day", UnitPrice=GetLabourRate("Concrete mixer 10/7") },
-                new ConcreteworkBreakdownLine { ComponentName="Fuel (Diesel)", Quantity=30, Unit="hr/m3", UnitPrice=GetLabourRate("Labourer") / 8, TotalPrice=(GetLabourRate("Labourer")/8)*30 },
-                new ConcreteworkBreakdownLine { ComponentName="Oil and consumables (per day)", Quantity=3, Unit="%", TotalPrice=0.03 * 0.03*((GetLabourRate("Labourer")/8)*30) },
-                new ConcreteworkBreakdownLine { ComponentName="Operator (per day)", Quantity=2, Unit="Nr/Day", UnitPrice=GetLabourRate("Heavy plant operator")*1.4, TotalPrice=(GetLabourRate("Heavy plant operator")*1.4)*2 },
+                new ConcreteworkBreakdownLine { ComponentName="Concrete 10/14 mixer.", Quantity=mixerQty, Unit="N/day", UnitPrice=mixerCost, TotalPrice=mixerLineTotal },
+                new ConcreteworkBreakdownLine { ComponentName="Fuel (Diesel)", Quantity=literPerDay, Unit="hr/m3", UnitPrice=dieselPrice, TotalPrice=fuelCost },
+                new ConcreteworkBreakdownLine { ComponentName="Oil and consumables (per day)", Quantity=oilPct, Unit="%", UnitPrice=0, TotalPrice=oilCost },
+                new ConcreteworkBreakdownLine { ComponentName="Operator (per day)", Quantity=operatorQty, Unit="Nr/Day", UnitPrice=operatorRate, TotalPrice=operatorTotal },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Cost per day", Quantity=1, Unit="", TotalPrice=totalPlantDay },
 
-                new ConcreteworkBreakdownLine { ComponentName="Cost per hour (8 hour Working Day)", Quantity=8, Unit="N/Hr", UnitPrice=totalPlantDay, TotalPrice=costPerHr },
+                new ConcreteworkBreakdownLine { ComponentName="Cost per hour (8 hour Working Day)", Quantity=workHr, Unit="N/Hr", UnitPrice=totalPlantDay, TotalPrice=costPerHr },
 
-                new ConcreteworkBreakdownLine { ComponentName="Total", Quantity=5.66, Unit="m3", TotalPrice=netCostPerm3 },
+                new ConcreteworkBreakdownLine { ComponentName="Total", Quantity=volPerHr, Unit="m3", TotalPrice=netCostPerm3 },
             };
 
             return new ConcreteworkItem
@@ -589,16 +656,20 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         public ConcreteworkItem ComputeItem2()
         {
+            double mixer2114Qty = UserRateEditStore.Current.Qty(SectionKey, 2, "Concrete mixer 21/14", 1);
+            double oilConsumQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Oil and consumables (per day)", 1);
+            double operatorQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Operator (per day)", 2);
+
             double mixerCost = GetLabourRate("Concrete mixer 21/14");
             double dieselPrice = (GetLabourRate("Labourer") / 8) *1.4;
-            double literPerDay = 40;
+            double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 2, "Fuel (Diesel)", 40);
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.2;
 
-            double totalPlantDay = mixerCost + fuelCost +
-                (0.03 * fuelCost) + (2 * operatorCost);
+            double totalPlantDay = (mixer2114Qty * mixerCost) + fuelCost +
+                (oilConsumQty * 0.03 * fuelCost) + (operatorQty * operatorCost);
 
-            double workHr = 8;
+            double workHr = UserRateEditStore.Current.Qty(SectionKey, 2, "Cost per hour (8 hour Working Day)", 8);
             double costPerHr = totalPlantDay / workHr;
 
             double volPerHr = 7.94;
@@ -607,10 +678,10 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
-                new ConcreteworkBreakdownLine { ComponentName="Concrete mixer 21/14", Quantity=1, Unit="N/day", UnitPrice=mixerCost },
+                new ConcreteworkBreakdownLine { ComponentName="Concrete mixer 21/14", Quantity=mixer2114Qty, Unit="N/day", UnitPrice=mixerCost, TotalPrice=mixer2114Qty * mixerCost },
                 new ConcreteworkBreakdownLine { ComponentName="Fuel (Diesel)", Quantity=literPerDay, Unit="hr/m3", UnitPrice=dieselPrice, TotalPrice=fuelCost },
-                new ConcreteworkBreakdownLine { ComponentName="Oil and consumables (per day)", Quantity=1, Unit="3%", TotalPrice=0.03 * fuelCost },
-                new ConcreteworkBreakdownLine { ComponentName="Operator (per day)", Quantity=2, Unit="Nr/Day", UnitPrice=operatorCost, TotalPrice=operatorCost*2 },
+                new ConcreteworkBreakdownLine { ComponentName="Oil and consumables (per day)", Quantity=oilConsumQty, Unit="3%", TotalPrice=oilConsumQty * 0.03 * fuelCost },
+                new ConcreteworkBreakdownLine { ComponentName="Operator (per day)", Quantity=operatorQty, Unit="Nr/Day", UnitPrice=operatorCost, TotalPrice=operatorCost*operatorQty },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Cost per day", Quantity=1, Unit="", TotalPrice=totalPlantDay },
 
                 new ConcreteworkBreakdownLine { ComponentName="Cost per hour (8 hour Working Day)", Quantity=workHr, Unit="N/Hr", UnitPrice=totalPlantDay, TotalPrice=costPerHr },
@@ -632,6 +703,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         public ConcreteworkItem ComputeItem3()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -639,9 +713,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             //double stonePrice = GetMaterialPrice("Washed gravel (local)") ;
             double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling")* 0.474;
 
-            double cementPerM3 = 3.32;
-            double sandPerM3 = 0.46;
-            double stonePerM3 = 0.90;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 3, "Cement", 3.32);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 3, "Sand", 0.46);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 3, "Granite (including transportation)", 0.90);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -650,7 +724,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -669,26 +743,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 6;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 3, "Mixing crew - labour.", 6);
             double mixingCrewCost = ((GetLabourRate("Labourer")));
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 3, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)");
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 6;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 3, "Placing crew - labour.", 6);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 3, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 3, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -705,11 +779,11 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
 
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
 
@@ -738,6 +812,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem4()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -745,9 +822,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 4.32;
-            double sandPerM3 = 0.45;
-            double stonePerM3 = 0.90;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 4, "Cement", 4.32);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 4, "Sand", 0.45);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 4, "Granite (including transportation)", 0.90);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -756,7 +833,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -775,26 +852,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 6;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 4, "Mixing crew - labour.", 6);
             double mixingCrewCost = ((GetLabourRate("Labourer")/8)*1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 4, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)")/8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 6;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 4, "Placing crew - labour.", 6);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 4, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 4, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -811,11 +888,11 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
 
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
 
@@ -844,6 +921,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem5()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -851,9 +931,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 6.16;
-            double sandPerM3 = 0.43;
-            double stonePerM3 = 0.86;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 5, "Cement", 6.16);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 5, "Sand", 0.43);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 5, "Granite (including transportation)", 0.86);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -862,7 +942,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -881,26 +961,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 6;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 5, "Mixing crew - labour.", 6);
             double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 5, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)") / 8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 6;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 5, "Placing crew - labour.", 6);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 5, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 5, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -917,11 +997,11 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
 
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
 
@@ -950,6 +1030,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem6()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -957,9 +1040,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 7.86;
-            double sandPerM3 = 0.41;
-            double stonePerM3 = 0.82;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 6, "Cement", 7.86);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 6, "Sand", 0.41);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 6, "Granite (including transportation)", 0.82);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -968,7 +1051,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -987,26 +1070,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 6;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 6, "Mixing crew - labour.", 6);
             double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 6, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)") / 8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 6;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 6, "Placing crew - labour.", 6);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 6, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 6, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -1023,11 +1106,11 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
 
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
 
@@ -1056,6 +1139,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem7()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -1063,9 +1149,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 6.16;
-            double sandPerM3 = 0.43;
-            double stonePerM3 = 0.86;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 7, "Cement", 6.16);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 7, "Sand", 0.43);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 7, "Granite (including transportation)", 0.86);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -1074,7 +1160,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -1093,26 +1179,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 9;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 7, "Mixing crew - labour.", 9);
             double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 7, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)") / 8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 12;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 7, "Placing crew - labour.", 12);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 7, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 7, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -1129,14 +1215,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
-			
+
 				//PLACING
 				new ConcreteworkBreakdownLine { ComponentName="Poker vibrator", Quantity=pokerVibratorDurationPerM3, Unit="hr/m3", UnitPrice=pokerVibratorCost, TotalPrice=totalPokerVibratorCost },
                 new ConcreteworkBreakdownLine { ComponentName="Placing crew - labour.", Quantity=placingCrewPerHr, Unit="per Hr", UnitPrice=placingCrewCost, TotalPrice=totalPlacingCrewCost },
@@ -1162,6 +1248,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem8()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -1169,9 +1258,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 7.86;
-            double sandPerM3 = 0.41;
-            double stonePerM3 = 0.82;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 8, "Cement", 7.86);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 8, "Sand", 0.41);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 8, "Granite (including transportation)", 0.82);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -1180,7 +1269,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -1199,26 +1288,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 9;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 8, "Mixing crew - labour.", 9);
             double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 8, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)") / 8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 12;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 8, "Placing crew - labour.", 12);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 8, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 8, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -1235,14 +1324,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
-			
+
 				//PLACING
 				new ConcreteworkBreakdownLine { ComponentName="Poker vibrator", Quantity=pokerVibratorDurationPerM3, Unit="hr/m3", UnitPrice=pokerVibratorCost, TotalPrice=totalPokerVibratorCost },
                 new ConcreteworkBreakdownLine { ComponentName="Placing crew - labour.", Quantity=placingCrewPerHr, Unit="per Hr", UnitPrice=placingCrewCost, TotalPrice=totalPlacingCrewCost },
@@ -1268,6 +1357,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem9()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -1275,9 +1367,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 18;
-            double sandPerM3 = 0.3;
-            double stonePerM3 = 0.6;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 9, "Cement", 18);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 9, "Sand", 0.3);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 9, "Granite (including transportation)", 0.6);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -1286,7 +1378,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -1305,26 +1397,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 9;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 9, "Mixing crew - labour.", 9);
             double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 9, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)") / 8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 9;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 9, "Placing crew - labour.", 9);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 9, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 9, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -1341,14 +1433,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
-			
+
 				//PLACING
 				new ConcreteworkBreakdownLine { ComponentName="Poker vibrator", Quantity=pokerVibratorDurationPerM3, Unit="hr/m3", UnitPrice=pokerVibratorCost, TotalPrice=totalPokerVibratorCost },
                 new ConcreteworkBreakdownLine { ComponentName="Placing crew - labour.", Quantity=placingCrewPerHr, Unit="per Hr", UnitPrice=placingCrewCost, TotalPrice=totalPlacingCrewCost },
@@ -1374,6 +1466,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem10()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -1381,9 +1476,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 4.2;
-            double sandPerM3 = 0.6;
-            double stonePerM3 = 0.74;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 10, "Cement", 4.2);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 10, "Sand", 0.6);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 10, "Granite (including transportation)", 0.74);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -1392,7 +1487,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -1411,26 +1506,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 4;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 10, "Mixing crew - labour.", 4);
             double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 1.25;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 10, "Poker vibrator", 1.25);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)") / 8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 4;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 10, "Placing crew - labour.", 4);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 1;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 10, "Mason.", 1);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 10, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -1447,14 +1542,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
-			
+
 				//PLACING
 				new ConcreteworkBreakdownLine { ComponentName="Poker vibrator", Quantity=pokerVibratorDurationPerM3, Unit="hr/m3", UnitPrice=pokerVibratorCost, TotalPrice=totalPokerVibratorCost },
                 new ConcreteworkBreakdownLine { ComponentName="Placing crew - labour.", Quantity=placingCrewPerHr, Unit="per Hr", UnitPrice=placingCrewCost, TotalPrice=totalPlacingCrewCost },
@@ -1480,28 +1575,32 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem11()
         {
+            double rebarQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Mild Steel: 6mm steel reinforcement (350 pieces)", 1);
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Add for waste.", 1);
+
             //MATERIAL COST
             double rebarPrice = GetMaterialPrice("1/4\" diameter (350 pieces) - 6mm diameter.");
+            double rebarLineTotal = rebarPrice * rebarQty;
             double wastePer = 10;
-            double rebarWaste = rebarPrice * (wastePer / 100);
+            double rebarWaste = wasteQty * rebarPrice * (wastePer / 100);
             double bindingWirePrice = GetMaterialPrice("Binding Wire - 25kg roll")/25;
-            double bindingQtyPerTon = 10;
+            double bindingQtyPerTon = UserRateEditStore.Current.Qty(SectionKey, 11, "Binding wire", 10);
             double totalBindingWire = bindingWirePrice * bindingQtyPerTon;
             double unloadingSteelLabour = (GetLabourRate("Labourer") / 8) * 1.4 * 2;
-            double unloadingDurationPerTon = 3;
+            double unloadingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 11, "Unloading steel. - 2 labour", 3);
             double totalUnloadingSteel = unloadingSteelLabour * unloadingDurationPerTon;
-            double concreteSpacerPer = 5;
+            double concreteSpacerPer = UserRateEditStore.Current.Qty(SectionKey, 11, "Concrete spacers", 5);
             double concreteSpacerQty = rebarPrice * (concreteSpacerPer / 100);
 
-            double totalMaterialCost = rebarPrice + rebarWaste + totalBindingWire + totalUnloadingSteel+ concreteSpacerQty;
+            double totalMaterialCost = rebarLineTotal + rebarWaste + totalBindingWire + totalUnloadingSteel+ concreteSpacerQty;
             double finalMaterialCost = totalMaterialCost;
 
             //LABOUR COST
-            double steelFixingDurationPerTon = 48;
+            double steelFixingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 11, "Steelfixer hours", 48);
             double steelFixingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double totalSteelFixingCost = steelFixingDurationPerTon * steelFixingLabourCost;
 
-            double labourDurationPerTon = 48;
+            double labourDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 11, "Labour hours", 48);
             double steelLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double totalSteelLabourCost = labourDurationPerTon * steelLabourCost;
 
@@ -1522,18 +1621,18 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="Mild Steel: 6mm steel reinforcement (350 pieces)", Quantity=1, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="10%", TotalPrice=rebarWaste },
+				new ConcreteworkBreakdownLine { ComponentName="Mild Steel: 6mm steel reinforcement (350 pieces)", Quantity=rebarQty, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarLineTotal },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="10%", TotalPrice=rebarWaste },
                 new ConcreteworkBreakdownLine { ComponentName="Binding wire", Quantity=bindingQtyPerTon, Unit="kg/tonne", UnitPrice=bindingWirePrice, TotalPrice=totalBindingWire },
                 new ConcreteworkBreakdownLine { ComponentName="Unloading steel. - 2 labour", Quantity=unloadingDurationPerTon, Unit="hr/tonne", UnitPrice=unloadingSteelLabour, TotalPrice=totalUnloadingSteel},
                 new ConcreteworkBreakdownLine { ComponentName="Concrete spacers", Quantity=concreteSpacerPer, Unit="% of Steel", TotalPrice=concreteSpacerQty },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steelfixer hours", Quantity=steelFixingDurationPerTon, Unit="hr/tonne", UnitPrice=steelFixingLabourCost, TotalPrice=totalSteelFixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Labour hours", Quantity=labourDurationPerTon, Unit="hr/tonne", UnitPrice=steelLabourCost, TotalPrice=totalSteelLabourCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Cutting and Fixing Per tonne", Quantity=1, Unit="", TotalPrice=totalSteelLabourFixingCost },
-			
+
 				//LABOUR HOISTING
 				new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Hoisting hours", Quantity=steelHoistingDurationPerTon, Unit="hr/tonne", UnitPrice=steelHoistingLabourCost, TotalPrice=totalSteelHoistingCost },
 
@@ -1557,28 +1656,32 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem12()
         {
+            double rebarQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Mild Steel: 10-12mm steel reinforcement (180 - 112 pieces)", 1);
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Add for waste.", 1);
+
             //MATERIAL COST
             double rebarPrice = GetMaterialPrice("1/2\" diameter (112 pieces) - 12mm diameter.");
+            double rebarLineTotal = rebarPrice * rebarQty;
             double wastePer = 10;
-            double rebarWaste = rebarPrice * (wastePer / 100);
+            double rebarWaste = wasteQty * rebarPrice * (wastePer / 100);
             double bindingWirePrice = GetMaterialPrice("Binding Wire - 25kg roll") / 25;
-            double bindingQtyPerTon = 10;
+            double bindingQtyPerTon = UserRateEditStore.Current.Qty(SectionKey, 12, "Binding wire", 10);
             double totalBindingWire = bindingWirePrice * bindingQtyPerTon;
             double unloadingSteelLabour = (GetLabourRate("Labourer") / 8) * 1.4 * 2;
-            double unloadingDurationPerTon = 3;
+            double unloadingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 12, "Unloading steel. - 2 labour", 3);
             double totalUnloadingSteel = unloadingSteelLabour * unloadingDurationPerTon;
-            double concreteSpacerPer = 5;
+            double concreteSpacerPer = UserRateEditStore.Current.Qty(SectionKey, 12, "Concrete spacers", 5);
             double concreteSpacerQty = rebarPrice * (concreteSpacerPer / 100);
 
-            double totalMaterialCost = rebarPrice + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
+            double totalMaterialCost = rebarLineTotal + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
             double finalMaterialCost = totalMaterialCost;
 
             //LABOUR COST
-            double steelFixingDurationPerTon = 44;
+            double steelFixingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 12, "Steelfixer hours", 44);
             double steelFixingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double totalSteelFixingCost = steelFixingDurationPerTon * steelFixingLabourCost;
 
-            double labourDurationPerTon = 44;
+            double labourDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 12, "Labour hours", 44);
             double steelLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double totalSteelLabourCost = labourDurationPerTon * steelLabourCost;
 
@@ -1599,18 +1702,18 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="Mild Steel: 10-12mm steel reinforcement (180 - 112 pieces)", Quantity=1, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="10%", TotalPrice=rebarWaste },
+				new ConcreteworkBreakdownLine { ComponentName="Mild Steel: 10-12mm steel reinforcement (180 - 112 pieces)", Quantity=rebarQty, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarLineTotal },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="10%", TotalPrice=rebarWaste },
                 new ConcreteworkBreakdownLine { ComponentName="Binding wire", Quantity=bindingQtyPerTon, Unit="kg/tonne", UnitPrice=bindingWirePrice, TotalPrice=totalBindingWire },
                 new ConcreteworkBreakdownLine { ComponentName="Unloading steel. - 2 labour", Quantity=unloadingDurationPerTon, Unit="hr/tonne", UnitPrice=unloadingSteelLabour, TotalPrice=totalUnloadingSteel},
                 new ConcreteworkBreakdownLine { ComponentName="Concrete spacers", Quantity=concreteSpacerPer, Unit="% of Steel", TotalPrice=concreteSpacerQty },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steelfixer hours", Quantity=steelFixingDurationPerTon, Unit="hr/tonne", UnitPrice=steelFixingLabourCost, TotalPrice=totalSteelFixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Labour hours", Quantity=labourDurationPerTon, Unit="hr/tonne", UnitPrice=steelLabourCost, TotalPrice=totalSteelLabourCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Cutting and Fixing Per tonne", Quantity=1, Unit="", TotalPrice=totalSteelLabourFixingCost },
-			
+
 				//LABOUR HOISTING
 				new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Hoisting hours", Quantity=steelHoistingDurationPerTon, Unit="hr/tonne", UnitPrice=steelHoistingLabourCost, TotalPrice=totalSteelHoistingCost },
 
@@ -1634,28 +1737,32 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem13()
         {
+            double rebarQty = UserRateEditStore.Current.Qty(SectionKey, 13, "High Tensile Steel: 10 - 12mm steel reinforcement (133 - 93 pieces)", 1);
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Add for waste.", 1);
+
             //MATERIAL COST
             double rebarPrice = GetMaterialPrice("1/2\" diameter (93 pieces) - 12mm diameter.");
+            double rebarLineTotal = rebarPrice * rebarQty;
             double wastePer = 10;
-            double rebarWaste = rebarPrice * (wastePer / 100);
-            double bindingQtyPerTon = 10;
+            double rebarWaste = wasteQty * rebarPrice * (wastePer / 100);
+            double bindingQtyPerTon = UserRateEditStore.Current.Qty(SectionKey, 13, "Binding wire", 10);
             double bindingWirePrice = GetMaterialPrice("Binding Wire - 25kg roll") / 25;
             double totalBindingWire = bindingWirePrice * bindingQtyPerTon;
             double unloadingSteelLabour = (GetLabourRate("Labourer") / 8) * 1.4 * 2;
-            double unloadingDurationPerTon = 3;
+            double unloadingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 13, "Unloading steel. - 2 labour", 3);
             double totalUnloadingSteel = unloadingSteelLabour * unloadingDurationPerTon;
-            double concreteSpacerPer = 5;
+            double concreteSpacerPer = UserRateEditStore.Current.Qty(SectionKey, 13, "Concrete spacers", 5);
             double concreteSpacerQty = rebarPrice * (concreteSpacerPer / 100);
 
-            double totalMaterialCost = rebarPrice + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
+            double totalMaterialCost = rebarLineTotal + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
             double finalMaterialCost = totalMaterialCost;
 
             //LABOUR COST
-            double steelFixingDurationPerTon = 48;
+            double steelFixingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 13, "Steelfixer hours", 48);
             double steelFixingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double totalSteelFixingCost = steelFixingDurationPerTon * steelFixingLabourCost;
 
-            double labourDurationPerTon = 33;
+            double labourDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 13, "Labour hours", 33);
             double steelLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double totalSteelLabourCost = labourDurationPerTon * steelLabourCost;
 
@@ -1676,18 +1783,18 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 10 - 12mm steel reinforcement (133 - 93 pieces)", Quantity=1, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="10%", TotalPrice=rebarWaste },
+				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 10 - 12mm steel reinforcement (133 - 93 pieces)", Quantity=rebarQty, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarLineTotal },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="10%", TotalPrice=rebarWaste },
                 new ConcreteworkBreakdownLine { ComponentName="Binding wire", Quantity=bindingQtyPerTon, Unit="kg/tonne", UnitPrice=bindingWirePrice, TotalPrice=totalBindingWire },
                 new ConcreteworkBreakdownLine { ComponentName="Unloading steel. - 2 labour", Quantity=unloadingDurationPerTon, Unit="hr/tonne", UnitPrice=unloadingSteelLabour, TotalPrice=totalUnloadingSteel},
                 new ConcreteworkBreakdownLine { ComponentName="Concrete spacers", Quantity=concreteSpacerPer, Unit="% of Steel", TotalPrice=concreteSpacerQty },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steelfixer hours", Quantity=steelFixingDurationPerTon, Unit="hr/tonne", UnitPrice=steelFixingLabourCost, TotalPrice=totalSteelFixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Labour hours", Quantity=labourDurationPerTon, Unit="hr/tonne", UnitPrice=steelLabourCost, TotalPrice=totalSteelLabourCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Cutting and Fixing Per tonne", Quantity=1, Unit="", TotalPrice=totalSteelLabourFixingCost },
-			
+
 				//LABOUR HOISTING
 				new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Hoisting hours", Quantity=steelHoistingDurationPerTon, Unit="hr/tonne", UnitPrice=steelHoistingLabourCost, TotalPrice=totalSteelHoistingCost },
 
@@ -1711,28 +1818,32 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem14()
         {
+            double rebarQty = UserRateEditStore.Current.Qty(SectionKey, 14, "High Tensile Steel: 10 - 12mm steel reinforcement (133 - 93 pieces)", 1);
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Add for waste.", 1);
+
             //MATERIAL COST
             double rebarPrice = GetMaterialPrice("1/2\" diameter (93 pieces) - 12mm diameter.");
+            double rebarLineTotal = rebarPrice * rebarQty;
             double wastePer = 10;
-            double rebarWaste = rebarPrice * (wastePer / 100);
-            double bindingQtyPerTon = 10;
+            double rebarWaste = wasteQty * rebarPrice * (wastePer / 100);
+            double bindingQtyPerTon = UserRateEditStore.Current.Qty(SectionKey, 14, "Binding wire", 10);
             double bindingWirePrice = GetMaterialPrice("Binding Wire - 25kg roll") / 25;
             double totalBindingWire = bindingWirePrice * bindingQtyPerTon;
             double unloadingSteelLabour = (GetLabourRate("Labourer") / 8) * 1.4 * 2;
-            double unloadingDurationPerTon = 3;
+            double unloadingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 14, "Unloading steel. - 2 labour", 3);
             double totalUnloadingSteel = unloadingSteelLabour * unloadingDurationPerTon;
-            double concreteSpacerPer = 5;
+            double concreteSpacerPer = UserRateEditStore.Current.Qty(SectionKey, 14, "Concrete spacers", 5);
             double concreteSpacerQty = rebarPrice * (concreteSpacerPer / 100);
 
-            double totalMaterialCost = rebarPrice + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
+            double totalMaterialCost = rebarLineTotal + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
             double finalMaterialCost = totalMaterialCost;
 
             //LABOUR COST
-            double steelFixingDurationPerTon = 33;
+            double steelFixingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 14, "Steelfixer hours", 33);
             double steelFixingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double totalSteelFixingCost = steelFixingDurationPerTon * steelFixingLabourCost;
 
-            double labourDurationPerTon = 33;
+            double labourDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 14, "Labour hours", 33);
             double steelLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double totalSteelLabourCost = labourDurationPerTon * steelLabourCost;
 
@@ -1753,18 +1864,18 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 10 - 12mm steel reinforcement (133 - 93 pieces)", Quantity=1, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="10%", TotalPrice=rebarWaste },
+				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 10 - 12mm steel reinforcement (133 - 93 pieces)", Quantity=rebarQty, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarLineTotal },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="10%", TotalPrice=rebarWaste },
                 new ConcreteworkBreakdownLine { ComponentName="Binding wire", Quantity=bindingQtyPerTon, Unit="kg/tonne", UnitPrice=bindingWirePrice, TotalPrice=totalBindingWire },
                 new ConcreteworkBreakdownLine { ComponentName="Unloading steel. - 2 labour", Quantity=unloadingDurationPerTon, Unit="hr/tonne", UnitPrice=unloadingSteelLabour, TotalPrice=totalUnloadingSteel},
                 new ConcreteworkBreakdownLine { ComponentName="Concrete spacers", Quantity=concreteSpacerPer, Unit="% of Steel", TotalPrice=concreteSpacerQty },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steelfixer hours", Quantity=steelFixingDurationPerTon, Unit="hr/tonne", UnitPrice=steelFixingLabourCost, TotalPrice=totalSteelFixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Labour hours", Quantity=labourDurationPerTon, Unit="hr/tonne", UnitPrice=steelLabourCost, TotalPrice=totalSteelLabourCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Cutting and Fixing Per tonne", Quantity=1, Unit="", TotalPrice=totalSteelLabourFixingCost },
-			
+
 				//LABOUR HOISTING
 				new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Hoisting hours", Quantity=steelHoistingDurationPerTon, Unit="hr/tonne", UnitPrice=steelHoistingLabourCost, TotalPrice=totalSteelHoistingCost },
 
@@ -1788,28 +1899,32 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem15()
         {
+            double rebarQty = UserRateEditStore.Current.Qty(SectionKey, 15, "High Tensile Steel: 10 - 12mm steel reinforcement (133 - 93 pieces)", 1);
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Add for waste.", 1);
+
             //MATERIAL COST
             double rebarPrice = GetMaterialPrice("1/2\" diameter (93 pieces) - 12mm diameter.");
+            double rebarLineTotal = rebarPrice * rebarQty;
             double wastePer = 10;
-            double rebarWaste = rebarPrice * (wastePer / 100);
-            double bindingQtyPerTon = 10;
+            double rebarWaste = wasteQty * rebarPrice * (wastePer / 100);
+            double bindingQtyPerTon = UserRateEditStore.Current.Qty(SectionKey, 15, "Binding wire", 10);
             double bindingWirePrice = GetMaterialPrice("Binding Wire - 25kg roll") / 25;
             double totalBindingWire = bindingWirePrice * bindingQtyPerTon;
             double unloadingSteelLabour = (GetLabourRate("Labourer") / 8) * 1.4 * 2;
-            double unloadingDurationPerTon = 3;
+            double unloadingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 15, "Unloading steel. - 2 labour", 3);
             double totalUnloadingSteel = unloadingSteelLabour * unloadingDurationPerTon;
-            double concreteSpacerPer = 5;
+            double concreteSpacerPer = UserRateEditStore.Current.Qty(SectionKey, 15, "Concrete spacers", 5);
             double concreteSpacerQty = rebarPrice * (concreteSpacerPer / 100);
 
-            double totalMaterialCost = rebarPrice + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
+            double totalMaterialCost = rebarLineTotal + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
             double finalMaterialCost = totalMaterialCost;
 
             //LABOUR COST
-            double steelFixingDurationPerTon = 48;
+            double steelFixingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 15, "Steelfixer hours", 48);
             double steelFixingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double totalSteelFixingCost = steelFixingDurationPerTon * steelFixingLabourCost;
 
-            double labourDurationPerTon = 33;
+            double labourDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 15, "Labour hours", 33);
             double steelLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double totalSteelLabourCost = labourDurationPerTon * steelLabourCost;
 
@@ -1830,18 +1945,18 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 10 - 12mm steel reinforcement (133 - 93 pieces)", Quantity=1, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="10%", TotalPrice=rebarWaste },
+				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 10 - 12mm steel reinforcement (133 - 93 pieces)", Quantity=rebarQty, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarLineTotal },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="10%", TotalPrice=rebarWaste },
                 new ConcreteworkBreakdownLine { ComponentName="Binding wire", Quantity=bindingQtyPerTon, Unit="kg/tonne", UnitPrice=bindingWirePrice, TotalPrice=totalBindingWire },
                 new ConcreteworkBreakdownLine { ComponentName="Unloading steel. - 2 labour", Quantity=unloadingDurationPerTon, Unit="hr/tonne", UnitPrice=unloadingSteelLabour, TotalPrice=totalUnloadingSteel},
                 new ConcreteworkBreakdownLine { ComponentName="Concrete spacers", Quantity=concreteSpacerPer, Unit="% of Steel", TotalPrice=concreteSpacerQty },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steelfixer hours", Quantity=steelFixingDurationPerTon, Unit="hr/tonne", UnitPrice=steelFixingLabourCost, TotalPrice=totalSteelFixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Labour hours", Quantity=labourDurationPerTon, Unit="hr/tonne", UnitPrice=steelLabourCost, TotalPrice=totalSteelLabourCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Cutting and Fixing Per tonne", Quantity=1, Unit="", TotalPrice=totalSteelLabourFixingCost },
-			
+
 				//LABOUR HOISTING
 				new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Hoisting hours", Quantity=steelHoistingDurationPerTon, Unit="hr/tonne", UnitPrice=steelHoistingLabourCost, TotalPrice=totalSteelHoistingCost },
 
@@ -1865,28 +1980,32 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem16()
         {
+            double rebarQty = UserRateEditStore.Current.Qty(SectionKey, 16, "High Tensile Steel: 16 - 18mm steel reinforcement (52 - 33 pieces)", 1);
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Add for waste.", 1);
+
             //MATERIAL COST
             double rebarPrice = GetMaterialPrice("5/8\" diameter (52 pieces) - 16mm diameter.");
+            double rebarLineTotal = rebarPrice * rebarQty;
             double wastePer = 10;
-            double rebarWaste = rebarPrice * (wastePer / 100);
-            double bindingQtyPerTon = 10;
+            double rebarWaste = wasteQty * rebarPrice * (wastePer / 100);
+            double bindingQtyPerTon = UserRateEditStore.Current.Qty(SectionKey, 16, "Binding wire", 10);
             double bindingWirePrice = GetMaterialPrice("Binding Wire - 25kg roll") / 25;
             double totalBindingWire = bindingWirePrice * bindingQtyPerTon;
             double unloadingSteelLabour = (GetLabourRate("Labourer") / 8) * 1.4 * 2;
-            double unloadingDurationPerTon = 3;
+            double unloadingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 16, "Unloading steel. - 2 labour", 3);
             double totalUnloadingSteel = unloadingSteelLabour * unloadingDurationPerTon;
-            double concreteSpacerPer = 5;
+            double concreteSpacerPer = UserRateEditStore.Current.Qty(SectionKey, 16, "Concrete spacers", 5);
             double concreteSpacerQty = rebarPrice * (concreteSpacerPer / 100);
 
-            double totalMaterialCost = rebarPrice + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
+            double totalMaterialCost = rebarLineTotal + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
             double finalMaterialCost = totalMaterialCost;
 
             //LABOUR COST
-            double steelFixingDurationPerTon = 24;
+            double steelFixingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 16, "Steelfixer hours", 24);
             double steelFixingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double totalSteelFixingCost = steelFixingDurationPerTon * steelFixingLabourCost;
 
-            double labourDurationPerTon = 24;
+            double labourDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 16, "Labour hours", 24);
             double steelLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double totalSteelLabourCost = labourDurationPerTon * steelLabourCost;
 
@@ -1907,18 +2026,18 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 16 - 18mm steel reinforcement (52 - 33 pieces)", Quantity=1, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="10%", TotalPrice=rebarWaste },
+				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 16 - 18mm steel reinforcement (52 - 33 pieces)", Quantity=rebarQty, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarLineTotal },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="10%", TotalPrice=rebarWaste },
                 new ConcreteworkBreakdownLine { ComponentName="Binding wire", Quantity=bindingQtyPerTon, Unit="kg/tonne", UnitPrice=bindingWirePrice, TotalPrice=totalBindingWire },
                 new ConcreteworkBreakdownLine { ComponentName="Unloading steel. - 2 labour", Quantity=unloadingDurationPerTon, Unit="hr/tonne", UnitPrice=unloadingSteelLabour, TotalPrice=totalUnloadingSteel},
                 new ConcreteworkBreakdownLine { ComponentName="Concrete spacers", Quantity=concreteSpacerPer, Unit="% of Steel", TotalPrice=concreteSpacerQty },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steelfixer hours", Quantity=steelFixingDurationPerTon, Unit="hr/tonne", UnitPrice=steelFixingLabourCost, TotalPrice=totalSteelFixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Labour hours", Quantity=labourDurationPerTon, Unit="hr/tonne", UnitPrice=steelLabourCost, TotalPrice=totalSteelLabourCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Cutting and Fixing Per tonne", Quantity=1, Unit="", TotalPrice=totalSteelLabourFixingCost },
-			
+
 				//LABOUR HOISTING
 				new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Hoisting hours", Quantity=steelHoistingDurationPerTon, Unit="hr/tonne", UnitPrice=steelHoistingLabourCost, TotalPrice=totalSteelHoistingCost },
 
@@ -1942,28 +2061,32 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem17()
         {
+            double rebarQty = UserRateEditStore.Current.Qty(SectionKey, 17, "High Tensile Steel: 12 - 18mm steel reinforcement (93 - 33 pieces)", 1);
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 17, "Add for waste.", 1);
+
             //MATERIAL COST
             double rebarPrice = GetMaterialPrice("1/2\" diameter (93 pieces) - 12mm diameter.");
+            double rebarLineTotal = rebarPrice * rebarQty;
             double wastePer = 10;
-            double rebarWaste = rebarPrice * (wastePer / 100);
-            double bindingQtyPerTon = 10;
+            double rebarWaste = wasteQty * rebarPrice * (wastePer / 100);
+            double bindingQtyPerTon = UserRateEditStore.Current.Qty(SectionKey, 17, "Binding wire", 10);
             double bindingWirePrice = GetMaterialPrice("Binding Wire - 25kg roll") / 25;
             double totalBindingWire = bindingWirePrice * bindingQtyPerTon;
             double unloadingSteelLabour = (GetLabourRate("Labourer") / 8) * 1.4 * 2;
-            double unloadingDurationPerTon = 3;
+            double unloadingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 17, "Unloading steel. - 2 labour", 3);
             double totalUnloadingSteel = unloadingSteelLabour * unloadingDurationPerTon;
-            double concreteSpacerPer = 5;
+            double concreteSpacerPer = UserRateEditStore.Current.Qty(SectionKey, 17, "Concrete spacers", 5);
             double concreteSpacerQty = rebarPrice * (concreteSpacerPer / 100);
 
-            double totalMaterialCost = rebarPrice + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
+            double totalMaterialCost = rebarLineTotal + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
             double finalMaterialCost = totalMaterialCost;
 
             //LABOUR COST
-            double steelFixingDurationPerTon = 39;
+            double steelFixingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 17, "Steelfixer hours", 39);
             double steelFixingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double totalSteelFixingCost = steelFixingDurationPerTon * steelFixingLabourCost;
 
-            double labourDurationPerTon = 39;
+            double labourDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 17, "Labour hours", 39);
             double steelLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double totalSteelLabourCost = labourDurationPerTon * steelLabourCost;
 
@@ -1984,18 +2107,18 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 12 - 18mm steel reinforcement (93 - 33 pieces)", Quantity=1, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="10%", TotalPrice=rebarWaste },
+				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 12 - 18mm steel reinforcement (93 - 33 pieces)", Quantity=rebarQty, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarLineTotal },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="10%", TotalPrice=rebarWaste },
                 new ConcreteworkBreakdownLine { ComponentName="Binding wire", Quantity=bindingQtyPerTon, Unit="kg/tonne", UnitPrice=bindingWirePrice, TotalPrice=totalBindingWire },
                 new ConcreteworkBreakdownLine { ComponentName="Unloading steel. - 2 labour", Quantity=unloadingDurationPerTon, Unit="hr/tonne", UnitPrice=unloadingSteelLabour, TotalPrice=totalUnloadingSteel},
                 new ConcreteworkBreakdownLine { ComponentName="Concrete spacers", Quantity=concreteSpacerPer, Unit="% of Steel", TotalPrice=concreteSpacerQty },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steelfixer hours", Quantity=steelFixingDurationPerTon, Unit="hr/tonne", UnitPrice=steelFixingLabourCost, TotalPrice=totalSteelFixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Labour hours", Quantity=labourDurationPerTon, Unit="hr/tonne", UnitPrice=steelLabourCost, TotalPrice=totalSteelLabourCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Cutting and Fixing Per tonne", Quantity=1, Unit="", TotalPrice=totalSteelLabourFixingCost },
-			
+
 				//LABOUR HOISTING
 				new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Hoisting hours", Quantity=steelHoistingDurationPerTon, Unit="hr/tonne", UnitPrice=steelHoistingLabourCost, TotalPrice=totalSteelHoistingCost },
 
@@ -2019,28 +2142,32 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem18()
         {
+            double rebarQty = UserRateEditStore.Current.Qty(SectionKey, 18, "High Tensile Steel: 12 - 18mm steel reinforcement (93 - 33 pieces)", 1);
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 18, "Add for waste.", 1);
+
             //MATERIAL COST
             double rebarPrice = GetMaterialPrice("1/2\" diameter (93 pieces) - 12mm diameter.");
+            double rebarLineTotal = rebarPrice * rebarQty;
             double wastePer = 10;
-            double rebarWaste = rebarPrice * (wastePer / 100);
-            double bindingQtyPerTon = 10;
+            double rebarWaste = wasteQty * rebarPrice * (wastePer / 100);
+            double bindingQtyPerTon = UserRateEditStore.Current.Qty(SectionKey, 18, "Binding wire", 10);
             double bindingWirePrice = GetMaterialPrice("Binding Wire - 25kg roll") / 25;
             double totalBindingWire = bindingWirePrice * bindingQtyPerTon;
             double unloadingSteelLabour = (GetLabourRate("Labourer") / 8) * 1.4 * 2;
-            double unloadingDurationPerTon = 3;
+            double unloadingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 18, "Unloading steel. - 2 labour", 3);
             double totalUnloadingSteel = unloadingSteelLabour * unloadingDurationPerTon;
-            double concreteSpacerPer = 5;
+            double concreteSpacerPer = UserRateEditStore.Current.Qty(SectionKey, 18, "Concrete spacers", 5);
             double concreteSpacerQty = rebarPrice * (concreteSpacerPer / 100);
 
-            double totalMaterialCost = rebarPrice + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
+            double totalMaterialCost = rebarLineTotal + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
             double finalMaterialCost = totalMaterialCost;
 
             //LABOUR COST
-            double steelFixingDurationPerTon = 24;
+            double steelFixingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 18, "Steelfixer hours", 24);
             double steelFixingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double totalSteelFixingCost = steelFixingDurationPerTon * steelFixingLabourCost;
 
-            double labourDurationPerTon = 24;
+            double labourDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 18, "Labour hours", 24);
             double steelLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double totalSteelLabourCost = labourDurationPerTon * steelLabourCost;
 
@@ -2061,18 +2188,18 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 12 - 18mm steel reinforcement (93 - 33 pieces)", Quantity=1, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="10%", TotalPrice=rebarWaste },
+				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 12 - 18mm steel reinforcement (93 - 33 pieces)", Quantity=rebarQty, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarLineTotal },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="10%", TotalPrice=rebarWaste },
                 new ConcreteworkBreakdownLine { ComponentName="Binding wire", Quantity=bindingQtyPerTon, Unit="kg/tonne", UnitPrice=bindingWirePrice, TotalPrice=totalBindingWire },
                 new ConcreteworkBreakdownLine { ComponentName="Unloading steel. - 2 labour", Quantity=unloadingDurationPerTon, Unit="hr/tonne", UnitPrice=unloadingSteelLabour, TotalPrice=totalUnloadingSteel},
                 new ConcreteworkBreakdownLine { ComponentName="Concrete spacers", Quantity=concreteSpacerPer, Unit="% of Steel", TotalPrice=concreteSpacerQty },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steelfixer hours", Quantity=steelFixingDurationPerTon, Unit="hr/tonne", UnitPrice=steelFixingLabourCost, TotalPrice=totalSteelFixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Labour hours", Quantity=labourDurationPerTon, Unit="hr/tonne", UnitPrice=steelLabourCost, TotalPrice=totalSteelLabourCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Cutting and Fixing Per tonne", Quantity=1, Unit="", TotalPrice=totalSteelLabourFixingCost },
-			
+
 				//LABOUR HOISTING
 				new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Hoisting hours", Quantity=steelHoistingDurationPerTon, Unit="hr/tonne", UnitPrice=steelHoistingLabourCost, TotalPrice=totalSteelHoistingCost },
 
@@ -2096,28 +2223,32 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem19()
         {
+            double rebarQty = UserRateEditStore.Current.Qty(SectionKey, 19, "High Tensile Steel: 12 - 18mm steel reinforcement (93 - 33 pieces)", 1);
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 19, "Add for waste.", 1);
+
             //MATERIAL COST
             double rebarPrice = GetMaterialPrice("1/2\" diameter (93 pieces) - 12mm diameter.");
+            double rebarLineTotal = rebarPrice * rebarQty;
             double wastePer = 10;
-            double rebarWaste = rebarPrice * (wastePer / 100);
-            double bindingQtyPerTon = 10;
+            double rebarWaste = wasteQty * rebarPrice * (wastePer / 100);
+            double bindingQtyPerTon = UserRateEditStore.Current.Qty(SectionKey, 19, "Binding wire", 10);
             double bindingWirePrice = GetMaterialPrice("Binding Wire - 25kg roll") / 25;
             double totalBindingWire = bindingWirePrice * bindingQtyPerTon;
             double unloadingSteelLabour = (GetLabourRate("Labourer") / 8) * 1.4 * 2;
-            double unloadingDurationPerTon = 3;
+            double unloadingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 19, "Unloading steel. - 2 labour", 3);
             double totalUnloadingSteel = unloadingSteelLabour * unloadingDurationPerTon;
-            double concreteSpacerPer = 5;
+            double concreteSpacerPer = UserRateEditStore.Current.Qty(SectionKey, 19, "Concrete spacers", 5);
             double concreteSpacerQty = rebarPrice * (concreteSpacerPer / 100);
 
-            double totalMaterialCost = rebarPrice + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
+            double totalMaterialCost = rebarLineTotal + rebarWaste + totalBindingWire + totalUnloadingSteel + concreteSpacerQty;
             double finalMaterialCost = totalMaterialCost;
 
             //LABOUR COST
-            double steelFixingDurationPerTon = 39;
+            double steelFixingDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 19, "Steelfixer hours", 39);
             double steelFixingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double totalSteelFixingCost = steelFixingDurationPerTon * steelFixingLabourCost;
 
-            double labourDurationPerTon = 39;
+            double labourDurationPerTon = UserRateEditStore.Current.Qty(SectionKey, 19, "Labour hours", 39);
             double steelLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double totalSteelLabourCost = labourDurationPerTon * steelLabourCost;
 
@@ -2138,18 +2269,18 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 12 - 18mm steel reinforcement (93 - 33 pieces)", Quantity=1, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="10%", TotalPrice=rebarWaste },
+				new ConcreteworkBreakdownLine { ComponentName="High Tensile Steel: 12 - 18mm steel reinforcement (93 - 33 pieces)", Quantity=rebarQty, Unit="tonne", UnitPrice=rebarPrice, TotalPrice=rebarLineTotal },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="10%", TotalPrice=rebarWaste },
                 new ConcreteworkBreakdownLine { ComponentName="Binding wire", Quantity=bindingQtyPerTon, Unit="kg/tonne", UnitPrice=bindingWirePrice, TotalPrice=totalBindingWire },
                 new ConcreteworkBreakdownLine { ComponentName="Unloading steel. - 2 labour", Quantity=unloadingDurationPerTon, Unit="hr/tonne", UnitPrice=unloadingSteelLabour, TotalPrice=totalUnloadingSteel},
                 new ConcreteworkBreakdownLine { ComponentName="Concrete spacers", Quantity=concreteSpacerPer, Unit="% of Steel", TotalPrice=concreteSpacerQty },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steelfixer hours", Quantity=steelFixingDurationPerTon, Unit="hr/tonne", UnitPrice=steelFixingLabourCost, TotalPrice=totalSteelFixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Labour hours", Quantity=labourDurationPerTon, Unit="hr/tonne", UnitPrice=steelLabourCost, TotalPrice=totalSteelLabourCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Cutting and Fixing Per tonne", Quantity=1, Unit="", TotalPrice=totalSteelLabourFixingCost },
-			
+
 				//LABOUR HOISTING
 				new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour Hoisting hours", Quantity=steelHoistingDurationPerTon, Unit="hr/tonne", UnitPrice=steelHoistingLabourCost, TotalPrice=totalSteelHoistingCost },
 
@@ -2173,29 +2304,30 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem20()
         {
+            double cuttingWasteQty = UserRateEditStore.Current.Qty(SectionKey, 20, "Add cutting waste.", 6);
+
             //MATERIAL COST
-            double boardLengthPerm2 = 0.93;
+            double boardLengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 20, "25 x 300mm x 3600mm boards.", 0.93);
             double boardPrice = GetMaterialPrice("1x12\"x12' (25x300x3600mm)");
             double totalBoardPrice = boardPrice * boardLengthPerm2;
-            double propsAndBraceLengthPerm2 = 1.56;
+            double propsAndBraceLengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 20, "50 x 75mm props and braces.", 1.56);
             double propsAndBracePrice = GetMaterialPrice("2x3\"x12' (50x75x3600mm)");
             double totalpropsAndBracePrice = propsAndBraceLengthPerm2 * propsAndBracePrice;
-            double propsAndBrace2LengthPerm2 = 2.25;
+            double propsAndBrace2LengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 20, "50 x 50mm, props and braces.", 2.25);
             double propsAndBrace2Price = GetMaterialPrice("2x2\"x12' (50x50x3600mm)");
             double totalpropsAndBrace2Price = propsAndBrace2LengthPerm2 * propsAndBrace2Price;
             double totalWoodPrice = totalBoardPrice+totalpropsAndBracePrice+ totalpropsAndBrace2Price;
-            double wastePerM2 = 6;
-            double cuttingWaste = totalWoodPrice * (wastePerM2 / 100);
+            double cuttingWaste = totalWoodPrice * (cuttingWasteQty / 100);
             double subTotalWoodPrice = totalWoodPrice + cuttingWaste;
 
-            double nailFirstUse = 0.5;
-            double nailFiveUse = 0.125 * 5;
-            double nailSixUse = nailFirstUse + nailFiveUse;
+            double nailFirstUse = UserRateEditStore.Current.Qty(SectionKey, 20, "Allow for nails: first use", 0.5);
+            double nailFiveUse = UserRateEditStore.Current.Qty(SectionKey, 20, "Allow for nails for 5 subsequent  uses.", 0.125 * 5);
+            double nailSixUse = UserRateEditStore.Current.Qty(SectionKey, 20, "Nails for 6 uses.", nailFirstUse + nailFiveUse);
             double nailPrice = GetMaterialPrice("Nails 4\"")/25;
             double totalNailPrice = nailPrice * nailSixUse;
 
-            double mouldOilSingleUse = 0.27;
-            double mouldOilSixUse = mouldOilSingleUse * 6;
+            double mouldOilSingleUse = UserRateEditStore.Current.Qty(SectionKey, 20, "Allow for mould oil", 0.27);
+            double mouldOilSixUse = UserRateEditStore.Current.Qty(SectionKey, 20, "Mould oil for 6 uses", mouldOilSingleUse * 6);
             double mouldOilPrice = GetMaterialPrice("Mould oil") / 4;
             double totalMouldOilPrice = mouldOilPrice * mouldOilSixUse;
 
@@ -2203,14 +2335,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double materialCostPerUse = totalMaterialCost / 6;
 
             //LABOUR COST
-            double carpenterDurationPerFirstUse = 1.8;
-            double carpenterDurationPerFiveUse = 1.3 * 5;
+            double carpenterDurationPerFirstUse = UserRateEditStore.Current.Qty(SectionKey, 20, "Carpenter hours", 1.8);
+            double carpenterDurationPerFiveUse = UserRateEditStore.Current.Qty(SectionKey, 20, "Carpenter time for 5 repetitive use-times.", 1.3 * 5);
             double totalCarpentaDurationPer6Use = carpenterDurationPerFirstUse + carpenterDurationPerFiveUse;
             double carpenterCostPerHr = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalCarpenterCost = totalCarpentaDurationPer6Use * carpenterCostPerHr;
 
-            double labourDurationPerFirstUse = 1.8;
-            double labourDurationPerFiveUse = 1.3 * 5;
+            double labourDurationPerFirstUse = UserRateEditStore.Current.Qty(SectionKey, 20, "Labour hours", 1.8);
+            double labourDurationPerFiveUse = UserRateEditStore.Current.Qty(SectionKey, 20, "Labour time for 5 repetitive use-times.", 1.3 * 5);
             double totalLabourDurationPer6Use = labourDurationPerFirstUse + labourDurationPerFiveUse;
             double labourCostPerHr = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalLabourCost = totalLabourDurationPer6Use * labourCostPerHr;
@@ -2235,7 +2367,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="50 x 75mm props and braces.", Quantity=propsAndBraceLengthPerm2, Unit="Length/m2",UnitPrice=propsAndBracePrice, TotalPrice=totalpropsAndBracePrice },
                 new ConcreteworkBreakdownLine { ComponentName="50 x 50mm, props and braces.", Quantity=propsAndBrace2LengthPerm2, Unit="Length/m2", UnitPrice=propsAndBrace2Price, TotalPrice=totalpropsAndBrace2Price },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Wood Per Length", Quantity=1, Unit="", TotalPrice=totalWoodPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add cutting waste.", Quantity=6, Unit="%",  TotalPrice=cuttingWaste},
+                new ConcreteworkBreakdownLine { ComponentName="Add cutting waste.", Quantity=cuttingWasteQty, Unit="%",  TotalPrice=cuttingWaste},
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total:", Quantity=1, Unit="", TotalPrice=subTotalWoodPrice },
 
                 new ConcreteworkBreakdownLine { ComponentName="Allow for nails: first use", Quantity=nailFirstUse, Unit="kg", },
@@ -2247,7 +2379,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
                 new ConcreteworkBreakdownLine { ComponentName="Total material cost in formwork per m2", Quantity=1, Unit="", TotalPrice=totalMaterialCost },
                 new ConcreteworkBreakdownLine { ComponentName="Total allowing for repetitive use.", Quantity=1, Unit="", TotalPrice=materialCostPerUse },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Carpenter hours", Quantity=carpenterDurationPerFirstUse, Unit="hr/m2", },
                 new ConcreteworkBreakdownLine { ComponentName="Carpenter time for 5 repetitive use-times.", Quantity=carpenterDurationPerFiveUse, Unit="hr/m2", },
@@ -2281,32 +2413,33 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem21()
         {
+            double cuttingWasteQty = UserRateEditStore.Current.Qty(SectionKey, 21, "Add cutting waste.", 6);
+
             //MATERIAL COST
-            double boardLengthPerm2 = 0.93;
+            double boardLengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 21, "25 x 300mm x 3600mm boards.", 0.93);
             double boardPrice = GetMaterialPrice("1x12\"x12' (25x300x3600mm)");
             double totalBoardPrice = boardPrice * boardLengthPerm2;
 
-            double propsAndBraceLengthPerm2 = 1.56;
+            double propsAndBraceLengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 21, "50 x 75mm props and braces.", 1.56);
             double propsAndBracePrice = GetMaterialPrice("2x3\"x12' (50x75x3600mm)");
             double totalpropsAndBracePrice = propsAndBraceLengthPerm2 * propsAndBracePrice;
 
-            double propsAndBrace2LengthPerm2 = 2.25;
+            double propsAndBrace2LengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 21, "50 x 50mm, props and braces.", 2.25);
             double propsAndBrace2Price = GetMaterialPrice("2x2\"x12' (50x50x3600mm)");
             double totalpropsAndBrace2Price = propsAndBrace2LengthPerm2 * propsAndBrace2Price;
             double totalWoodPrice = totalBoardPrice + totalpropsAndBracePrice + totalpropsAndBrace2Price;
 
-            double wastePerM2 = 5;
-            double cuttingWaste = totalWoodPrice * (wastePerM2 / 100);
+            double cuttingWaste = totalWoodPrice * (cuttingWasteQty / 100);
             double subTotalWoodPrice = totalWoodPrice + cuttingWaste;
 
-            double nailFirstUse = 0.5;
-            double nailFiveUse = 0.125 * 5;
-            double nailSixUse = nailFirstUse + nailFiveUse;
+            double nailFirstUse = UserRateEditStore.Current.Qty(SectionKey, 21, "Allow for nails: first use", 0.5);
+            double nailFiveUse = UserRateEditStore.Current.Qty(SectionKey, 21, "Allow for nails for 5 subsequent  uses.", 0.125 * 5);
+            double nailSixUse = UserRateEditStore.Current.Qty(SectionKey, 21, "Nails for 6 uses.", nailFirstUse + nailFiveUse);
             double nailPrice = GetMaterialPrice("Nails 4\"") / 25;
             double totalNailPrice = nailPrice * nailSixUse;
 
-            double mouldOilSingleUse = 0.27;
-            double mouldOilSixUse = mouldOilSingleUse * 6;
+            double mouldOilSingleUse = UserRateEditStore.Current.Qty(SectionKey, 21, "Allow for mould oil", 0.27);
+            double mouldOilSixUse = UserRateEditStore.Current.Qty(SectionKey, 21, "Mould oil for 6 uses", mouldOilSingleUse * 6);
             double mouldOilPrice = GetMaterialPrice("Mould oil") / 4;
             double totalMouldOilPrice = mouldOilPrice * mouldOilSixUse;
 
@@ -2314,14 +2447,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double materialCostPerUse = totalMaterialCost / 6;
 
             //LABOUR COST
-            double carpenterDurationPerFirstUse = 2.07;
-            double carpenterDurationPerFiveUse = 1.5 * 5;
+            double carpenterDurationPerFirstUse = UserRateEditStore.Current.Qty(SectionKey, 21, "Carpenter hours", 2.07);
+            double carpenterDurationPerFiveUse = UserRateEditStore.Current.Qty(SectionKey, 21, "Carpenter time for 5 repetitive use-times.", 1.5 * 5);
             double totalCarpentaDurationPer6Use = carpenterDurationPerFirstUse + carpenterDurationPerFiveUse;
             double carpenterCostPerHr = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalCarpenterCost = totalCarpentaDurationPer6Use * carpenterCostPerHr;
 
-            double labourDurationPerFirstUse = 2.07;
-            double labourDurationPerFiveUse = 1.5 * 5;
+            double labourDurationPerFirstUse = UserRateEditStore.Current.Qty(SectionKey, 21, "Labour hours", 2.07);
+            double labourDurationPerFiveUse = UserRateEditStore.Current.Qty(SectionKey, 21, "Labour time for 5 repetitive use-times.", 1.5 * 5);
             double totalLabourDurationPer6Use = labourDurationPerFirstUse + labourDurationPerFiveUse;
             double labourCostPerHr = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalLabourCost = totalLabourDurationPer6Use * labourCostPerHr;
@@ -2346,7 +2479,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="50 x 75mm props and braces.", Quantity=propsAndBraceLengthPerm2, Unit="Length/m2",UnitPrice=propsAndBracePrice, TotalPrice=totalpropsAndBracePrice },
                 new ConcreteworkBreakdownLine { ComponentName="50 x 50mm, props and braces.", Quantity=propsAndBrace2LengthPerm2, Unit="Length/m2", UnitPrice=propsAndBrace2Price, TotalPrice=totalpropsAndBrace2Price },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Wood Per Length", Quantity=1, Unit="", TotalPrice=totalWoodPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add cutting waste.", Quantity=6, Unit="%",  TotalPrice=cuttingWaste},
+                new ConcreteworkBreakdownLine { ComponentName="Add cutting waste.", Quantity=cuttingWasteQty, Unit="%",  TotalPrice=cuttingWaste},
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total:", Quantity=1, Unit="", TotalPrice=subTotalWoodPrice },
 
                 new ConcreteworkBreakdownLine { ComponentName="Allow for nails: first use", Quantity=nailFirstUse, Unit="kg", },
@@ -2358,7 +2491,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
                 new ConcreteworkBreakdownLine { ComponentName="Total material cost in formwork per m2", Quantity=1, Unit="", TotalPrice=totalMaterialCost },
                 new ConcreteworkBreakdownLine { ComponentName="Total allowing for repetitive use.", Quantity=1, Unit="", TotalPrice=materialCostPerUse },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Carpenter hours", Quantity=carpenterDurationPerFirstUse, Unit="hr/m2", },
                 new ConcreteworkBreakdownLine { ComponentName="Carpenter time for 5 repetitive use-times.", Quantity=carpenterDurationPerFiveUse, Unit="hr/m2", },
@@ -2392,32 +2525,33 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem22()
         {
+            double cuttingWasteQty = UserRateEditStore.Current.Qty(SectionKey, 22, "Add cutting waste.", 6);
+
             //MATERIAL COST
-            double boardLengthPerm2 = 0.93;
+            double boardLengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 22, "25 x 300mm x 3600mm boards.", 0.93);
             double boardPrice = GetMaterialPrice("1x12\"x12' (25x300x3600mm)");
             double totalBoardPrice = boardPrice * boardLengthPerm2;
 
-            double propsAndBraceLengthPerm2 = 1.56;
+            double propsAndBraceLengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 22, "50 x 75mm props and braces.", 1.56);
             double propsAndBracePrice = GetMaterialPrice("2x3\"x12' (50x75x3600mm)");
             double totalpropsAndBracePrice = propsAndBraceLengthPerm2 * propsAndBracePrice;
 
-            double propsAndBrace2LengthPerm2 = 2.25;
+            double propsAndBrace2LengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 22, "50 x 50mm, props and braces.", 2.25);
             double propsAndBrace2Price = GetMaterialPrice("2x2\"x12' (50x50x3600mm)");
             double totalpropsAndBrace2Price = propsAndBrace2LengthPerm2 * propsAndBrace2Price;
             double totalWoodPrice = totalBoardPrice + totalpropsAndBracePrice + totalpropsAndBrace2Price;
 
-            double wastePerM2 = 5;
-            double cuttingWaste = totalWoodPrice * (wastePerM2 / 100);
+            double cuttingWaste = totalWoodPrice * (cuttingWasteQty / 100);
             double subTotalWoodPrice = totalWoodPrice + cuttingWaste;
 
-            double nailFirstUse = 0.5;
-            double nailFiveUse = 0.125 * 5;
-            double nailSixUse = nailFirstUse + nailFiveUse;
+            double nailFirstUse = UserRateEditStore.Current.Qty(SectionKey, 22, "Allow for nails: first use", 0.5);
+            double nailFiveUse = UserRateEditStore.Current.Qty(SectionKey, 22, "Allow for nails for 5 subsequent  uses.", 0.125 * 5);
+            double nailSixUse = UserRateEditStore.Current.Qty(SectionKey, 22, "Nails for 6 uses.", nailFirstUse + nailFiveUse);
             double nailPrice = GetMaterialPrice("Nails 4\"") / 25;
             double totalNailPrice = nailPrice * nailSixUse;
 
-            double mouldOilSingleUse = 0.27;
-            double mouldOilSixUse = mouldOilSingleUse * 6;
+            double mouldOilSingleUse = UserRateEditStore.Current.Qty(SectionKey, 22, "Allow for mould oil", 0.27);
+            double mouldOilSixUse = UserRateEditStore.Current.Qty(SectionKey, 22, "Mould oil for 6 uses", mouldOilSingleUse * 6);
             double mouldOilPrice = GetMaterialPrice("Mould oil") / 4;
             double totalMouldOilPrice = mouldOilPrice * mouldOilSixUse;
 
@@ -2425,14 +2559,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double materialCostPerUse = totalMaterialCost / 6;
 
             //LABOUR COST
-            double carpenterDurationPerFirstUse = 1.62;
-            double carpenterDurationPerFiveUse = 1.13 * 5;
+            double carpenterDurationPerFirstUse = UserRateEditStore.Current.Qty(SectionKey, 22, "Carpenter hours", 1.62);
+            double carpenterDurationPerFiveUse = UserRateEditStore.Current.Qty(SectionKey, 22, "Carpenter time for 5 repetitive use-times.", 1.13 * 5);
             double totalCarpentaDurationPer6Use = Math.Round(carpenterDurationPerFirstUse + carpenterDurationPerFiveUse, 2);
             double carpenterCostPerHr = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalCarpenterCost = totalCarpentaDurationPer6Use * carpenterCostPerHr;
 
-            double labourDurationPerFirstUse = 1.62;
-            double labourDurationPerFiveUse = 1.13 * 5;
+            double labourDurationPerFirstUse = UserRateEditStore.Current.Qty(SectionKey, 22, "Labour hours", 1.62);
+            double labourDurationPerFiveUse = UserRateEditStore.Current.Qty(SectionKey, 22, "Labour time for 5 repetitive use-times.", 1.13 * 5);
             double totalLabourDurationPer6Use = Math.Round(labourDurationPerFirstUse + labourDurationPerFiveUse, 2);
             double labourCostPerHr = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalLabourCost = totalLabourDurationPer6Use * labourCostPerHr;
@@ -2457,7 +2591,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="50 x 75mm props and braces.", Quantity=propsAndBraceLengthPerm2, Unit="Length/m2",UnitPrice=propsAndBracePrice, TotalPrice=totalpropsAndBracePrice },
                 new ConcreteworkBreakdownLine { ComponentName="50 x 50mm, props and braces.", Quantity=propsAndBrace2LengthPerm2, Unit="Length/m2", UnitPrice=propsAndBrace2Price, TotalPrice=totalpropsAndBrace2Price },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Wood Per Length", Quantity=1, Unit="", TotalPrice=totalWoodPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add cutting waste.", Quantity=6, Unit="%",  TotalPrice=cuttingWaste},
+                new ConcreteworkBreakdownLine { ComponentName="Add cutting waste.", Quantity=cuttingWasteQty, Unit="%",  TotalPrice=cuttingWaste},
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total:", Quantity=1, Unit="", TotalPrice=subTotalWoodPrice },
 
                 new ConcreteworkBreakdownLine { ComponentName="Allow for nails: first use", Quantity=nailFirstUse, Unit="kg", },
@@ -2469,7 +2603,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
                 new ConcreteworkBreakdownLine { ComponentName="Total material cost in formwork per m2", Quantity=1, Unit="", TotalPrice=totalMaterialCost },
                 new ConcreteworkBreakdownLine { ComponentName="Total allowing for repetitive use.", Quantity=1, Unit="", TotalPrice=materialCostPerUse },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Carpenter hours", Quantity=carpenterDurationPerFirstUse, Unit="hr/m2", },
                 new ConcreteworkBreakdownLine { ComponentName="Carpenter time for 5 repetitive use-times.", Quantity=carpenterDurationPerFiveUse, Unit="hr/m2", },
@@ -2503,6 +2637,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem23()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 23, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 23, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -2510,9 +2647,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 10.8;
-            double sandPerM3 = 0.38;
-            double stonePerM3 = 0.75;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 23, "Cement", 10.8);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 23, "Sand", 0.38);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 23, "Granite (including transportation)", 0.75);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -2521,7 +2658,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -2540,26 +2677,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 9;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 23, "Mixing crew - labour.", 9);
             double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 23, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)") / 8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 9;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 23, "Placing crew - labour.", 9);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 23, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 23, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -2576,14 +2713,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
-			
+
 				//PLACING
 				new ConcreteworkBreakdownLine { ComponentName="Poker vibrator", Quantity=pokerVibratorDurationPerM3, Unit="hr/m3", UnitPrice=pokerVibratorCost, TotalPrice=totalPokerVibratorCost },
                 new ConcreteworkBreakdownLine { ComponentName="Placing crew - labour.", Quantity=placingCrewPerHr, Unit="per Hr", UnitPrice=placingCrewCost, TotalPrice=totalPlacingCrewCost },
@@ -2609,6 +2746,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem24()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 24, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 24, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -2616,9 +2756,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 10.8;
-            double sandPerM3 = 0.38;
-            double stonePerM3 = 0.75;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 24, "Cement", 10.8);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 24, "Sand", 0.38);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 24, "Granite (including transportation)", 0.75);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -2627,7 +2767,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -2646,26 +2786,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 9;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 24, "Mixing crew - labour.", 9);
             double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 24, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)") / 8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 12;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 24, "Placing crew - labour.", 12);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 24, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 24, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -2682,14 +2822,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
-			
+
 				//PLACING
 				new ConcreteworkBreakdownLine { ComponentName="Poker vibrator", Quantity=pokerVibratorDurationPerM3, Unit="hr/m3", UnitPrice=pokerVibratorCost, TotalPrice=totalPokerVibratorCost },
                 new ConcreteworkBreakdownLine { ComponentName="Placing crew - labour.", Quantity=placingCrewPerHr, Unit="per Hr", UnitPrice=placingCrewCost, TotalPrice=totalPlacingCrewCost },
@@ -2715,23 +2855,25 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem25()
         {
+            double meshPerM2Qty = UserRateEditStore.Current.Qty(SectionKey, 25, "Mesh Cost Per M2", 1);
+
             //MATERIAL COST
             double meshPrice = GetMaterialPrice("A142 at 2.22kg/m2 size 4.8 x 2.4m x 2.2kg/m2");
-            double sheetSize = 11.52;
-            double costPerSqm = meshPrice/sheetSize;
-            double bindingWirePer = 5;
+            double sheetSize = UserRateEditStore.Current.Qty(SectionKey, 25, "Sheet size 2.4m x 4.8m wide.", 11.52);
+            double costPerSqm = meshPerM2Qty * (meshPrice/sheetSize);
+            double bindingWirePer = UserRateEditStore.Current.Qty(SectionKey, 25, "Add  for binding wire and overlaps", 5);
             double bindingWireCost = costPerSqm * (bindingWirePer / 100);
-            double wastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 25, "Add for waste.", 5);
             double wasteCost = (costPerSqm+ bindingWireCost) * (wastePer / 100);
 
             double totalMaterial = costPerSqm + bindingWireCost + wasteCost;
 
             //LABOUR COST
-            double steelFixingLabour = 0.15;
+            double steelFixingLabour = UserRateEditStore.Current.Qty(SectionKey, 25, "Steel Fixers", 0.15);
             double steelFixerCostPerHr = ((GetLabourRate("Welder") / 8) * 1.4);
             double totalSteelFixerCost = steelFixingLabour * steelFixerCostPerHr;
 
-            double labourDuration = 0.15;
+            double labourDuration = UserRateEditStore.Current.Qty(SectionKey, 25, "Labour", 0.15);
             double labourCostPerHr = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totallabourCost = labourDuration * labourCostPerHr;
 
@@ -2746,13 +2888,13 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="Material cost", Quantity=1, Unit="", UnitPrice=meshPrice, },
+				new ConcreteworkBreakdownLine { ComponentName="Material cost", Quantity=UserRateEditStore.Current.Qty(SectionKey, 25, "Material cost", 1), Unit="", UnitPrice=meshPrice, },
                 new ConcreteworkBreakdownLine { ComponentName="Sheet size 2.4m x 4.8m wide.", Quantity=sheetSize, Unit="m2" },
-                new ConcreteworkBreakdownLine { ComponentName="Mesh Cost Per M2", Quantity=1, Unit="N/m2", TotalPrice=costPerSqm },
+                new ConcreteworkBreakdownLine { ComponentName="Mesh Cost Per M2", Quantity=meshPerM2Qty, Unit="N/m2", TotalPrice=costPerSqm },
                 new ConcreteworkBreakdownLine { ComponentName="Add  for binding wire and overlaps", Quantity=bindingWirePer, Unit="%",  TotalPrice=bindingWireCost},
                 new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%",  TotalPrice=wasteCost},
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=totalMaterial },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steel Fixers", Quantity=steelFixingLabour, Unit="hr/m2", UnitPrice=steelFixerCostPerHr, TotalPrice=totalSteelFixerCost},
                 new ConcreteworkBreakdownLine { ComponentName="Labour", Quantity=labourDuration, Unit="hr/m2", UnitPrice=labourCostPerHr, TotalPrice=totallabourCost},
@@ -2775,23 +2917,25 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem26()
         {
+            double meshPerM2Qty = UserRateEditStore.Current.Qty(SectionKey, 26, "Mesh Cost Per M2", 1);
+
             //MATERIAL COST
             double meshPrice = GetMaterialPrice("A193 at 3.95kg/m2 size 4.8 x 2.4m x 3.02kg/m2");
-            double sheetSize = 11.52;
-            double costPerSqm = meshPrice / sheetSize;
-            double bindingWirePer = 5;
+            double sheetSize = UserRateEditStore.Current.Qty(SectionKey, 26, "Sheet size 2.4m x 4.8m wide.", 11.52);
+            double costPerSqm = meshPerM2Qty * (meshPrice / sheetSize);
+            double bindingWirePer = UserRateEditStore.Current.Qty(SectionKey, 26, "Add  for binding wire and overlaps", 5);
             double bindingWireCost = costPerSqm * (bindingWirePer / 100);
-            double wastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 26, "Add for waste.", 5);
             double wasteCost = (costPerSqm + bindingWireCost) * (wastePer / 100);
 
             double totalMaterial = costPerSqm + bindingWireCost + wasteCost;
 
             //LABOUR COST
-            double steelFixingLabour = 0.18;
+            double steelFixingLabour = UserRateEditStore.Current.Qty(SectionKey, 26, "Steel Fixers", 0.18);
             double steelFixerCostPerHr = ((GetLabourRate("Welder") / 8) * 1.4);
             double totalSteelFixerCost = steelFixingLabour * steelFixerCostPerHr;
 
-            double labourDuration = 0.18;
+            double labourDuration = UserRateEditStore.Current.Qty(SectionKey, 26, "Labour", 0.18);
             double labourCostPerHr = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totallabourCost = labourDuration * labourCostPerHr;
 
@@ -2806,13 +2950,13 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="Material cost", Quantity=1, Unit="", UnitPrice=meshPrice, },
+				new ConcreteworkBreakdownLine { ComponentName="Material cost", Quantity=UserRateEditStore.Current.Qty(SectionKey, 26, "Material cost", 1), Unit="", UnitPrice=meshPrice, },
                 new ConcreteworkBreakdownLine { ComponentName="Sheet size 2.4m x 4.8m wide.", Quantity=sheetSize, Unit="m2" },
-                new ConcreteworkBreakdownLine { ComponentName="Mesh Cost Per M2", Quantity=1, Unit="N/m2", TotalPrice=costPerSqm },
+                new ConcreteworkBreakdownLine { ComponentName="Mesh Cost Per M2", Quantity=meshPerM2Qty, Unit="N/m2", TotalPrice=costPerSqm },
                 new ConcreteworkBreakdownLine { ComponentName="Add  for binding wire and overlaps", Quantity=bindingWirePer, Unit="%",  TotalPrice=bindingWireCost},
                 new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%",  TotalPrice=wasteCost},
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=totalMaterial },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Steel Fixers", Quantity=steelFixingLabour, Unit="hr/m2", UnitPrice=steelFixerCostPerHr, TotalPrice=totalSteelFixerCost},
                 new ConcreteworkBreakdownLine { ComponentName="Labour", Quantity=labourDuration, Unit="hr/m2", UnitPrice=labourCostPerHr, TotalPrice=totallabourCost},
@@ -2835,6 +2979,11 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem27()
         {
+            double concreteGradeQty = UserRateEditStore.Current.Qty(SectionKey, 27, "Concrete grade 30", 1);
+            double materialCostQty = UserRateEditStore.Current.Qty(SectionKey, 27, "Material cost", 1);
+            double mixingPrecastQty = UserRateEditStore.Current.Qty(SectionKey, 27, "Mixing - as before calculated", 1);
+            double placingPrecastQty = UserRateEditStore.Current.Qty(SectionKey, 27, "Placing - as before calculated", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -2993,13 +3142,13 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double netWoodCostPerM2 = materialCostPerUse + totalLabourPerUse;
 
             //PRECAST CALCULATION
-            double precastRebarQty = 0.12;
+            double precastRebarQty = UserRateEditStore.Current.Qty(SectionKey, 27, "Reinforcement", 0.12);
             double precastRebarCost = precastRebarQty * netCostPerTon;
 
-            double precastWoodQty = 5;
+            double precastWoodQty = UserRateEditStore.Current.Qty(SectionKey, 27, "Formwork", 5);
             double precastWoodCost = precastWoodQty * netWoodCostPerM2;
 
-            double precastTotal = netCostPerm3+ precastRebarCost + precastWoodCost;
+            double precastTotal = (concreteGradeQty * netCostPerm3) + precastRebarCost + precastWoodCost;
 
             double mixingPreCastCrewduration = 9;
             double mixingPrecastCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
@@ -3009,11 +3158,11 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double placingPrecastCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingPrecastCrewCost = placingPercastCrewPerHr * placingPrecastCrewCost;
 
-            double totalPrecastLabour = totalPreCastMixingCost + totalPlacingPrecastCrewCost;
+            double totalPrecastLabour = (mixingPrecastQty * totalPreCastMixingCost) + (placingPrecastQty * totalPlacingPrecastCrewCost);
 
             double precastNetTotal = precastTotal + totalPrecastLabour;
 
-            double extraPreCastPer = 30;
+            double extraPreCastPer = UserRateEditStore.Current.Qty(SectionKey, 27, "Extra over costs for incidental works associated", 30);
             double extraPrecast = precastNetTotal * (extraPreCastPer / 100);
             double precastFinalTotal = precastNetTotal + extraPrecast;
 
@@ -3023,14 +3172,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             var breakdown = new ObservableCollection<ConcreteworkBreakdownLine>
             {
 				//MATERIALCOST
-				new ConcreteworkBreakdownLine { ComponentName="Concrete grade 30", Quantity=1, Unit="m3", UnitPrice=netCostPerm3, TotalPrice=netCostPerm3},
+				new ConcreteworkBreakdownLine { ComponentName="Concrete grade 30", Quantity=concreteGradeQty, Unit="m3", UnitPrice=netCostPerm3, TotalPrice=concreteGradeQty * netCostPerm3},
                 new ConcreteworkBreakdownLine { ComponentName="Reinforcement", Quantity=precastRebarQty, Unit="Tonne/m3", UnitPrice=netCostPerTon, TotalPrice=precastRebarCost},
                 new ConcreteworkBreakdownLine { ComponentName="Formwork", Quantity=precastWoodQty, Unit="m2/m3", UnitPrice=netWoodCostPerM2, TotalPrice=precastWoodCost},
-                new ConcreteworkBreakdownLine { ComponentName="Material cost", Quantity=1, Unit="", TotalPrice=precastTotal },
-			
+                new ConcreteworkBreakdownLine { ComponentName="Material cost", Quantity=materialCostQty, Unit="", TotalPrice=precastTotal },
+
 				//LABOUR CUTTING AND FIXING
-				new ConcreteworkBreakdownLine { ComponentName="Mixing - as before calculated", Quantity=1, Unit="lot/m3", UnitPrice=totalPreCastMixingCost, TotalPrice=totalPreCastMixingCost},
-                new ConcreteworkBreakdownLine { ComponentName="Placing - as before calculated", Quantity=1, Unit="lot/m3", UnitPrice=totalPlacingPrecastCrewCost, TotalPrice=totalPlacingPrecastCrewCost},
+				new ConcreteworkBreakdownLine { ComponentName="Mixing - as before calculated", Quantity=mixingPrecastQty, Unit="lot/m3", UnitPrice=totalPreCastMixingCost, TotalPrice=mixingPrecastQty * totalPreCastMixingCost},
+                new ConcreteworkBreakdownLine { ComponentName="Placing - as before calculated", Quantity=placingPrecastQty, Unit="lot/m3", UnitPrice=totalPlacingPrecastCrewCost, TotalPrice=placingPrecastQty * totalPlacingPrecastCrewCost},
 
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Labour", Quantity=1, Unit="lot/m3", TotalPrice=totalPrecastLabour },
 
@@ -3054,32 +3203,33 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem28()
         {
+            double cuttingWasteQty = UserRateEditStore.Current.Qty(SectionKey, 28, "Add cutting waste.", 6);
+
             //MATERIAL COST
-            double plyWoodLengthPerm2 = 0.35;
+            double plyWoodLengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 28, "18mm plywood", 0.35);
             double boardPrice = GetMaterialPrice("3/4\"x4x8'(18x1200x2400mm)");
             double totalBoardPrice = boardPrice * plyWoodLengthPerm2;
 
-            double propsAndBraceLengthPerm2 = 1.56;
+            double propsAndBraceLengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 28, "50 x 75mm props and braces.", 1.56);
             double propsAndBracePrice = GetMaterialPrice("2x3\"x12' (50x75x3600mm)");
             double totalpropsAndBracePrice = propsAndBraceLengthPerm2 * propsAndBracePrice;
 
-            double propsAndBrace2LengthPerm2 = 2.25;
+            double propsAndBrace2LengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 28, "50 x 50mm, props and braces.", 2.25);
             double propsAndBrace2Price = GetMaterialPrice("2x2\"x12' (50x50x3600mm)");
             double totalpropsAndBrace2Price = propsAndBrace2LengthPerm2 * propsAndBrace2Price;
             double totalWoodPrice = totalBoardPrice + totalpropsAndBracePrice + totalpropsAndBrace2Price;
 
-            double wastePerM2 = 5;
-            double cuttingWaste = totalWoodPrice * (wastePerM2 / 100);
+            double cuttingWaste = totalWoodPrice * (cuttingWasteQty / 100);
             double subTotalWoodPrice = totalWoodPrice + cuttingWaste;
 
-            double nailFirstUse = 0.5;
-            double nailFiveUse = 0.125 * 5;
-            double nailSixUse = nailFirstUse + nailFiveUse;
+            double nailFirstUse = UserRateEditStore.Current.Qty(SectionKey, 28, "Allow for nails: first use", 0.5);
+            double nailFiveUse = UserRateEditStore.Current.Qty(SectionKey, 28, "Allow for nails for 5 subsequent  uses.", 0.125 * 5);
+            double nailSixUse = UserRateEditStore.Current.Qty(SectionKey, 28, "Nails for 6 uses.", nailFirstUse + nailFiveUse);
             double nailPrice = GetMaterialPrice("Nails 4\"") / 25;
             double totalNailPrice = nailPrice * nailSixUse;
 
-            double mouldOilSingleUse = 0.27;
-            double mouldOilSixUse = mouldOilSingleUse * 6;
+            double mouldOilSingleUse = UserRateEditStore.Current.Qty(SectionKey, 28, "Allow for mould oil", 0.27);
+            double mouldOilSixUse = UserRateEditStore.Current.Qty(SectionKey, 28, "Mould oil for 6 uses", mouldOilSingleUse * 6);
             double mouldOilPrice = GetMaterialPrice("Mould oil") / 4;
             double totalMouldOilPrice = mouldOilPrice * mouldOilSixUse;
 
@@ -3087,14 +3237,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double materialCostPerUse = totalMaterialCost / 6;
 
             //LABOUR COST
-            double carpenterDurationPerFirstUse = 1.62;
-            double carpenterDurationPerFiveUse = 1.13 * 5;
+            double carpenterDurationPerFirstUse = UserRateEditStore.Current.Qty(SectionKey, 28, "Carpenter hours", 1.62);
+            double carpenterDurationPerFiveUse = UserRateEditStore.Current.Qty(SectionKey, 28, "Carpenter time for 5 repetitive use-times.", 1.13 * 5);
             double totalCarpentaDurationPer6Use = Math.Round(carpenterDurationPerFirstUse + carpenterDurationPerFiveUse, 2);
             double carpenterCostPerHr = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalCarpenterCost = totalCarpentaDurationPer6Use * carpenterCostPerHr;
 
-            double labourDurationPerFirstUse = 1.62;
-            double labourDurationPerFiveUse = 1.13 * 5;
+            double labourDurationPerFirstUse = UserRateEditStore.Current.Qty(SectionKey, 28, "Labour hours", 1.62);
+            double labourDurationPerFiveUse = UserRateEditStore.Current.Qty(SectionKey, 28, "Labour time for 5 repetitive use-times.", 1.13 * 5);
             double totalLabourDurationPer6Use = Math.Round(labourDurationPerFirstUse + labourDurationPerFiveUse, 2);
             double labourCostPerHr = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalLabourCost = totalLabourDurationPer6Use * labourCostPerHr;
@@ -3119,7 +3269,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="50 x 75mm props and braces.", Quantity=propsAndBraceLengthPerm2, Unit="Length/m2",UnitPrice=propsAndBracePrice, TotalPrice=totalpropsAndBracePrice },
                 new ConcreteworkBreakdownLine { ComponentName="50 x 50mm, props and braces.", Quantity=propsAndBrace2LengthPerm2, Unit="Length/m2", UnitPrice=propsAndBrace2Price, TotalPrice=totalpropsAndBrace2Price },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Wood Per Length", Quantity=1, Unit="", TotalPrice=totalWoodPrice },
-                new ConcreteworkBreakdownLine { ComponentName="Add cutting waste.", Quantity=6, Unit="%",  TotalPrice=cuttingWaste},
+                new ConcreteworkBreakdownLine { ComponentName="Add cutting waste.", Quantity=cuttingWasteQty, Unit="%",  TotalPrice=cuttingWaste},
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total:", Quantity=1, Unit="", TotalPrice=subTotalWoodPrice },
 
                 new ConcreteworkBreakdownLine { ComponentName="Allow for nails: first use", Quantity=nailFirstUse, Unit="kg", },
@@ -3131,7 +3281,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
                 new ConcreteworkBreakdownLine { ComponentName="Total material cost in formwork per m2", Quantity=1, Unit="", TotalPrice=totalMaterialCost },
                 new ConcreteworkBreakdownLine { ComponentName="Total allowing for repetitive use.", Quantity=1, Unit="", TotalPrice=materialCostPerUse },
-			
+
 				//LABOUR CUTTING AND FIXING
 				new ConcreteworkBreakdownLine { ComponentName="Carpenter hours", Quantity=carpenterDurationPerFirstUse, Unit="hr/m2", },
                 new ConcreteworkBreakdownLine { ComponentName="Carpenter time for 5 repetitive use-times.", Quantity=carpenterDurationPerFiveUse, Unit="hr/m2", },
@@ -3165,6 +3315,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem29()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 29, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 29, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("EMACO S88CA (imported shrinkage compensated cement for concrete repair)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -3172,9 +3325,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 10.8;
-            double sandPerM3 = 0.38;
-            double stonePerM3 = 0.75;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 29, "Emaco S88CA Cement", 10.8);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 29, "Sand", 0.38);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 29, "Granite (including transportation)", 0.75);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -3183,7 +3336,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -3202,26 +3355,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 9;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 29, "Mixing crew - labour.", 9);
             double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 29, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)") / 8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 12;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 29, "Placing crew - labour.", 12);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 29, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 29, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -3238,14 +3391,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
-			
+
 				//PLACING
 				new ConcreteworkBreakdownLine { ComponentName="Poker vibrator", Quantity=pokerVibratorDurationPerM3, Unit="hr/m3", UnitPrice=pokerVibratorCost, TotalPrice=totalPokerVibratorCost },
                 new ConcreteworkBreakdownLine { ComponentName="Placing crew - labour.", Quantity=placingCrewPerHr, Unit="per Hr", UnitPrice=placingCrewCost, TotalPrice=totalPlacingCrewCost },
@@ -3271,6 +3424,8 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem30()
         {
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 30, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -3278,10 +3433,10 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             //double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 28.82;
-            double sandPerM3 = 10;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 30, "Cement", 28.82);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 30, "Sand", 10);
             //double stonePerM3 = 0.75;
-            double wastePer = 25;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 30, "Add for waste.", 25);
 
             double cementCost = cementPerM3 * cementPrice;
             double cementLoadingCost = cementLoadingPrice * cementPerM3;
@@ -3311,7 +3466,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double netCostPerUse = costPerHr / volPerHr;
 
 
-            double netCostPerm3 = materialCostPerCum + netCostPerUse;
+            double netCostPerm3 = materialCostPerCum + (plantLabourQty * netCostPerUse);
 
             var ohp = ApplyOHP(netCostPerm3);
 
@@ -3324,9 +3479,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material cost per m3", Quantity=1, Unit="m3", TotalPrice=materialCostPerCum },
-			
+
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="", TotalPrice=netCostPerUse },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="", TotalPrice=plantLabourQty * netCostPerUse },
 
 
                 new ConcreteworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m3", TotalPrice=netCostPerm3 },
@@ -3346,6 +3501,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
         }
         private ConcreteworkItem ComputeItem31()
         {
+            double wasteQty = UserRateEditStore.Current.Qty(SectionKey, 31, "Add for waste.", 1);
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 31, "Cost of plant and labour as before calculated.", 1);
+
             //MATERIAL COST
             double cementPrice = GetMaterialPrice("Cement (50kg bag)");
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
@@ -3353,9 +3511,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stonePrice = GetMaterialPrice("Washed gravel (local)");
             //double stonePrice = GetMaterialPrice("15-25mm") + GetMaterialPrice("Hardcore filling") * 0.474;
 
-            double cementPerM3 = 24;
-            double sandPerM3 = 0.21;
-            double stonePerM3 = 0.43;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 31, "Cement", 24);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 31, "Sand", 0.21);
+            double stonePerM3 = UserRateEditStore.Current.Qty(SectionKey, 31, "Granite (including transportation)", 0.43);
             double wastePer = 5;
 
             double cementCost = cementPerM3 * cementPrice;
@@ -3364,7 +3522,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double stoneCost = stonePerM3 * stonePrice;
 
             double totalMaterialCost = cementCost + cementLoadingCost + sandCost + stoneCost;
-            double waste = totalMaterialCost * (wastePer / 100);
+            double waste = wasteQty * totalMaterialCost * (wastePer / 100);
             double finalMaterialCost = totalMaterialCost + waste;
 
             //LABOUR COST
@@ -3383,26 +3541,26 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double volPerHr = 5.66;
             double plantCostPerm3 = costPerHr / volPerHr;
 
-            double mixingCrewduration = 9;
+            double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 31, "Mixing crew - labour.", 9);
             double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
-            double finalMixing = plantCostPerm3 + totalMixingCost;
+            double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
 
             //PLACING AND FINISHING COST
-            double pokerVibratorDurationPerM3 = 0.24;
+            double pokerVibratorDurationPerM3 = UserRateEditStore.Current.Qty(SectionKey, 31, "Poker vibrator", 0.24);
             double pokerVibratorCost = GetLabourRate("Poker vibrator (mechanical)") / 8;
             double totalPokerVibratorCost = pokerVibratorDurationPerM3 * pokerVibratorCost;
 
-            double placingCrewPerHr = 12;
+            double placingCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 31, "Placing crew - labour.", 12);
             double placingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalPlacingCrewCost = placingCrewCost * placingCrewPerHr;
 
-            double masonCrewPerHr = 2;
+            double masonCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 31, "Mason.", 2);
             double masonCrewCost = ((GetLabourRate("Skilled/Artisan") / 8) * 1.4);
             double totalMasonCrewCost = masonCrewCost * masonCrewPerHr;
 
-            double headmanCrewPerHr = 1;
+            double headmanCrewPerHr = UserRateEditStore.Current.Qty(SectionKey, 31, "Headman", 1);
             double headmanCrewCost = ((GetLabourRate("Headman") / 8) * 1.4);
             double totalHeadmanCrewCost = headmanCrewCost * headmanCrewPerHr;
 
@@ -3419,14 +3577,14 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
                 new ConcreteworkBreakdownLine { ComponentName="Loading and Unloading cement", Quantity=cementPerM3, Unit="bag/m3", UnitPrice=cementLoadingPrice, TotalPrice=cementLoadingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sand", Quantity=sandPerM3, Unit="m3", UnitPrice=sandPrice, TotalPrice=sandCost},
                 new ConcreteworkBreakdownLine { ComponentName="Granite (including transportation)", Quantity=stonePerM3, Unit="m3", UnitPrice=stonePrice, TotalPrice=stoneCost },
-                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=1, Unit="5%", TotalPrice=waste },
+                new ConcreteworkBreakdownLine { ComponentName="Add for waste.", Quantity=wasteQty, Unit="5%", TotalPrice=waste },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Material Per m3", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
-			
+
 				//MIXING
-				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantCostPerm3 },
+				new ConcreteworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="m3/hr", UnitPrice=plantCostPerm3, TotalPrice=plantLabourQty * plantCostPerm3 },
                 new ConcreteworkBreakdownLine { ComponentName="Mixing crew - labour.", Quantity=mixingCrewduration, Unit="per Hr", UnitPrice=mixingCrewCost, TotalPrice=totalMixingCost },
                 new ConcreteworkBreakdownLine { ComponentName="Sub-total: Mixing Per m3", Quantity=1, Unit="", TotalPrice=finalMixing },
-			
+
 				//PLACING
 				new ConcreteworkBreakdownLine { ComponentName="Poker vibrator", Quantity=pokerVibratorDurationPerM3, Unit="hr/m3", UnitPrice=pokerVibratorCost, TotalPrice=totalPokerVibratorCost },
                 new ConcreteworkBreakdownLine { ComponentName="Placing crew - labour.", Quantity=placingCrewPerHr, Unit="per Hr", UnitPrice=placingCrewCost, TotalPrice=totalPlacingCrewCost },

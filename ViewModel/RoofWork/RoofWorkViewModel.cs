@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -136,6 +137,18 @@ namespace ADLMRateGen.ViewModel.RoofWork
                 if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
                     RecomputeAll();
             };
+
+            UserRateEditStore.Current.OverridesChanged += (_, __) =>
+            {
+                void Refresh()
+                {
+                    var nos = RoofWorkItems.Select(i => i.ItemNo).ToList();
+                    foreach (var n in nos) RecomputeItemInPlace(n);
+                }
+                var disp = System.Windows.Application.Current?.Dispatcher;
+                if (disp == null || disp.CheckAccess()) Refresh();
+                else disp.BeginInvoke((Action)Refresh);
+            };
         }
 
         /* -------------------- API LOADERS -------------------- */
@@ -226,6 +239,38 @@ namespace ADLMRateGen.ViewModel.RoofWork
         {
             RoofWorkItems.Clear();
             BuildRoofworkItem();
+            RoofworkCollectionView?.Refresh();
+        }
+
+        public void RecomputeItemInPlace(int itemNo)
+        {
+            var existing = RoofWorkItems.FirstOrDefault(i => i.ItemNo == itemNo);
+            if (existing == null) return;
+
+            Func<RoofWorkItem>[] all =
+            {
+                ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6,
+                ComputeItem7, ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12,
+                ComputeItem13, ComputeItem14, ComputeItem15, ComputeItem16
+            };
+
+            RoofWorkItem? fresh = null;
+            foreach (var fn in all)
+            {
+                var candidate = fn();
+                if (candidate.ItemNo == itemNo) { fresh = candidate; break; }
+            }
+            if (fresh == null) return;
+
+            existing.NetCost = fresh.NetCost;
+            existing.OverheadValue = fresh.OverheadValue;
+            existing.ProfitValue = fresh.ProfitValue;
+            existing.TotalCost = fresh.TotalCost;
+
+            existing.RoofWorkBreakdownLines.Clear();
+            foreach (var line in fresh.RoofWorkBreakdownLines)
+                existing.RoofWorkBreakdownLines.Add(line);
+
             RoofworkCollectionView?.Refresh();
         }
 
@@ -479,11 +524,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("3 1/2x6' (1050mm x 1800mm x 4mm thick)");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = 1.61;
-            double boltQty = 4;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 1, "Sheeting (975 x 1650)", 1.61);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Bolts", 4);
 
-            double wastePer = 30;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 1, "Add for waste and laps.", 30);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 1, "Add for waste on bolts/screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -497,16 +542,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate+ carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.3;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 1, "Total Gang Cost per m2", 0.3);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -561,11 +606,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("3 1/2x8' (1050mm x 2400mm x 4mm thick)");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = 2.19;
-            double boltQty = 4;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 2, "Sheeting (975 x 2250)", 2.19);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Bolts", 4);
 
-            double wastePer = 30;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 2, "Add for waste and laps.", 30);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 2, "Add for waste on bolts/screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -579,16 +624,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.3;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 2, "Total Gang Cost per m2", 0.3);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -640,11 +685,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("Two piece flat wing ridges, 1055mm long");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = 0.905;
-            double boltQty = 4;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 3, "Ridge capping 1070mm long.", 0.905);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Drive screws", 4);
 
             //double wastePer = 30;
-            double boltWastePer = 5;
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 3, "Add for waste on screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             //double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -658,16 +703,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.25;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 3, "Total Gang Cost per m2", 0.25);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -719,11 +764,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("Two piece corrugated wing ridges, 1055mm long");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = 0.905;
-            double boltQty = 4;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 4, "Ridge capping 1055mm long.", 0.905);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Drive screws", 4);
 
             //double wastePer = 30;
-            double boltWastePer = 5;
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 4, "Add for waste on screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             //double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -737,16 +782,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.25;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 4, "Total Gang Cost per m2", 0.25);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -798,11 +843,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("3 1/2x8' (1097mm x 2400mm x 4.5mm thick)");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = 2.36;
-            double boltQty = 5;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 5, "Sheeting (1050 x 2250)", 2.36);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Bolts", 5);
 
-            double wastePer = 30;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 5, "Add for waste and laps.", 30);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 5, "Add for waste on bolts/screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -816,16 +861,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.3;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 5, "Total Gang Cost per m2", 0.3);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -878,11 +923,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("3 1/2x6' (1097mm x 1800mm x 4.5mm thick)");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = 2.19;
-            double boltQty = 5;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 6, "Sheeting (1050 x 1650)", 2.19);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Bolts", 5);
 
-            double wastePer = 30;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 6, "Add for waste and laps.", 30);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 6, "Add for waste on bolts/screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -896,16 +941,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.3;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 6, "Total Gang Cost per m2", 0.3);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -957,11 +1002,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("One piece flat wing ridges, 1650mm long");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = 0.905;
-            double boltQty = 5;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 7, "Ridge capping 1070mm long.", 0.905);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Drive screws", 5);
 
             //double wastePer = 30;
-            double boltWastePer = 5;
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 7, "Add for waste on screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             //double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -975,16 +1020,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.25;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 7, "Total Gang Cost per m2", 0.25);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -1036,11 +1081,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("Two piece corrugated wing ridges, 1187mm long");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = 0.905;
-            double boltQty = 5;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 7, "Ridge capping 1055mm long.", 0.905);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Drive screws", 5);
 
             //double wastePer = 30;
-            double boltWastePer = 5;
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 7, "Add for waste on screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             //double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -1054,16 +1099,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.25;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 7, "Total Gang Cost per m2", 0.25);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -1115,11 +1160,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("0.70mm (22SWG) sheet, Stucco mill");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = .9;
-            double boltQty = 4;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 9, "Material cost (900mm wide)", .9);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Bolts", 4);
 
-            double wastePer = 22;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 9, "Add for waste and laps.", 22);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 9, "Add for waste on bolts/screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -1133,16 +1178,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.25;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 9, "Total Gang Cost per m", 0.25);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -1195,11 +1240,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("0.70mm (22SWG) sheet, Stucco mill");
             double boltCost = GetMaterialPrice("Hook Bolts (Roof Manufacturer's Specification)");
 
-            double sheetArea = .9;
-            double boltQty = 6;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 10, "Material cost (900mm wide)", .9);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Hook bolts", 6);
 
-            double wastePer = 22;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 10, "Add for waste and laps.", 22);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 10, "Add for waste on screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -1213,16 +1258,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.25;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 10, "Total Gang Cost per m", 0.25);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -1275,11 +1320,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("0.70mm (22SWG) sheet, coloured");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = .9;
-            double boltQty = 4;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 11, "Material cost (900mm wide)", .9);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Drive screws", 4);
 
-            double wastePer = 22;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 11, "Add for waste and laps.", 22);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 11, "Add for waste on screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -1293,16 +1338,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.25;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 11, "Total Gang Cost per m", 0.25);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -1355,11 +1400,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("0.70mm (22SWG) sheet, coloured");
             double boltCost = GetMaterialPrice("Hook Bolts (Roof Manufacturer's Specification)");
 
-            double sheetArea = .9;
-            double boltQty = 6;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 12, "Material cost (900mm wide)", .9);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Drive screws", 6);
 
-            double wastePer = 22;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 12, "Add for waste and laps.", 22);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 12, "Add for waste on screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -1373,16 +1418,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.25;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 12, "Total Gang Cost per m", 0.25);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -1435,11 +1480,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double primerCost = GetMaterialPrice("Imper 66 primer")/200;
             double parallonCost = GetMaterialPrice("Water proof membrane - parallon NT4 (10 x 1m)")/10;
 
-            double primerQty = 1;
-            double parallonQty = 1;
+            double primerQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Place primer to horizontal surface", 1);
+            double parallonQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Place and apply  parallon NT4 membrane", 1);
 
-            double primerPer = 5;
-            double parallonWastePer = 5;
+            double primerPer = UserRateEditStore.Current.Qty(SectionKey, 13, "Add waste.", 5);
+            double parallonWastePer = UserRateEditStore.Current.Qty(SectionKey, 13, "Add waste.", 5);
 
             double primerRate = primerCost*primerQty;
             double primerWaste = primerRate * (primerPer / 100);
@@ -1452,22 +1497,22 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double gasTorchCost = GetLabourRate("Gas torch and 50 or 70mm burner.");
             double gasCylinderCost = GetMaterialPrice("Gas (13 kg Cylinder)");
 
-            double gasTorchQty = 1;
-            double gasCylinderQty = 7;
+            double gasTorchQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Gas Torch / Burner.", 1);
+            double gasCylinderQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Gas  (13 kg cylinder)", 7);
 
             double gasTouchRate = gasTorchCost*gasTorchQty;
             double gasCylinderRate = gasCylinderCost * gasCylinderQty;
 
             double totalPlantPerDay = gasTouchRate + gasCylinderRate;
             double totalPlantPerHr = totalPlantPerDay / 8;
-            double plantOutputPerHr = 9;
+            double plantOutputPerHr = UserRateEditStore.Current.Qty(SectionKey, 13, "Total Plant Cost per Output", 9);
 
             double plantCost = totalPlantPerHr / plantOutputPerHr;
 
             //LABOUR COST
             double labourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
 
-            double labourOutput = .11;
+            double labourOutput = UserRateEditStore.Current.Qty(SectionKey, 13, "Labour laying - skilled layer", .11);
 
             double labourRate = labourCost * labourOutput;
 
@@ -1520,11 +1565,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("Swan size 1.8 x 900mm")/20;
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = 2.19;
-            double boltQty = 4;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 14, "Sheeting (975 x 2250)", 2.19);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Drive screws", 4);
 
-            double wastePer = 30;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 14, "Add for waste and laps.", 30);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 14, "Add for waste on bolts/screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -1539,15 +1584,15 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
             //double headmanQty = 1;
-            double carpenterQty = 2;
-            double labourQty = 2;
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Tradesman (Carpenter)", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Labour", 2);
 
             //double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.3;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 14, "Total Gang Cost per m2", 0.3);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -1599,11 +1644,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("0.55mm (24SWG) sheet, Stucco mill");
             double boltCost = GetMaterialPrice("Drive Screws/Roofing Nails");
 
-            double sheetArea = .9;
-            double boltQty = 4;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 15, "Material cost (900mm wide)", .9);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Drive screws", 4);
 
-            double wastePer = 22;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 15, "Add for waste and laps.", 22);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 15, "Add for waste on screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -1617,16 +1662,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.25;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 15, "Total Gang Cost per m", 0.25);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 
@@ -1680,11 +1725,11 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double sheetCost = GetMaterialPrice("0.55mm (24SWG) sheet, Stucco mill");
             double boltCost = GetMaterialPrice("Hook Bolts (Roof Manufacturer's Specification)");
 
-            double sheetArea = .9;
-            double boltQty = 6;
+            double sheetArea = UserRateEditStore.Current.Qty(SectionKey, 16, "Material cost (900mm wide)", .9);
+            double boltQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Drive screws", 6);
 
-            double wastePer = 22;
-            double boltWastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 16, "Add for waste and laps.", 22);
+            double boltWastePer = UserRateEditStore.Current.Qty(SectionKey, 16, "Add for waste on screws", 5);
 
             double sheetCostPerSqm = sheetCost / sheetArea;
             double sheetWaste = sheetCostPerSqm * (wastePer / 100);
@@ -1698,16 +1743,16 @@ namespace ADLMRateGen.ViewModel.RoofWork
             double carpenterLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double headmanQty = 1;
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Labour", 1);
 
             double headmanRate = headmanCost * headmanQty;
             double carpenterLabourRate = carpenterLabourCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double labourPerHr = headmanRate + carpenterLabourRate + labourRate;
-            double labourSqmPerHr = 0.25;
+            double labourSqmPerHr = UserRateEditStore.Current.Qty(SectionKey, 16, "Total Gang Cost per m", 0.25);
 
             double labourPerSqm = labourPerHr * labourSqmPerHr;
 

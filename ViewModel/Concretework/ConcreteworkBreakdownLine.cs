@@ -62,5 +62,9 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 					&& ComponentName.IndexOf("total", StringComparison.OrdinalIgnoreCase) >= 0;
 			}
 		}
+
+		/// <summary>True when the Quantity cell should accept user edits in the breakdown popup.
+		/// Sub-total / total rows are read-only (they are computed sums).</summary>
+		public bool IsEditableQuantity => !IsTotalLine;
 	}
 }

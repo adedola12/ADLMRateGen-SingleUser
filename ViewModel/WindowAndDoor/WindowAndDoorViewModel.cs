@@ -7,6 +7,7 @@ using ADLMRateGen.ViewModel.CustomRate;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -131,6 +132,18 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
                 if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
                     RecomputeAll();
             };
+
+            UserRateEditStore.Current.OverridesChanged += (_, __) =>
+            {
+                void Refresh()
+                {
+                    var nos = WindowAndDoorItems.Select(i => i.ItemNo).ToList();
+                    foreach (var n in nos) RecomputeItemInPlace(n);
+                }
+                var disp = System.Windows.Application.Current?.Dispatcher;
+                if (disp == null || disp.CheckAccess()) Refresh();
+                else disp.BeginInvoke((Action)Refresh);
+            };
         }
 
         // ✅ Same as GroundWorkViewModel: show cached first, then refresh from API
@@ -219,6 +232,37 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         {
             WindowAndDoorItems.Clear();
             BuildWindowAndDoorItem();
+            WindowAndDoorCollectionView?.Refresh();
+        }
+
+        public void RecomputeItemInPlace(int itemNo)
+        {
+            var existing = WindowAndDoorItems.FirstOrDefault(i => i.ItemNo == itemNo);
+            if (existing == null) return;
+
+            Func<WindowAndDoorItem>[] all =
+            {
+                ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6,
+                ComputeItem7, ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12
+            };
+
+            WindowAndDoorItem? fresh = null;
+            foreach (var fn in all)
+            {
+                var candidate = fn();
+                if (candidate.ItemNo == itemNo) { fresh = candidate; break; }
+            }
+            if (fresh == null) return;
+
+            existing.NetCost = fresh.NetCost;
+            existing.OverheadValue = fresh.OverheadValue;
+            existing.ProfitValue = fresh.ProfitValue;
+            existing.TotalCost = fresh.TotalCost;
+
+            existing.WindowAndDoorBreakdownLines.Clear();
+            foreach (var line in fresh.WindowAndDoorBreakdownLines)
+                existing.WindowAndDoorBreakdownLines.Add(line);
+
             WindowAndDoorCollectionView?.Refresh();
         }
 
@@ -468,18 +512,18 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         private WindowAndDoorItem ComputeItem1()
         {
             double windowCost = GetMaterialPrice("Window size 1800 x 1200mm high");
-            double windowQty = 1;
-            double transportPer = 5;
+            double windowQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Window size 1800 x 1200mm high.", 1);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 1, "Add for Transportation to site and handling", 5);
 
             double windowRate = windowCost * windowQty;
             double windowTransport = windowRate * (transportPer / 100);
             double totalMaterialCost = windowRate + windowTransport;
 
             double glazierLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
-            double glazierLabourQty = 2;
+            double glazierLabourQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Tradesman (Glaziers)", 2);
             double glazierLabourRate = glazierLabourCost * glazierLabourQty;
 
-            double outputPerWindow = 1.5;
+            double outputPerWindow = UserRateEditStore.Current.Qty(SectionKey, 1, "Time per window.", 1.5);
             double labourPerwindow = glazierLabourRate * outputPerWindow;
 
             double netCostPerWindow = totalMaterialCost + labourPerwindow;
@@ -512,18 +556,18 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         private WindowAndDoorItem ComputeItem2()
         {
             double windowCost = GetMaterialPrice("Window size 1200 x 1200mm high");
-            double windowQty = 1;
-            double transportPer = 5;
+            double windowQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Window size 1200 x 1200mm high.", 1);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 2, "Add for Transportation to site and handling", 5);
 
             double windowRate = windowCost * windowQty;
             double windowTransport = windowRate * (transportPer / 100);
             double totalMaterialCost = windowRate + windowTransport;
 
             double glazierLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
-            double glazierLabourQty = 2;
+            double glazierLabourQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Tradesman (Glaziers)", 2);
             double glazierLabourRate = glazierLabourCost * glazierLabourQty;
 
-            double outputPerWindow = 1.5;
+            double outputPerWindow = UserRateEditStore.Current.Qty(SectionKey, 2, "Time per window.", 1.5);
             double labourPerwindow = glazierLabourRate * outputPerWindow;
 
             double netCostPerWindow = totalMaterialCost + labourPerwindow;
@@ -556,18 +600,18 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         private WindowAndDoorItem ComputeItem3()
         {
             double windowCost = GetMaterialPrice("Window size 2400 x 1200mm high");
-            double windowQty = 1;
-            double transportPer = 5;
+            double windowQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Window size 2400 x 1200mm high.", 1);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 3, "Add for Transportation to site and handling", 5);
 
             double windowRate = windowCost * windowQty;
             double windowTransport = windowRate * (transportPer / 100);
             double totalMaterialCost = windowRate + windowTransport;
 
             double glazierLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
-            double glazierLabourQty = 2;
+            double glazierLabourQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Tradesman (Glaziers)", 2);
             double glazierLabourRate = glazierLabourCost * glazierLabourQty;
 
-            double outputPerWindow = 2.25;
+            double outputPerWindow = UserRateEditStore.Current.Qty(SectionKey, 3, "Time per window.", 2.25);
             double labourPerwindow = glazierLabourRate * outputPerWindow;
 
             double netCostPerWindow = totalMaterialCost + labourPerwindow;
@@ -600,18 +644,18 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         private WindowAndDoorItem ComputeItem4()
         {
             double windowCost = GetMaterialPrice("Window size 900 x 600mm high");
-            double windowQty = 1;
-            double transportPer = 5;
+            double windowQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Window size 900 x 600mm high.", 1);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 4, "Add for Transportation to site and handling", 5);
 
             double windowRate = windowCost * windowQty;
             double windowTransport = windowRate * (transportPer / 100);
             double totalMaterialCost = windowRate + windowTransport;
 
             double glazierLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
-            double glazierLabourQty = 2;
+            double glazierLabourQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Tradesman (Glaziers)", 2);
             double glazierLabourRate = glazierLabourCost * glazierLabourQty;
 
-            double outputPerWindow = 0.75;
+            double outputPerWindow = UserRateEditStore.Current.Qty(SectionKey, 4, "Time per window.", 0.75);
             double labourPerwindow = glazierLabourRate * outputPerWindow;
 
             double netCostPerWindow = totalMaterialCost + labourPerwindow;
@@ -644,18 +688,18 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         private WindowAndDoorItem ComputeItem5()
         {
             double doorCost = GetMaterialPrice("Single swing door size 900 x 2100mm high (Clear Sheet Glazing)");
-            double qty = 1;
-            double transportPer = 5;
+            double qty = UserRateEditStore.Current.Qty(SectionKey, 5, "Single swing door size 900 x 2100mm high (Clear Sheet Glazing)", 1);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 5, "Add for Transportation to site and handling", 5);
 
             double rate = doorCost * qty;
             double transport = rate * (transportPer / 100);
             double totalMaterialCost = rate + transport;
 
             double glazierLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
-            double glazierLabourQty = 2;
+            double glazierLabourQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Tradesman (Glaziers)", 2);
             double glazierLabourRate = glazierLabourCost * glazierLabourQty;
 
-            double time = 1.5;
+            double time = UserRateEditStore.Current.Qty(SectionKey, 5, "Time per door.", 1.5);
             double labour = glazierLabourRate * time;
 
             double net = totalMaterialCost + labour;
@@ -688,18 +732,18 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         private WindowAndDoorItem ComputeItem6()
         {
             double doorCost = GetMaterialPrice("Double leaf single swing door size 1500 x 2100mm high (Clear Sheet Glazing)");
-            double qty = 1;
-            double transportPer = 5;
+            double qty = UserRateEditStore.Current.Qty(SectionKey, 6, "Double leaf single swing door size 1500 x 2100mm high (Clear Sheet Glazing)", 1);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 6, "Add for Transportation to site and handling", 5);
 
             double rate = doorCost * qty;
             double transport = rate * (transportPer / 100);
             double totalMaterialCost = rate + transport;
 
             double glazierLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
-            double glazierLabourQty = 2;
+            double glazierLabourQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Tradesman (Glaziers)", 2);
             double glazierLabourRate = glazierLabourCost * glazierLabourQty;
 
-            double time = 1.65;
+            double time = UserRateEditStore.Current.Qty(SectionKey, 6, "Time per door.", 1.65);
             double labour = glazierLabourRate * time;
 
             double net = totalMaterialCost + labour;
@@ -732,18 +776,18 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         private WindowAndDoorItem ComputeItem7()
         {
             double doorCost = GetMaterialPrice("Double leaf single swing door size 1800 x 2100mm high (Clear Sheet Glazing)");
-            double qty = 1;
-            double transportPer = 5;
+            double qty = UserRateEditStore.Current.Qty(SectionKey, 7, "Double leaf single swing door size 1800 x 2100mm high (Clear Sheet Glazing)", 1);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 7, "Add for Transportation to site and handling", 5);
 
             double rate = doorCost * qty;
             double transport = rate * (transportPer / 100);
             double totalMaterialCost = rate + transport;
 
             double glazierLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
-            double glazierLabourQty = 2;
+            double glazierLabourQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Tradesman (Glaziers)", 2);
             double glazierLabourRate = glazierLabourCost * glazierLabourQty;
 
-            double time = 1.75;
+            double time = UserRateEditStore.Current.Qty(SectionKey, 7, "Time per door.", 1.75);
             double labour = glazierLabourRate * time;
 
             double net = totalMaterialCost + labour;
@@ -776,8 +820,8 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         private WindowAndDoorItem ComputeItem8()
         {
             double doorCost = GetMaterialPrice("44mm Solid core flush door (900 x 2100mm)");
-            double qty = 1;
-            double transportPer = 5;
+            double qty = UserRateEditStore.Current.Qty(SectionKey, 8, "44mm Double faced paneled door (900 x 2100mm)", 1);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 8, "Add for Transportation to site and handling", 5);
 
             double rate = doorCost * qty;
             double transport = rate * (transportPer / 100);
@@ -786,15 +830,15 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
             double carpenterCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Labour", 1);
 
             double carpenterRate = carpenterCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double totalLabourCost = carpenterRate + labourRate;
 
-            double time = 0.83;
+            double time = UserRateEditStore.Current.Qty(SectionKey, 8, "Time per door.", 0.83);
             double labour = totalLabourCost * time;
 
             double net = totalMaterialCost + labour;
@@ -828,8 +872,8 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         private WindowAndDoorItem ComputeItem9()
         {
             double doorCost = GetMaterialPrice("Door (750 x 2100mm)");
-            double qty = 1;
-            double transportPer = 5;
+            double qty = UserRateEditStore.Current.Qty(SectionKey, 9, "Ditto size (750 x 2100mm)", 1);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 9, "Add for Transportation to site and handling", 5);
 
             double rate = doorCost * qty;
             double transport = rate * (transportPer / 100);
@@ -838,15 +882,15 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
             double carpenterCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Labour", 1);
 
             double carpenterRate = carpenterCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double totalLabourCost = carpenterRate + labourRate;
 
-            double time = 0.83;
+            double time = UserRateEditStore.Current.Qty(SectionKey, 9, "Time per door.", 0.83);
             double labour = totalLabourCost * time;
 
             double net = totalMaterialCost + labour;
@@ -882,16 +926,16 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
             double frameCost = GetMaterialPrice("2x4\"x12' (50x100x4200mm)");
             double solignumCost = GetMaterialPrice("Solignum (normal)") / 12;
 
-            double frameQty = 1;
-            double solignumQty = 0.05 * 0.225 * 3.6;
-            double transportPer = 5;
+            double frameQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Frame size 50 x 225 x 3600mm", 1);
+            double solignumQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Allow for treating with solignum", 0.05 * 0.225 * 3.6);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 10, "Add for Transportation to site and handling", 5);
 
             double frameRate = frameCost * frameQty;
             double smoothingCost = solignumCost * .3;
             double frameTransport = frameRate * (transportPer / 100);
             double solignumRate = solignumCost * solignumQty;
 
-            double woodLength = 3.6;
+            double woodLength = UserRateEditStore.Current.Qty(SectionKey, 10, "Cost per m of frame", 3.6);
 
             double totalMaterialCost = frameRate + smoothingCost + frameTransport + solignumRate;
             double lengthPerM = totalMaterialCost / woodLength;
@@ -899,15 +943,15 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
             double carpenterCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Labour", 1);
 
             double carpenterRate = carpenterCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double totalLabourCost = carpenterRate + labourRate;
 
-            double time = 0.76;
+            double time = UserRateEditStore.Current.Qty(SectionKey, 10, "Time (converted to per m)", 0.76);
             double labourPerM = (totalLabourCost * time) / woodLength;
 
             double net = lengthPerM + labourPerM;
@@ -948,16 +992,16 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
             double frameCost = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
             double solignumCost = GetMaterialPrice("Solignum (normal)") / 12;
 
-            double frameQty = 1;
-            double solignumQty = 0.05 * 0.075 * 3.6;
-            double transportPer = 5;
+            double frameQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Architrave size 50 x 75 x 3600mm", 1);
+            double solignumQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Allow for treating with solignum", 0.05 * 0.075 * 3.6);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 11, "Add for Transportation to site and handling", 5);
 
             double frameRate = frameCost * frameQty;
             double smoothingCost = solignumCost * .3;
             double frameTransport = frameRate * (transportPer / 100);
             double solignumRate = solignumCost * solignumQty;
 
-            double woodLength = 3.6;
+            double woodLength = UserRateEditStore.Current.Qty(SectionKey, 11, "Cost per m of architrave", 3.6);
 
             double totalMaterialCost = frameRate + smoothingCost + frameTransport + solignumRate;
             double lengthPerM = totalMaterialCost / woodLength;
@@ -965,15 +1009,15 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
             double carpenterCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double carpenterQty = 1;
-            double labourQty = 1;
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Tradesman (Carpenter)", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Labour", 1);
 
             double carpenterRate = carpenterCost * carpenterQty;
             double labourRate = labourCost * labourQty;
 
             double totalLabourCost = carpenterRate + labourRate;
 
-            double time = 0.6;
+            double time = UserRateEditStore.Current.Qty(SectionKey, 11, "Time (converted to per m)", 0.6);
             double labourPerM = (totalLabourCost * time) / woodLength;
 
             double net = lengthPerM + labourPerM;
@@ -1014,18 +1058,18 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
         {
             // Simple placeholder for “Ironmongery set per door” (edit names to match your material library)
             double ironmongeryCost = GetMaterialPrice("Door ironmongery set");
-            double qty = 1;
-            double transportPer = 5;
+            double qty = UserRateEditStore.Current.Qty(SectionKey, 12, "Door ironmongery set", 1);
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 12, "Add for Transportation to site and handling", 5);
 
             double rate = ironmongeryCost * qty;
             double transport = rate * (transportPer / 100);
             double totalMaterialCost = rate + transport;
 
             double artisanCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
-            double artisanQty = 1;
+            double artisanQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Skilled/Artisan", 1);
             double gangRate = artisanCost * artisanQty;
 
-            double time = 0.5; // hrs/door
+            double time = UserRateEditStore.Current.Qty(SectionKey, 12, "Time per door", 0.5); // hrs/door
             double labour = gangRate * time;
 
             double net = totalMaterialCost + labour;

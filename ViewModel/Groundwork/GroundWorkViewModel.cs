@@ -6,6 +6,7 @@ using ADLMRateGen.ViewModel.ConcreteWork;
 using ADLMRateGen.ViewModel.CustomRate;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -125,7 +126,17 @@ namespace ADLMRateGen.ViewModel.Groundwork
 					RecomputeAll();                 // already clears & rebuilds everything
 			};
 
-
+			UserRateEditStore.Current.OverridesChanged += (_, __) =>
+			{
+				void Refresh()
+				{
+					var nos = GroundworkItems.Select(i => i.ItemNo).ToList();
+					foreach (var n in nos) RecomputeItemInPlace(n);
+				}
+				var disp = System.Windows.Application.Current?.Dispatcher;
+				if (disp == null || disp.CheckAccess()) Refresh();
+				else disp.BeginInvoke((Action)Refresh);
+			};
 
         }
 
@@ -236,6 +247,42 @@ namespace ADLMRateGen.ViewModel.Groundwork
         {
             GroundworkItems.Clear();
             BuildGroundWorkItems();
+            GroundworkCollectionView?.Refresh();
+        }
+
+        /// <summary>
+        /// Re-runs the matching ComputeItemN method for the supplied ItemNo and updates the
+        /// existing Item instance in place so the open popup keeps its DataContext binding live.
+        /// </summary>
+        public void RecomputeItemInPlace(int itemNo)
+        {
+            var existing = GroundworkItems.FirstOrDefault(i => i.ItemNo == itemNo);
+            if (existing == null) return;
+
+            Func<GroundworkItem>[] all =
+            {
+                ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6,
+                ComputeItem7, ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12,
+                ComputeItem13, ComputeItem14, ComputeItem15, ComputeItem16, ComputeItem17, ComputeItem18,
+            };
+
+            GroundworkItem? fresh = null;
+            foreach (var fn in all)
+            {
+                var candidate = fn();
+                if (candidate.ItemNo == itemNo) { fresh = candidate; break; }
+            }
+            if (fresh == null) return;
+
+            existing.NetCost = fresh.NetCost;
+            existing.OverheadValue = fresh.OverheadValue;
+            existing.ProfitValue = fresh.ProfitValue;
+            existing.TotalCost = fresh.TotalCost;
+
+            existing.BreakdownLines.Clear();
+            foreach (var line in fresh.BreakdownLines)
+                existing.BreakdownLines.Add(line);
+
             GroundworkCollectionView?.Refresh();
         }
 
@@ -504,16 +551,22 @@ namespace ADLMRateGen.ViewModel.Groundwork
         #region COMPUTE
         private GroundworkItem ComputeItem1()
         {
+            double d8BulldozerQty = UserRateEditStore.Current.Qty(SectionKey, 1, "D8 Bulldozer", 1);
+            double operatorQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Operator", 1);
+            double oilPctQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Oil & Consumables (3% of Diesel)", 1);
+            double banksmanQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Banksman", 1);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Labour", 2);
+
             double d8Cost = GetLabourRate("Bulldozer D8");
             double dieselPrice = GetMaterialPrice("Diesel");
             double operatorCost = GetLabourRate("Heavy plant operator");
             double banksmanCost = GetLabourRate("Heavy vehicle driver");
             double labourCost = GetLabourRate("Semi skilled");
-            double literPerDay = 304.0;
+            double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 1, "Diesel", 304.0);
             double outputPerDay = 1456.0;
 
-            double totalPlantDay = d8Cost + (literPerDay * dieselPrice) +
-                (0.03 * (literPerDay * dieselPrice)) + operatorCost + banksmanCost + (2 * labourCost);
+            double totalPlantDay = (d8BulldozerQty * d8Cost) + (literPerDay * dieselPrice) +
+                (oilPctQty * 0.03 * (literPerDay * dieselPrice)) + (operatorQty * operatorCost) + (banksmanQty * banksmanCost) + (labourQty * labourCost);
 
             double costPerM2 = totalPlantDay / outputPerDay;
             var ohp = ApplyOHP(costPerM2);
@@ -523,10 +576,10 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "D8 Bulldozer",
-                    Quantity = 1,
+                    Quantity = d8BulldozerQty,
                     Unit = "No/Day",
                     UnitPrice = d8Cost,
-                    TotalPrice = d8Cost
+                    TotalPrice = d8BulldozerQty * d8Cost
                 },
                 new GroundworkBreakdownLine
                 {
@@ -540,34 +593,34 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "Operator",
-                    Quantity = 1,
+                    Quantity = operatorQty,
                     Unit = "No/Day",
                     UnitPrice = operatorCost,
-                    TotalPrice = operatorCost
+                    TotalPrice = operatorQty * operatorCost
                 },
                 new GroundworkBreakdownLine
                 {
                   ComponentName = "Oil & Consumables (3% of Diesel)",
-                  Quantity = 1,
+                  Quantity = oilPctQty,
                     Unit = "3%",
                     UnitPrice = 0.03 * dieselPrice,
-                    TotalPrice = 0.03 * dieselPrice
+                    TotalPrice = oilPctQty * 0.03 * dieselPrice
                 },
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "Banksman",
-                    Quantity = 1,
+                    Quantity = banksmanQty,
                     Unit = "No/Day",
                     UnitPrice = banksmanCost,
-                    TotalPrice = banksmanCost
+                    TotalPrice = banksmanQty * banksmanCost
                 },
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "Labour",
-                    Quantity = 2,
+                    Quantity = labourQty,
                     Unit = "No/Day",
                     UnitPrice = labourCost,
-                    TotalPrice = 2 * labourCost
+                    TotalPrice = labourQty * labourCost
                 },
                  new GroundworkBreakdownLine
                 {
@@ -603,8 +656,10 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem2()
         {
+            double costPerM3Qty = UserRateEditStore.Current.Qty(SectionKey, 2, "Cost per m3", 1);
+
             double subCost = ComputeItem1_SubTotal();
-            double outputPerDay = 1820.0;
+            double outputPerDay = UserRateEditStore.Current.Qty(SectionKey, 2, "Output per day", 1820.0);
 
             double costPerM3 = subCost / outputPerDay;
             var ohp = ApplyOHP(costPerM3);
@@ -630,7 +685,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "Cost per m3",
-                    Quantity = 1,
+                    Quantity = costPerM3Qty,
                     Unit = "m3",
                     UnitPrice = costPerM3,
                     TotalPrice = costPerM3
@@ -667,8 +722,11 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem3()
         {
+            double subItemQty = UserRateEditStore.Current.Qty(SectionKey, 3, "SubItem from Item1 approach", 1);
+            double costPerM2Qty = UserRateEditStore.Current.Qty(SectionKey, 3, "Cost per m2", 1);
+
             double subCost = ComputeItem1_SubTotal();
-            double outputPerDay = 980.0;
+            double outputPerDay = UserRateEditStore.Current.Qty(SectionKey, 3, "Output per day", 980.0);
 
             double costPerM2 = subCost / outputPerDay;
             var ohp = ApplyOHP(costPerM2);
@@ -678,7 +736,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "SubItem from Item1 approach",
-                    Quantity = 1,
+                    Quantity = subItemQty,
                     Unit = "Lump",
                     UnitPrice = subCost,
                     TotalPrice = subCost
@@ -694,7 +752,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "Cost per m2",
-                    Quantity = 1,
+                    Quantity = costPerM2Qty,
                     Unit = "m2",
                     UnitPrice = costPerM2,
                     TotalPrice = costPerM2
@@ -731,8 +789,8 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem4()
         {
-            double labourDuration = 1.6;
-            double wheelDuration = 1.18;
+            double labourDuration = UserRateEditStore.Current.Qty(SectionKey, 4, "Skilled/Artisan for excavation", 1.6);
+            double wheelDuration = UserRateEditStore.Current.Qty(SectionKey, 4, "Skilled/Artisan for wheel deposit", 1.18);
             double labourCost = GetLabourRate("Skilled/Artisan");
             double ratePerHr = labourCost / 8;
 
@@ -794,7 +852,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem5()
         {
-            double workDuration = 1.4;
+            double workDuration = UserRateEditStore.Current.Qty(SectionKey, 5, "Labourer (soft sand excavation)", 1.4);
             double labourCost = GetLabourRate("Labourer");
             double ratePerHr = labourCost / 8;
 
@@ -843,7 +901,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem6()
         {
-            double workDuration = 1.53;
+            double workDuration = UserRateEditStore.Current.Qty(SectionKey, 6, "Labourer (stiff clay excavation)", 1.53);
             double labourCost = GetLabourRate("Labourer");
             double ratePerHr = labourCost / 8;
             double rateWithBonus = (ratePerHr * 0.4) + ratePerHr;
@@ -893,21 +951,27 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem7()
         {
+            double rollerQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Static steel roller (2.7 to 6 tonnes)", 1);
+            double oilPctQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Oil & Consumables (3% Diesel)", 1);
+            double operatorQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Operator (Heavy plant operator)", 1);
+            double banksmanQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Banksman (Semi skilled)", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour", 2);
+
             double rollerCost = GetLabourRate("Static steel wheeled roller - (2.7 to 6 tonnes)");
             double dieselPrice = GetLabourRate("Labourer") / 8;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
             double banksmanCost = GetLabourRate("Semi skilled") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
-            double literPerDay = 150;
+            double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 7, "Diesel", 150);
             double outputPerDay = 276;
             double fuelCost = dieselPrice * literPerDay;
 
-            double totalPlantDay = rollerCost + fuelCost +
-                (0.03 * fuelCost) + (operatorCost) + (2 * banksmanCost) + (2 * labourCost);
+            double totalPlantDay = (rollerQty * rollerCost) + fuelCost +
+                (oilPctQty * 0.03 * fuelCost) + (operatorQty * operatorCost) + (banksmanQty * banksmanCost) + (labourQty * labourCost);
 
             double plantCost = totalPlantDay / outputPerDay;
 
-            double fillingInM2 = 0.18;
+            double fillingInM2 = UserRateEditStore.Current.Qty(SectionKey, 7, "Filling Sand (Beach)", 0.18);
             double fillingCostPerM3 = GetMaterialPrice("Filling Sand (Beach)");
             double fillingPerM2 = fillingInM2 * fillingCostPerM3;
 
@@ -919,10 +983,10 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "Static steel roller (2.7 to 6 tonnes)",
-                    Quantity = 1,
+                    Quantity = rollerQty,
                     Unit = "No/Day",
                     UnitPrice = rollerCost,
-                    TotalPrice = rollerCost
+                    TotalPrice = rollerQty * rollerCost
                 },
                 new GroundworkBreakdownLine
                 {
@@ -935,34 +999,34 @@ namespace ADLMRateGen.ViewModel.Groundwork
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "Oil & Consumables (3% Diesel)",
-                    Quantity = 1,
+                    Quantity = oilPctQty,
                     Unit = "",
                     UnitPrice = 0.03*fuelCost,
-                    TotalPrice =  0.03*fuelCost
+                    TotalPrice =  oilPctQty * 0.03 * fuelCost
                 },
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "Operator (Heavy plant operator)",
-                    Quantity = 1,
+                    Quantity = operatorQty,
                     Unit = "No/Day",
                     UnitPrice = operatorCost,
-                    TotalPrice = operatorCost
+                    TotalPrice = operatorQty * operatorCost
                 },
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "Banksman (Semi skilled)",
-                    Quantity = 2,
+                    Quantity = banksmanQty,
                     Unit = "No/Day",
                     UnitPrice = banksmanCost,
-                    TotalPrice = 2 * banksmanCost
+                    TotalPrice = banksmanQty * banksmanCost
                 },
                 new GroundworkBreakdownLine
                 {
                     ComponentName = "Labour",
-                    Quantity = 2,
+                    Quantity = labourQty,
                     Unit = "No/Day",
                     UnitPrice = labourCost,
-                    TotalPrice = 2 * labourCost
+                    TotalPrice = labourQty * labourCost
                 },
                 new GroundworkBreakdownLine
                 {
@@ -1004,10 +1068,16 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem8()
         {
+            double rollerQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Vibratory Roller (8-10 tons)", 1);
+            double oilPctQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Oil & Consumables (3%)", 1);
+            double operatorQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Operator (Heavy plant operator)", 1);
+            double banksmanQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Banksman (Semi skilled)", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Labour", 2);
+
             double rollerCost = GetLabourRate("Vibratory whelled roller (8 to 10 tons)");
 
             double dieselPrice = GetLabourRate("Labourer") / 8;
-            double literPerDay = 250;
+            double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 8, "Diesel", 250);
             double fuelCost = dieselPrice * literPerDay;
 
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -1017,12 +1087,12 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double outputPerDay = 183;
             double outputVolumePerDay = outputPerDay * .3;
 
-            double totalPlantDay = rollerCost + fuelCost +
-                (0.03 * fuelCost) + (operatorCost) + (2 * banksmanCost) + (2 * labourCost);
+            double totalPlantDay = (rollerQty * rollerCost) + fuelCost +
+                (oilPctQty * 0.03 * fuelCost) + (operatorQty * operatorCost) + (banksmanQty * banksmanCost) + (labourQty * labourCost);
 
             double plantCost = totalPlantDay / outputPerDay;
 
-            double fillingInM2 = 0.36;
+            double fillingInM2 = UserRateEditStore.Current.Qty(SectionKey, 8, "Filling Sand (Beach)", 0.36);
             double fillingCostPerM3 = GetMaterialPrice("Filling Sand (Beach)");
             double fillingPerM2 = fillingInM2 * fillingCostPerM3;
 
@@ -1031,12 +1101,12 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             var breakdown = new ObservableCollection<GroundworkBreakdownLine>
             {
-                new GroundworkBreakdownLine { ComponentName="Vibratory Roller (8-10 tons)", Quantity=1, Unit="No/Day", UnitPrice=rollerCost, TotalPrice=rollerCost },
+                new GroundworkBreakdownLine { ComponentName="Vibratory Roller (8-10 tons)", Quantity=rollerQty, Unit="No/Day", UnitPrice=rollerCost, TotalPrice=rollerQty * rollerCost },
                 new GroundworkBreakdownLine { ComponentName="Diesel", Quantity=literPerDay, Unit="Liters", UnitPrice=dieselPrice, TotalPrice=fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=1, Unit="", UnitPrice=0.03*fuelCost, TotalPrice=0.03 *fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Operator (Heavy plant operator)", Quantity=1, Unit="No/Day", UnitPrice=operatorCost, TotalPrice=operatorCost },
-                new GroundworkBreakdownLine { ComponentName="Banksman (Semi skilled)", Quantity=2, Unit="No/Day", UnitPrice=banksmanCost, TotalPrice=2*banksmanCost },
-                new GroundworkBreakdownLine { ComponentName="Labour", Quantity=2, Unit="No/Day", UnitPrice=labourCost, TotalPrice=2*labourCost },
+                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=oilPctQty, Unit="", UnitPrice=0.03*fuelCost, TotalPrice=oilPctQty * 0.03 * fuelCost },
+                new GroundworkBreakdownLine { ComponentName="Operator (Heavy plant operator)", Quantity=operatorQty, Unit="No/Day", UnitPrice=operatorCost, TotalPrice=operatorQty * operatorCost },
+                new GroundworkBreakdownLine { ComponentName="Banksman (Semi skilled)", Quantity=banksmanQty, Unit="No/Day", UnitPrice=banksmanCost, TotalPrice=banksmanQty * banksmanCost },
+                new GroundworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="No/Day", UnitPrice=labourCost, TotalPrice=labourQty * labourCost },
                 new GroundworkBreakdownLine { ComponentName="Total Plant Cost/m2", Quantity=1, Unit="m2", UnitPrice=plantCost, TotalPrice=plantCost },
                 new GroundworkBreakdownLine { ComponentName="Filling Sand (Beach)", Quantity=fillingInM2, Unit="m3 per m2", UnitPrice=fillingCostPerM3, TotalPrice=fillingPerM2 },
                 new GroundworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", UnitPrice=totalCompact, TotalPrice=totalCompact },
@@ -1058,10 +1128,16 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem9()
         {
+            double rollerQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Vibratory Roller (8-10 tons)", 1);
+            double oilPctQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Oil & Consumables (3%)", 1);
+            double operatorQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Operator (Heavy plant operator)", 1);
+            double banksmanQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Banksman (Semi skilled)", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Labour", 2);
+
             double rollerCost = GetLabourRate("Vibratory whelled roller (8 to 10 tons)");
 
             double dieselPrice = GetLabourRate("Labourer") / 8;
-            double literPerDay = 250;
+            double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 9, "Diesel", 250);
             double fuelCost = dieselPrice * literPerDay;
 
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -1071,12 +1147,12 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double outputPerDay = 183;
             double outputVolumePerDay = outputPerDay * .3;
 
-            double totalPlantDay = rollerCost + fuelCost +
-                (0.03 * fuelCost) + (operatorCost) + (2 * banksmanCost) + (2 * labourCost);
+            double totalPlantDay = (rollerQty * rollerCost) + fuelCost +
+                (oilPctQty * 0.03 * fuelCost) + (operatorQty * operatorCost) + (banksmanQty * banksmanCost) + (labourQty * labourCost);
 
             double plantCost = totalPlantDay / outputPerDay;
 
-            double fillingInM2 = 0.54;
+            double fillingInM2 = UserRateEditStore.Current.Qty(SectionKey, 9, "Filling Sand (Beach)", 0.54);
             double fillingCostPerM3 = GetMaterialPrice("Filling Sand (Beach)");
             double fillingPerM2 = fillingInM2 * fillingCostPerM3;
 
@@ -1085,12 +1161,12 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             var breakdown = new ObservableCollection<GroundworkBreakdownLine>
             {
-                new GroundworkBreakdownLine { ComponentName="Vibratory Roller (8-10 tons)", Quantity=1, Unit="No/Day", UnitPrice=rollerCost, TotalPrice=rollerCost },
+                new GroundworkBreakdownLine { ComponentName="Vibratory Roller (8-10 tons)", Quantity=rollerQty, Unit="No/Day", UnitPrice=rollerCost, TotalPrice=rollerQty * rollerCost },
                 new GroundworkBreakdownLine { ComponentName="Diesel", Quantity=literPerDay, Unit="Liters", UnitPrice=dieselPrice, TotalPrice=fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=1, Unit="", UnitPrice=0.03 *dieselPrice, TotalPrice=0.03 *dieselPrice },
-                new GroundworkBreakdownLine { ComponentName="Operator (Heavy plant operator)", Quantity=1, Unit="No/Day", UnitPrice=operatorCost, TotalPrice=operatorCost },
-                new GroundworkBreakdownLine { ComponentName="Banksman (Semi skilled)", Quantity=2, Unit="No/Day", UnitPrice=banksmanCost, TotalPrice=2*banksmanCost },
-                new GroundworkBreakdownLine { ComponentName="Labour", Quantity=2, Unit="No/Day", UnitPrice=labourCost, TotalPrice=2*labourCost },
+                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=oilPctQty, Unit="", UnitPrice=0.03 *dieselPrice, TotalPrice=oilPctQty * 0.03 * dieselPrice },
+                new GroundworkBreakdownLine { ComponentName="Operator (Heavy plant operator)", Quantity=operatorQty, Unit="No/Day", UnitPrice=operatorCost, TotalPrice=operatorQty * operatorCost },
+                new GroundworkBreakdownLine { ComponentName="Banksman (Semi skilled)", Quantity=banksmanQty, Unit="No/Day", UnitPrice=banksmanCost, TotalPrice=banksmanQty * banksmanCost },
+                new GroundworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="No/Day", UnitPrice=labourCost, TotalPrice=labourQty * labourCost },
                 new GroundworkBreakdownLine { ComponentName="Total Plant Cost/m2", Quantity=1, Unit="m2", UnitPrice=plantCost, TotalPrice=plantCost },
                 new GroundworkBreakdownLine { ComponentName="Filling Sand (Beach)", Quantity=fillingInM2, Unit="m3 per m2", UnitPrice=fillingCostPerM3, TotalPrice=fillingPerM2 },
                 new GroundworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", UnitPrice=totalCompact, TotalPrice=totalCompact },
@@ -1110,10 +1186,16 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem10()
         {
+            double rollerQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Vibratory Roller (8-10 tons)", 1);
+            double oilPctQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Oil & Consumables (3%)", 1);
+            double operatorQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Operator (Heavy plant operator)", 1);
+            double banksmanQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Banksman (Semi skilled)", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Labour", 2);
+
             double rollerCost = GetLabourRate("Vibratory whelled roller (8 to 10 tons)");
 
             double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
-            double literPerDay = 250;
+            double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 10, "Diesel", 250);
             double fuelCost = dieselPrice * literPerDay;
 
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -1123,12 +1205,12 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double outputPerDay = 93;
             double outputVolumePerDay = outputPerDay * .6;
 
-            double totalPlantDay = rollerCost + fuelCost +
-                (0.03 * fuelCost) + (operatorCost) + (2 * banksmanCost) + (2 * labourCost);
+            double totalPlantDay = (rollerQty * rollerCost) + fuelCost +
+                (oilPctQty * 0.03 * fuelCost) + (operatorQty * operatorCost) + (banksmanQty * banksmanCost) + (labourQty * labourCost);
 
             double plantCost = totalPlantDay / outputVolumePerDay;
 
-            double fillingInM2 = 0.72;
+            double fillingInM2 = UserRateEditStore.Current.Qty(SectionKey, 10, "Filling Sand (Beach)", 0.72);
             double fillingCostPerM3 = GetMaterialPrice("Filling Sand (Beach)");
             double fillingPerM2 = fillingInM2 * fillingCostPerM3;
 
@@ -1137,12 +1219,12 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             var breakdown = new ObservableCollection<GroundworkBreakdownLine>
             {
-                new GroundworkBreakdownLine { ComponentName="Vibratory Roller (8-10 tons)", Quantity=1, Unit="No/Day", UnitPrice=rollerCost, TotalPrice=rollerCost },
+                new GroundworkBreakdownLine { ComponentName="Vibratory Roller (8-10 tons)", Quantity=rollerQty, Unit="No/Day", UnitPrice=rollerCost, TotalPrice=rollerQty * rollerCost },
                 new GroundworkBreakdownLine { ComponentName="Diesel", Quantity=literPerDay, Unit="Liters", UnitPrice=dieselPrice, TotalPrice=fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=1, Unit="", UnitPrice=0.03 * fuelCost, TotalPrice=0.03 * fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Operator (Heavy plant operator)", Quantity=1, Unit="No/Day", UnitPrice=operatorCost, TotalPrice=operatorCost },
-                new GroundworkBreakdownLine { ComponentName="Banksman (Semi skilled)", Quantity=2, Unit="No/Day", UnitPrice=banksmanCost, TotalPrice=2*banksmanCost },
-                new GroundworkBreakdownLine { ComponentName="Labour", Quantity=2, Unit="No/Day", UnitPrice=labourCost, TotalPrice=2*labourCost },
+                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=oilPctQty, Unit="", UnitPrice=0.03 * fuelCost, TotalPrice=oilPctQty * 0.03 * fuelCost },
+                new GroundworkBreakdownLine { ComponentName="Operator (Heavy plant operator)", Quantity=operatorQty, Unit="No/Day", UnitPrice=operatorCost, TotalPrice=operatorQty * operatorCost },
+                new GroundworkBreakdownLine { ComponentName="Banksman (Semi skilled)", Quantity=banksmanQty, Unit="No/Day", UnitPrice=banksmanCost, TotalPrice=banksmanQty * banksmanCost },
+                new GroundworkBreakdownLine { ComponentName="Labour", Quantity=labourQty, Unit="No/Day", UnitPrice=labourCost, TotalPrice=labourQty * labourCost },
                 new GroundworkBreakdownLine { ComponentName="Total Plant Cost/m3", Quantity=1, Unit="m3", UnitPrice=plantCost, TotalPrice=plantCost },
                 new GroundworkBreakdownLine { ComponentName="Filling Sand (Beach)", Quantity=fillingInM2, Unit="m3 per m2", UnitPrice=fillingCostPerM3, TotalPrice=fillingPerM2 },
                 new GroundworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m2", UnitPrice=totalCompact, TotalPrice=totalCompact },
@@ -1162,36 +1244,42 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem11()
         {
+            double tipperQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Hire of one no. tipper (per day)", 1);
+            double oilPctQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Oil & Consumables (3%)", 1);
+            double tipperDriverQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Tipper Driver (per day)", 1);
+            double motorBoyQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Motor-boy (per day)", 2);
+            double tripsPerDayQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Number of trips per day", 9);
+
             double tipperCost = GetLabourRate("Tipping lorry-10 ton");
 
             double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
-            double literPerDay = 200;
+            double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 11, "Diesel", 200);
             double fuelCost = dieselPrice * literPerDay;
 
             double tipperDriverCost = GetLabourRate("Heavy plant operator") * 1.4;
             double motorBoyCost = GetLabourRate("Semi skilled") * 1.4;
 
-            double tripsPerDay = 9;
+            double tripsPerDay = tripsPerDayQty;
 
             double soilVolumePerTrip = 7.6;
 
-            double totalPlantDay = tipperCost + fuelCost +
-                (0.03 * fuelCost) + (tipperDriverCost) + (2 * motorBoyCost);
+            double totalPlantDay = (tipperQty * tipperCost) + fuelCost +
+                (oilPctQty * 0.03 * fuelCost) + (tipperDriverQty * tipperDriverCost) + (motorBoyQty * motorBoyCost);
 
             double costPerTrip = totalPlantDay / tripsPerDay;
             double costPerCubicMeter = costPerTrip / soilVolumePerTrip;
 
             //LOADING LABOUR
             double labourPerHr = GetLabourRate("Labourer") / 8;
-            double labourLoadingPerM3 = 0.15;
+            double labourLoadingPerM3 = UserRateEditStore.Current.Qty(SectionKey, 11, "Loading Time Per Cubic", 0.15);
 
-            double timeLoadingPerTruck = soilVolumePerTrip * labourLoadingPerM3;
-            double labourToLoadTruck = 6;
+            double timeLoadingPerTruck = UserRateEditStore.Current.Qty(SectionKey, 11, "Loading Time Per 10 ton Truck", soilVolumePerTrip * labourLoadingPerM3);
+            double labourToLoadTruck = UserRateEditStore.Current.Qty(SectionKey, 11, "Nr of Labour Per 10 ton Truck", 6);
             double costLabourGang = labourPerHr * labourToLoadTruck;
-            double timeForAllLabour = timeLoadingPerTruck / labourToLoadTruck;
+            double timeForAllLabour = UserRateEditStore.Current.Qty(SectionKey, 11, $"{labourToLoadTruck} Labour Loading Time", timeLoadingPerTruck / labourToLoadTruck);
             double costForAllLabour = timeForAllLabour * costLabourGang;
 
-            double soilPerTruck = 7.6;
+            double soilPerTruck = UserRateEditStore.Current.Qty(SectionKey, 11, "Soil Volume Per Trip", 7.6);
 
             double labourCostPerm3 = costForAllLabour / soilPerTruck;
 
@@ -1200,22 +1288,22 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             var breakdown = new ObservableCollection<GroundworkBreakdownLine>
             {
-                new GroundworkBreakdownLine { ComponentName="Hire of one no. tipper (per day)", Quantity=1, Unit="No/Day", UnitPrice=tipperCost, TotalPrice=tipperCost },
+                new GroundworkBreakdownLine { ComponentName="Hire of one no. tipper (per day)", Quantity=tipperQty, Unit="No/Day", UnitPrice=tipperCost, TotalPrice=tipperQty * tipperCost },
                 new GroundworkBreakdownLine { ComponentName="Diesel", Quantity=literPerDay, Unit="Liters", UnitPrice=dieselPrice, TotalPrice=fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=1 , Unit="3%", UnitPrice=0.03 * fuelCost, TotalPrice=0.03 * fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Tipper Driver (per day)", Quantity=1, Unit="No/Day", UnitPrice=tipperDriverCost, TotalPrice=tipperDriverCost },
-                new GroundworkBreakdownLine { ComponentName="Motor-boy (per day)", Quantity=2, Unit="No/Day", UnitPrice=motorBoyCost, TotalPrice=2*motorBoyCost },
+                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=oilPctQty , Unit="3%", UnitPrice=0.03 * fuelCost, TotalPrice=oilPctQty * 0.03 * fuelCost },
+                new GroundworkBreakdownLine { ComponentName="Tipper Driver (per day)", Quantity=tipperDriverQty, Unit="No/Day", UnitPrice=tipperDriverCost, TotalPrice=tipperDriverQty * tipperDriverCost },
+                new GroundworkBreakdownLine { ComponentName="Motor-boy (per day)", Quantity=motorBoyQty, Unit="No/Day", UnitPrice=motorBoyCost, TotalPrice=motorBoyQty * motorBoyCost },
 
-                new GroundworkBreakdownLine { ComponentName="Number of trips per day", Quantity=9, Unit="trips/day"},
-                new GroundworkBreakdownLine { ComponentName="Cost Per Trip", Quantity=1, Unit="N", UnitPrice=costPerTrip},
+                new GroundworkBreakdownLine { ComponentName="Number of trips per day", Quantity=tripsPerDayQty, Unit="trips/day"},
+                new GroundworkBreakdownLine { ComponentName="Cost Per Trip", Quantity=UserRateEditStore.Current.Qty(SectionKey, 11, "Cost Per Trip", 1), Unit="N", UnitPrice=costPerTrip},
                 new GroundworkBreakdownLine { ComponentName="Soil Volume Per Trip", Quantity=soilPerTruck, Unit="m3"},
                 new GroundworkBreakdownLine { ComponentName="Total Transport Cost per M3", Quantity=1, Unit="m3",  TotalPrice=costPerCubicMeter },
 
-                new GroundworkBreakdownLine { ComponentName="Labourer (Loading per Hour)", Quantity=1, Unit="N/hr", UnitPrice=labourPerHr },
+                new GroundworkBreakdownLine { ComponentName="Labourer (Loading per Hour)", Quantity=UserRateEditStore.Current.Qty(SectionKey, 11, "Labourer (Loading per Hour)", 1), Unit="N/hr", UnitPrice=labourPerHr },
                 new GroundworkBreakdownLine { ComponentName="Loading Time Per Cubic", Quantity=labourLoadingPerM3, Unit="hr", UnitPrice=labourLoadingPerM3 },
                 new GroundworkBreakdownLine { ComponentName="Loading Time Per 10 ton Truck", Quantity=timeLoadingPerTruck, Unit="hr", UnitPrice=timeLoadingPerTruck },
                 new GroundworkBreakdownLine { ComponentName="Nr of Labour Per 10 ton Truck", Quantity=labourToLoadTruck, Unit="Nr", UnitPrice=labourToLoadTruck },
-                new GroundworkBreakdownLine { ComponentName="Labour Cost Per 10 ton Truck", Quantity=1, Unit="N/hr", UnitPrice=costLabourGang },
+                new GroundworkBreakdownLine { ComponentName="Labour Cost Per 10 ton Truck", Quantity=UserRateEditStore.Current.Qty(SectionKey, 11, "Labour Cost Per 10 ton Truck", 1), Unit="N/hr", UnitPrice=costLabourGang },
                 new GroundworkBreakdownLine { ComponentName=$"{labourToLoadTruck} Labour Loading Time", Quantity=timeForAllLabour, Unit="hr/Trip", UnitPrice=costLabourGang, TotalPrice=costForAllLabour },
                 new GroundworkBreakdownLine { ComponentName=$"Soil Volume Per 10 ton Truck", Quantity=soilPerTruck, Unit="m3" },
                 new GroundworkBreakdownLine { ComponentName="Total Labour Loading Cost per M3", Quantity=1, Unit="m3",  TotalPrice=labourCostPerm3 },
@@ -1238,36 +1326,44 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem12()
         {
+            double tipperQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Hire of one no. tipper (per day)", 1);
+            double oilPctQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Oil & Consumables (3%)", 1);
+            double tipperDriverQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Tipper Driver (per day)", 1);
+            double motorBoyQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Motor-boy (per day)", 2);
+            double payLoaderQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Hire of one no. payloader (per day)", 1);
+            double loaderOperatorQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Operator (per day)", 1);
+            double loaderBanksmanQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Banksman (per day)", 2);
+
             double tipperCost = GetLabourRate("Tipping lorry-10 ton");
 
             double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
-            double literPerDay = 200;
+            double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 12, "Diesel", 200);
             double fuelCost = dieselPrice * literPerDay;
 
             double tipperDriverCost = GetLabourRate("Heavy plant operator") * 1.4;
             double motorBoyCost = GetLabourRate("Semi skilled") * 1.4;
 
-            double tripsPerDay = 12;
+            double tripsPerDay = UserRateEditStore.Current.Qty(SectionKey, 12, "Number of trips per day", 12);
 
-            double soilVolumePerTrip = 7.6;
+            double soilVolumePerTrip = UserRateEditStore.Current.Qty(SectionKey, 12, "Soil Volume Per Trip", 7.6);
 
-            double totalPlantDay = tipperCost + fuelCost +
-                (0.03 * fuelCost) + (tipperDriverCost) + (2 * motorBoyCost);
+            double totalPlantDay = (tipperQty * tipperCost) + fuelCost +
+                (oilPctQty * 0.03 * fuelCost) + (tipperDriverQty * tipperDriverCost) + (motorBoyQty * motorBoyCost);
 
             double costPerTrip = Math.Round(totalPlantDay / tripsPerDay, 2);
             double costPerCubicMeter = Math.Round(costPerTrip / soilVolumePerTrip, 2);
 
             //LOADING PLANT COST
             double payLoaderCost = GetLabourRate("Payloader 935");
-            double totalPlantDayLoading = payLoaderCost + fuelCost +
-                (0.03 * fuelCost) + (tipperDriverCost) + (2 * motorBoyCost);
+            double totalPlantDayLoading = (payLoaderQty * payLoaderCost) + fuelCost +
+                (oilPctQty * 0.03 * fuelCost) + (loaderOperatorQty * tipperDriverCost) + (loaderBanksmanQty * motorBoyCost);
 
-            double payloadWorkHrPerDay = 8;
+            double payloadWorkHrPerDay = UserRateEditStore.Current.Qty(SectionKey, 12, "Total worked hours per day", 8);
 
-            double payLoadSoilVolumePerDay = 7.6;
+            double payLoadSoilVolumePerDay = UserRateEditStore.Current.Qty(SectionKey, 12, "Bucket capacity of payloader", 7.6);
 
             double costPerLoadDay = Math.Round(totalPlantDayLoading / payloadWorkHrPerDay, 2);
-            double volumePerDay = Math.Round(tripsPerDay * payLoadSoilVolumePerDay, 2);
+            double volumePerDay = UserRateEditStore.Current.Qty(SectionKey, 12, "Volume of soil loaded per day", Math.Round(tripsPerDay * payLoadSoilVolumePerDay, 2));
             double payLoadCostPerDay = Math.Round(costPerLoadDay / volumePerDay, 2);
 
 
@@ -1276,23 +1372,23 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             var breakdown = new ObservableCollection<GroundworkBreakdownLine>
             {
-                new GroundworkBreakdownLine { ComponentName="Hire of one no. tipper (per day)", Quantity=1, Unit="No/Day", UnitPrice=tipperCost, TotalPrice=tipperCost },
+                new GroundworkBreakdownLine { ComponentName="Hire of one no. tipper (per day)", Quantity=tipperQty, Unit="No/Day", UnitPrice=tipperCost, TotalPrice=tipperQty * tipperCost },
                 new GroundworkBreakdownLine { ComponentName="Diesel", Quantity=literPerDay, Unit="Liters", UnitPrice=dieselPrice, TotalPrice=fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=1 , Unit="3%", UnitPrice=0.03 * fuelCost, TotalPrice=0.03 * fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Tipper Driver (per day)", Quantity=1, Unit="No/Day", UnitPrice=tipperDriverCost, TotalPrice=tipperDriverCost },
-                new GroundworkBreakdownLine { ComponentName="Motor-boy (per day)", Quantity=2, Unit="No/Day", UnitPrice=motorBoyCost, TotalPrice=2*motorBoyCost },
+                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=oilPctQty , Unit="3%", UnitPrice=0.03 * fuelCost, TotalPrice=oilPctQty * 0.03 * fuelCost },
+                new GroundworkBreakdownLine { ComponentName="Tipper Driver (per day)", Quantity=tipperDriverQty, Unit="No/Day", UnitPrice=tipperDriverCost, TotalPrice=tipperDriverQty * tipperDriverCost },
+                new GroundworkBreakdownLine { ComponentName="Motor-boy (per day)", Quantity=motorBoyQty, Unit="No/Day", UnitPrice=motorBoyCost, TotalPrice=motorBoyQty * motorBoyCost },
 
                 new GroundworkBreakdownLine { ComponentName="Number of trips per day", Quantity=tripsPerDay, Unit="trips/day"},
-                new GroundworkBreakdownLine { ComponentName="Cost Per Trip", Quantity=1, Unit="N", UnitPrice=costPerTrip},
+                new GroundworkBreakdownLine { ComponentName="Cost Per Trip", Quantity=UserRateEditStore.Current.Qty(SectionKey, 12, "Cost Per Trip", 1), Unit="N", UnitPrice=costPerTrip},
                 new GroundworkBreakdownLine { ComponentName="Soil Volume Per Trip", Quantity=soilVolumePerTrip, Unit="m3"},
                 new GroundworkBreakdownLine { ComponentName="Total Transport Cost per M3", Quantity=1, Unit="m3",  TotalPrice=costPerCubicMeter },
 
 				//PLANT COST
-				new GroundworkBreakdownLine { ComponentName="Hire of one no. payloader (per day)", Quantity=1, Unit="No/Day", UnitPrice=payLoaderCost, TotalPrice=payLoaderCost },
+				new GroundworkBreakdownLine { ComponentName="Hire of one no. payloader (per day)", Quantity=payLoaderQty, Unit="No/Day", UnitPrice=payLoaderCost, TotalPrice=payLoaderQty * payLoaderCost },
                 new GroundworkBreakdownLine { ComponentName="Diesel", Quantity=literPerDay, Unit="Liters", UnitPrice=dieselPrice, TotalPrice=fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=1 , Unit="3%", UnitPrice=0.03 * fuelCost, TotalPrice=0.03 * fuelCost },
-                new GroundworkBreakdownLine { ComponentName="Operator (per day)", Quantity=1, Unit="No/Day", UnitPrice=tipperDriverCost, TotalPrice=tipperDriverCost },
-                new GroundworkBreakdownLine { ComponentName="Banksman (per day)", Quantity=2, Unit="No/Day", UnitPrice=motorBoyCost, TotalPrice=2*motorBoyCost },
+                new GroundworkBreakdownLine { ComponentName="Oil & Consumables (3%)", Quantity=oilPctQty , Unit="3%", UnitPrice=0.03 * fuelCost, TotalPrice=oilPctQty * 0.03 * fuelCost },
+                new GroundworkBreakdownLine { ComponentName="Operator (per day)", Quantity=loaderOperatorQty, Unit="No/Day", UnitPrice=tipperDriverCost, TotalPrice=loaderOperatorQty * tipperDriverCost },
+                new GroundworkBreakdownLine { ComponentName="Banksman (per day)", Quantity=loaderBanksmanQty, Unit="No/Day", UnitPrice=motorBoyCost, TotalPrice=loaderBanksmanQty * motorBoyCost },
 
                 new GroundworkBreakdownLine { ComponentName="Total worked hours per day", Quantity=payloadWorkHrPerDay, Unit="hrs"},
                 new GroundworkBreakdownLine { ComponentName="Bucket capacity of payloader", Quantity=payLoadSoilVolumePerDay, Unit="m3", UnitPrice=costPerLoadDay},
@@ -1317,7 +1413,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem13()
         {
-            double labourPerHr = 0.98;
+            double labourPerHr = UserRateEditStore.Current.Qty(SectionKey, 13, "Labour (per hour)", 0.98);
             double labourCost = (GetLabourRate("Labourer") / 8) + 90;
 
             double netCost = labourPerHr * labourCost;
@@ -1343,7 +1439,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem14()
         {
-            double labourPerHr = 1.07;
+            double labourPerHr = UserRateEditStore.Current.Qty(SectionKey, 14, "Labour (per hour)", 1.07);
             double labourCost = (GetLabourRate("Labourer") / 8) + 90;
 
             double netCost = Math.Round(labourPerHr * labourCost, 2);
@@ -1369,18 +1465,20 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem15()
         {
+            double sharpSandQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Sharp sand (delivered to site)", 1);
+
             double materialCost = GetMaterialPrice("Sharp Sand");
 
-            double labourPerHr = 0.77;
+            double labourPerHr = UserRateEditStore.Current.Qty(SectionKey, 15, "Labour (per hour)", 0.77);
             double labourCost = (GetLabourRate("Labourer") / 8) + 90;
             double labourTotal = (labourPerHr * labourCost);
 
-            double netCost = Math.Round(labourTotal + materialCost, 2);
+            double netCost = Math.Round(labourTotal + (sharpSandQty * materialCost), 2);
             var ohp = ApplyOHP(netCost);
 
             var breakdown = new ObservableCollection<GroundworkBreakdownLine>
             {
-                new GroundworkBreakdownLine { ComponentName="Sharp sand (delivered to site)", Quantity=1, Unit="m3", UnitPrice=materialCost, TotalPrice=materialCost },
+                new GroundworkBreakdownLine { ComponentName="Sharp sand (delivered to site)", Quantity=sharpSandQty, Unit="m3", UnitPrice=materialCost, TotalPrice=sharpSandQty * materialCost },
                 new GroundworkBreakdownLine { ComponentName="Labour (per hour)", Quantity=labourPerHr, Unit="hr/m3", UnitPrice=labourCost, TotalPrice=labourTotal },
 
                 new GroundworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m3", TotalPrice=netCost },
@@ -1399,18 +1497,20 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem16()
         {
+            double beachSandQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Beach sand (delivered to site)", 1);
+
             double materialCost = GetMaterialPrice("Beach sand");
 
-            double labourPerHr = 0.77;
+            double labourPerHr = UserRateEditStore.Current.Qty(SectionKey, 16, "Labour (per hour)", 0.77);
             double labourCost = (GetLabourRate("Labourer") / 8) + 90;
             double labourTotal = (labourPerHr * labourCost);
 
-            double netCost = Math.Round(labourTotal + materialCost, 2);
+            double netCost = Math.Round(labourTotal + (beachSandQty * materialCost), 2);
             var ohp = ApplyOHP(netCost);
 
             var breakdown = new ObservableCollection<GroundworkBreakdownLine>
             {
-                new GroundworkBreakdownLine { ComponentName="Beach sand (delivered to site)", Quantity=1, Unit="m3", UnitPrice=materialCost, TotalPrice=materialCost },
+                new GroundworkBreakdownLine { ComponentName="Beach sand (delivered to site)", Quantity=beachSandQty, Unit="m3", UnitPrice=materialCost, TotalPrice=beachSandQty * materialCost },
                 new GroundworkBreakdownLine { ComponentName="Labour (per hour)", Quantity=labourPerHr, Unit="hr/m3", UnitPrice=labourCost, TotalPrice=labourTotal },
 
                 new GroundworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m3", TotalPrice=netCost },
@@ -1429,7 +1529,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem17()
         {
-            double labourPerHr = 0.25;
+            double labourPerHr = UserRateEditStore.Current.Qty(SectionKey, 17, "Labour (per hour)", 0.25);
             double labourCost = (GetLabourRate("Labourer") / 8) + 90;
 
             double netCost = Math.Round(labourPerHr * labourCost, 2);
@@ -1455,14 +1555,14 @@ namespace ADLMRateGen.ViewModel.Groundwork
         }
         private GroundworkItem ComputeItem18()
         {
-            double hardcorePerM3 = 0.192;
+            double hardcorePerM3 = UserRateEditStore.Current.Qty(SectionKey, 18, "Hardcore or  (cubic metre content in 1m2 of filling, 150mm thick)", 0.192);
             double materialCost = GetMaterialPrice("15-25mm");
             double materialCost2 = GetMaterialPrice("Hardcore filling");
             double materialSum = (materialCost + materialCost2) * 1.474;
 
             double totalMaterialCost = hardcorePerM3 * materialSum;
 
-            double labourPerHr = 0.88;
+            double labourPerHr = UserRateEditStore.Current.Qty(SectionKey, 18, "Labour (per hour)", 0.88);
             double labourCost = (GetLabourRate("Labourer") / 8) + 90;
             double labourTotal = (labourPerHr * labourCost);
 
@@ -1472,7 +1572,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
             var breakdown = new ObservableCollection<GroundworkBreakdownLine>
             {
                 new GroundworkBreakdownLine { ComponentName="Hardcore or  (cubic metre content in 1m2 of filling, 150mm thick)", Quantity=hardcorePerM3, Unit="m2" },
-                new GroundworkBreakdownLine { ComponentName="Cost per m3 (including transportation)", Quantity=1, Unit="m3", UnitPrice=materialSum  },
+                new GroundworkBreakdownLine { ComponentName="Cost per m3 (including transportation)", Quantity=UserRateEditStore.Current.Qty(SectionKey, 18, "Cost per m3 (including transportation)", 1), Unit="m3", UnitPrice=materialSum  },
                 new GroundworkBreakdownLine { ComponentName="Total Material Cost", Quantity=1, Unit="m3", TotalPrice=totalMaterialCost  },
 
                 new GroundworkBreakdownLine { ComponentName="Labour (per hour)", Quantity=labourPerHr, Unit="hr/m2", UnitPrice=labourCost, TotalPrice=labourTotal },

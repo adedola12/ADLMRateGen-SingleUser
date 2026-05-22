@@ -40,6 +40,67 @@ namespace ADLMRateGen.Services
 
         private UserRatesCloudSync() { }
 
+        /// <summary>
+        /// Fetches the user's saved rate overrides from the cloud and merges them into
+        /// the local <see cref="UserRateEditStore"/>. Called after login so edits made
+        /// on QUIV / HERON propagate back to RateGen.
+        /// </summary>
+        public async Task<bool> PullUserEditsAsync(CancellationToken ct = default)
+        {
+            var auth = AuthProvider.Instance.Client;
+            if (!auth.HasSession || string.IsNullOrWhiteSpace(auth.AccessToken))
+            {
+                LastStatus = "User rates pull skipped: not signed in.";
+                return false;
+            }
+
+            try
+            {
+                using var doc = await auth.GetJsonAsync("/rategen-v2/library/user-rates", ct).ConfigureAwait(false);
+                var state = JsonSerializer.Deserialize<ServerLibraryState>(
+                                doc.RootElement.GetRawText(),
+                                ReadJsonOptions)
+                            ?? new ServerLibraryState();
+
+                var edits = new List<ADLMRateGen.ViewModel.Model.UserRateEdit>();
+                foreach (var ov in state.RateOverrides ?? new List<RateOverridePayload>())
+                {
+                    if (ov == null) continue;
+                    if (string.IsNullOrWhiteSpace(ov.SectionKey) || ov.ItemNo == null) continue;
+
+                    foreach (var line in ov.Breakdown ?? new List<BreakdownPayload>())
+                    {
+                        if (line == null) continue;
+                        if (string.IsNullOrWhiteSpace(line.ComponentName)) continue;
+                        // Skip computed sub-total / total rows — we never override those.
+                        if (line.ComponentName.IndexOf("total", StringComparison.OrdinalIgnoreCase) >= 0) continue;
+
+                        edits.Add(new ADLMRateGen.ViewModel.Model.UserRateEdit
+                        {
+                            SectionKey = ov.SectionKey,
+                            ItemNo = ov.ItemNo.Value,
+                            ComponentName = line.ComponentName,
+                            OverrideQuantity = (double)line.Quantity,
+                            EditedAtUtc = ov.ClientUpdatedAt ?? DateTime.UtcNow
+                        });
+                    }
+                }
+
+                UserRateEditStore.Current.ReplaceAll(edits);
+                UserRateEditStore.Current.SaveToDisk();
+
+                LastSyncUtc = DateTime.Now;
+                LastStatus = $"User rates pulled from cloud: {edits.Count} component quantities.";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LastStatus = $"User rates pull failed: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"[UserRatesCloudSync.PullUserEditsAsync] {ex}");
+                return false;
+            }
+        }
+
         public async Task<bool> PushSnapshotAsync(MainViewModel vm, CancellationToken ct = default)
         {
             if (vm == null)

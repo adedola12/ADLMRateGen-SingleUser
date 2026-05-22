@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -145,6 +146,18 @@ namespace ADLMRateGen.ViewModel.Finishes
             {
                 if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
                     RecomputeAll();
+            };
+
+            UserRateEditStore.Current.OverridesChanged += (_, __) =>
+            {
+                void Refresh()
+                {
+                    var nos = FinishesItems.Select(i => i.ItemNo).ToList();
+                    foreach (var n in nos) RecomputeItemInPlace(n);
+                }
+                var disp = System.Windows.Application.Current?.Dispatcher;
+                if (disp == null || disp.CheckAccess()) Refresh();
+                else disp.BeginInvoke((Action)Refresh);
             };
 
             // ✅ Initial build (shows disk cached items immediately)
@@ -300,6 +313,38 @@ namespace ADLMRateGen.ViewModel.Finishes
                     }
                 }
             });
+        }
+
+        public void RecomputeItemInPlace(int itemNo)
+        {
+            var existing = FinishesItems.FirstOrDefault(i => i.ItemNo == itemNo);
+            if (existing == null) return;
+
+            Func<FinishesItem>[] all =
+            {
+                ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6, ComputeItem7,
+                ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12, ComputeItem13, ComputeItem14, ComputeItem15,
+                ComputeItem16, ComputeItem17, ComputeItem18, ComputeItem19, ComputeItem20, ComputeItem21, ComputeItem22, ComputeItem23
+            };
+
+            FinishesItem? fresh = null;
+            foreach (var fn in all)
+            {
+                var candidate = fn();
+                if (candidate.ItemNo == itemNo) { fresh = candidate; break; }
+            }
+            if (fresh == null) return;
+
+            existing.NetCost = fresh.NetCost;
+            existing.OverheadValue = fresh.OverheadValue;
+            existing.ProfitValue = fresh.ProfitValue;
+            existing.TotalCost = fresh.TotalCost;
+
+            existing.FinishesBreakdownLine.Clear();
+            foreach (var line in fresh.FinishesBreakdownLine)
+                existing.FinishesBreakdownLine.Add(line);
+
+            FinishesCollectionView?.Refresh();
         }
 
         private List<FinishesItem> BuildFinishesItemsSnapshot()
@@ -596,33 +641,35 @@ namespace ADLMRateGen.ViewModel.Finishes
 
         private FinishesItem ComputeItem1()
         {
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Mortar 12mm thick (See Blockwork)", 1);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem2) *0.012;
-            double mortarWastePer = 5;
-            double mortarWaste = mortarCost * (mortarWastePer / 100);
+            double mortarLineTotal = mortarCost * mortarQty;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 1, "Add waste", 5);
+            double mortarWaste = mortarLineTotal * (mortarWastePer / 100);
 
             //lABOUR COST
             double headmanCost = (GetLabourRate("Headman")) * 1.4;
             double masonCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double headmanQty = 1;
-            double masonQty = 6;
-            double labourQty = 6;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Headman", 1);
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Mason", 6);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Labourer", 6);
 
             double headmanRate = headmanCost * headmanQty;
             double masonRate = masonCost * masonQty;
             double labourRate = labourCost * labourQty;
             double totalLabourRate = headmanRate + masonRate + labourRate;
 
-            double outPutPerDay = 50;
+            double outPutPerDay = UserRateEditStore.Current.Qty(SectionKey, 1, "Output per day", 50);
             double outputPerSqm = totalLabourRate / outPutPerDay;
-            double netCostPerm2 = outputPerSqm + mortarCost + mortarWaste;
+            double netCostPerm2 = outputPerSqm + mortarLineTotal + mortarWaste;
 
             var ohp = ApplyOHP(netCostPerm2);
 
             var breakdown = new ObservableCollection<FinishesBreakdownLine>
             {
-                new FinishesBreakdownLine{ ComponentName= "Mortar 12mm thick (See Blockwork)", Quantity=1, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarCost},
+                new FinishesBreakdownLine{ ComponentName= "Mortar 12mm thick (See Blockwork)", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarLineTotal},
                 new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=mortarWastePer, Unit="%", UnitPrice=mortarWaste, TotalPrice=mortarWaste},
 
                 new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="per/day", UnitPrice=headmanCost, TotalPrice=headmanRate},
@@ -649,33 +696,35 @@ namespace ADLMRateGen.ViewModel.Finishes
         }
         private FinishesItem ComputeItem2()
         {
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Mortar 12mm thick (See Blockwork)", 1);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem5) * 0.012;
-            double mortarWastePer = 5;
-            double mortarWaste = mortarCost * (mortarWastePer / 100);
+            double mortarLineTotal = mortarCost * mortarQty;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 2, "Add waste", 5);
+            double mortarWaste = mortarLineTotal * (mortarWastePer / 100);
 
             //lABOUR COST
             double headmanCost = (GetLabourRate("Headman")) * 1.4;
             double masonCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double headmanQty = 1;
-            double masonQty = 6;
-            double labourQty = 6;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Headman", 1);
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Mason", 6);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Labourer", 6);
 
             double headmanRate = headmanCost * headmanQty;
             double masonRate = masonCost * masonQty;
             double labourRate = labourCost * labourQty;
             double totalLabourRate = headmanRate + masonRate + labourRate;
 
-            double outPutPerDay = 50;
+            double outPutPerDay = UserRateEditStore.Current.Qty(SectionKey, 2, "Output per day", 50);
             double outputPerSqm = totalLabourRate / outPutPerDay;
-            double netCostPerm2 = outputPerSqm + mortarCost + mortarWaste;
+            double netCostPerm2 = outputPerSqm + mortarLineTotal + mortarWaste;
 
             var ohp = ApplyOHP(netCostPerm2);
 
             var breakdown = new ObservableCollection<FinishesBreakdownLine>
             {
-                new FinishesBreakdownLine{ ComponentName= "Mortar 12mm thick (See Blockwork)", Quantity=1, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarCost},
+                new FinishesBreakdownLine{ ComponentName= "Mortar 12mm thick (See Blockwork)", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarLineTotal},
                 new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=mortarWastePer, Unit="%", UnitPrice=mortarWaste, TotalPrice=mortarWaste},
 
                 new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="per/day", UnitPrice=headmanCost, TotalPrice=headmanRate},
@@ -701,33 +750,35 @@ namespace ADLMRateGen.ViewModel.Finishes
         }
         private FinishesItem ComputeItem3()
         {
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Mortar 12mm thick (See Blockwork)", 1);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem3) * 0.012;
-            double mortarWastePer = 5;
-            double mortarWaste = mortarCost * (mortarWastePer / 100);
+            double mortarLineTotal = mortarCost * mortarQty;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 3, "Add waste", 5);
+            double mortarWaste = mortarLineTotal * (mortarWastePer / 100);
 
             //lABOUR COST
             double headmanCost = (GetLabourRate("Headman")) * 1.4;
             double masonCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double headmanQty = 1;
-            double masonQty = 6;
-            double labourQty = 6;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Headman", 1);
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Mason", 6);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Labourer", 6);
 
             double headmanRate = headmanCost * headmanQty;
             double masonRate = masonCost * masonQty;
             double labourRate = labourCost * labourQty;
             double totalLabourRate = headmanRate + masonRate + labourRate;
 
-            double outPutPerDay = 50;
+            double outPutPerDay = UserRateEditStore.Current.Qty(SectionKey, 3, "Output per day", 50);
             double outputPerSqm = totalLabourRate / outPutPerDay;
-            double netCostPerm2 = outputPerSqm + mortarCost + mortarWaste;
+            double netCostPerm2 = outputPerSqm + mortarLineTotal + mortarWaste;
 
             var ohp = ApplyOHP(netCostPerm2);
 
             var breakdown = new ObservableCollection<FinishesBreakdownLine>
             {
-                new FinishesBreakdownLine{ ComponentName= "Mortar 12mm thick (See Blockwork)", Quantity=1, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarCost},
+                new FinishesBreakdownLine{ ComponentName= "Mortar 12mm thick (See Blockwork)", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarLineTotal},
                 new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=mortarWastePer, Unit="%", UnitPrice=mortarWaste, TotalPrice=mortarWaste},
 
                 new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="per/day", UnitPrice=headmanCost, TotalPrice=headmanRate},
@@ -753,18 +804,20 @@ namespace ADLMRateGen.ViewModel.Finishes
         }
         private FinishesItem ComputeItem4()
         {
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Mortar 15-19mm thick (See Blockwork)", 1);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem2) * 0.012;
-            double mortarWastePer = 10;
-            double mortarWaste = mortarCost * (mortarWastePer / 100);
+            double mortarLineTotal = mortarCost * mortarQty;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 4, "Add waste", 10);
+            double mortarWaste = mortarLineTotal * (mortarWastePer / 100);
 
             //lABOUR COST
             double headmanCost = (GetLabourRate("Headman")) * 1.4;
             double masonCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double headmanQty = 1;
-            double masonQty = 2;
-            double labourQty = 2;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Headman", 1);
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Mason", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Labourer", 2);
 
             double headmanRate = headmanCost * headmanQty;
             double masonRate = masonCost * masonQty;
@@ -772,16 +825,16 @@ namespace ADLMRateGen.ViewModel.Finishes
             double totalLabourRate = headmanRate + masonRate + labourRate;
 
             double outPutHrPerM2 = 0.2;
-            double outPutPerDay = Math.Round(1 / outPutHrPerM2 * 8, 2);
+            double outPutPerDay = UserRateEditStore.Current.Qty(SectionKey, 4, "Output per day", Math.Round(1 / outPutHrPerM2 * 8, 2));
 
             double outputPerSqm = totalLabourRate / outPutPerDay;
-            double netCostPerm2 = outputPerSqm + mortarCost + mortarWaste;
+            double netCostPerm2 = outputPerSqm + mortarLineTotal + mortarWaste;
 
             var ohp = ApplyOHP(netCostPerm2);
 
             var breakdown = new ObservableCollection<FinishesBreakdownLine>
             {
-                new FinishesBreakdownLine{ ComponentName= "Mortar 15-19mm thick (See Blockwork)", Quantity=1, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarCost},
+                new FinishesBreakdownLine{ ComponentName= "Mortar 15-19mm thick (See Blockwork)", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarLineTotal},
                 new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=mortarWastePer, Unit="%", UnitPrice=mortarWaste, TotalPrice=mortarWaste},
 
                 new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="per/day", UnitPrice=headmanCost, TotalPrice=headmanRate},
@@ -807,18 +860,20 @@ namespace ADLMRateGen.ViewModel.Finishes
         }
         private FinishesItem ComputeItem5()
         {
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Mortar 20-29mm thick (See Blockwork)", 1);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem2) * 0.0245;
-            double mortarWastePer = 10;
-            double mortarWaste = mortarCost * (mortarWastePer / 100);
+            double mortarLineTotal = mortarCost * mortarQty;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 5, "Add waste", 10);
+            double mortarWaste = mortarLineTotal * (mortarWastePer / 100);
 
             //lABOUR COST
             double headmanCost = (GetLabourRate("Headman")) * 1.4;
             double masonCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double headmanQty = 1;
-            double masonQty = 2;
-            double labourQty = 2;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Headman", 1);
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Mason", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Labourer", 2);
 
             double headmanRate = headmanCost * headmanQty;
             double masonRate = masonCost * masonQty;
@@ -826,16 +881,16 @@ namespace ADLMRateGen.ViewModel.Finishes
             double totalLabourRate = headmanRate + masonRate + labourRate;
 
             double outPutHrPerM2 = 0.25;
-            double outPutPerDay = Math.Round(1 / outPutHrPerM2 * 8, 2);
+            double outPutPerDay = UserRateEditStore.Current.Qty(SectionKey, 5, "Output per day", Math.Round(1 / outPutHrPerM2 * 8, 2));
 
             double outputPerSqm = totalLabourRate / outPutPerDay;
-            double netCostPerm2 = outputPerSqm + mortarCost + mortarWaste;
+            double netCostPerm2 = outputPerSqm + mortarLineTotal + mortarWaste;
 
             var ohp = ApplyOHP(netCostPerm2);
 
             var breakdown = new ObservableCollection<FinishesBreakdownLine>
             {
-                new FinishesBreakdownLine{ ComponentName= "Mortar 20-29mm thick (See Blockwork)", Quantity=1, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarCost},
+                new FinishesBreakdownLine{ ComponentName= "Mortar 20-29mm thick (See Blockwork)", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarLineTotal},
                 new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=mortarWastePer, Unit="%", UnitPrice=mortarWaste, TotalPrice=mortarWaste},
 
                 new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="per/day", UnitPrice=headmanCost, TotalPrice=headmanRate},
@@ -861,18 +916,20 @@ namespace ADLMRateGen.ViewModel.Finishes
         }
         private FinishesItem ComputeItem6()
         {
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Mortar 30-39mm thick (See Blockwork)", 1);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem2) * 0.0345;
-            double mortarWastePer = 10;
-            double mortarWaste = mortarCost * (mortarWastePer / 100);
+            double mortarLineTotal = mortarCost * mortarQty;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 6, "Add waste", 10);
+            double mortarWaste = mortarLineTotal * (mortarWastePer / 100);
 
             //lABOUR COST
             double headmanCost = (GetLabourRate("Headman")) * 1.4;
             double masonCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double headmanQty = 1;
-            double masonQty = 2;
-            double labourQty = 2;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Headman", 1);
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Mason", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Labourer", 2);
 
             double headmanRate = headmanCost * headmanQty;
             double masonRate = masonCost * masonQty;
@@ -880,16 +937,16 @@ namespace ADLMRateGen.ViewModel.Finishes
             double totalLabourRate = headmanRate + masonRate + labourRate;
 
             double outPutHrPerM2 = 0.3;
-            double outPutPerDay = Math.Round(1 / outPutHrPerM2 * 8, 2);
+            double outPutPerDay = UserRateEditStore.Current.Qty(SectionKey, 6, "Output per day", Math.Round(1 / outPutHrPerM2 * 8, 2));
 
             double outputPerSqm = totalLabourRate / outPutPerDay;
-            double netCostPerm2 = outputPerSqm + mortarCost + mortarWaste;
+            double netCostPerm2 = outputPerSqm + mortarLineTotal + mortarWaste;
 
             var ohp = ApplyOHP(netCostPerm2);
 
             var breakdown = new ObservableCollection<FinishesBreakdownLine>
             {
-                new FinishesBreakdownLine{ ComponentName= "Mortar 30-39mm thick (See Blockwork)", Quantity=1, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarCost},
+                new FinishesBreakdownLine{ ComponentName= "Mortar 30-39mm thick (See Blockwork)", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarLineTotal},
                 new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=mortarWastePer, Unit="%", UnitPrice=mortarWaste, TotalPrice=mortarWaste},
 
                 new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="per/day", UnitPrice=headmanCost, TotalPrice=headmanRate},
@@ -915,18 +972,20 @@ namespace ADLMRateGen.ViewModel.Finishes
         }
         private FinishesItem ComputeItem7()
         {
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Mortar 40-50mm thick (See Blockwork)", 1);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem2) * 0.045;
-            double mortarWastePer = 10;
-            double mortarWaste = mortarCost * (mortarWastePer / 100);
+            double mortarLineTotal = mortarCost * mortarQty;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 7, "Add waste", 10);
+            double mortarWaste = mortarLineTotal * (mortarWastePer / 100);
 
             //lABOUR COST
             double headmanCost = (GetLabourRate("Headman")) * 1.4;
             double masonCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double headmanQty = 1;
-            double masonQty = 2;
-            double labourQty = 2;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Headman", 1);
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Mason", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labourer", 2);
 
             double headmanRate = headmanCost * headmanQty;
             double masonRate = masonCost * masonQty;
@@ -934,16 +993,16 @@ namespace ADLMRateGen.ViewModel.Finishes
             double totalLabourRate = headmanRate + masonRate + labourRate;
 
             double outPutHrPerM2 = 0.35;
-            double outPutPerDay = Math.Round(1 / outPutHrPerM2 * 8, 2);
+            double outPutPerDay = UserRateEditStore.Current.Qty(SectionKey, 7, "Output per day", Math.Round(1 / outPutHrPerM2 * 8, 2));
 
             double outputPerSqm = totalLabourRate / outPutPerDay;
-            double netCostPerm2 = outputPerSqm + mortarCost + mortarWaste;
+            double netCostPerm2 = outputPerSqm + mortarLineTotal + mortarWaste;
 
             var ohp = ApplyOHP(netCostPerm2);
 
             var breakdown = new ObservableCollection<FinishesBreakdownLine>
             {
-                new FinishesBreakdownLine{ ComponentName= "Mortar 40-50mm thick (See Blockwork)", Quantity=1, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarCost},
+                new FinishesBreakdownLine{ ComponentName= "Mortar 40-50mm thick (See Blockwork)", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarLineTotal},
                 new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=mortarWastePer, Unit="%", UnitPrice=mortarWaste, TotalPrice=mortarWaste},
 
                 new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="per/day", UnitPrice=headmanCost, TotalPrice=headmanRate},
@@ -969,18 +1028,20 @@ namespace ADLMRateGen.ViewModel.Finishes
         }
         private FinishesItem ComputeItem8()
         {
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Mortar 40-50mm thick (See Blockwork)", 1);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem5) * 0.045;
-            double mortarWastePer = 10;
-            double mortarWaste = mortarCost * (mortarWastePer / 100);
+            double mortarLineTotal = mortarCost * mortarQty;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 8, "Add waste", 10);
+            double mortarWaste = mortarLineTotal * (mortarWastePer / 100);
 
             //lABOUR COST
             double headmanCost = (GetLabourRate("Headman")) * 1.4;
             double masonCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double headmanQty = 1;
-            double masonQty = 2;
-            double labourQty = 2;
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Headman", 1);
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Mason", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Labourer", 2);
 
             double headmanRate = headmanCost * headmanQty;
             double masonRate = masonCost * masonQty;
@@ -988,16 +1049,16 @@ namespace ADLMRateGen.ViewModel.Finishes
             double totalLabourRate = headmanRate + masonRate + labourRate;
 
             double outPutHrPerM2 = 0.35;
-            double outPutPerDay = Math.Round(1 / outPutHrPerM2 * 8, 2);
+            double outPutPerDay = UserRateEditStore.Current.Qty(SectionKey, 8, "Output per day", Math.Round(1 / outPutHrPerM2 * 8, 2));
 
             double outputPerSqm = totalLabourRate / outPutPerDay;
-            double netCostPerm2 = outputPerSqm + mortarCost + mortarWaste;
+            double netCostPerm2 = outputPerSqm + mortarLineTotal + mortarWaste;
 
             var ohp = ApplyOHP(netCostPerm2);
 
             var breakdown = new ObservableCollection<FinishesBreakdownLine>
             {
-                new FinishesBreakdownLine{ ComponentName= "Mortar 40-50mm thick (See Blockwork)", Quantity=1, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarCost},
+                new FinishesBreakdownLine{ ComponentName= "Mortar 40-50mm thick (See Blockwork)", Quantity=mortarQty, Unit="m2", UnitPrice=mortarCost, TotalPrice=mortarLineTotal},
                 new FinishesBreakdownLine{ ComponentName="Add waste", Quantity=mortarWastePer, Unit="%", UnitPrice=mortarWaste, TotalPrice=mortarWaste},
 
                 new FinishesBreakdownLine{ComponentName="Headman", Quantity=headmanQty, Unit="per/day", UnitPrice=headmanCost, TotalPrice=headmanRate},
@@ -1029,10 +1090,11 @@ namespace ADLMRateGen.ViewModel.Finishes
             double blackChippingCost = GetMaterialPrice("Terrazzo Chipping - Black");
             double unloadingBags = (GetLabourRate("Labourer")/8)*1.4;
 
-            double whiteCementQty = 28;
-            double whiteChippingQty = 70;
-            double blackChippingQty = 70;
-            double unloadingBagsDur = 2.57;
+            double whiteCementQty = UserRateEditStore.Current.Qty(SectionKey, 9, "White Cement", 28);
+            double whiteChippingQty = UserRateEditStore.Current.Qty(SectionKey, 9, "White Chipping", 70);
+            double blackChippingQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Black Chipping", 70);
+            double unloadingBagsDur = UserRateEditStore.Current.Qty(SectionKey, 9, "Unloading Bags", 2.57);
+            double materialPerSqmQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Material cost for 1m2", 3.5);
 
             double whiteCementRate = whiteCementCost * whiteCementQty;
             double whiteChippingRate = whiteChippingCost * whiteChippingQty;
@@ -1040,13 +1102,13 @@ namespace ADLMRateGen.ViewModel.Finishes
             double unloadingBagsRate = unloadingBags * unloadingBagsDur;
 
             double materialCostForSqm = whiteCementRate + whiteChippingRate + blackChippingRate + unloadingBagsRate;
-            double materialCostPerSqm = materialCostForSqm/3.5;
+            double materialCostPerSqm = materialCostForSqm/materialPerSqmQty;
 
-            double shrinkagePer = 25;
+            double shrinkagePer = UserRateEditStore.Current.Qty(SectionKey, 9, "Add shrinkage", 25);
             double shrinkage = materialCostPerSqm * (shrinkagePer / 100);
             double materialWithShrinkage = materialCostPerSqm + shrinkage;
 
-            double wastagePer = 10;
+            double wastagePer = UserRateEditStore.Current.Qty(SectionKey, 9, "Add for waste and compaction", 10);
             double wastage = materialWithShrinkage * (wastagePer / 100);
             #endregion
 
@@ -1055,8 +1117,8 @@ namespace ADLMRateGen.ViewModel.Finishes
             double mixingHeadmanCost = (GetLabourRate("Headman")/8)*1.4;
             double mixingLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double mixingHeadmanQty = 1;
-            double mixingLabourQty = 3;
+            double mixingHeadmanQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Cost of plant and labour as before calculated.", 1);
+            double mixingLabourQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Mixing crew - labour.", 3);
 
             double mixingHeadmanRate = mixingHeadmanCost * mixingHeadmanQty;
             double mixingLabourRate = mixingLabourCost * mixingLabourQty;
@@ -1066,24 +1128,24 @@ namespace ADLMRateGen.ViewModel.Finishes
             double placingLabourCost = (GetLabourRate("Labourer") / 8)*1.4;
             double placingTilierCost = (GetLabourRate("Skilled/Artisan") / 8)*1.4;
 
-            double placingLabourQty = 3;
-            double placingTilierQty = 1;
+            double placingLabourQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Placing crew - labour.", 3);
+            double placingTilierQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Placing crew - tiler.", 1);
 
             double placingLabourRate = placingLabourCost * placingLabourQty;
             double placingTilierRate = placingTilierCost * placingTilierQty;
             double totalPlacingRate = placingLabourRate + placingTilierRate;
 
             double totalMaterialCostPerCUM = materialWithShrinkage + wastage+totalMixingRate+totalPlacingRate;
-            double pavingThickness = 0.019;
+            double pavingThickness = UserRateEditStore.Current.Qty(SectionKey, 9, "Cost per 19mm paving", 0.019);
             double costPer19mmPaving = totalMaterialCostPerCUM * pavingThickness;
             #endregion
 
             #region Polishing
             //POLISHING COST
-            double firstPolishCostPer20SqmQty = Math.Round(4.0 / 20.0, 2);
-            double firstPolishGrindingMachine = Math.Round((5.0 / 60.0), 2);
-            double firstPolishTerrazoMan = Math.Round((5.0 / 60.0), 2);
-            double firstPolishTilingMan = Math.Round((5.0 / 60.0), 2);
+            double firstPolishCostPer20SqmQty = UserRateEditStore.Current.Qty(SectionKey, 9, "4 sets per 20m2", Math.Round(4.0 / 20.0, 2));
+            double firstPolishGrindingMachine = UserRateEditStore.Current.Qty(SectionKey, 9, "Grinding machine", Math.Round((5.0 / 60.0), 2));
+            double firstPolishTerrazoMan = UserRateEditStore.Current.Qty(SectionKey, 9, "Tiller/Terrazzo Man", Math.Round((5.0 / 60.0), 2));
+            double firstPolishTilingMan = UserRateEditStore.Current.Qty(SectionKey, 9, "Tiling Assistant", Math.Round((5.0 / 60.0), 2));
 
 
             double firstPolishCostPer20SqmCost = GetMaterialPrice("Carborumdum stone (8 No. per set)");
@@ -1098,11 +1160,11 @@ namespace ADLMRateGen.ViewModel.Finishes
 
             double totalFirstPolish = firstPolishCostPer20SqmRate + firstPolishGrindingRate + firstPolishTerrazoRate + firstPolishTilingRate;
 
-            double sodiumSillicatePer = 20;
-            double secondPolishCostPer20SqmQty = Math.Round(4.0 / 20.0, 2);
-            double secondPolishGrindingMachine = Math.Round(8.0 / 60.0, 2);
-            double secondPolishTerrazoMan = Math.Round(8.0 / 60.0, 2);
-            double secondPolishTilingMan = Math.Round(8.0 / 60.0, 2);
+            double sodiumSillicatePer = UserRateEditStore.Current.Qty(SectionKey, 9, "20% Sodium Sillicate", 20);
+            double secondPolishCostPer20SqmQty = UserRateEditStore.Current.Qty(SectionKey, 9, "4 sets per 20m2", Math.Round(4.0 / 20.0, 2));
+            double secondPolishGrindingMachine = UserRateEditStore.Current.Qty(SectionKey, 9, "Grinding machine", Math.Round(8.0 / 60.0, 2));
+            double secondPolishTerrazoMan = UserRateEditStore.Current.Qty(SectionKey, 9, "Tiller/Terrazzo Man", Math.Round(8.0 / 60.0, 2));
+            double secondPolishTilingMan = UserRateEditStore.Current.Qty(SectionKey, 9, "Tiling Assistant", Math.Round(8.0 / 60.0, 2));
 
             double sodiumSillicateCost = GetMaterialPrice("Acid (Sodium Silicate Solution)");
             double secondPolishCostPer20SqmCost = GetMaterialPrice("Carborumdum stone (8 No. per set)");
@@ -1118,11 +1180,11 @@ namespace ADLMRateGen.ViewModel.Finishes
 
             double totalSecondPolish = sodiumSillicateRate+ secondPolishCostPer20SqmRate + secondPolishGrindingRate + secondPolishTerrazoRate + secondPolishTilingRate;
 
-            double waxPolishPer = 15;
-            double finalPolishCostPer20SqmQty = Math.Round(4.0 / 20.0, 2);
-            double finalPolishGrindingMachine = Math.Round(10.0 / 60.0, 2);
-            double finalPolishTerrazoMan = Math.Round(10.0 / 60.0, 2);
-            double finalPolishTilingMan = Math.Round(10.0 / 60.0, 2);
+            double waxPolishPer = UserRateEditStore.Current.Qty(SectionKey, 9, "15% Wax Polish", 15);
+            double finalPolishCostPer20SqmQty = UserRateEditStore.Current.Qty(SectionKey, 9, "4 sets per 20m2", Math.Round(4.0 / 20.0, 2));
+            double finalPolishGrindingMachine = UserRateEditStore.Current.Qty(SectionKey, 9, "Grinding machine", Math.Round(10.0 / 60.0, 2));
+            double finalPolishTerrazoMan = UserRateEditStore.Current.Qty(SectionKey, 9, "Tiller/Terrazzo Man", Math.Round(10.0 / 60.0, 2));
+            double finalPolishTilingMan = UserRateEditStore.Current.Qty(SectionKey, 9, "Tiling Assistant", Math.Round(10.0 / 60.0, 2));
 
             double waxPolishCost = GetMaterialPrice("Wax polish");
             double finalPolishCostPer20SqmCost = GetMaterialPrice("Carborumdum stone (8 No. per set)");
@@ -1154,7 +1216,7 @@ namespace ADLMRateGen.ViewModel.Finishes
                 new FinishesBreakdownLine{ComponentName="Unloading Bags", Quantity=unloadingBagsDur, Unit="hrs/m3", UnitPrice=unloadingBags, TotalPrice=unloadingBagsRate},
                 new FinishesBreakdownLine{ComponentName="Total material cost 3.5m2"  ,TotalPrice=materialCostForSqm},
 
-                new FinishesBreakdownLine{ComponentName="Material cost for 1m2", Quantity=3.5, Unit="m2", TotalPrice=materialCostPerSqm},
+                new FinishesBreakdownLine{ComponentName="Material cost for 1m2", Quantity=materialPerSqmQty, Unit="m2", TotalPrice=materialCostPerSqm},
                 new FinishesBreakdownLine{ComponentName="Add shrinkage", Quantity=shrinkagePer, Unit="%", TotalPrice=shrinkage},
                 new FinishesBreakdownLine{ComponentName="Sub-total", TotalPrice=materialWithShrinkage},
                 new FinishesBreakdownLine{ComponentName="Add for waste and compaction", Quantity=wastagePer, Unit="%", TotalPrice=wastage},
@@ -1211,13 +1273,13 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem10()
         {
             double flexTileCost = GetMaterialPrice("Floor tiles 300 x 300, 56 tiles per carton")/5.04;
-            double flexTileWastePer = 10;
+            double flexTileWastePer = UserRateEditStore.Current.Qty(SectionKey, 10, "Add waste", 10);
             double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
             double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
             double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)")/4.0)/17.5;
 
-            double flexTileQty = 1;
-            double adhesiveQty = 1;
+            double flexTileQty = UserRateEditStore.Current.Qty(SectionKey, 10, "1.3mm floor flex tile", 1);
+            double adhesiveQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Adhesive", 1);
 
             double flexTileRate = flexTileCost * flexTileQty;
             double adhesiveRate = adhesiveCost * adhesiveQty;
@@ -1229,9 +1291,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
 
-            double tilesLabourQty = 12.0/60.0;
-            double labourQty = 12.0/60.0;
-            double headmanQty = 5.0/60.0;
+            double tilesLabourQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Laying tiles using 1 tiler.", 12.0/60.0);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Labourer", 12.0/60.0);
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Headman", 5.0/60.0);
 
             double tilesLabourRate = tilesLabourCost * tilesLabourQty;
             double labourRate = labourCost * labourQty;
@@ -1271,14 +1333,14 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem11()
         {
             double flexTileCost = GetMaterialPrice("300 x 300 x 1.3mm thick floor tiles (42 tiles per carton)") / 5.04;
-            double flexTileWastePer = 10;
+            double flexTileWastePer = UserRateEditStore.Current.Qty(SectionKey, 11, "Add waste", 10);
             double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
             double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
 
             double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)") / 4.0) / 17.5;
 
-            double flexTileQty = 1;
-            double adhesiveQty = 1;
+            double flexTileQty = UserRateEditStore.Current.Qty(SectionKey, 11, "1.3mm floor flex tile", 1);
+            double adhesiveQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Adhesive", 1);
 
             double flexTileRate = flexTileCost * flexTileQty;
             double adhesiveRate = adhesiveCost * adhesiveQty;
@@ -1290,9 +1352,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
 
-            double tilesLabourQty = 12.0 / 60.0;
-            double labourQty = 12.0 / 60.0;
-            double headmanQty = 5.0 / 60.0;
+            double tilesLabourQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Laying tiles using 1 tiler.", 12.0 / 60.0);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Labourer", 12.0 / 60.0);
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Headman", 5.0 / 60.0);
 
             double tilesLabourRate = tilesLabourCost * tilesLabourQty;
             double labourRate = labourCost * labourQty;
@@ -1332,14 +1394,14 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem12()
         {
             double flexTileCost = GetMaterialPrice("Floor tiles 1.6mm thick, 36 tiles per carton") / 3.24;
-            double flexTileWastePer = 10;
+            double flexTileWastePer = UserRateEditStore.Current.Qty(SectionKey, 12, "Add waste", 10);
             double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
             double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
 
             double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)") / 4.0) / 17.5;
 
-            double flexTileQty = 1;
-            double adhesiveQty = 1;
+            double flexTileQty = UserRateEditStore.Current.Qty(SectionKey, 12, "1.6mm floor flex tile", 1);
+            double adhesiveQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Adhesive", 1);
 
             double flexTileRate = flexTileCost * flexTileQty;
             double adhesiveRate = adhesiveCost * adhesiveQty;
@@ -1351,9 +1413,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
 
-            double tilesLabourQty = 12.0 / 60.0;
-            double labourQty = 12.0 / 60.0;
-            double headmanQty = 5.0 / 60.0;
+            double tilesLabourQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Laying tiles using 1 tiler.", 12.0 / 60.0);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Labourer", 12.0 / 60.0);
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Headman", 5.0 / 60.0);
 
             double tilesLabourRate = tilesLabourCost * tilesLabourQty;
             double labourRate = labourCost * labourQty;
@@ -1393,14 +1455,14 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem13()
         {
             double flexTileCost = GetMaterialPrice("Floor tiles 56 tiles per carton") / 5.04;
-            double flexTileWastePer = 10;
+            double flexTileWastePer = UserRateEditStore.Current.Qty(SectionKey, 13, "Add waste", 10);
             double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
             double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
 
             double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)") / 4.0) / 17.5;
 
-            double flexTileQty = 1;
-            double adhesiveQty = 1;
+            double flexTileQty = UserRateEditStore.Current.Qty(SectionKey, 13, "1.6mm floor flex tile", 1);
+            double adhesiveQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Adhesive", 1);
 
             double flexTileRate = flexTileCost * flexTileQty;
             double adhesiveRate = adhesiveCost * adhesiveQty;
@@ -1412,9 +1474,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
 
-            double tilesLabourQty = 12.0 / 60.0;
-            double labourQty = 12.0 / 60.0;
-            double headmanQty = 5.0 / 60.0;
+            double tilesLabourQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Laying tiles using 1 tiler.", 12.0 / 60.0);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Labourer", 12.0 / 60.0);
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Headman", 5.0 / 60.0);
 
             double tilesLabourRate = tilesLabourCost * tilesLabourQty;
             double labourRate = labourCost * labourQty;
@@ -1454,14 +1516,14 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem14()
         {
             double flexTileCost = GetMaterialPrice("Floor tiles 2.0mm thick (56 tiles per carton)") / 5.04;
-            double flexTileWastePer = 10;
+            double flexTileWastePer = UserRateEditStore.Current.Qty(SectionKey, 14, "Add waste", 10);
             double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
             double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
 
             double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)") / 4.0) / 17.5;
 
-            double flexTileQty = 1;
-            double adhesiveQty = 1;
+            double flexTileQty = UserRateEditStore.Current.Qty(SectionKey, 14, "2.0mm floor flex tile", 1);
+            double adhesiveQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Adhesive", 1);
 
             double flexTileRate = flexTileCost * flexTileQty;
             double adhesiveRate = adhesiveCost * adhesiveQty;
@@ -1473,9 +1535,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
 
-            double tilesLabourQty = 12.0 / 60.0;
-            double labourQty = 12.0 / 60.0;
-            double headmanQty = 5.0 / 60.0;
+            double tilesLabourQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Laying tiles using 1 tiler.", 12.0 / 60.0);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Labourer", 12.0 / 60.0);
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Headman", 5.0 / 60.0);
 
             double tilesLabourRate = tilesLabourCost * tilesLabourQty;
             double labourRate = labourCost * labourQty;
@@ -1515,14 +1577,14 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem15()
         {
             double flexTileCost = GetMaterialPrice("Floor tiles 3.0mm thick (38 tiles per carton)") / 5.04;
-            double flexTileWastePer = 10;
+            double flexTileWastePer = UserRateEditStore.Current.Qty(SectionKey, 15, "Add waste", 10);
             double flexTileWaste = flexTileCost * (flexTileWastePer / 100);
             double totalFlexTilesWaste = flexTileWaste * (flexTileWastePer / 100);
 
             double adhesiveCost = (GetMaterialPrice("Florflex adhesive (4 tins per carton)") / 4.0) / 17.5;
 
-            double flexTileQty = 1;
-            double adhesiveQty = 1;
+            double flexTileQty = UserRateEditStore.Current.Qty(SectionKey, 15, "3.0mm floor flex tile", 1);
+            double adhesiveQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Adhesive", 1);
 
             double flexTileRate = flexTileCost * flexTileQty;
             double adhesiveRate = adhesiveCost * adhesiveQty;
@@ -1534,9 +1596,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
             double headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
 
-            double tilesLabourQty = 12.0 / 60.0;
-            double labourQty = 12.0 / 60.0;
-            double headmanQty = 5.0 / 60.0;
+            double tilesLabourQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Laying tiles using 1 tiler.", 12.0 / 60.0);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Labourer", 12.0 / 60.0);
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Headman", 5.0 / 60.0);
 
             double tilesLabourRate = tilesLabourCost * tilesLabourQty;
             double labourRate = labourCost * labourQty;
@@ -1576,11 +1638,11 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem16()
         {
             double ceilingCost = GetMaterialPrice("84R with open sides");
-            double ceilingQty = 1;
+            double ceilingQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Luxalon ceiling type 84R", 1);
             double ceilingRate = ceilingCost * ceilingQty;
-            double wastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 16, "Add waste", 5);
             double waste = ceilingRate * (wastePer / 100);
-            double accessoriesPer = 7.5;
+            double accessoriesPer = UserRateEditStore.Current.Qty(SectionKey, 16, "Accessories", 7.5);
             double accessories = ceilingRate * (accessoriesPer / 100);
             double totalCeiling = ceilingRate + waste + accessories;
 
@@ -1589,9 +1651,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double ceilingFitterCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double ceilingLabourerCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double ceilingForemanQty = 1;
-            double ceilingFitterQty = 2;
-            double ceilingLabourerQty = 1;
+            double ceilingForemanQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Foreman", 1);
+            double ceilingFitterQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Fitter", 2);
+            double ceilingLabourerQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Labourer", 1);
 
             double ceilingForemanRate = ceilingForemanCost * ceilingForemanQty;
             double ceilingFitterRate = ceilingFitterCost * ceilingFitterQty;
@@ -1634,11 +1696,11 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem17()
         {
             double ceilingCost = GetMaterialPrice("2'x2' (600x600x13-15mm) Celotex acoustic ceiling tile (16 tiles per box) complete with aluminium suspension grid")/5.76;
-            double ceilingQty = 1;
+            double ceilingQty = UserRateEditStore.Current.Qty(SectionKey, 17, "Celotex ceiling.", 1);
             double ceilingRate = ceilingCost * ceilingQty;
-            double wastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 17, "Add waste", 5);
             double waste = ceilingRate * (wastePer / 100);
-            double accessoriesPer = 5;
+            double accessoriesPer = UserRateEditStore.Current.Qty(SectionKey, 17, "Accessories", 5);
             double accessories = ceilingRate * (accessoriesPer / 100);
             double totalCeiling = ceilingRate + waste + accessories;
 
@@ -1647,9 +1709,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double ceilingFitterCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double ceilingLabourerCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double ceilingForemanQty = 1;
-            double ceilingFitterQty = 2;
-            double ceilingLabourerQty = 1;
+            double ceilingForemanQty = UserRateEditStore.Current.Qty(SectionKey, 17, "Foreman", 1);
+            double ceilingFitterQty = UserRateEditStore.Current.Qty(SectionKey, 17, "Fitter", 2);
+            double ceilingLabourerQty = UserRateEditStore.Current.Qty(SectionKey, 17, "Labourer", 1);
 
             double ceilingForemanRate = ceilingForemanCost * ceilingForemanQty;
             double ceilingFitterRate = ceilingFitterCost * ceilingFitterQty;
@@ -1692,11 +1754,11 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem18()
         {
             double ceilingCost = GetMaterialPrice("4'x4' (1200x1200mm x 3mm thick) Asbestos ceiling sheets") / 0.44;
-            double ceilingQty = 1;
+            double ceilingQty = UserRateEditStore.Current.Qty(SectionKey, 18, "Asbestos ceiling.", 1);
             double ceilingRate = ceilingCost * ceilingQty;
-            double wastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 18, "Add waste", 5);
             double waste = ceilingRate * (wastePer / 100);
-            double accessoriesPer = 5;
+            double accessoriesPer = UserRateEditStore.Current.Qty(SectionKey, 18, "Accessories", 5);
             double accessories = ceilingRate * (accessoriesPer / 100);
             double totalCeiling = ceilingRate + waste + accessories;
 
@@ -1706,8 +1768,8 @@ namespace ADLMRateGen.ViewModel.Finishes
             double ceilingLabourerCost = (GetLabourRate("Labourer")) * 1.4;
 
             //double ceilingForemanQty = 1;
-            double ceilingFitterQty = 1;
-            double ceilingLabourerQty = 1;
+            double ceilingFitterQty = UserRateEditStore.Current.Qty(SectionKey, 18, "Carpenters", 1);
+            double ceilingLabourerQty = UserRateEditStore.Current.Qty(SectionKey, 18, "Labourer", 1);
 
             //double ceilingForemanRate = ceilingForemanCost * ceilingForemanQty;
             double ceilingFitterRate = ceilingFitterCost * ceilingFitterQty;
@@ -1750,11 +1812,11 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem19()
         {
             double ceilingCost = GetMaterialPrice("2'x2' (610x610x4mm) Decoceil decorative sheet (16 tiles per box)") / 5.95;
-            double ceilingQty = 1;
+            double ceilingQty = UserRateEditStore.Current.Qty(SectionKey, 19, "Asbestos ceiling.", 1);
             double ceilingRate = ceilingCost * ceilingQty;
-            double wastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 19, "Add waste", 5);
             double waste = ceilingRate * (wastePer / 100);
-            double accessoriesPer = 5;
+            double accessoriesPer = UserRateEditStore.Current.Qty(SectionKey, 19, "Accessories", 5);
             double accessories = ceilingRate * (accessoriesPer / 100);
             double totalCeiling = ceilingRate + waste + accessories;
 
@@ -1764,8 +1826,8 @@ namespace ADLMRateGen.ViewModel.Finishes
             double ceilingLabourerCost = (GetLabourRate("Labourer")) * 1.4;
 
             //double ceilingForemanQty = 1;
-            double ceilingFitterQty = 1;
-            double ceilingLabourerQty = 1;
+            double ceilingFitterQty = UserRateEditStore.Current.Qty(SectionKey, 19, "Carpenters", 1);
+            double ceilingLabourerQty = UserRateEditStore.Current.Qty(SectionKey, 19, "Labourer", 1);
 
             //double ceilingForemanRate = ceilingForemanCost * ceilingForemanQty;
             double ceilingFitterRate = ceilingFitterCost * ceilingFitterQty;
@@ -1808,12 +1870,12 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem20()
         {
             double tileCost = GetMaterialPrice("12x12\" (300x300mm) Brazilian Floor Tiles");
-            double transportPer = 5;
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 20, "Transport", 5);
             double transport = tileCost * (transportPer / 100);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem4);
 
-            double tileQty = 1;
-            double mortarQty = 0.015;
+            double tileQty = UserRateEditStore.Current.Qty(SectionKey, 20, "Vitrified floor tiles size 300 x 300 x 10mm", 1);
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 20, "Mortar", 0.015);
 
             double tileRate = tileCost * tileQty;
             double mortarRate = mortarCost * mortarQty;
@@ -1825,9 +1887,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double tilerCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourerCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double tilesHeadmanQty = 1;
-            double tilerQty = 1;
-            double labourerQty = 1;
+            double tilesHeadmanQty = UserRateEditStore.Current.Qty(SectionKey, 20, "Headman", 1);
+            double tilerQty = UserRateEditStore.Current.Qty(SectionKey, 20, "Tiler", 1);
+            double labourerQty = UserRateEditStore.Current.Qty(SectionKey, 20, "Labourer", 1);
 
             double tilesHeadmanRate = tilesHeadmanCost * tilesHeadmanQty;
             double tilerRate = tilerCost * tilerQty;
@@ -1870,12 +1932,12 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem21()
         {
             double tileCost = GetMaterialPrice("8x8\" (200x200mm) Italian Floor Tiles");
-            double transportPer = 5;
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 21, "Transport", 5);
             double transport = tileCost * (transportPer / 100);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem4);
 
-            double tileQty = 1;
-            double mortarQty = 0.015;
+            double tileQty = UserRateEditStore.Current.Qty(SectionKey, 21, "Vitrified floor tiles size 200 x 200 x 10mm", 1);
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 21, "Mortar", 0.015);
 
             double tileRate = tileCost * tileQty;
             double mortarRate = mortarCost * mortarQty;
@@ -1887,9 +1949,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double tilerCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourerCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double tilesHeadmanQty = 1;
-            double tilerQty = 1;
-            double labourerQty = 1;
+            double tilesHeadmanQty = UserRateEditStore.Current.Qty(SectionKey, 21, "Headman", 1);
+            double tilerQty = UserRateEditStore.Current.Qty(SectionKey, 21, "Tiler", 1);
+            double labourerQty = UserRateEditStore.Current.Qty(SectionKey, 21, "Labourer", 1);
 
             double tilesHeadmanRate = tilesHeadmanCost * tilesHeadmanQty;
             double tilerRate = tilerCost * tilerQty;
@@ -1932,12 +1994,12 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem22()
         {
             double tileCost = GetMaterialPrice("6x6\" (150x150mm) - Royal Floor Tiles")/2;
-            double transportPer = 5;
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 22, "Transport", 5);
             double transport = tileCost * (transportPer / 100);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem4);
 
-            double tileQty = 1;
-            double mortarQty = 0.015;
+            double tileQty = UserRateEditStore.Current.Qty(SectionKey, 22, "Ceramic Wall tiles size 150 x 150 x 6mm (Nigerian - Royal)", 1);
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 22, "Mortar", 0.015);
 
             double tileRate = tileCost * tileQty;
             double mortarRate = mortarCost * mortarQty;
@@ -1949,9 +2011,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double tilerCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourerCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double tilesHeadmanQty = 1;
-            double tilerQty = 1;
-            double labourerQty = 1;
+            double tilesHeadmanQty = UserRateEditStore.Current.Qty(SectionKey, 22, "Headman", 1);
+            double tilerQty = UserRateEditStore.Current.Qty(SectionKey, 22, "Tiler", 1);
+            double labourerQty = UserRateEditStore.Current.Qty(SectionKey, 22, "Labourer", 1);
 
             double tilesHeadmanRate = tilesHeadmanCost * tilesHeadmanQty;
             double tilerRate = tilerCost * tilerQty;
@@ -1994,12 +2056,12 @@ namespace ADLMRateGen.ViewModel.Finishes
         private FinishesItem ComputeItem23()
         {
             double tileCost = GetMaterialPrice("Italian Wall Tiles (6x6\")");
-            double transportPer = 5;
+            double transportPer = UserRateEditStore.Current.Qty(SectionKey, 23, "Transport", 5);
             double transport = tileCost * (transportPer / 100);
             double mortarCost = GetBlockworkNetValue(_blockworkViewModel.ComputeItem4);
 
-            double tileQty = 1;
-            double mortarQty = 0.015;
+            double tileQty = UserRateEditStore.Current.Qty(SectionKey, 23, "Ceramic Wall tiles size 150 x 150 x 6mm (Italian)", 1);
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 23, "Mortar", 0.015);
 
             double tileRate = tileCost * tileQty;
             double mortarRate = mortarCost * mortarQty;
@@ -2011,9 +2073,9 @@ namespace ADLMRateGen.ViewModel.Finishes
             double tilerCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
             double labourerCost = (GetLabourRate("Labourer")) * 1.4;
 
-            double tilesHeadmanQty = 1;
-            double tilerQty = 1;
-            double labourerQty = 1;
+            double tilesHeadmanQty = UserRateEditStore.Current.Qty(SectionKey, 23, "Headman", 1);
+            double tilerQty = UserRateEditStore.Current.Qty(SectionKey, 23, "Tiler", 1);
+            double labourerQty = UserRateEditStore.Current.Qty(SectionKey, 23, "Labourer", 1);
 
             double tilesHeadmanRate = tilesHeadmanCost * tilesHeadmanQty;
             double tilerRate = tilerCost * tilerQty;

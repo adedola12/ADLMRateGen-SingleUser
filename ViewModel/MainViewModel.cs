@@ -1146,6 +1146,18 @@ namespace ADLMRateGen.ViewModel
             StartNotificationPolling();
             ScheduleUserRatesCloudSync();
 
+            // Pull saved rate-build-up Quantity overrides from the cloud so edits made on
+            // QUIV / HERON show up here. Fires UserRateEditStore.OverridesChanged, which each
+            // section VM listens to and triggers a RecomputeAll.
+            try
+            {
+                await UserRatesCloudSync.Instance.PullUserEditsAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[MainViewModel.OnLoginSucceeded] PullUserEditsAsync failed: {ex.Message}");
+            }
+
         }
 
         // ✅ This is the real “does it fetch rates + apply to library” flow

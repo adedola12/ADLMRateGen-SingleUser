@@ -264,6 +264,19 @@
                                       Foreground="{DynamicResource Blue900Brush}" />
                     </Button>
 
+                    <Button x:Name="ResetAllEditsButton"
+                            Margin="0,0,4,0"
+                            Style="{StaticResource HeaderActionButtonStyle}"
+                            Click="ResetAllEditsButton_Click"
+                            ToolTip="Reset all rate edits app-wide — restores every section's quantities to shipped defaults and syncs the reset to QUIV / HERON.">
+                        <fa:IconBlock Icon="Undo"
+                                      Width="16"
+                                      Height="16"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Foreground="{DynamicResource Blue900Brush}" />
+                    </Button>
+
                     <Grid>
                         <Button x:Name="BellButton"
                                 Style="{StaticResource HeaderActionButtonStyle}"

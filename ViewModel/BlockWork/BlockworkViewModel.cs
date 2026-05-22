@@ -81,6 +81,18 @@ namespace ADLMRateGen.ViewModel.BlockWork
                 if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
                     RecomputeAll();
             };
+
+            UserRateEditStore.Current.OverridesChanged += (_, __) =>
+            {
+                void Refresh()
+                {
+                    var nos = BlockworkItems.Select(i => i.ItemNo).ToList();
+                    foreach (var n in nos) RecomputeItemInPlace(n);
+                }
+                var disp = System.Windows.Application.Current?.Dispatcher;
+                if (disp == null || disp.CheckAccess()) Refresh();
+                else disp.BeginInvoke((Action)Refresh);
+            };
         }
 
         public double OverheadPercent
@@ -240,6 +252,42 @@ namespace ADLMRateGen.ViewModel.BlockWork
         {
             BlockworkItems.Clear();
             BuildBlockWorkItems();
+            BlockworkCollectionView?.Refresh();
+        }
+
+        /// <summary>
+        /// Re-runs the matching ComputeItemN method for the supplied ItemNo and updates the
+        /// existing Item instance in place so the open popup keeps its DataContext binding live.
+        /// </summary>
+        public void RecomputeItemInPlace(int itemNo)
+        {
+            var existing = BlockworkItems.FirstOrDefault(i => i.ItemNo == itemNo);
+            if (existing == null) return;
+
+            Func<BlockworkItem>[] all =
+            {
+                ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6,
+                ComputeItem7, ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12,
+                ComputeItem13, ComputeItem14, ComputeItem15, ComputeItem16, ComputeItem17, ComputeItem18
+            };
+
+            BlockworkItem? fresh = null;
+            foreach (var fn in all)
+            {
+                var candidate = fn();
+                if (candidate.ItemNo == itemNo) { fresh = candidate; break; }
+            }
+            if (fresh == null) return;
+
+            existing.NetCost = fresh.NetCost;
+            existing.OverheadValue = fresh.OverheadValue;
+            existing.ProfitValue = fresh.ProfitValue;
+            existing.TotalCost = fresh.TotalCost;
+
+            existing.BlockworkBreakdownLine.Clear();
+            foreach (var line in fresh.BlockworkBreakdownLine)
+                existing.BlockworkBreakdownLine.Add(line);
+
             BlockworkCollectionView?.Refresh();
         }
 
@@ -550,14 +598,22 @@ namespace ADLMRateGen.ViewModel.BlockWork
         #region Compute Methods
         private BlockworkItem ComputeItem1()
         {
+            double mixerQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Concrete mixer 10/7", 1);
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
-            double literPerDay = 40;
-            double fuelCost = dieselPrice * literPerDay;
-            double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
+            double mixerLineTotal = mixerCost * mixerQty;
 
-            double totalPlantDay = mixerCost + fuelCost +
-                (0.03 * fuelCost) + (operatorCost);
+            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 1, "Fuel (Diesel)", 40);
+            double fuelCost = dieselPrice * literPerDay;
+
+            double oilPct = UserRateEditStore.Current.Qty(SectionKey, 1, "Oil and consumables (per day)", 3);
+            double oilCost = (oilPct / 100.0) * fuelCost;
+
+            double operatorQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Operator (per day)", 1);
+            double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
+            double operatorTotal = operatorCost * operatorQty;
+
+            double totalPlantDay = mixerLineTotal + fuelCost + oilCost + operatorTotal;
 
             double workHr = 8;
             double costPerHr = totalPlantDay / workHr;
@@ -568,10 +624,10 @@ namespace ADLMRateGen.ViewModel.BlockWork
 
             var breakdown = new ObservableCollection<BlockworkBreakdownLine>
             {
-                new BlockworkBreakdownLine { ComponentName="Concrete mixer 10/7", Quantity=1, Unit="N/day", UnitPrice=mixerCost },
+                new BlockworkBreakdownLine { ComponentName="Concrete mixer 10/7", Quantity=mixerQty, Unit="N/day", UnitPrice=mixerCost, TotalPrice=mixerLineTotal },
                 new BlockworkBreakdownLine { ComponentName="Fuel (Diesel)", Quantity=literPerDay, Unit="hr/m3", UnitPrice=dieselPrice, TotalPrice=fuelCost },
-                new BlockworkBreakdownLine { ComponentName="Oil and consumables (per day)", Quantity=3, Unit="%", TotalPrice=0.03 * fuelCost },
-                new BlockworkBreakdownLine { ComponentName="Operator (per day)", Quantity=1, Unit="Nr/Day", UnitPrice=operatorCost, TotalPrice=operatorCost },
+                new BlockworkBreakdownLine { ComponentName="Oil and consumables (per day)", Quantity=oilPct, Unit="%", TotalPrice=oilCost },
+                new BlockworkBreakdownLine { ComponentName="Operator (per day)", Quantity=operatorQty, Unit="Nr/Day", UnitPrice=operatorCost, TotalPrice=operatorTotal },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Cost per day", Quantity=1, Unit="", TotalPrice=totalPlantDay },
                 new BlockworkBreakdownLine { ComponentName="Cost per hour (8 hour Working Day)", Quantity=workHr, Unit="N/Hr", UnitPrice=totalPlantDay, TotalPrice=costPerHr },
                 new BlockworkBreakdownLine { ComponentName="Total", Quantity=volPerHr, Unit="m3", TotalPrice=netCostPerm3 },
@@ -596,9 +652,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
             double sandPrice = GetMaterialPrice("Sharp Sand");
 
-            double cementPerM3 = 28.82;
-            double sandPerM3 = 3;
-            double wastePer = 25;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 2, "Cement", 28.82);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 2, "Sand", 3);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 2, "Add for waste.", 25);
 
             double cementCost = cementPerM3 * cementPrice;
             double cementLoadingCost = cementLoadingPrice * cementPerM3;
@@ -624,8 +680,10 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double costPerHr = totalPlantDay / workHr;
 
             double volPerHr = 5.66;
-            double netCostPerUse = costPerHr / volPerHr;
+            double netCostPerUseRaw = costPerHr / volPerHr;
 
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Cost of plant and labour as before calculated.", 1);
+            double netCostPerUse = netCostPerUseRaw * plantLabourQty;
 
             double netCostPerm3 = materialCostPerCum + netCostPerUse;
 
@@ -641,9 +699,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
                 new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Material cost per m3", Quantity=1, Unit="m3", TotalPrice=materialCostPerCum },
-			
+
 				//MIXING
-				new BlockworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="", TotalPrice=netCostPerUse },
+				new BlockworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="", TotalPrice=netCostPerUse },
 
 
                 new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m3", TotalPrice=netCostPerm3 },
@@ -668,9 +726,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
             double sandPrice = GetMaterialPrice("Sharp Sand");
 
-            double cementPerM3 = 28.82;
-            double sandPerM3 = 4;
-            double wastePer = 25;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 3, "Cement", 28.82);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 3, "Sand", 4);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 3, "Add for waste.", 25);
 
             double cementCost = cementPerM3 * cementPrice;
             double cementLoadingCost = cementLoadingPrice * cementPerM3;
@@ -696,8 +754,10 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double costPerHr = totalPlantDay / workHr;
 
             double volPerHr = 5.66;
-            double netCostPerUse = costPerHr / volPerHr;
+            double netCostPerUseRaw = costPerHr / volPerHr;
 
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Cost of plant and labour as before calculated.", 1);
+            double netCostPerUse = netCostPerUseRaw * plantLabourQty;
 
             double netCostPerm3 = materialCostPerCum + netCostPerUse;
 
@@ -713,9 +773,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
                 new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Material cost per m3", Quantity=1, Unit="m3", TotalPrice=materialCostPerCum },
-			
+
 				//MIXING
-				new BlockworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="", TotalPrice=netCostPerUse },
+				new BlockworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="", TotalPrice=netCostPerUse },
 
 
                 new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m3", TotalPrice=netCostPerm3 },
@@ -740,9 +800,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
             double sandPrice = GetMaterialPrice("Sharp Sand");
 
-            double cementPerM3 = 28.82;
-            double sandPerM3 = 6;
-            double wastePer = 25;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 4, "Cement", 28.82);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 4, "Sand", 6);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 4, "Add for waste.", 25);
 
             double cementCost = cementPerM3 * cementPrice;
             double cementLoadingCost = cementLoadingPrice * cementPerM3;
@@ -768,8 +828,10 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double costPerHr = totalPlantDay / workHr;
 
             double volPerHr = 5.66;
-            double netCostPerUse = costPerHr / volPerHr;
+            double netCostPerUseRaw = costPerHr / volPerHr;
 
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Cost of plant and labour as before calculated.", 1);
+            double netCostPerUse = netCostPerUseRaw * plantLabourQty;
 
             double netCostPerm3 = materialCostPerCum + netCostPerUse;
 
@@ -785,9 +847,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
                 new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Material cost per m3", Quantity=1, Unit="m3", TotalPrice=materialCostPerCum },
-			
+
 				//MIXING
-				new BlockworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="", TotalPrice=netCostPerUse },
+				new BlockworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="", TotalPrice=netCostPerUse },
 
 
                 new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m3", TotalPrice=netCostPerm3 },
@@ -812,9 +874,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
             double sandPrice = GetMaterialPrice("Sharp Sand");
 
-            double cementPerM3 = 28.82;
-            double sandPerM3 = 1;
-            double wastePer = 25;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 5, "Cement", 28.82);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 5, "Sand", 1);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 5, "Add for waste.", 25);
 
             double cementCost = cementPerM3 * cementPrice;
             double cementLoadingCost = cementLoadingPrice * cementPerM3;
@@ -840,8 +902,10 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double costPerHr = totalPlantDay / workHr;
 
             double volPerHr = 5.66;
-            double netCostPerUse = costPerHr / volPerHr;
+            double netCostPerUseRaw = costPerHr / volPerHr;
 
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Cost of plant and labour as before calculated.", 1);
+            double netCostPerUse = netCostPerUseRaw * plantLabourQty;
 
             double netCostPerm3 = materialCostPerCum + netCostPerUse;
 
@@ -857,9 +921,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
                 new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Material cost per m3", Quantity=1, Unit="m3", TotalPrice=materialCostPerCum },
-			
+
 				//MIXING
-				new BlockworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="", TotalPrice=netCostPerUse },
+				new BlockworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="", TotalPrice=netCostPerUse },
 
 
                 new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m3", TotalPrice=netCostPerm3 },
@@ -884,9 +948,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double cementLoadingPrice = GetMaterialPrice("Loading and unloading cement");
             double sandPrice = GetMaterialPrice("Sharp Sand");
 
-            double cementPerM3 = 28.82;
-            double sandPerM3 = 12;
-            double wastePer = 25;
+            double cementPerM3 = UserRateEditStore.Current.Qty(SectionKey, 6, "Cement", 28.82);
+            double sandPerM3 = UserRateEditStore.Current.Qty(SectionKey, 6, "Sand", 12);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 6, "Add for waste.", 25);
 
             double cementCost = cementPerM3 * cementPrice;
             double cementLoadingCost = cementLoadingPrice * cementPerM3;
@@ -912,8 +976,10 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double costPerHr = totalPlantDay / workHr;
 
             double volPerHr = 5.66;
-            double netCostPerUse = costPerHr / volPerHr;
+            double netCostPerUseRaw = costPerHr / volPerHr;
 
+            double plantLabourQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Cost of plant and labour as before calculated.", 1);
+            double netCostPerUse = netCostPerUseRaw * plantLabourQty;
 
             double netCostPerm3 = materialCostPerCum + netCostPerUse;
 
@@ -929,9 +995,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
                 new BlockworkBreakdownLine { ComponentName="Add for waste.", Quantity=wastePer, Unit="%", TotalPrice=waste },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Material", Quantity=1, Unit="", TotalPrice=finalMaterialCost },
                 new BlockworkBreakdownLine { ComponentName="Sub-total: Material cost per m3", Quantity=1, Unit="m3", TotalPrice=materialCostPerCum },
-			
+
 				//MIXING
-				new BlockworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=1, Unit="", TotalPrice=netCostPerUse },
+				new BlockworkBreakdownLine { ComponentName="Cost of plant and labour as before calculated.", Quantity=plantLabourQty, Unit="", TotalPrice=netCostPerUse },
 
 
                 new BlockworkBreakdownLine { ComponentName="Total", Quantity=1, Unit="m3", TotalPrice=netCostPerm3 },
@@ -955,8 +1021,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double blockPrice = GetMaterialPrice("225 x 225 x 450mm (9 x 9 x 18\") Hollow blocks");
             double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
 
-            double blockPerM2 = 10;
-            double wastePer = 10;
+            double blockPerM2 = UserRateEditStore.Current.Qty(SectionKey, 7, "Blocks per square meter.", 10);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 7, "Add for waste.", 10);
 
             double blockCost = blockPrice * blockPerM2;
             double blockLoadingCost = blockLoadingPrice * blockPerM2;
@@ -966,9 +1032,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double finalMaterialCost = totalMaterialCost + waste+ blockLoadingCost;
 
             double mortarCost = GetNetValue(ComputeItem4);
-            double mortarQty = 0.013;
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Mortar per square meter", 0.013);
             double totalMortarCost = mortarCost * mortarQty;
-            double mortarWastePer = 5;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 7, "Add for waste.", 5);
             double mortarWaste = totalMortarCost * (mortarWastePer / 100);
             double finalCost = totalMortarCost + mortarWaste;
 
@@ -976,8 +1042,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
 
-            double masonQty = 3;
-            double labourQty = 2;
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Masons", 3);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour", 2);
 
             double masonPrice = masonCost * masonQty;
             double labourPrice = labourCost * labourQty;
@@ -1026,17 +1092,17 @@ namespace ADLMRateGen.ViewModel.BlockWork
         }
         private BlockworkItem ComputeItem8()
         {
-            double concreteFillingQty = 0.1030;
+            double concreteFillingQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Concrete filling in 225mm blockwall", 0.1030);
             double concreteCost = GetConcreteNetValue(_concreteViewModel.ComputeItem3);
             double concreteTotal = concreteFillingQty * concreteCost;
 
-            double wastePer = 2.5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 8, "Add for waste.", 2.5);
             double waste = concreteTotal * (wastePer / 100);
             double finalMaterialCost = concreteTotal + waste;
 
             //LABOUR COST
             double labourCost = (GetLabourRate("Labourer")/8) * 1.4;
-            double labourDuration = 0.5;
+            double labourDuration = UserRateEditStore.Current.Qty(SectionKey, 8, "Labour filling 225mm blockwall", 0.5);
             double labourPrice = labourCost * labourDuration;
 
             double netFillingCost = finalMaterialCost + labourPrice;
@@ -1079,8 +1145,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double blockPrice = GetMaterialPrice("150 x 225 x 450mm (6 x 9 x 18\") Hollow blocks");
             double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
 
-            double blockPerM2 = 10;
-            double wastePer = 10;
+            double blockPerM2 = UserRateEditStore.Current.Qty(SectionKey, 9, "Blocks per square meter.", 10);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 9, "Add for waste.", 10);
 
             double blockCost = blockPrice * blockPerM2;
             double blockLoadingCost = blockLoadingPrice * blockPerM2;
@@ -1090,9 +1156,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double finalMaterialCost = totalMaterialCost + waste + blockLoadingCost;
 
             double mortarCost = GetNetValue(ComputeItem4);
-            double mortarQty = 0.0084;
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Mortar per square meter", 0.0084);
             double totalMortarCost = mortarCost * mortarQty;
-            double mortarWastePer = 5;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 9, "Add for waste.", 5);
             double mortarWaste = totalMortarCost * (mortarWastePer / 100);
             double finalCost = totalMortarCost + mortarWaste;
 
@@ -1100,8 +1166,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
 
-            double masonQty = 3;
-            double labourQty = 2;
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Masons", 3);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Labour", 2);
 
             double masonPrice = masonCost * masonQty;
             double labourPrice = labourCost * labourQty;
@@ -1150,17 +1216,17 @@ namespace ADLMRateGen.ViewModel.BlockWork
         }
         private BlockworkItem ComputeItem10()
         {
-            double concreteFillingQty = 0.0618;
+            double concreteFillingQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Concrete filling in 150mm blockwall", 0.0618);
             double concreteCost = GetConcreteNetValue(_concreteViewModel.ComputeItem3);
             double concreteTotal = concreteFillingQty * concreteCost;
 
-            double wastePer = 2.5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 10, "Add for waste.", 2.5);
             double waste = concreteTotal * (wastePer / 100);
             double finalMaterialCost = concreteTotal + waste;
 
             //LABOUR COST
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
-            double labourDuration = 0.33;
+            double labourDuration = UserRateEditStore.Current.Qty(SectionKey, 10, "Labour filling 150mm blockwall", 0.33);
             double labourPrice = labourCost * labourDuration;
 
             double netFillingCost = finalMaterialCost + labourPrice;
@@ -1202,8 +1268,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double blockPrice = GetMaterialPrice("100 x 225 x 450mm (4 x 9 x 18\") Hollow blocks");
             double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
 
-            double blockPerM2 = 10;
-            double wastePer = 10;
+            double blockPerM2 = UserRateEditStore.Current.Qty(SectionKey, 11, "Blocks per square meter.", 10);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 11, "Add for waste.", 10);
 
             double blockCost = blockPrice * blockPerM2;
             double blockLoadingCost = blockLoadingPrice * blockPerM2;
@@ -1213,9 +1279,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double finalMaterialCost = totalMaterialCost + waste + blockLoadingCost;
 
             double mortarCost = GetNetValue(ComputeItem4);
-            double mortarQty = 0.0058;
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Mortar per square meter", 0.0058);
             double totalMortarCost = mortarCost * mortarQty;
-            double mortarWastePer = 5;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 11, "Add for waste.", 5);
             double mortarWaste = totalMortarCost * (mortarWastePer / 100);
             double finalCost = totalMortarCost + mortarWaste;
 
@@ -1223,8 +1289,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
 
-            double masonQty = 3;
-            double labourQty = 2;
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Masons", 3);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 11, "Labour", 2);
 
             double masonPrice = masonCost * masonQty;
             double labourPrice = labourCost * labourQty;
@@ -1273,17 +1339,17 @@ namespace ADLMRateGen.ViewModel.BlockWork
         }
         private BlockworkItem ComputeItem12()
         {
-            double concreteFillingQty = 0.0442;
+            double concreteFillingQty = UserRateEditStore.Current.Qty(SectionKey, 12, "Concrete filling in 100mm blockwall", 0.0442);
             double concreteCost = GetConcreteNetValue(_concreteViewModel.ComputeItem3);
             double concreteTotal = concreteFillingQty * concreteCost;
 
-            double wastePer = 2.5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 12, "Add for waste.", 2.5);
             double waste = concreteTotal * (wastePer / 100);
             double finalMaterialCost = concreteTotal + waste;
 
             //LABOUR COST
             double labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
-            double labourDuration = 0.25;
+            double labourDuration = UserRateEditStore.Current.Qty(SectionKey, 12, "Labour filling 100mm blockwall", 0.25);
             double labourPrice = labourCost * labourDuration;
 
             double netFillingCost = finalMaterialCost + labourPrice;
@@ -1325,8 +1391,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double blockPrice = GetMaterialPrice("225 x 225 x 450mm (9 x 9 x 18\") Hollow blocks");
             double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
 
-            double blockPerM2 = 10;
-            double wastePer = 10;
+            double blockPerM2 = UserRateEditStore.Current.Qty(SectionKey, 13, "Blocks per square meter.", 10);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 13, "Add for waste.", 10);
 
             double blockCost = blockPrice * blockPerM2;
             double blockLoadingCost = blockLoadingPrice * blockPerM2;
@@ -1336,9 +1402,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double finalMaterialCost = totalMaterialCost + waste + blockLoadingCost;
 
             double mortarCost = GetNetValue(ComputeItem3);
-            double mortarQty = 0.013;
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Mortar per square meter", 0.013);
             double totalMortarCost = mortarCost * mortarQty;
-            double mortarWastePer = 5;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 13, "Add for waste.", 5);
             double mortarWaste = totalMortarCost * (mortarWastePer / 100);
             double finalCost = totalMortarCost + mortarWaste;
 
@@ -1346,8 +1412,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
 
-            double masonQty = 3;
-            double labourQty = 2;
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Masons", 3);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 13, "Labour", 2);
 
             double masonPrice = masonCost * masonQty;
             double labourPrice = labourCost * labourQty;
@@ -1400,8 +1466,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double blockPrice = GetMaterialPrice("150 x 225 x 450mm (6 x 9 x 18\") Hollow blocks");
             double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
 
-            double blockPerM2 = 10;
-            double wastePer = 10;
+            double blockPerM2 = UserRateEditStore.Current.Qty(SectionKey, 14, "Blocks per square meter.", 10);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 14, "Add for waste.", 10);
 
             double blockCost = blockPrice * blockPerM2;
             double blockLoadingCost = blockLoadingPrice * blockPerM2;
@@ -1411,9 +1477,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double finalMaterialCost = totalMaterialCost + waste + blockLoadingCost;
 
             double mortarCost = GetNetValue(ComputeItem3);
-            double mortarQty = 0.0084;
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Mortar per square meter", 0.0084);
             double totalMortarCost = mortarCost * mortarQty;
-            double mortarWastePer = 5;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 14, "Add for waste.", 5);
             double mortarWaste = totalMortarCost * (mortarWastePer / 100);
             double finalCost = totalMortarCost + mortarWaste;
 
@@ -1421,8 +1487,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
 
-            double masonQty = 3;
-            double labourQty = 2;
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Masons", 3);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 14, "Labour", 2);
 
             double masonPrice = masonCost * masonQty;
             double labourPrice = labourCost * labourQty;
@@ -1475,8 +1541,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double blockPrice = GetMaterialPrice("100 x 225 x 450mm (4 x 9 x 18\") Hollow blocks");
             double blockLoadingPrice = GetMaterialPrice("Loading and unloading blocks");
 
-            double blockPerM2 = 10;
-            double wastePer = 10;
+            double blockPerM2 = UserRateEditStore.Current.Qty(SectionKey, 15, "Blocks per square meter.", 10);
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 15, "Add for waste.", 10);
 
             double blockCost = blockPrice * blockPerM2;
             double blockLoadingCost = blockLoadingPrice * blockPerM2;
@@ -1486,9 +1552,9 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double finalMaterialCost = totalMaterialCost + waste + blockLoadingCost;
 
             double mortarCost = GetNetValue(ComputeItem3);
-            double mortarQty = 0.0058;
+            double mortarQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Mortar per square meter", 0.0058);
             double totalMortarCost = mortarCost * mortarQty;
-            double mortarWastePer = 5;
+            double mortarWastePer = UserRateEditStore.Current.Qty(SectionKey, 15, "Add for waste.", 5);
             double mortarWaste = totalMortarCost * (mortarWastePer / 100);
             double finalCost = totalMortarCost + mortarWaste;
 
@@ -1496,8 +1562,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
 
-            double masonQty = 3;
-            double labourQty = 2;
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Masons", 3);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 15, "Labour", 2);
 
             double masonPrice = masonCost * masonQty;
             double labourPrice = labourCost * labourQty;
@@ -1551,16 +1617,16 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double hardwoodPrice = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
             double solignumPrice = GetMaterialPrice("Solignum (normal)")/20;
 
-            double panelPer100m2 = 35;
-            double hardwoodPer100m2 = 130;
-            double solignumPer100m2 = 50;
+            double panelPer100m2 = UserRateEditStore.Current.Qty(SectionKey, 16, "18mm plywood", 35);
+            double hardwoodPer100m2 = UserRateEditStore.Current.Qty(SectionKey, 16, "50 x 50mm hardwood", 130);
+            double solignumPer100m2 = UserRateEditStore.Current.Qty(SectionKey, 16, "Solignum", 50);
 
             double panelCost = plywoodPrice * panelPer100m2;
             double hardwoodCost = hardwoodPer100m2 * hardwoodPrice;
             double solignumCost = solignumPrice * solignumPer100m2;
-            double nailPer = 2.5;
+            double nailPer = UserRateEditStore.Current.Qty(SectionKey, 16, "Add for nail.", 2.5);
             double nails = (panelCost+hardwoodCost) * (nailPer / 100);
-            double wastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 16, "Add for waste.", 5);
             double waste = (panelCost + hardwoodCost+solignumCost+nails) * (wastePer / 100);
 
             double totalMaterial = panelCost + hardwoodCost + solignumCost + nails + waste;
@@ -1570,8 +1636,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
 
-            double masonQty = 3;
-            double labourQty = 2;
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Masons", 3);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 16, "Labour", 2);
 
             double masonPrice = masonCost * masonQty;
             double labourPrice = labourCost * labourQty;
@@ -1621,16 +1687,16 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double hardwoodPrice = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
             double solignumPrice = GetMaterialPrice("Solignum (normal)") / 20;
 
-            double panelPer100m2 = 35;
-            double hardwoodPer100m2 = 80;
-            double solignumPer100m2 = 50;
+            double panelPer100m2 = UserRateEditStore.Current.Qty(SectionKey, 17, "18mm plywood", 35);
+            double hardwoodPer100m2 = UserRateEditStore.Current.Qty(SectionKey, 17, "50 x 50mm hardwood", 80);
+            double solignumPer100m2 = UserRateEditStore.Current.Qty(SectionKey, 17, "Solignum", 50);
 
             double panelCost = plywoodPrice * panelPer100m2;
             double hardwoodCost = hardwoodPer100m2 * hardwoodPrice;
             double solignumCost = solignumPrice * solignumPer100m2;
-            double nailPer = 2.5;
+            double nailPer = UserRateEditStore.Current.Qty(SectionKey, 17, "Add for nail.", 2.5);
             double nails = (panelCost + hardwoodCost) * (nailPer / 100);
-            double wastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 17, "Add for waste.", 5);
             double waste = (panelCost + hardwoodCost + solignumCost + nails) * (wastePer / 100);
 
             double totalMaterial = panelCost + hardwoodCost + solignumCost + nails + waste;
@@ -1640,8 +1706,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
 
-            double masonQty = 3;
-            double labourQty = 2;
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 17, "Masons", 3);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 17, "Labour", 2);
 
             double masonPrice = masonCost * masonQty;
             double labourPrice = labourCost * labourQty;
@@ -1691,16 +1757,16 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double hardwoodPrice = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
             double solignumPrice = GetMaterialPrice("Solignum (normal)") / 20;
 
-            double panelPer100m2 = 70;
-            double hardwoodPer100m2 = 80;
-            double solignumPer100m2 = 50;
+            double panelPer100m2 = UserRateEditStore.Current.Qty(SectionKey, 18, "18mm plywood", 70);
+            double hardwoodPer100m2 = UserRateEditStore.Current.Qty(SectionKey, 18, "50 x 50mm hardwood", 80);
+            double solignumPer100m2 = UserRateEditStore.Current.Qty(SectionKey, 18, "Solignum", 50);
 
             double panelCost = plywoodPrice * panelPer100m2;
             double hardwoodCost = hardwoodPer100m2 * hardwoodPrice;
             double solignumCost = solignumPrice * solignumPer100m2;
-            double nailPer = 2.5;
+            double nailPer = UserRateEditStore.Current.Qty(SectionKey, 18, "Add for nail.", 2.5);
             double nails = (panelCost + hardwoodCost) * (nailPer / 100);
-            double wastePer = 5;
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, 18, "Add for waste.", 5);
             double waste = (panelCost + hardwoodCost + solignumCost + nails) * (wastePer / 100);
 
             double totalMaterial = panelCost + hardwoodCost + solignumCost + nails + waste;
@@ -1710,8 +1776,8 @@ namespace ADLMRateGen.ViewModel.BlockWork
             double masonCost = GetLabourRate("Skilled/Artisan") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
 
-            double masonQty = 3;
-            double labourQty = 2;
+            double masonQty = UserRateEditStore.Current.Qty(SectionKey, 18, "Masons", 3);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, 18, "Labour", 2);
 
             double masonPrice = masonCost * masonQty;
             double labourPrice = labourCost * labourQty;

@@ -9,6 +9,7 @@ using ADLMRateGen.ViewModel.RoofWork;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -143,6 +144,18 @@ namespace ADLMRateGen.ViewModel.SteelWork
                 if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
                     RecomputeAll();
             };
+
+            UserRateEditStore.Current.OverridesChanged += (_, __) =>
+            {
+                void Refresh()
+                {
+                    var nos = SteelWorkItems.Select(i => i.ItemNo).ToList();
+                    foreach (var n in nos) RecomputeItemInPlace(n);
+                }
+                var disp = System.Windows.Application.Current?.Dispatcher;
+                if (disp == null || disp.CheckAccess()) Refresh();
+                else disp.BeginInvoke((Action)Refresh);
+            };
         }
 
         /* -------------------- API LOADERS -------------------- */
@@ -232,6 +245,36 @@ namespace ADLMRateGen.ViewModel.SteelWork
         {
             SteelWorkItems.Clear();
             BuildSteelworkItem();
+            SteelWorkCollectionView?.Refresh();
+        }
+
+        public void RecomputeItemInPlace(int itemNo)
+        {
+            var existing = SteelWorkItems.FirstOrDefault(i => i.ItemNo == itemNo);
+            if (existing == null) return;
+
+            Func<SteelworkItem>[] all =
+            {
+                ComputeItem1, ComputeItem2, ComputeItem3
+            };
+
+            SteelworkItem? fresh = null;
+            foreach (var fn in all)
+            {
+                var candidate = fn();
+                if (candidate.ItemNo == itemNo) { fresh = candidate; break; }
+            }
+            if (fresh == null) return;
+
+            existing.NetCost = fresh.NetCost;
+            existing.OverheadValue = fresh.OverheadValue;
+            existing.ProfitValue = fresh.ProfitValue;
+            existing.TotalCost = fresh.TotalCost;
+
+            existing.SteelWorkBreakdownLines.Clear();
+            foreach (var line in fresh.SteelWorkBreakdownLines)
+                existing.SteelWorkBreakdownLines.Add(line);
+
             SteelWorkCollectionView?.Refresh();
         }
 
@@ -487,14 +530,14 @@ namespace ADLMRateGen.ViewModel.SteelWork
         public SteelworkItem ComputeItem1()
         {
             double brushCost = GetLabourRate("Power Brush");
-            double brushQty = 1;
+            double brushQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Power Brush", 1);
             double brushTotal = brushCost * brushQty;
 
-            double brushPer = 10;
+            double brushPer = UserRateEditStore.Current.Qty(SectionKey, 1, "Allow for Brushes", 10);
             double brushOv = brushTotal * (brushPer / 100);
 
             double artisanCost = GetLabourRate("Semi skilled") * 1.4;
-            double artisanQty = 1;
+            double artisanQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Skilled/Artisan", 1);
             double artisanTotal = artisanCost * artisanQty;
 
             double totalCostPerDay = brushTotal + brushOv + artisanTotal;
@@ -533,12 +576,12 @@ namespace ADLMRateGen.ViewModel.SteelWork
             double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
             double gritCost = GetMaterialPrice("Grit (for sand blasting)");
 
-            double compressorQty = 0.025;
-            double fuelQty = 45;
-            double oilPer = 3;
-            double sandPotQty = 0.025;
-            double respiratoryQty = 0.025;
-            double gritQty = 0.15;
+            double compressorQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Compressor", 0.025);
+            double fuelQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Fuel (Diesel)", 45);
+            double oilPer = UserRateEditStore.Current.Qty(SectionKey, 2, "Oil and consumables (per day)", 3);
+            double sandPotQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Sand Pot", 0.025);
+            double respiratoryQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Respiratory gear.", 0.025);
+            double gritQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Grit", 0.15);
 
             double compressorRate = compressorCost * compressorQty;
             double fuelRate = fuelCost * fuelQty;
@@ -551,16 +594,16 @@ namespace ADLMRateGen.ViewModel.SteelWork
             double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
             double blastingForemanCost = GetLabourRate("Foreman") * 1.4;
 
-            double blastingOperatorQty = 1;
-            double blastingLabouurQty = 3;
-            double blastingForemanQty = 1;
+            double blastingOperatorQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Blasting operator.", 1);
+            double blastingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Labour (for loading sand pot)", 3);
+            double blastingForemanQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Foreman", 1);
 
             double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
             double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
             double blastingForemanRate = blastingForemanCost * blastingForemanQty;
 
             double blastingLabour = blastingOperatorRate + blastingLabourRate + blastingForemanRate;
-            double blastingOutputDaily = 300;
+            double blastingOutputDaily = UserRateEditStore.Current.Qty(SectionKey, 2, "Labour Output", 300);
 
             double blastingPerSqm = blastingLabour / blastingOutputDaily;
 
@@ -616,12 +659,12 @@ namespace ADLMRateGen.ViewModel.SteelWork
             double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
             double gritCost = GetMaterialPrice("Sharp Sand");
 
-            double compressorQty = 0.025;
-            double fuelQty = 45;
-            double oilPer = 3;
-            double sandPotQty = 0.025;
-            double respiratoryQty = 0.025;
-            double gritQty = 0.15;
+            double compressorQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Compressor", 0.025);
+            double fuelQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Fuel (Diesel)", 45);
+            double oilPer = UserRateEditStore.Current.Qty(SectionKey, 3, "Oil and consumables (per day)", 3);
+            double sandPotQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Sand Pot", 0.025);
+            double respiratoryQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Respiratory gear.", 0.025);
+            double gritQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Grit", 0.15);
 
             double compressorRate = compressorCost * compressorQty;
             double fuelRate = fuelCost * fuelQty;
@@ -634,16 +677,16 @@ namespace ADLMRateGen.ViewModel.SteelWork
             double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
             double blastingForemanCost = GetLabourRate("Foreman") * 1.4;
 
-            double blastingOperatorQty = 1;
-            double blastingLabouurQty = 3;
-            double blastingForemanQty = 1;
+            double blastingOperatorQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Blasting operator.", 1);
+            double blastingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Labour (for loading sand pot)", 3);
+            double blastingForemanQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Foreman", 1);
 
             double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
             double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
             double blastingForemanRate = blastingForemanCost * blastingForemanQty;
 
             double blastingLabour = blastingOperatorRate + blastingLabourRate + blastingForemanRate;
-            double blastingOutputDaily = 300;
+            double blastingOutputDaily = UserRateEditStore.Current.Qty(SectionKey, 3, "Labour Output", 300);
 
             double blastingPerSqm = blastingLabour / blastingOutputDaily;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -143,6 +144,18 @@ namespace ADLMRateGen.ViewModel.Painting
                 if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
                     RecomputeAll();
             };
+
+            UserRateEditStore.Current.OverridesChanged += (_, __) =>
+            {
+                void Refresh()
+                {
+                    var nos = PaintWorkItems.Select(i => i.ItemNo).ToList();
+                    foreach (var n in nos) RecomputeItemInPlace(n);
+                }
+                var disp = System.Windows.Application.Current?.Dispatcher;
+                if (disp == null || disp.CheckAccess()) Refresh();
+                else disp.BeginInvoke((Action)Refresh);
+            };
         }
 
         /* -------------------- Cloud loaders -------------------- */
@@ -237,6 +250,42 @@ namespace ADLMRateGen.ViewModel.Painting
         {
             PaintWorkItems.Clear();
             BuildPaintworkItem();
+            PaintWorkCollectionView?.Refresh();
+        }
+
+        /// <summary>
+        /// Re-runs the matching ComputeItemN method for the supplied ItemNo and updates the
+        /// existing Item instance in place so the open popup keeps its DataContext binding live.
+        /// Called by the breakdown popup after a user edits a Quantity.
+        /// </summary>
+        public void RecomputeItemInPlace(int itemNo)
+        {
+            var existing = PaintWorkItems.FirstOrDefault(i => i.ItemNo == itemNo);
+            if (existing == null) return;
+
+            Func<PaintWorkItem>[] all =
+            {
+                ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5,
+                ComputeItem6, ComputeItem7, ComputeItem8, ComputeItem9
+            };
+
+            PaintWorkItem? fresh = null;
+            foreach (var fn in all)
+            {
+                var candidate = fn();
+                if (candidate.ItemNo == itemNo) { fresh = candidate; break; }
+            }
+            if (fresh == null) return;
+
+            existing.NetCost = fresh.NetCost;
+            existing.OverheadValue = fresh.OverheadValue;
+            existing.ProfitValue = fresh.ProfitValue;
+            existing.TotalCost = fresh.TotalCost;
+
+            existing.PaintingBreakdownLines.Clear();
+            foreach (var line in fresh.PaintingBreakdownLines)
+                existing.PaintingBreakdownLines.Add(line);
+
             PaintWorkCollectionView?.Refresh();
         }
 
@@ -505,17 +554,17 @@ namespace ADLMRateGen.ViewModel.Painting
             double antiFungalCost = GetMaterialPrice("Pealux Anti Fungi/Algae Emulsion")/4;
             double texcoteCost = GetMaterialPrice("Peacotex Textured Finish (B/W)") /25;
 
-            double puttyQty = 0.3;
-            double antiFungalQty = 0.4;
-            double texcoteQty = 1;
+            double puttyQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Putty filler to joints and fine cracks", 0.3);
+            double antiFungalQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Anti-fungal paint", 0.4);
+            double texcoteQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Texcote-(Pealux - 25kg drum)", 1);
 
             double puttyRate = puttyCost * puttyQty;
             double antiFungalRate = antiFungalCost * antiFungalQty;
             double texcoteRate = texcoteCost * texcoteQty;
 
-            double puttyWastePer = 2.5;
-            double antiFungalWastePer = 10;
-            double texcoatWastePer = 10;
+            double puttyWastePer = UserRateEditStore.Current.Qty(SectionKey, 1, "Add waste", 2.5);
+            double antiFungalWastePer = UserRateEditStore.Current.Qty(SectionKey, 1, "Add waste", 10);
+            double texcoatWastePer = UserRateEditStore.Current.Qty(SectionKey, 1, "Add waste", 10);
 
             double puttyWaste = puttyRate * (puttyWastePer / 100);
             double antiFungalWaste = antiFungalRate *(antiFungalWastePer / 100);
@@ -526,10 +575,10 @@ namespace ADLMRateGen.ViewModel.Painting
 
             //LABOUR COST
             double painterCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
-            double painterQty = 2;
+            double painterQty = UserRateEditStore.Current.Qty(SectionKey, 1, "Painter", 2);
             double painterRate = painterCost * painterQty;
 
-            double painterOutput = 18;
+            double painterOutput = UserRateEditStore.Current.Qty(SectionKey, 1, "Output", 18);
 
             double painterOutputPerSqm = painterRate / painterOutput;
 
@@ -583,17 +632,17 @@ namespace ADLMRateGen.ViewModel.Painting
             //double antiFungalCost = GetMaterialPrice("Pealux Anti Fungi/Algae Emulsion") / 4;
             double texcoteCost = GetMaterialPrice("Peacotex Textured Finish (B/W)") / 25;
 
-            double puttyQty = 0.3;
+            double puttyQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Putty filler to joints and fine cracks", 0.3);
             //double antiFungalQty = 0.4;
-            double texcoteQty = 1;
+            double texcoteQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Texcote-(Pealux - 25kg drum)", 1);
 
             double puttyRate = puttyCost * puttyQty;
             //double antiFungalRate = antiFungalCost * antiFungalQty;
             double texcoteRate = texcoteCost * texcoteQty;
 
-            double puttyWastePer = 2.5;
+            double puttyWastePer = UserRateEditStore.Current.Qty(SectionKey, 2, "Add waste", 2.5);
             //double antiFungalWastePer = 10;
-            double texcoatWastePer = 10;
+            double texcoatWastePer = UserRateEditStore.Current.Qty(SectionKey, 2, "Add waste", 10);
 
             double puttyWaste = puttyRate * (puttyWastePer / 100);
             //double antiFungalWaste = antiFungalRate * (antiFungalWastePer / 100);
@@ -604,10 +653,10 @@ namespace ADLMRateGen.ViewModel.Painting
 
             //LABOUR COST
             double painterCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
-            double painterQty = 2;
+            double painterQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Painter", 2);
             double painterRate = painterCost * painterQty;
 
-            double painterOutput = 30;
+            double painterOutput = UserRateEditStore.Current.Qty(SectionKey, 2, "Output", 30);
 
             double painterOutputPerSqm = painterRate / painterOutput;
 
@@ -660,17 +709,17 @@ namespace ADLMRateGen.ViewModel.Painting
             double primingCost = GetMaterialPrice("White Emulsion (High Quality)") / 4;
             double emulsionCost = GetMaterialPrice("White Emulsion (High Quality)") / 4;
 
-            double puttyQty = 0.3;
-            double primingQty = 0.28;
-            double emulsionQty = 0.42;
+            double puttyQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Putty filler to joints and fine cracks", 0.3);
+            double primingQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Priming paint", 0.28);
+            double emulsionQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Emulsion Paint - (Peacock)", 0.42);
 
             double puttyRate = puttyCost * puttyQty;
             double primingRate = primingCost * primingQty;
             double emulsionRate = emulsionCost * emulsionQty;
 
-            double puttyWastePer = 2.5;
-            double primingWastePer = 10;
-            double emulsionWastePer = 10;
+            double puttyWastePer = UserRateEditStore.Current.Qty(SectionKey, 3, "Add waste", 2.5);
+            double primingWastePer = UserRateEditStore.Current.Qty(SectionKey, 3, "Add waste", 10);
+            double emulsionWastePer = UserRateEditStore.Current.Qty(SectionKey, 3, "Add waste", 10);
 
             double puttyWaste = puttyRate * (puttyWastePer / 100);
             double primingWaste = primingRate * (primingWastePer / 100);
@@ -681,10 +730,10 @@ namespace ADLMRateGen.ViewModel.Painting
 
             //LABOUR COST
             double painterCost = (GetLabourRate("Skilled/Artisan")) * 1.4;
-            double painterQty = 2;
+            double painterQty = UserRateEditStore.Current.Qty(SectionKey, 3, "Painter", 2);
             double painterRate = painterCost * painterQty;
 
-            double painterOutput = 20;
+            double painterOutput = UserRateEditStore.Current.Qty(SectionKey, 3, "Output", 20);
 
             double painterOutputPerSqm = painterRate / painterOutput;
 
@@ -733,8 +782,8 @@ namespace ADLMRateGen.ViewModel.Painting
             double chemicalCost = GetMaterialPrice("Oil and Grease Remover (Amercoat 57 OC)");
             double chemicalLabourCost = (GetLabourRate("Labourer") / 8) * 1.4;
 
-            double chemicalQty = 0.2;
-            double chemicalLabourQty = 0.08;
+            double chemicalQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Material cost per square metre of degreasing chemical.", 0.2);
+            double chemicalLabourQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Labour application", 0.08);
 
             double chemicalRate = chemicalCost * chemicalQty;
             double chemicalLabourRate = chemicalLabourCost * chemicalLabourQty;
@@ -747,12 +796,12 @@ namespace ADLMRateGen.ViewModel.Painting
             double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
             double gritCost = GetMaterialPrice("Grit (for sand blasting)");
 
-            double compressorQty = 0.025;
-            double fuelQty = 45;
-            double sandPotQty = 0.025;
-            double respiratoryQty = 0.025;
-            double gritQty = 0.15;
-            double oilPer = 3;
+            double compressorQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Compressor", 0.025);
+            double fuelQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Fuel (Diesel)", 45);
+            double sandPotQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Sand Pot", 0.025);
+            double respiratoryQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Respiratory gear.", 0.025);
+            double gritQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Grit", 0.15);
+            double oilPer = UserRateEditStore.Current.Qty(SectionKey, 4, "Oil and consumables (per day)", 3);
 
             double compressorRate = compressorCost * compressorQty;
             double fuelRate = fuelCost * fuelQty;
@@ -764,13 +813,13 @@ namespace ADLMRateGen.ViewModel.Painting
             double blastingOperatorCost = GetLabourRate("Light plant operator") * 1.4;
             double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
 
-            double blastingOperatorQty = 1;
-            double blastingLabouurQty = 2;
+            double blastingOperatorQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Blasting operator.", 1);
+            double blastingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Labour (for loading sand pot)", 2);
 
             double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
             double blastingLabourRate = blastingLabourCost* blastingLabouurQty;
             double blastingLabour = blastingOperatorRate + blastingLabourRate;
-            double blastingOutputDaily = 300;
+            double blastingOutputDaily = UserRateEditStore.Current.Qty(SectionKey, 4, "Labour Output", 300);
 
             double blastingPerSqm = blastingLabour / blastingOutputDaily;
 
@@ -781,10 +830,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double sprayingLabourCost = (GetLabourRate("Skilled/Artisan")/8) *1.4;
             double primerCost = GetMaterialPrice("Zinc Rich Epoxy (Amercoat 64, Pale Red)");
 
-            double sprayingMachineQty = 0.10;
-            double sprayingLabouurQty = 0.1;
-            double primerQty = 0.11;
-            double primerWastePer = 5;
+            double sprayingMachineQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Spraying machine", 0.10);
+            double sprayingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Labour spraying - spray painter", 0.1);
+            double primerQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Primer coat - Zinc rich epoxy", 0.11);
+            double primerWastePer = UserRateEditStore.Current.Qty(SectionKey, 4, "Add waste", 5);
 
             double sprayingMachineRate = sprayingMachineCost * sprayingMachineQty;
             double sprayingLabourRate = sprayingLabourCost* sprayingLabouurQty;
@@ -798,10 +847,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double undercoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double epoxyCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)");
 
-            double undercoatMachineQty = 0.10;
-            double undercoatLabouurQty = 0.10;
-            double epoxyQty = 0.13;
-            double epoxyWastePer = 5;
+            double undercoatMachineQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Spraying machine", 0.10);
+            double undercoatLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Labour spraying - spray painter", 0.10);
+            double epoxyQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Build coat - High build epoxy", 0.13);
+            double epoxyWastePer = UserRateEditStore.Current.Qty(SectionKey, 4, "Add waste", 5);
 
             double undercoatMachineRate = undercoatMachineCost * undercoatMachineQty;
             double undercoatLabourRate = undercoatLabourCost * undercoatLabouurQty;
@@ -815,10 +864,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double finishcoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double enamelCost = GetMaterialPrice("Mobil Beige Epoxy Enamel")/4;
 
-            double finishcoatMachineQty = 0.10;
-            double finishcoatLabouurQty = 0.10;
-            double enamelQty = 0.08;
-            double enamelWastePer = 5;
+            double finishcoatMachineQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Spraying machine", 0.10);
+            double finishcoatLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Labour spraying - spray painter", 0.10);
+            double enamelQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Finish coat - Mobil beige gloss", 0.08);
+            double enamelWastePer = UserRateEditStore.Current.Qty(SectionKey, 4, "Add waste", 5);
 
             double finishcoatMachineRate = finishcoatMachineCost * finishcoatMachineQty;
             double finishcoatLabourRate = finishcoatLabourCost * finishcoatLabouurQty;
@@ -924,12 +973,12 @@ namespace ADLMRateGen.ViewModel.Painting
             double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
             double gritCost = GetMaterialPrice("Grit (for sand blasting)");
 
-            double compressorQty = 0.025;
-            double fuelQty = 45;
-            double sandPotQty = 0.025;
-            double respiratoryQty = 0.025;
-            double gritQty = 0.15;
-            double oilPer = 3;
+            double compressorQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Compressor", 0.025);
+            double fuelQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Fuel (Diesel)", 45);
+            double sandPotQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Sand Pot", 0.025);
+            double respiratoryQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Respiratory gear.", 0.025);
+            double gritQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Grit", 0.15);
+            double oilPer = UserRateEditStore.Current.Qty(SectionKey, 5, "Oil and consumables (per day)", 3);
 
             double compressorRate = compressorCost * compressorQty;
             double fuelRate = fuelCost * fuelQty;
@@ -941,13 +990,13 @@ namespace ADLMRateGen.ViewModel.Painting
             double blastingOperatorCost = GetLabourRate("Light plant operator") * 1.4;
             double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
 
-            double blastingOperatorQty = 1;
-            double blastingLabouurQty = 2;
+            double blastingOperatorQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Blasting operator.", 1);
+            double blastingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Labour (for loading sand pot)", 2);
 
             double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
             double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
             double blastingLabour = blastingOperatorRate + blastingLabourRate;
-            double blastingOutputDaily = 300;
+            double blastingOutputDaily = UserRateEditStore.Current.Qty(SectionKey, 5, "Labour Output", 300);
 
             double blastingPerSqm = blastingLabour / blastingOutputDaily;
 
@@ -958,10 +1007,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double sprayingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double primerCost = GetMaterialPrice("Inorganic Zinc Silicate (Dimetcote 6, Redish Grey)");
 
-            double sprayingMachineQty = 0.10;
-            double sprayingLabouurQty = 0.10;
-            double primerQty = 0.11;
-            double primerWastePer = 5;
+            double sprayingMachineQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Spraying machine", 0.10);
+            double sprayingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Labour spraying - spray painter", 0.10);
+            double primerQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Base coat - Inorganic Zinc Silicate", 0.11);
+            double primerWastePer = UserRateEditStore.Current.Qty(SectionKey, 5, "Add waste", 5);
 
             double sprayingMachineRate = sprayingMachineCost * sprayingMachineQty;
             double sprayingLabourRate = sprayingLabourCost * sprayingLabouurQty;
@@ -975,10 +1024,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double undercoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double epoxyCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)") + GetMaterialPrice("Amercoat 8");
 
-            double undercoatMachineQty = 0.10;
-            double undercoatLabouurQty = 0.10;
-            double epoxyQty = 0.11;
-            double epoxyWastePer = 5;
+            double undercoatMachineQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Spraying machine", 0.10);
+            double undercoatLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Labour spraying - spray painter", 0.10);
+            double epoxyQty = UserRateEditStore.Current.Qty(SectionKey, 5, "First coat - Thinned high build epoxy", 0.11);
+            double epoxyWastePer = UserRateEditStore.Current.Qty(SectionKey, 5, "Add waste", 5);
 
             double undercoatMachineRate = undercoatMachineCost * undercoatMachineQty;
             double undercoatLabourRate = undercoatLabourCost * undercoatLabouurQty;
@@ -992,10 +1041,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double finishcoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double enamelCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)");
 
-            double finishcoatMachineQty = 0.10;
-            double finishcoatLabouurQty = 0.10;
-            double enamelQty = 0.14;
-            double enamelWastePer = 5;
+            double finishcoatMachineQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Spraying machine", 0.10);
+            double finishcoatLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Labour spraying - spray painter", 0.10);
+            double enamelQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Second coat - High build epoxy", 0.14);
+            double enamelWastePer = UserRateEditStore.Current.Qty(SectionKey, 5, "Add waste", 5);
 
             double finishcoatMachineRate = finishcoatMachineCost * finishcoatMachineQty;
             double finishcoatLabourRate = finishcoatLabourCost * finishcoatLabouurQty;
@@ -1009,10 +1058,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double topcoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double beigeCost = GetMaterialPrice("Mobil Beige Epoxy Enamel") / 4;
 
-            double topcoatMachineQty = 0.10;
-            double topcoatLabouurQty = 0.10;
-            double beigeQty = 0.06;
-            double beigeWastePer = 5;
+            double topcoatMachineQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Spraying machine", 0.10);
+            double topcoatLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Labour spraying - spray painter", 0.10);
+            double beigeQty = UserRateEditStore.Current.Qty(SectionKey, 5, "Top coat - Mobil beige Urethane Enamel", 0.06);
+            double beigeWastePer = UserRateEditStore.Current.Qty(SectionKey, 5, "Add waste", 5);
 
             double topcoatMachineRate = topcoatMachineCost * topcoatMachineQty;
             double topcoatLabourRate = topcoatLabourCost * topcoatLabouurQty;
@@ -1119,12 +1168,12 @@ namespace ADLMRateGen.ViewModel.Painting
             double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
             double gritCost = GetMaterialPrice("Grit (for sand blasting)");
 
-            double compressorQty = 0.025;
-            double fuelQty = 45;
-            double sandPotQty = 0.025;
-            double respiratoryQty = 0.025;
-            double gritQty = 0.15;
-            double oilPer = 3;
+            double compressorQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Compressor", 0.025);
+            double fuelQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Fuel (Diesel)", 45);
+            double sandPotQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Sand Pot", 0.025);
+            double respiratoryQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Respiratory gear.", 0.025);
+            double gritQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Grit", 0.15);
+            double oilPer = UserRateEditStore.Current.Qty(SectionKey, 6, "Oil and consumables (per day)", 3);
 
             double compressorRate = compressorCost * compressorQty;
             double fuelRate = fuelCost * fuelQty;
@@ -1136,13 +1185,13 @@ namespace ADLMRateGen.ViewModel.Painting
             double blastingOperatorCost = GetLabourRate("Light plant operator") * 1.4;
             double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
 
-            double blastingOperatorQty = 1;
-            double blastingLabouurQty = 2;
+            double blastingOperatorQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Blasting operator.", 1);
+            double blastingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Labour (for loading sand pot)", 2);
 
             double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
             double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
             double blastingLabour = blastingOperatorRate + blastingLabourRate;
-            double blastingOutputDaily = 300;
+            double blastingOutputDaily = UserRateEditStore.Current.Qty(SectionKey, 6, "Labour Output", 300);
 
             double blastingPerSqm = blastingLabour / blastingOutputDaily;
 
@@ -1153,10 +1202,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double sprayingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double primerCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)");
 
-            double sprayingMachineQty = 0.10;
-            double sprayingLabouurQty = 0.10;
-            double primerQty = 0.52;
-            double primerWastePer = 5;
+            double sprayingMachineQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Spraying machine", 0.10);
+            double sprayingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Labour spraying - spray painter", 0.10);
+            double primerQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Base coat - Inorganic Zinc Silicate", 0.52);
+            double primerWastePer = UserRateEditStore.Current.Qty(SectionKey, 6, "Add waste", 5);
 
             double sprayingMachineRate = sprayingMachineCost * sprayingMachineQty;
             double sprayingLabourRate = sprayingLabourCost * sprayingLabouurQty;
@@ -1170,10 +1219,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double undercoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double epoxyCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)");
 
-            double undercoatMachineQty = 0.10;
-            double undercoatLabouurQty = 0.10;
-            double epoxyQty = 0.52;
-            double epoxyWastePer = 5;
+            double undercoatMachineQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Spraying machine", 0.10);
+            double undercoatLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 6, "Labour spraying - spray painter", 0.10);
+            double epoxyQty = UserRateEditStore.Current.Qty(SectionKey, 6, "First coat - Thinned high build epoxy", 0.52);
+            double epoxyWastePer = UserRateEditStore.Current.Qty(SectionKey, 6, "Add waste", 5);
 
             double undercoatMachineRate = undercoatMachineCost * undercoatMachineQty;
             double undercoatLabourRate = undercoatLabourCost * undercoatLabouurQty;
@@ -1310,8 +1359,8 @@ namespace ADLMRateGen.ViewModel.Painting
             double chemicalCost = GetMaterialPrice("Oil and Grease Remover (Amercoat 57 OC)");
             double chemicalLabourCost = (GetLabourRate("Labourer") / 8) * 1.4 * 1.4;
 
-            double chemicalQty = 0.2;
-            double chemicalLabourQty = 0.08;
+            double chemicalQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Material cost per square metre of degreasing chemical.", 0.2);
+            double chemicalLabourQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour application", 0.08);
 
             double chemicalRate = chemicalCost * chemicalQty;
             double chemicalLabourRate = chemicalLabourCost * chemicalLabourQty;
@@ -1324,12 +1373,12 @@ namespace ADLMRateGen.ViewModel.Painting
             double respiratoryCost = GetLabourRate("Respiratory gear for sand blasting") / 8;
             double gritCost = GetMaterialPrice("Grit (for sand blasting)");
 
-            double compressorQty = 0.025;
-            double fuelQty = 45;
-            double sandPotQty = 0.025;
-            double respiratoryQty = 0.025;
-            double gritQty = 0.15;
-            double oilPer = 3;
+            double compressorQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Compressor", 0.025);
+            double fuelQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Fuel (Diesel)", 45);
+            double sandPotQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Sand Pot", 0.025);
+            double respiratoryQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Respiratory gear.", 0.025);
+            double gritQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Grit", 0.15);
+            double oilPer = UserRateEditStore.Current.Qty(SectionKey, 7, "Oil and consumables (per day)", 3);
 
             double compressorRate = compressorCost * compressorQty;
             double fuelRate = fuelCost * fuelQty;
@@ -1341,13 +1390,13 @@ namespace ADLMRateGen.ViewModel.Painting
             double blastingOperatorCost = GetLabourRate("Light plant operator") * 1.4;
             double blastingLabourCost = GetLabourRate("Labourer") * 1.4;
 
-            double blastingOperatorQty = 1;
-            double blastingLabouurQty = 2;
+            double blastingOperatorQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Blasting operator.", 1);
+            double blastingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour (for loading sand pot)", 2);
 
             double blastingOperatorRate = blastingOperatorCost * blastingOperatorQty;
             double blastingLabourRate = blastingLabourCost * blastingLabouurQty;
             double blastingLabour = blastingOperatorRate + blastingLabourRate;
-            double blastingOutputDaily = 300;
+            double blastingOutputDaily = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour Output", 300);
 
             double blastingPerSqm = blastingLabour / blastingOutputDaily;
 
@@ -1358,10 +1407,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double sprayingLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double primerCost = GetMaterialPrice("Zinc Rich Epoxy (Amercoat 64, Pale Red)");
 
-            double sprayingMachineQty = 0.10;
-            double sprayingLabouurQty = 0.1;
-            double primerQty = 0.11;
-            double primerWastePer = 5;
+            double sprayingMachineQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Spraying machine", 0.10);
+            double sprayingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour spraying - spray painter", 0.1);
+            double primerQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Primer coat - Zinc rich epoxy", 0.11);
+            double primerWastePer = UserRateEditStore.Current.Qty(SectionKey, 7, "Add waste", 5);
 
             double sprayingMachineRate = sprayingMachineCost * sprayingMachineQty;
             double sprayingLabourRate = sprayingLabourCost * sprayingLabouurQty;
@@ -1375,10 +1424,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double undercoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double epoxyCost = GetMaterialPrice("High Build Epoxy (Amercoat 78HBB, Black)");
 
-            double undercoatMachineQty = 0.10;
-            double undercoatLabouurQty = 0.10;
-            double epoxyQty = 0.13;
-            double epoxyWastePer = 5;
+            double undercoatMachineQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Spraying machine", 0.10);
+            double undercoatLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour spraying - spray painter", 0.10);
+            double epoxyQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Build coat - High build epoxy", 0.13);
+            double epoxyWastePer = UserRateEditStore.Current.Qty(SectionKey, 7, "Add waste", 5);
 
             double undercoatMachineRate = undercoatMachineCost * undercoatMachineQty;
             double undercoatLabourRate = undercoatLabourCost * undercoatLabouurQty;
@@ -1392,10 +1441,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double finishcoatLabourCost = (GetLabourRate("Skilled/Artisan") / 8) * 1.4;
             double enamelCost = GetMaterialPrice("Ditto but OSHA S/Yellow (Finish Coating)");
 
-            double finishcoatMachineQty = 0.10;
-            double finishcoatLabouurQty = 0.10;
-            double enamelQty = 0.09;
-            double enamelWastePer = 5;
+            double finishcoatMachineQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Spraying machine", 0.10);
+            double finishcoatLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour spraying - spray painter", 0.10);
+            double enamelQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Finish coat - Aliphatic Polyurethane - Safety Yellow ", 0.09);
+            double enamelWastePer = UserRateEditStore.Current.Qty(SectionKey, 7, "Add waste", 5);
 
             double finishcoatMachineRate = finishcoatMachineCost * finishcoatMachineQty;
             double finishcoatLabourRate = finishcoatLabourCost * finishcoatLabouurQty;
@@ -1486,19 +1535,19 @@ namespace ADLMRateGen.ViewModel.Painting
         private PaintWorkItem ComputeItem8()
         {
             double scrubLabour = (GetLabourRate("Labourer") / 8) * 1.4;
-            double scrubLabourQty = 0.2;
+            double scrubLabourQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Scrub wall down of all dirt. (Labour Only)", 0.2);
             double scrubLabourRate = scrubLabour * scrubLabourQty;
 
             double latexCost = GetMaterialPrice("Multipurpose Polymaide Epoxy (Amercoat 385, Off White)");
             double finishLatexCost = GetMaterialPrice("Ditto but Mobil Beige F38");
 
-            double latexQty = 0.4;
+            double latexQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Exterior Acrylic Latex.", 0.4);
             double finishLatexQty = 0.4;
 
             double latexRate = latexCost * latexQty;
             double finishLatexRate = finishLatexCost * finishLatexQty;
 
-            double waste = 10;
+            double waste = UserRateEditStore.Current.Qty(SectionKey, 8, "Add waste", 10);
 
             double latexWaste = latexRate * (waste / 100);
             double finishLatexWaste = finishLatexRate * (waste / 100);
@@ -1507,10 +1556,10 @@ namespace ADLMRateGen.ViewModel.Painting
             double finishLatexTotal = finishLatexRate + finishLatexWaste;
 
             double painterCost = GetLabourRate("Skilled/Artisan");
-            double painterQty = 1;
+            double painterQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Painter", 1);
             double painterRate = painterCost * painterQty;
 
-            double painterOutput = 18;
+            double painterOutput = UserRateEditStore.Current.Qty(SectionKey, 8, "Output", 18);
             double painLabour = painterRate / painterOutput;
 
             double netCostPerSqm = scrubLabourRate + latexTotal + finishLatexTotal + painLabour;
@@ -1557,8 +1606,8 @@ namespace ADLMRateGen.ViewModel.Painting
         private PaintWorkItem ComputeItem9()
         {
             //Get value from steel work
-            double paintRemovalLabour = 171; //GetSteelNetValue(_steelWorkViewModel.ComputeItem1); 
-            double paintRemovalQty = 1;
+            double paintRemovalLabour = 171; //GetSteelNetValue(_steelWorkViewModel.ComputeItem1);
+            double paintRemovalQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Remove existing paint through power brushing. (see steel work)", 1);
             double paintRemovalRate = paintRemovalLabour * paintRemovalQty;
 
             //Primer Application
@@ -1567,11 +1616,11 @@ namespace ADLMRateGen.ViewModel.Painting
             double primerCost = GetMaterialPrice("Epoxy Mastic (Amerlock 400AL, Aluminium Grey)");
             double thinnerCost = GetMaterialPrice("Amercoat 9HF");
 
-            double sprayingMachineQty = 0.10;
-            double sprayingLabouurQty = 0.15;
-            double primerQty = 0.15;
-            double primerWastePer = 15;
-            double thinnerQty = primerQty * 0.1;
+            double sprayingMachineQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Spraying machine", 0.10);
+            double sprayingLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Labour spraying - spray painter", 0.15);
+            double primerQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Aluminium epoxy primer", 0.15);
+            double primerWastePer = UserRateEditStore.Current.Qty(SectionKey, 9, "Add waste", 15);
+            double thinnerQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Thinner - Amercoat 9HF", primerQty * 0.1);
 
             double sprayingMachineRate = sprayingMachineCost * sprayingMachineQty;
             double sprayingLabourRate = sprayingLabourCost * sprayingLabouurQty;
@@ -1587,11 +1636,11 @@ namespace ADLMRateGen.ViewModel.Painting
             double polyurethanerCost = GetMaterialPrice("Ditto but Blue 5010 (Finish Coating)");
             double FinishthinnerCost = GetMaterialPrice("Amercoat 920");
 
-            double finishMachineQty = 0.10;
-            double finishLabouurQty = 0.15;
-            double polyurethanerQty = 0.09;
-            double polyurethanerWastePer = 15;
-            double thinnerFinishQty = polyurethanerQty * 0.1;
+            double finishMachineQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Spraying machine", 0.10);
+            double finishLabouurQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Labour spraying - spray painter", 0.15);
+            double polyurethanerQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Blue/White Polyurethane", 0.09);
+            double polyurethanerWastePer = UserRateEditStore.Current.Qty(SectionKey, 9, "Add waste", 15);
+            double thinnerFinishQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Thinner - Amercoat 920", polyurethanerQty * 0.1);
 
             double finishMachineRate = finishMachineCost * finishMachineQty;
             double finishLabourRate = finishLabourCost * finishLabouurQty;

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ADLMRateGen.Services;
 using ADLMRateGen.ViewModel;
 using ADLMRateGen.ViewModel.Model;
 using FontAwesome.Sharp;
@@ -62,6 +63,40 @@ namespace ADLMCivilPlugin.Controls
         {
             ColorModeIcon.Icon = isDark ? IconChar.Sun : IconChar.Moon;
             ColorModeButton.ToolTip = isDark ? "Switch to light mode" : "Switch to dark mode";
+        }
+
+        /// <summary>
+        /// Global reset for all user Quantity overrides — wipes every saved edit across every
+        /// rate-build-up section (Concrete, Block, Ground, Finishes, Paint, Roof, Steel, Doors/Windows),
+        /// persists the cleared state to disk, and pushes the wipe to the cloud so QUIV and HERON
+        /// also see the reset.
+        /// </summary>
+        private async void ResetAllEditsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var count = UserRateEditStore.Current.TotalOverrideCount;
+            if (count == 0)
+            {
+                MessageBox.Show(
+                    "You don't have any saved rate edits to reset.",
+                    "Nothing to reset",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            var confirm = MessageBox.Show(
+                $"Reset all {count} saved rate-build-up edits back to the shipped defaults?\n\n" +
+                "This affects EVERY section (Concrete, Blockwork, Groundwork, Finishes, Painting, " +
+                "Roofing, Steelwork, Windows & Doors) and will sync the reset to QUIV and HERON.\n\n" +
+                "This action cannot be undone.",
+                "Reset All Rate Edits",
+                MessageBoxButton.OKCancel,
+                MessageBoxImage.Warning);
+            if (confirm != MessageBoxResult.OK) return;
+
+            await RateEditCommands.ResetAllAsync();
+            // The store fires OverridesChanged after ClearAll → each section VM is
+            // subscribed and rebuilds its items automatically (see RecomputeAll in each VM ctor).
         }
     }
 }
