@@ -7,6 +7,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\ADLM Rate Generator Plugin.ico</ApplicationIcon>
+    <!-- v2.5.0: Stable hardware device fingerprint (v2) shared with the other ADLM
+         apps, replacing the MAC-based value that changed with the active network
+         adapter and caused repeat DEVICE_MISMATCH sign-in failures. Minor rather
+         than patch because device binding behaviour changes for every install. -->
+    <Version>2.5.0</Version>
+    <AssemblyVersion>2.5.0.0</AssemblyVersion>
+    <FileVersion>2.5.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -151,6 +158,8 @@
     <PackageReference Include="MongoDB.Driver" Version="3.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.1" />
+    <!-- WMI for the stable hardware device fingerprint (Helpers.HardwareFingerprint). -->
+    <PackageReference Include="System.Management" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

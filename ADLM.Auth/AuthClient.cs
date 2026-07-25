@@ -19,6 +19,13 @@ namespace ADLMRateGen.ADLM.Auth
         public string ProductKey { get; set; } = AppEnvironment.ProductKey;
         public TimeSpan AccessSkew { get; set; } = TimeSpan.FromSeconds(30);
         public Func<string>? DeviceFingerprintProvider { get; set; }
+
+        /// <summary>
+        /// Supplies the legacy (v1) fingerprint so the server can migrate an
+        /// existing binding to the v2 value instead of failing with DEVICE_MISMATCH.
+        /// </summary>
+        public Func<string>? LegacyDeviceFingerprintProvider { get; set; }
+
         public int TimeoutMs { get; set; } = 90000;
     }
 
@@ -193,6 +200,12 @@ namespace ADLMRateGen.ADLM.Auth
             _http.DefaultRequestHeaders.Accept.Clear();
             _http.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
+            // Advertise the fingerprint algorithm version so the server can run the
+            // v1 to v2 migration path for users still bound to the MAC-based value.
+            _http.DefaultRequestHeaders.Add(
+                "x-adlm-fp-version",
+                HardwareFingerprint.FingerprintVersion.ToString());
+
             TryLoadSession();
 
             if (!string.IsNullOrWhiteSpace(_accessToken))
@@ -224,12 +237,28 @@ namespace ADLMRateGen.ADLM.Auth
                 dfp = "";
             }
 
+            string legacyDfp = "";
+            try
+            {
+                legacyDfp = _opt.LegacyDeviceFingerprintProvider != null
+                    ? (_opt.LegacyDeviceFingerprintProvider() ?? "")
+                    : "";
+            }
+            catch
+            {
+                legacyDfp = "";
+            }
+
             var body = new
             {
                 identifier = identifier,
                 password = password,
                 productKey = _opt.ProductKey,
-                device_fingerprint = string.IsNullOrWhiteSpace(dfp) ? null : dfp
+                device_fingerprint = string.IsNullOrWhiteSpace(dfp) ? null : dfp,
+                fp_version = HardwareFingerprint.FingerprintVersion,
+                // Lets the server match an existing v1 binding and re-bind it to the
+                // stable v2 value rather than rejecting this device as a new one.
+                device_fingerprint_legacy = string.IsNullOrWhiteSpace(legacyDfp) ? null : legacyDfp
             };
 
             string resText = await PostJsonAsync("/auth/login", JsonSerializer.Serialize(body), null, ct);

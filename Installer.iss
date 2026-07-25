@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ADLM Rate Gen "
-#define MyAppVersion "2.2"
+#define MyAppVersion "2.5.0"
 #define MyAppPublisher "ADLM Studio"
 #define MyAppURL "https://www.adlmstudios.net"
 #define MyAppExeName "ADLMRateGen.exe"
@@ -11,7 +11,8 @@
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
 ; ── Self-contained publish output (includes .NET runtime) ──
-#define BuildOutput "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Debug\net8.0-windows\win-x64"
+; Points at the Release build so installers always ship optimised binaries.
+#define BuildOutput "C:\Users\ADLM\source\repos\ADLMRateGenPublicBuild\bin\Release\net8.0-windows\win-x64"
 
 ; ── Shared ADLM env-var registration (reads ADLM_SHARED_* from the build
 ;    machine's environment at compile time; generates per-machine local

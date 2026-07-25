@@ -6,6 +6,20 @@ using System.Text;
 
 namespace ADLMRateGen.ADLM.Auth
 {
+    /// <summary>
+    /// LEGACY (v1) device fingerprint — MachineName + fastest active NIC MAC + UserName.
+    ///
+    /// DO NOT use this to bind new devices. It is unstable across sessions: the
+    /// selected NIC changes whenever a VPN, dock, USB ethernet or Wi-Fi adapter
+    /// comes up or goes down, which produces a different hash on the same
+    /// physical machine and makes the server reject the login as DEVICE_MISMATCH.
+    /// Helpers.HardwareFingerprint (v2) is the current algorithm.
+    ///
+    /// This is kept ONLY so the client can present its old fingerprint during the
+    /// v1 to v2 migration window, letting the server recognise an existing binding
+    /// and re-bind it to the stable value. The algorithm must stay frozen — any
+    /// change here breaks migration for users who have not yet upgraded.
+    /// </summary>
     public static class DeviceFingerprint
     {
         public static string Generate()

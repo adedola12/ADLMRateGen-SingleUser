@@ -216,8 +216,16 @@ namespace ADLMRateGen.ViewModel
             var (ok, payload, _) = await JwtLicenseValidator.TryValidateAsync(jwt).ConfigureAwait(false);
             if (!ok) return (false, default);
 
-            var dfp = ADLMRateGen.ADLM.Auth.DeviceFingerprint.Generate();
-            return (JwtLicenseValidator.IsEntitledForDevice(payload, ProductKey, dfp), payload);
+            // Cached licence tokens issued before the v2 fingerprint carry the old
+            // MAC-based dfp claim. Accept either value so upgrading users are not
+            // bounced back to an online sign-in; the server re-issues the token
+            // with the v2 dfp on their next successful login.
+            var dfp = HardwareFingerprint.Get();
+            if (JwtLicenseValidator.IsEntitledForDevice(payload, ProductKey, dfp))
+                return (true, payload);
+
+            var legacyDfp = ADLMRateGen.ADLM.Auth.DeviceFingerprint.Generate();
+            return (JwtLicenseValidator.IsEntitledForDevice(payload, ProductKey, legacyDfp), payload);
         }
 
         private UserModel? BuildUserFromLicensePayload(JsonElement payload)
