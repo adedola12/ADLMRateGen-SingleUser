@@ -93,9 +93,19 @@ namespace ADLMRateGen.Services
 
                 WriteVersion(CurrentDataVersion);
             }
-            catch
+            catch (Exception ex)
             {
-                // swallow or log; don’t block app startup on migration
+                System.Diagnostics.Debug.WriteLine($"[DataMigrator] Migration failed: {ex}");
+                try
+                {
+                    var logDir = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "ADLMRateGen", "Logs");
+                    Directory.CreateDirectory(logDir);
+                    var logPath = Path.Combine(logDir, $"migration_{DateTime.Now:yyyyMMdd_HHmmss}.log");
+                    File.WriteAllText(logPath, $"DataMigrator failed at {DateTime.Now:O}\r\n\r\n{ex}");
+                }
+                catch { }
             }
         }
 
