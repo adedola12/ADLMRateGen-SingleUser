@@ -10,6 +10,8 @@
              MinWidth="760">
 
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
         <!-- ─── Label ─── -->
         <Style x:Key="FLabel" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{DynamicResource AppFont}" />
@@ -283,6 +285,39 @@
                           HorizontalScrollBarVisibility="Disabled"
                           PanningMode="VerticalOnly">
                 <StackPanel>
+
+                    <!-- ── AI assist (ADLM AI add-on; hidden unless configured) ── -->
+                    <Border Visibility="{Binding IsAiAvailable, Converter={StaticResource BoolToVis}}"
+                            Background="{DynamicResource BgInput}"
+                            BorderBrush="{DynamicResource BorderBrushLight}"
+                            BorderThickness="1" CornerRadius="12"
+                            Padding="14" Margin="0,0,0,18">
+                        <StackPanel>
+                            <TextBlock Text="Build with AI — describe the work item"
+                                       Style="{StaticResource FLabel}" Margin="0,0,0,8" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding AiPrompt, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource FInput}"
+                                         IsEnabled="{Binding IsAiIdle}" />
+                                <Button Grid.Column="1"
+                                        Content="✦ Build with AI"
+                                        Style="{StaticResource FAddBtn}"
+                                        Command="{Binding BuildWithAiCommand}"
+                                        IsEnabled="{Binding IsAiIdle}"
+                                        VerticalAlignment="Center"
+                                        Margin="10,0,0,0" />
+                            </Grid>
+                            <TextBlock Text="{Binding AiStatus}"
+                                       Style="{StaticResource FLabelSmall}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,8,0,0" />
+                        </StackPanel>
+                    </Border>
 
                     <!-- ── Name of Rate ── -->
                     <TextBlock Text="Name of Rate" Style="{StaticResource FLabel}" Margin="0,0,0,8" />

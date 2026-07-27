@@ -163,6 +163,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- ADLM AI Service client (AI rate build-up; entitlement-gated add-on). -->
+    <ProjectReference Include="..\adlm-ai-service\sdk\csharp\AdlmAi.Sdk\AdlmAi.Sdk.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Resources\ADLMRate.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

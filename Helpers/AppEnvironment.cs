@@ -22,6 +22,13 @@ namespace ADLMRateGen.Helpers
 
         public static string? OfflineLicenseSharedSecret => GetOptional("ADLM_RATEGEN_OFFLINE_LICENSE_SECRET");
 
+        // ADLM AI Service. No default URL — AI features stay hidden until the
+        // operator configures the endpoint. Token normally comes from the
+        // signed-in licence token; ADLM_AI_TOKEN is a dev/test override.
+        public static string? AiServiceUrl => GetOptional("ADLM_AI_URL");
+
+        public static string? AiServiceTokenOverride => GetOptional("ADLM_AI_TOKEN");
+
         public static string? LocalJwtSecret => GetOptional("ADLM_RATEGEN_LOCAL_JWT_SECRET");
 
         private static string Get(string name, string fallback)

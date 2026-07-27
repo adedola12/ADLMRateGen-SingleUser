@@ -74,6 +74,36 @@ namespace ADLMRateGen.ViewModel.CustomRate
             set { if (_description != value) { _description = value; RaisePropertyChanged(nameof(Description)); } }
         }
 
+        // ── AI assist (ADLM AI add-on) ──────────────────────────────────────
+        // The AI fills this same form from a plain-language description; the
+        // QS reviews every line, then saves with the normal Save flow.
+        private string _aiPrompt = string.Empty;
+        public string AiPrompt
+        {
+            get => _aiPrompt;
+            set { if (_aiPrompt != value) { _aiPrompt = value; RaisePropertyChanged(nameof(AiPrompt)); } }
+        }
+
+        private string _aiStatus = string.Empty;
+        public string AiStatus
+        {
+            get => _aiStatus;
+            set { if (_aiStatus != value) { _aiStatus = value; RaisePropertyChanged(nameof(AiStatus)); } }
+        }
+
+        private bool _isAiBusy;
+        public bool IsAiBusy
+        {
+            get => _isAiBusy;
+            set { if (_isAiBusy != value) { _isAiBusy = value; RaisePropertyChanged(nameof(IsAiBusy)); RaisePropertyChanged(nameof(IsAiIdle)); } }
+        }
+        public bool IsAiIdle => !_isAiBusy;
+
+        /// <summary>Hides the AI section entirely when ADLM_AI_URL is not configured.</summary>
+        public bool IsAiAvailable => AiRateService.Instance.IsConfigured;
+
+        public ICommand BuildWithAiCommand { get; private set; }
+
         public ICommand AddMaterialItemCommand { get; }
         public ICommand AddLabourItemCommand { get; }
         public ICommand SaveCustomRateCommand { get; }
@@ -90,6 +120,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
             AddMaterialItemCommand = new RelayCommand(_ => AddMaterialItem());
             AddLabourItemCommand   = new RelayCommand(_ => AddLabourItem());
             SaveCustomRateCommand  = new RelayCommand(_ => SaveCustomRate());
+            BuildWithAiCommand     = new RelayCommand(async _ => await BuildWithAiAsync());
 
             CurrencyService.Instance.PropertyChanged += (_, e) =>
             {
@@ -252,6 +283,63 @@ namespace ADLMRateGen.ViewModel.CustomRate
         {
             ClearForm();
             IsEditing = false;
+        }
+
+        // ── AI assist ───────────────────────────────────────────────────────
+        // Calls the ADLM AI Service and fills the form for review. Runs on the
+        // UI thread's context after the await, so collection updates are safe.
+        private async Task BuildWithAiAsync()
+        {
+            if (IsAiBusy) return;
+            var prompt = (AiPrompt ?? string.Empty).Trim();
+            if (prompt.Length < 8)
+            {
+                AiStatus = "Describe the work item first, e.g. \"225mm hollow sandcrete blockwork in cement-sand mortar (1:6)\".";
+                return;
+            }
+
+            IsAiBusy = true;
+            AiStatus = "Building rate with ADLM AI…";
+            try
+            {
+                var progress = new Progress<string>(msg => AiStatus = msg);
+                var result = await AiRateService.Instance.BuildRateAsync(prompt, progress: progress);
+
+                if (!result.IsSuccess || result.Rate == null)
+                {
+                    AiStatus = result.Message ?? "AI request failed.";
+                    return;
+                }
+
+                var rate = result.Rate;
+                StartNewRate();
+                RateName = rate.Title;
+                Description = rate.Description;
+                OverheadPercent = rate.OverheadPercent;
+                ProfitPercent = rate.ProfitPercent;
+                foreach (var m in rate.MaterialItems) MaterialItems.Add(m);
+                foreach (var l in rate.LabourItems) LabourItems.Add(l);
+                UpdateTotals();
+
+                var confidence = result.Confidence.HasValue
+                    ? $" (confidence {result.Confidence.Value:P0})"
+                    : string.Empty;
+                var cachedNote = result.Status == AdlmAi.AiStatus.CachedFallback
+                    ? " — cached result, service unreachable"
+                    : string.Empty;
+                AiStatus =
+                    $"AI draft ready{confidence}{cachedNote}. Review every line before saving. " +
+                    (result.Disclaimer ?? string.Empty);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[CustomRateEntryVM] AI build failed: {ex}");
+                AiStatus = "Something went wrong contacting ADLM AI. The rest of RateGen is unaffected.";
+            }
+            finally
+            {
+                IsAiBusy = false;
+            }
         }
 
         private void ClearForm()
