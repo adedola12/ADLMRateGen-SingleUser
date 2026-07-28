@@ -172,7 +172,9 @@ namespace ADLMRateGen.ViewModel
                 }
 
                 string localZone = AppSettings.Zone ?? string.Empty;
-                if (!string.Equals(serverZone, localZone, StringComparison.OrdinalIgnoreCase))
+                bool zoneChanged = !string.Equals(serverZone, localZone, StringComparison.OrdinalIgnoreCase);
+
+                if (zoneChanged)
                 {
                     var resp = MessageBox.Show(
                         "Your account zone is '" + serverZone + "'. Update your RateGen prices to this zone now?",
@@ -180,29 +182,29 @@ namespace ADLMRateGen.ViewModel
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Question);
 
-                    if (resp == MessageBoxResult.Yes)
-                    {
-                        using (var masterDoc = await _auth.GetJsonAsync("/rategen/master?zone=" + Uri.EscapeDataString(serverZone)))
-                        {
-                            JsonElement root = masterDoc.RootElement;
-
-                            if (root.TryGetProperty("materials", out var mats))
-                                DataSourceCloudSync.SaveMaterialsFromDto(mats);
-
-                            if (root.TryGetProperty("labour", out var labs))
-                                DataSourceCloudSync.SaveLaboursFromDto(labs);
-                        }
-
-                        AppSettings.Zone = serverZone;
-                        ZonePricesApplied?.Invoke(serverZone);
-
-                        MessageBox.Show("Prices updated for zone: " + serverZone);
-                    }
-                    else
-                    {
-                        AppSettings.Zone = serverZone;
-                    }
+                    AppSettings.Zone = serverZone;
+                    if (resp != MessageBoxResult.Yes)
+                        return;
                 }
+
+                // Always refresh master prices at sign-in (silently when the
+                // zone is unchanged) — prices move within a zone too, and the
+                // cloud master library is the single source of truth.
+                using (var masterDoc = await _auth.GetJsonAsync("/rategen/master?zone=" + Uri.EscapeDataString(serverZone)))
+                {
+                    JsonElement root = masterDoc.RootElement;
+
+                    if (root.TryGetProperty("materials", out var mats))
+                        DataSourceCloudSync.SaveMaterialsFromDto(mats);
+
+                    if (root.TryGetProperty("labour", out var labs))
+                        DataSourceCloudSync.SaveLaboursFromDto(labs);
+                }
+
+                ZonePricesApplied?.Invoke(serverZone);
+
+                if (zoneChanged)
+                    MessageBox.Show("Prices updated for zone: " + serverZone);
             }
         }
 

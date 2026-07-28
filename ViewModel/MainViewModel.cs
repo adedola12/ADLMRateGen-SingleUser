@@ -713,26 +713,18 @@ namespace ADLMRateGen.ViewModel
                         results.Add("Compute: FAIL");
                 }
 
-                // ✅ 3) Optional: materials/labour update check
+                // ✅ 3) Materials/labour master prices — single source of truth.
+                // Pulls the signed-in zone's prices from /rategen/master (the
+                // admin library the website, QUIV and the AI service all use)
+                // and persists them into the local library files.
+                // (Replaces RateCatalogSyncService.CheckAndPromptUpdateAsync,
+                // which wrote raw server arrays to a folder nothing reads.)
                 try
                 {
-                    var zone = ADLMRateGen.Properties.AppSettings.Zone ?? cfg.Zone ?? "Lagos";
-
-                    await _rateSync.CheckAndPromptUpdateAsync(
-                        token,
-                        zone,
-                        async (prompt) =>
-                        {
-                            var result = MessageBox.Show(
-                                prompt,
-                                "Rate Update",
-                                MessageBoxButton.YesNo,
-                                MessageBoxImage.Information);
-
-                            return await Task.FromResult(result == MessageBoxResult.Yes);
-                        });
-
-                    results.Add("Materials/Labour check: OK");
+                    var masterSync = await Services.MasterLibrarySyncService.SyncAsync();
+                    results.Add(masterSync.Ok
+                        ? $"Master prices ({masterSync.Zone}): OK ({masterSync.Materials} materials, {masterSync.Labours} labour)"
+                        : $"Master prices: {masterSync.Message}");
                 }
                 catch (Exception ex)
                 {
@@ -743,9 +735,9 @@ namespace ADLMRateGen.ViewModel
                     }
 
                     if (Is404(ex))
-                        results.Add("Materials/Labour check: SKIPPED (404 Not Found)");
+                        results.Add("Master prices: SKIPPED (404 Not Found)");
                     else
-                        results.Add("Materials/Labour check: FAIL");
+                        results.Add("Master prices: FAIL");
                 }
 
                 // Refresh local UI
@@ -1646,6 +1638,8 @@ namespace ADLMRateGen.ViewModel
                     LastName = TryReadProfileValue(root, "lastName") ?? CurrentUser.LastName,
                     AvatarUrl = TryReadProfileValue(root, "avatarUrl") ?? CurrentUser.AvatarUrl,
                     Zone = TryReadProfileValue(root, "zone") ?? CurrentUser.Zone,
+                    // (profile zone is persisted to AppSettings below so every
+                    // sync path prices against the account's real zone)
                     Password = CurrentUser.Password,
                     CreationAt = CurrentUser.CreationAt,
                     SubscriptionDuration = CurrentUser.SubscriptionDuration,
@@ -1653,6 +1647,14 @@ namespace ADLMRateGen.ViewModel
                     UpdatedAt = CurrentUser.UpdatedAt,
                     HardwareFingerprint = CurrentUser.HardwareFingerprint
                 };
+
+                // Persist the account's zone so every sync path (master price
+                // sync, sign-in refresh) prices against the right location.
+                if (!string.IsNullOrWhiteSpace(updated.Zone) &&
+                    !string.Equals(ADLMRateGen.Properties.AppSettings.Zone, updated.Zone, StringComparison.OrdinalIgnoreCase))
+                {
+                    ADLMRateGen.Properties.AppSettings.Zone = updated.Zone;
+                }
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
