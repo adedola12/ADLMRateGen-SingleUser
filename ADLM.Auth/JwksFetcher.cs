@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ADLMRateGen.Helpers;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ADLMRateGen.ADLM.Auth
@@ -38,7 +39,7 @@ namespace ADLMRateGen.ADLM.Auth
         public JwksFetcher(string? apiBaseUrl, string productSlug)
         {
             var baseUrl = string.IsNullOrWhiteSpace(apiBaseUrl)
-                ? "https://adlmweb.onrender.com"
+                ? AppEnvironment.DefaultApiBaseUrl
                 : apiBaseUrl!.TrimEnd('/');
             _jwksUrl = baseUrl + DefaultJwksPath;
 
