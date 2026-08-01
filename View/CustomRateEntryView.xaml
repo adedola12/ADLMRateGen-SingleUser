@@ -65,8 +65,18 @@
         <Style x:Key="FInputOHP" TargetType="TextBox" BasedOn="{StaticResource FInput}">
             <Setter Property="Background" Value="{DynamicResource LighterGrayBrush}" />
             <Setter Property="BorderBrush" Value="#1D94CA" />
-            <Setter Property="Padding" Value="14,10" />
-            <Setter Property="Height" Value="44" />
+            <Setter Property="BorderThickness" Value="1.4" />
+            <Setter Property="Foreground" Value="{DynamicResource Blue900Brush}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <!-- No fixed Height and no vertical Padding. FInput's template hangs
+                 Padding off the Border around a vertically-centred
+                 PART_ContentHost, so with Height="44" the 10px top/bottom padding
+                 left ~23px of content slot and clipped the text out of sight.
+                 MinHeight keeps the box tall while letting the line always fit. -->
+            <Setter Property="Padding" Value="14,0,34,0" />
+            <Setter Property="MinHeight" Value="46" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
 
         <!-- ─── Small hint label ─── -->
@@ -335,37 +345,46 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="8" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Overhead" Style="{StaticResource FLabel}" />
                         <TextBlock Grid.Row="0" Grid.Column="2" Text="Profit" Style="{StaticResource FLabel}" />
 
                         <Grid Grid.Row="2" Grid.Column="0">
-                            <TextBox Text="{Binding OverheadPercent, UpdateSourceTrigger=PropertyChanged}"
+                            <TextBox Text="{Binding OverheadPercentText, UpdateSourceTrigger=PropertyChanged}"
                                      Style="{StaticResource FInputOHP}"
-                                     Padding="14,10,32,10" />
+                                     ToolTip="Overhead as a percentage of the material + labour total" />
                             <TextBlock Text="%" VerticalAlignment="Center"
                                        HorizontalAlignment="Right" Margin="0,0,14,0"
                                        FontFamily="{DynamicResource AppFont}"
-                                       FontSize="13" Foreground="{DynamicResource Grey700}"
+                                       FontSize="14" FontWeight="Bold"
+                                       Foreground="{DynamicResource Grey700}"
                                        IsHitTestVisible="False" />
                         </Grid>
 
                         <Grid Grid.Row="2" Grid.Column="2">
-                            <TextBox Text="{Binding ProfitPercent, UpdateSourceTrigger=PropertyChanged}"
-                                     Padding="14,10,32,10">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox" BasedOn="{StaticResource FInputOHP}">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushLight}" />
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
+                            <TextBox Text="{Binding ProfitPercentText, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FInputOHP}"
+                                     ToolTip="Profit as a percentage of the material + labour total" />
                             <TextBlock Text="%" VerticalAlignment="Center"
                                        HorizontalAlignment="Right" Margin="0,0,14,0"
                                        FontFamily="{DynamicResource AppFont}"
-                                       FontSize="13" Foreground="{DynamicResource Grey700}"
+                                       FontSize="14" FontWeight="Bold"
+                                       Foreground="{DynamicResource Grey700}"
                                        IsHitTestVisible="False" />
                         </Grid>
+
+                        <!-- Live cash value of each markup, so the percentages are
+                             not just numbers in a box -->
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Text="{Binding OverheadAmount, StringFormat='= {0:N2}'}"
+                                   Style="{StaticResource FLabelSmall}"
+                                   Margin="4,6,0,0" />
+                        <TextBlock Grid.Row="3" Grid.Column="2"
+                                   Text="{Binding ProfitAmount, StringFormat='= {0:N2}'}"
+                                   Style="{StaticResource FLabelSmall}"
+                                   Margin="4,6,0,0" />
                     </Grid>
 
                     <!-- ── Description ── -->
@@ -524,6 +543,16 @@
                                Style="{StaticResource FTotals}" />
                     <TextBlock Text="{Binding OverallTotal, StringFormat='Overall Total: {0:N2}'}"
                                Style="{StaticResource FTotals}" />
+                    <TextBlock Style="{StaticResource FTotals}">
+                        <Run Text="Overhead (" /><Run Text="{Binding OverheadPercent, Mode=OneWay, StringFormat='0.##'}" /><Run Text="%): " /><Run Text="{Binding OverheadAmount, Mode=OneWay, StringFormat=N2}" />
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource FTotals}">
+                        <Run Text="Profit (" /><Run Text="{Binding ProfitPercent, Mode=OneWay, StringFormat='0.##'}" /><Run Text="%): " /><Run Text="{Binding ProfitAmount, Mode=OneWay, StringFormat=N2}" />
+                    </TextBlock>
+                    <TextBlock Text="{Binding GrandTotal, StringFormat='Grand Total: {0:N2}'}"
+                               Style="{StaticResource FTotals}"
+                               FontSize="15" FontWeight="Bold"
+                               Margin="0,8,0,0" />
 
                 </StackPanel>
             </ScrollViewer>

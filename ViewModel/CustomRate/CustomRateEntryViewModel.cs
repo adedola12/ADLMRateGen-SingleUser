@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;                    // ← for Debug.WriteLine
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -43,13 +44,27 @@ namespace ADLMRateGen.ViewModel.CustomRate
         public decimal TotalMaterialCost => MaterialItems.Sum(item => item.TotalCost);
         public decimal TotalLabourCost => LabourItems.Sum(item => item.TotalCost);
         public decimal OverallTotal => TotalLabourCost + TotalMaterialCost;
-        public decimal GrandTotal => OverallTotal * (1 + (OverheadPercent + ProfitPercent) / 100);
+
+        /// <summary>Cash value of the overhead percentage — shown in the totals block.</summary>
+        public decimal OverheadAmount => OverallTotal * OverheadPercent / 100m;
+
+        /// <summary>Cash value of the profit percentage — shown in the totals block.</summary>
+        public decimal ProfitAmount => OverallTotal * ProfitPercent / 100m;
+
+        public decimal GrandTotal => OverallTotal + OverheadAmount + ProfitAmount;
 
         private void RecomputeAll()
         {
             RaisePropertyChanged(nameof(TotalMaterialCost));
             RaisePropertyChanged(nameof(TotalLabourCost));
             RaisePropertyChanged(nameof(OverallTotal));
+            RaiseMarkupChanged();
+        }
+
+        private void RaiseMarkupChanged()
+        {
+            RaisePropertyChanged(nameof(OverheadAmount));
+            RaisePropertyChanged(nameof(ProfitAmount));
             RaisePropertyChanged(nameof(GrandTotal));
         }
 
@@ -57,14 +72,83 @@ namespace ADLMRateGen.ViewModel.CustomRate
         public decimal OverheadPercent
         {
             get => _overheadPercent;
-            set { if (_overheadPercent != value) { _overheadPercent = value; RaisePropertyChanged(nameof(OverheadPercent)); RaisePropertyChanged(nameof(GrandTotal)); } }
+            set
+            {
+                if (_overheadPercent != value)
+                {
+                    _overheadPercent = value;
+                    _overheadPercentText = FormatPercent(value);
+                    RaisePropertyChanged(nameof(OverheadPercent));
+                    RaisePropertyChanged(nameof(OverheadPercentText));
+                    RaiseMarkupChanged();
+                }
+            }
         }
 
         private decimal _profitPercent = 10;
         public decimal ProfitPercent
         {
             get => _profitPercent;
-            set { if (_profitPercent != value) { _profitPercent = value; RaisePropertyChanged(nameof(ProfitPercent)); RaisePropertyChanged(nameof(GrandTotal)); } }
+            set
+            {
+                if (_profitPercent != value)
+                {
+                    _profitPercent = value;
+                    _profitPercentText = FormatPercent(value);
+                    RaisePropertyChanged(nameof(ProfitPercent));
+                    RaisePropertyChanged(nameof(ProfitPercentText));
+                    RaiseMarkupChanged();
+                }
+            }
+        }
+
+        // The Overhead / Profit boxes bind to these strings rather than to the
+        // decimals directly. A decimal binding fails to convert while the box
+        // holds a partial entry ("", "1.") and WPF then leaves the field looking
+        // blank; keeping the raw text means what the user typed always stays on
+        // screen while the parsed value drives the totals.
+        private string _overheadPercentText = FormatPercent(10);
+        public string OverheadPercentText
+        {
+            get => _overheadPercentText;
+            set
+            {
+                if (_overheadPercentText == value) return;
+                _overheadPercentText = value ?? string.Empty;
+                RaisePropertyChanged(nameof(OverheadPercentText));
+
+                _overheadPercent = ParsePercent(_overheadPercentText, _overheadPercent);
+                RaisePropertyChanged(nameof(OverheadPercent));
+                RaiseMarkupChanged();
+            }
+        }
+
+        private string _profitPercentText = FormatPercent(10);
+        public string ProfitPercentText
+        {
+            get => _profitPercentText;
+            set
+            {
+                if (_profitPercentText == value) return;
+                _profitPercentText = value ?? string.Empty;
+                RaisePropertyChanged(nameof(ProfitPercentText));
+
+                _profitPercent = ParsePercent(_profitPercentText, _profitPercent);
+                RaisePropertyChanged(nameof(ProfitPercent));
+                RaiseMarkupChanged();
+            }
+        }
+
+        private static string FormatPercent(decimal value) =>
+            value.ToString("0.##", CultureInfo.CurrentCulture);
+
+        /// <summary>Empty means 0; anything unparseable keeps the previous value.</summary>
+        private static decimal ParsePercent(string text, decimal fallback)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return 0m;
+            return decimal.TryParse(text, NumberStyles.Number, CultureInfo.CurrentCulture, out var parsed)
+                ? parsed
+                : fallback;
         }
 
         private string _description;
@@ -155,7 +239,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
             RaisePropertyChanged(nameof(TotalMaterialCost));
             RaisePropertyChanged(nameof(OverallTotal));
-            RaisePropertyChanged(nameof(GrandTotal));
+            RaiseMarkupChanged();
         }
 
         private void OnLabourCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -165,7 +249,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
             RaisePropertyChanged(nameof(TotalLabourCost));
             RaisePropertyChanged(nameof(OverallTotal));
-            RaisePropertyChanged(nameof(GrandTotal));
+            RaiseMarkupChanged();
         }
 
         private void OnRateEntryItemChanged(object sender, PropertyChangedEventArgs e)
@@ -177,7 +261,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
                 RaisePropertyChanged(nameof(TotalMaterialCost));
                 RaisePropertyChanged(nameof(TotalLabourCost));
                 RaisePropertyChanged(nameof(OverallTotal));
-                RaisePropertyChanged(nameof(GrandTotal));
+                RaiseMarkupChanged();
             }
         }
 
@@ -196,24 +280,27 @@ namespace ADLMRateGen.ViewModel.CustomRate
             OverheadPercent = rate.OverheadPercent;
             ProfitPercent   = rate.ProfitPercent;
 
+            // Order matters: RateType and Description both re-query the library,
+            // so the saved figures are restored last and win. (Setting RateType
+            // last used to wipe the price of any line the library doesn't know.)
             foreach (var matItem in rate.MaterialItems)
                 MaterialItems.Add(new RateEntryItem
                 {
+                    RateType    = matItem.RateType,
                     Description = matItem.Description,
                     Quantity    = matItem.Quantity,
                     Unit        = matItem.Unit,
-                    UnitPrice   = matItem.UnitPrice,
-                    RateType    = matItem.RateType
+                    UnitPrice   = matItem.UnitPrice
                 });
 
             foreach (var labItem in rate.LabourItems)
                 LabourItems.Add(new RateEntryItem
                 {
+                    RateType    = labItem.RateType,
                     Description = labItem.Description,
                     Quantity    = labItem.Quantity,
                     Unit        = labItem.Unit,
-                    UnitPrice   = labItem.UnitPrice,
-                    RateType    = labItem.RateType
+                    UnitPrice   = labItem.UnitPrice
                 });
         }
 
@@ -229,7 +316,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
             });
             RaisePropertyChanged(nameof(TotalMaterialCost));
             RaisePropertyChanged(nameof(OverallTotal));
-            RaisePropertyChanged(nameof(GrandTotal));
+            RaiseMarkupChanged();
         }
 
         private void AddLabourItem()
@@ -244,7 +331,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
             });
             RaisePropertyChanged(nameof(TotalLabourCost));
             RaisePropertyChanged(nameof(OverallTotal));
-            RaisePropertyChanged(nameof(GrandTotal));
+            RaiseMarkupChanged();
         }
 
         private void SaveCustomRate()
@@ -271,9 +358,31 @@ namespace ADLMRateGen.ViewModel.CustomRate
                 CustomRateServices.UpdateCustomRate(newRate);
             }
 
+            // Fold any priced line the library doesn't have yet back into it, so
+            // materials and labour entered here (or drafted by AI) are available
+            // to every future rate. Existing library prices are never overwritten.
+            var addedToLibrary = 0;
+            try
+            {
+                addedToLibrary = RateLineLibrary.Harvest(MaterialItems, LabourItems);
+                if (addedToLibrary > 0)
+                    RefreshLookups();
+            }
+            catch (Exception ex)
+            {
+                // The rate itself is already saved — a library write failure
+                // must not look like a failed save.
+                Debug.WriteLine($"[CustomRateEntryVM] library harvest failed: {ex}");
+            }
+
             // Show success popup
             if (System.Windows.Application.Current.MainWindow is MainWindow mw)
-                mw.PopupHost.Show(new View.LibrarySuccessView("New Rate Saved"));
+            {
+                var message = addedToLibrary > 0
+                    ? $"New Rate Saved — {addedToLibrary} item(s) added to your library"
+                    : "New Rate Saved";
+                mw.PopupHost.Show(new View.LibrarySuccessView(message));
+            }
 
             Saved?.Invoke();
             ClearForm();
@@ -350,6 +459,10 @@ namespace ADLMRateGen.ViewModel.CustomRate
             LabourItems.Clear();
             OverheadPercent = 10;
             ProfitPercent = 10;
+            // Set the text too: if the box holds an unparseable entry the decimal
+            // is still 10, so the assignments above are no-ops and would leave it.
+            OverheadPercentText = FormatPercent(OverheadPercent);
+            ProfitPercentText = FormatPercent(ProfitPercent);
             IsEditing = false;
             _originalId = Guid.Empty;
         }
@@ -360,7 +473,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
             RaisePropertyChanged(nameof(TotalMaterialCost));
             RaisePropertyChanged(nameof(TotalLabourCost));
             RaisePropertyChanged(nameof(OverallTotal));
-            RaisePropertyChanged(nameof(GrandTotal));
+            RaiseMarkupChanged();
         }
     }
 }

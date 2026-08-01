@@ -274,6 +274,7 @@
                                     <TextBox x:Name="EmailTextBox"
                                              Style="{StaticResource SignInFieldTextBoxStyle}"
                                              Width="560"
+                                             KeyDown="LoginField_KeyDown"
                                              Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <TextBlock Text="Password"
@@ -283,12 +284,14 @@
                                     <Grid Width="560">
                                         <PasswordBox x:Name="PasswordBox"
                                                      Style="{StaticResource SignInPasswordBoxStyle}"
+                                                     KeyDown="LoginField_KeyDown"
                                                      PasswordChanged="PasswordBox_PasswordChanged" />
 
                                         <TextBox x:Name="PasswordPreviewTextBox"
                                                  Style="{StaticResource SignInFieldTextBoxStyle}"
                                                  Padding="20,0,60,0"
                                                  Visibility="Collapsed"
+                                                 KeyDown="LoginField_KeyDown"
                                                  TextChanged="PasswordPreviewTextBox_TextChanged" />
 
                                         <Button Width="34"

@@ -98,9 +98,13 @@ namespace ADLMRateGen.Services
 		/// <summary>
 		/// Maps the AI build-up onto RateGen's CustomRate. Plant lines go into
 		/// MaterialItems (RateGen has no plant category), tagged "(plant)".
-		/// Per line the assignment order matters: RateType, Description, and
-		/// Unit each trigger ResolveUnitPrice() against the local library, so
-		/// the server-priced value is assigned to UnitPrice LAST and wins.
+		///
+		/// Pricing rule: the local price library is the source of truth. When a
+		/// component matches a library entry the line is stored under the
+		/// library's own name, which makes RateEntryItem.ResolveUnitPrice() pull
+		/// that entry's price and unit — the AI's figure is discarded. Only
+		/// components the library has never heard of keep the AI price, and
+		/// those are tagged "[AI]" so the QS can see what still needs review.
 		/// </summary>
 		private static CustomRate MapToCustomRate(string description, RateBuildup build)
 		{
@@ -117,19 +121,35 @@ namespace ADLMRateGen.Services
 			foreach (var c in build.Components ?? Enumerable.Empty<RateComponent>())
 			{
 				var isLabour = string.Equals(c.Kind, "labour", StringComparison.OrdinalIgnoreCase);
-				var tag = c.Source == "library" ? "" : " [AI]";
 				var plantTag = string.Equals(c.Kind, "plant", StringComparison.OrdinalIgnoreCase)
 					? " (plant)" : "";
 
 				var item = new RateEntryItem
 				{
 					RateType = isLabour ? RateItemType.Labour : RateItemType.Material,
-					Description = $"{c.Name}{plantTag}{tag}",
-					Quantity = (decimal)c.Quantity,
-					Unit = c.Unit,
 				};
-				// Last — overrides whatever ResolveUnitPrice found locally.
-				item.UnitPrice = (decimal)c.UnitPriceNgn;
+
+				var lookupName = RateLineLibrary.CleanName(c.Name);
+				var libraryName = isLabour
+					? LabourLibraryService.FindByName(lookupName)?.LabourName
+					: MaterialLibraryService.FindByName(lookupName)?.MaterialName;
+
+				if (!string.IsNullOrWhiteSpace(libraryName))
+				{
+					// Assigning Description resolves price + unit from the library.
+					item.Description = libraryName;
+					item.Quantity = (decimal)c.Quantity;
+					if (string.IsNullOrWhiteSpace(item.Unit))
+						item.Unit = c.Unit;
+				}
+				else
+				{
+					item.Description = $"{c.Name}{plantTag} [AI]";
+					item.Quantity = (decimal)c.Quantity;
+					item.Unit = c.Unit;
+					// Last — overrides the 0 that ResolveUnitPrice just wrote.
+					item.UnitPrice = (decimal)c.UnitPriceNgn;
+				}
 
 				if (isLabour) rate.LabourItems.Add(item);
 				else rate.MaterialItems.Add(item);

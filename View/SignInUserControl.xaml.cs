@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using ADLMRateGen.ViewModel;
 using FontAwesome.Sharp;
 
@@ -25,6 +26,39 @@ namespace ADLMRateGen.View
         {
             _pwdVisible = !_pwdVisible;
             UpdatePasswordVisibility();
+        }
+
+        /// <summary>
+        /// Enter from either credential field signs in, so the user never has to
+        /// reach for the mouse. Handled on the fields rather than as the window's
+        /// default button so Enter on the Forgot-password / Create-account links
+        /// still does what those links do.
+        /// </summary>
+        private void LoginField_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Enter && e.Key != Key.Return)
+            {
+                return;
+            }
+
+            e.Handled = true;
+
+            if (DataContext is not SignInViewModel vm || vm.IsLoading)
+            {
+                return;
+            }
+
+            // The PasswordBox has no bindable Password, and a paste into the
+            // preview box can land after the last sync — push the current value
+            // through before the command reads it.
+            vm.Password = _pwdVisible
+                ? PasswordPreviewTextBox.Text
+                : PasswordBox.Password;
+
+            if (vm.LoginCommand != null && vm.LoginCommand.CanExecute(null))
+            {
+                vm.LoginCommand.Execute(null);
+            }
         }
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
