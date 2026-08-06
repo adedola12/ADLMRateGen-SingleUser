@@ -430,6 +430,18 @@ namespace ADLMRateGen.ViewModel.CustomRate
                 foreach (var l in rate.LabourItems) LabourItems.Add(l);
                 UpdateTotals();
 
+                // An all-zero build-up is not a usable rate. It used to fill the
+                // form and report "AI draft ready", so the QS could save a rate
+                // whose every line priced 0.00 without anything flagging it.
+                if (AiRateService.IsUnpriced(rate))
+                {
+                    AiStatus =
+                        "ADLM AI returned this build-up with no prices — every line came back at 0.00. " +
+                        "The quantities are filled in, but you must enter the rates yourself before saving, " +
+                        "or pick items from the library so their prices apply.";
+                    return;
+                }
+
                 var confidence = result.Confidence.HasValue
                     ? $" (confidence {result.Confidence.Value:P0})"
                     : string.Empty;

@@ -16,6 +16,17 @@
     <FileVersion>2.6.0.0</FileVersion>
   </PropertyGroup>
 
+  <!-- The test project lives under this project's directory, so the SDK's
+       default **/*.cs glob would otherwise pull its files into the app build
+       (and fail on the missing xunit reference). -->
+  <ItemGroup>
+    <Compile Remove="Tests\**" />
+    <None Remove="Tests\**" />
+    <Page Remove="Tests\**" />
+    <Resource Remove="Tests\**" />
+    <Content Remove="Tests\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Remove="Data\defaultLabours.json" />
     <None Remove="Data\defaultMaterials.json" />

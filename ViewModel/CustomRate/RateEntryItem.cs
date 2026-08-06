@@ -49,7 +49,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				{
 					_rateType = value;
 					OnPropertyChanged();
-					ResolveUnitPrice();          // re‑query the right library
+					ResolveUnitPrice(clearWhenUnknown: true);   // re‑query the right library
 				}
 			}
 		}
@@ -63,7 +63,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 				{
 					_description = value;
 					OnPropertyChanged();
-					ResolveUnitPrice();
+					ResolveUnitPrice(clearWhenUnknown: true);
 				}
 			}
 		}
@@ -98,8 +98,12 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
         private void OnAnyLibraryChanged()
         {
+            // clearWhenUnknown: false — a library refresh must never wipe a price
+            // the user or the AI put there. Saving a rate harvests new entries and
+            // reloads the libraries, which fires this for every line; with the old
+            // unconditional clear that turned every unmatched line into 0.00.
             if (!string.IsNullOrWhiteSpace(_description))
-                ResolveUnitPrice();               // pulls latest price+unit from the right library
+                ResolveUnitPrice(clearWhenUnknown: false);
         }
 
         /// <summary>Unit price **stored in NGN**.</summary>
@@ -129,27 +133,43 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
         /* ────────── helpers ────────── */
 
-        private void ResolveUnitPrice()
+        /// <summary>
+        /// Re-prices this line from the library.
+        /// </summary>
+        /// <param name="clearWhenUnknown">
+        /// When the library has no entry for this description: true zeroes the
+        /// price (the user just picked a different item, so the old price is
+        /// meaningless), false leaves it alone (a background library reload must
+        /// not destroy an AI or hand-entered price).
+        /// </param>
+        private void ResolveUnitPrice(bool clearWhenUnknown)
         {
             if (string.IsNullOrWhiteSpace(_description)) return;
+
+            // Match on the library-facing name so provenance tags don't block the
+            // lookup: an AI line reads "Cement (Portland 42.5R) [AI]" but the
+            // library entry — including the one Harvest creates on save — is
+            // stored under the clean name.
+            var name = RateLineLibrary.CleanName(_description);
+            if (name.Length == 0) return;
 
             switch (RateType)
             {
                 case RateItemType.Material:
-                    var mat = MaterialLibraryService.FindByName(_description);
+                    var mat = MaterialLibraryService.FindByName(name);
                     if (mat != null) { UnitPrice = mat.MaterialPrice; Unit = mat.MaterialUnit; }
-                    else UnitPrice = 0m;
+                    else if (clearWhenUnknown) UnitPrice = 0m;
                     break;
 
                 case RateItemType.Labour:
-                    var lab = LabourLibraryService.FindByName(_description);
+                    var lab = LabourLibraryService.FindByName(name);
                     if (lab != null) { UnitPrice = lab.LabourPrice; Unit = lab.LabourUnit; }
-                    else UnitPrice = 0m;
+                    else if (clearWhenUnknown) UnitPrice = 0m;
                     break;
             }
         }
 
-        public void RefreshFromLibrary() => ResolveUnitPrice();
+        public void RefreshFromLibrary() => ResolveUnitPrice(clearWhenUnknown: false);
 
 
         /* ────────── INotifyPropertyChanged boilerplate ────────── */

@@ -148,7 +148,7 @@ namespace ADLMRateGen.Services
 					item.Quantity = (decimal)c.Quantity;
 					item.Unit = c.Unit;
 					// Last — overrides the 0 that ResolveUnitPrice just wrote.
-					item.UnitPrice = (decimal)c.UnitPriceNgn;
+					item.UnitPrice = UnitPriceOf(c);
 				}
 
 				if (isLabour) rate.LabourItems.Add(item);
@@ -157,6 +157,35 @@ namespace ADLMRateGen.Services
 
 			return rate;
 		}
+
+		/// <summary>
+		/// Unit price for a component, falling back to totalNgn / quantity.
+		///
+		/// The service sends both unitPriceNgn and totalNgn. A build-up has been
+		/// seen arriving with every unitPriceNgn at 0 while the rest of the line
+		/// (name, quantity, unit) was correct, which saved a rate where every
+		/// price read 0.00. Deriving from the line total recovers the figure
+		/// whenever the total survived.
+		/// </summary>
+		private static decimal UnitPriceOf(RateComponent c)
+		{
+			var unitPrice = (decimal)c.UnitPriceNgn;
+			if (unitPrice > 0m) return unitPrice;
+
+			var quantity = (decimal)c.Quantity;
+			var total = (decimal)c.TotalNgn;
+			if (total > 0m && quantity > 0m) return total / quantity;
+
+			return 0m;
+		}
+
+		/// <summary>
+		/// True when the build-up carries no usable pricing at all, so the caller
+		/// can warn instead of presenting an all-zero rate as ready to save.
+		/// </summary>
+		public static bool IsUnpriced(CustomRate rate) =>
+			rate != null &&
+			rate.MaterialItems.Concat(rate.LabourItems).All(i => i.UnitPrice <= 0m);
 
 		private static string Truncate(string s, int max) =>
 			s.Length <= max ? s : s.Substring(0, max - 1) + "…";

@@ -51,6 +51,11 @@
                 <Trigger Property="IsFocused" Value="True">
                     <Setter Property="BorderBrush" Value="{DynamicResource ButCol}" />
                 </Trigger>
+                <!-- Only ever fires for the AI prompt box, which is disabled while a
+                     request is in flight; the other FInput fields are never disabled. -->
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.55" />
+                </Trigger>
             </Style.Triggers>
         </Style>
 
@@ -239,15 +244,39 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
+                        <Border x:Name="BtnBg"
+                                Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="10" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
+                        <!-- Without these the button looked identical whether or not
+                             it was enabled, so "Build with AI" appeared clickable for
+                             the whole time a request was in flight. -->
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BtnBg" Property="Background"
+                                        Value="{DynamicResource HoverLightBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="BtnBg" Property="Opacity" Value="0.45" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <!-- ─── "Build with AI" button: adds a busy caption on top of FAddBtn ─── -->
+        <Style x:Key="FAiBtn" TargetType="Button" BasedOn="{StaticResource FAddBtn}">
+            <Setter Property="Content" Value="✦ Build with AI" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsAiBusy}" Value="True">
+                    <Setter Property="Content" Value="✦ Building…" />
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
         <!-- ─── Totals label ─── -->
@@ -302,6 +331,37 @@
                             BorderBrush="{DynamicResource BorderBrushLight}"
                             BorderThickness="1" CornerRadius="12"
                             Padding="14" Margin="0,0,0,18">
+                        <!-- Base values are 0 so stopping the storyboard reverts to no
+                             glow at all; the animation only runs while IsAiBusy. -->
+                        <Border.Effect>
+                            <DropShadowEffect Color="#1D94CA"
+                                              ShadowDepth="0"
+                                              BlurRadius="0"
+                                              Opacity="0" />
+                        </Border.Effect>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAiBusy}" Value="True">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard x:Name="AiGlowStoryboard">
+                                                <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                    <DoubleAnimation
+                                                        Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.BlurRadius)"
+                                                        From="4" To="26" Duration="0:0:1.1" />
+                                                    <DoubleAnimation
+                                                        Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)"
+                                                        From="0.20" To="0.85" Duration="0:0:1.1" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <DataTrigger.ExitActions>
+                                            <StopStoryboard BeginStoryboardName="AiGlowStoryboard" />
+                                        </DataTrigger.ExitActions>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
                         <StackPanel>
                             <TextBlock Text="Build with AI — describe the work item"
                                        Style="{StaticResource FLabel}" Margin="0,0,0,8" />
@@ -315,8 +375,7 @@
                                          Style="{StaticResource FInput}"
                                          IsEnabled="{Binding IsAiIdle}" />
                                 <Button Grid.Column="1"
-                                        Content="✦ Build with AI"
-                                        Style="{StaticResource FAddBtn}"
+                                        Style="{StaticResource FAiBtn}"
                                         Command="{Binding BuildWithAiCommand}"
                                         IsEnabled="{Binding IsAiIdle}"
                                         VerticalAlignment="Center"
