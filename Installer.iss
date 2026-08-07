@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ADLM Rate Gen "
-#define MyAppVersion "2.5.0"
+#define MyAppVersion "2.6.1"
 #define MyAppPublisher "ADLM Studio"
 #define MyAppURL "https://www.adlmstudios.net"
 #define MyAppExeName "ADLMRateGen.exe"
@@ -17,6 +17,9 @@
 ; ── Shared ADLM env-var registration (reads ADLM_SHARED_* from the build
 ;    machine's environment at compile time; generates per-machine local
 ;    secrets at install time). ──
+; This product ships offline licence validation, so a build without the
+; shared secret must fail rather than warn. See AdlmEnvVars.iss.
+#define AdlmRequireLicenseSecret
 #include "..\ADLMInstallerScripts\AdlmEnvVars.iss"
 
 [Setup]

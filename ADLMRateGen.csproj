@@ -10,6 +10,15 @@
     <!-- v2.6.1: AI-built rates kept their prices. A library reload — which every
          save triggers — was zeroing every AI line just before it was written to
          disk. Patch: fixes and UI feedback, no new behaviour. -->
+    <!-- v2.6.0: API host resolved from configuration instead of a compiled-in
+         constant, and repointed to the AWS backend. A stale value naming the
+         retired Render host is ignored rather than obeyed, so machines whose
+         installer wrote it into HKCU\Environment recover on upgrade. Custom
+         rates also began feeding the price library on save. -->
+    <!-- v2.5.0: Stable hardware device fingerprint (v2) shared with the other ADLM
+         apps, replacing the MAC-based value that changed with the active network
+         adapter and caused repeat DEVICE_MISMATCH sign-in failures. Minor rather
+         than patch because device binding behaviour changes for every install. -->
     <Version>2.6.1</Version>
     <AssemblyVersion>2.6.1.0</AssemblyVersion>
     <FileVersion>2.6.1.0</FileVersion>
