@@ -1,5 +1,69 @@
 # ADLM Rate Gen — Release Notes
 
+## v2.6.1
+
+### Fixed: AI-built rates saved with every price at 0.00
+
+Building a rate with AI filled the form correctly, but saving it wrote every
+price as 0.00 — and reopening the rate showed zeros. The quantities, units and
+names were all fine; only the money was gone.
+
+Saving a rate adds any new materials and labour to your library and then reloads
+it. That reload was re-pricing every line on the form, and because an AI line is
+labelled "Cement (Portland 42.5R) [AI]" it never matched the library entry named
+"Cement (Portland 42.5R)" — so it was set to zero. This happened in the moment
+between you pressing Save and the file being written.
+
+Lines now match their library entry regardless of the label, and a reload can no
+longer clear a price that is already there. Your existing zeroed rates cannot be
+recovered — rebuild them and they will save correctly.
+
+### Fixed: Overhead and Profit are no longer wiped by a bad keystroke
+
+Clearing the Overhead or Profit box left it looking empty while the old value
+was still being used in the total. Both boxes now keep exactly what you type.
+
+### ADLM AI: clearer feedback while it works, and when it doubts itself
+
+- The AI panel glows while a build-up is being prepared, the button reads
+  "Building…", and both it and the prompt box grey out. They were already
+  disabled during a request, but looked live.
+- A build-up that comes back with no prices at all is now refused rather than
+  presented as ready to save.
+- When ADLM's checks flag a build-up — a labour line priced per day that was
+  never pro-rated to one unit, a rate wildly out against comparable library
+  rates, a single line costing more than a whole comparable rate — the reasons
+  are listed in an amber panel under the AI box. The draft is still shown, but
+  you are told what to correct before saving.
+
+---
+
+### Technical detail
+
+- `RateEntryItem.ResolveUnitPrice` matched on the raw description and cleared the
+  price on every miss. It is wired to the static
+  `MaterialLibraryService.LibraryChanged`, which `SaveCustomRate` raises via
+  Harvest + `RefreshLookups`, so every unmatched line was zeroed mid-save. It now
+  matches on `RateLineLibrary.CleanName` and only clears when the user actively
+  picks a different item (`clearWhenUnknown`).
+- `AiRateService` derives a unit price from `totalNgn / quantity` when
+  `unitPriceNgn` is absent, and `IsUnpriced` gates an all-zero build-up.
+- `AiRateResult.Warnings` carries the service's check failures through to
+  `CustomRateEntryViewModel.AiWarnings`.
+- `OverheadPercentText` / `ProfitPercentText` hold the raw text; a decimal
+  binding blanked the field on a partial entry. `FInputOHP` also had a fixed
+  `Height` while `FInput`'s template puts `Padding` on the Border, leaving ~23px
+  of content slot and clipping the value out of view.
+- Added `Tests/ADLMRateGen.Tests` — 19 tests over the pricing and harvest rules,
+  hermetic via in-memory data sources. Verified as a negative control: against
+  the previous `RateEntryItem` they fail 5/19.
+
+**Server-side, already deployed:** the AI service now enforces pro-rating and
+sanity checks in code rather than only in the prompt, and escalates to the
+stronger model when a build-up fails them.
+
+---
+
 ## v2.6.0
 
 ### Your custom rates now build up your price library

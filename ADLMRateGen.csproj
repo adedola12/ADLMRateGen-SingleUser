@@ -7,13 +7,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\ADLM Rate Generator Plugin.ico</ApplicationIcon>
-    <!-- v2.6.0: Custom rates now feed the price library — every priced line saved
-         is added back to the material/labour library, and the AI build-up prices
-         from that library instead of its own figures. Minor: new behaviour on the
-         save path, not just a fix. -->
-    <Version>2.6.0</Version>
-    <AssemblyVersion>2.6.0.0</AssemblyVersion>
-    <FileVersion>2.6.0.0</FileVersion>
+    <!-- v2.6.1: AI-built rates kept their prices. A library reload — which every
+         save triggers — was zeroing every AI line just before it was written to
+         disk. Patch: fixes and UI feedback, no new behaviour. -->
+    <Version>2.6.1</Version>
+    <AssemblyVersion>2.6.1.0</AssemblyVersion>
+    <FileVersion>2.6.1.0</FileVersion>
   </PropertyGroup>
 
   <!-- The test project lives under this project's directory, so the SDK's
