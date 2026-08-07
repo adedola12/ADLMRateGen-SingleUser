@@ -91,6 +91,8 @@ namespace ADLMRateGen.Services
 				Disclaimer = res.Disclaimer,
 				Confidence = res.Audit?.Confidence,
 				Model = res.Audit?.Model,
+				Warnings = res.Value.Warnings?.Where(w => !string.IsNullOrWhiteSpace(w)).ToList()
+						   ?? new List<string>(),
 				Rate = MapToCustomRate(description, res.Value),
 			};
 		}
@@ -199,6 +201,13 @@ namespace ADLMRateGen.Services
 		public string? Disclaimer { get; set; }
 		public double? Confidence { get; set; }
 		public string? Model { get; set; }
+
+		/// <summary>
+		/// Server-side check failures the build-up was returned with anyway.
+		/// Empty when it passed. See AdlmAi RateBuildup.Warnings.
+		/// </summary>
+		public List<string> Warnings { get; set; } = new();
+
 		public CustomRate? Rate { get; set; }
 		public bool IsSuccess => Status == AiStatus.Success || Status == AiStatus.CachedFallback;
 

@@ -183,6 +183,27 @@ namespace ADLMRateGen.ViewModel.CustomRate
         }
         public bool IsAiIdle => !_isAiBusy;
 
+        /// <summary>
+        /// Checks the server ran on the build-up that it returned anyway —
+        /// a line priced per day without pro-rating, a total wildly out against
+        /// the closest library rate. Shown as its own block rather than folded
+        /// into AiStatus: a rate that is 2.5x wrong but looks plausible is more
+        /// dangerous than one that is obviously broken, so it must not read as
+        /// ordinary progress text.
+        /// </summary>
+        public ObservableCollection<string> AiWarnings { get; } = new();
+
+        public bool HasAiWarnings => AiWarnings.Count > 0;
+
+        private void SetAiWarnings(IEnumerable<string>? warnings)
+        {
+            AiWarnings.Clear();
+            foreach (var w in warnings ?? Enumerable.Empty<string>())
+                AiWarnings.Add(w);
+
+            RaisePropertyChanged(nameof(HasAiWarnings));
+        }
+
         /// <summary>Hides the AI section entirely when ADLM_AI_URL is not configured.</summary>
         public bool IsAiAvailable => AiRateService.Instance.IsConfigured;
 
@@ -409,6 +430,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
             IsAiBusy = true;
             AiStatus = "Building rate with ADLM AI…";
+            SetAiWarnings(null);
             try
             {
                 var progress = new Progress<string>(msg => AiStatus = msg);
@@ -421,7 +443,7 @@ namespace ADLMRateGen.ViewModel.CustomRate
                 }
 
                 var rate = result.Rate;
-                StartNewRate();
+                StartNewRate();            // clears the form, and the warnings with it
                 RateName = rate.Title;
                 Description = rate.Description;
                 OverheadPercent = rate.OverheadPercent;
@@ -442,15 +464,22 @@ namespace ADLMRateGen.ViewModel.CustomRate
                     return;
                 }
 
+                // Set after StartNewRate, which clears them.
+                SetAiWarnings(result.Warnings);
+
                 var confidence = result.Confidence.HasValue
                     ? $" (confidence {result.Confidence.Value:P0})"
                     : string.Empty;
                 var cachedNote = result.Status == AdlmAi.AiStatus.CachedFallback
                     ? " — cached result, service unreachable"
                     : string.Empty;
-                AiStatus =
-                    $"AI draft ready{confidence}{cachedNote}. Review every line before saving. " +
-                    (result.Disclaimer ?? string.Empty);
+
+                AiStatus = HasAiWarnings
+                    ? $"AI draft ready{confidence}{cachedNote}, but it did not pass ADLM's checks — " +
+                      $"see below. Correct the flagged lines before saving. " +
+                      (result.Disclaimer ?? string.Empty)
+                    : $"AI draft ready{confidence}{cachedNote}. Review every line before saving. " +
+                      (result.Disclaimer ?? string.Empty);
             }
             catch (Exception ex)
             {
@@ -465,6 +494,9 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
         private void ClearForm()
         {
+            // Warnings belong to the build-up that was on screen; leaving them
+            // up would attach them to whatever the user types next.
+            SetAiWarnings(null);
             RateName = string.Empty;
             Description = string.Empty;
             MaterialItems.Clear();

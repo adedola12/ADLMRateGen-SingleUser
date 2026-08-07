@@ -385,6 +385,57 @@
                                        Style="{StaticResource FLabelSmall}"
                                        TextWrapping="Wrap"
                                        Margin="0,8,0,0" />
+
+                            <!-- Checks the server ran and the build-up failed.
+                                 Deliberately loud: a rate that is 2.5x wrong but
+                                 looks plausible gets used in a tender, unlike one
+                                 that is obviously broken. -->
+                            <Border Visibility="{Binding HasAiWarnings, Converter={StaticResource BoolToVis}}"
+                                    Background="#FFF7E6"
+                                    BorderBrush="#E8A317"
+                                    BorderThickness="1"
+                                    CornerRadius="10"
+                                    Padding="12,10"
+                                    Margin="0,10,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="⚠  This build-up did not pass ADLM's checks"
+                                               FontFamily="{DynamicResource AppFont}"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Foreground="#8A5A00"
+                                               TextWrapping="Wrap" />
+                                    <ItemsControl ItemsSource="{Binding AiWarnings}"
+                                                  Margin="0,6,0,0">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,3,0,0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="•"
+                                                               Margin="0,0,6,0"
+                                                               Foreground="#8A5A00"
+                                                               FontSize="11.5" />
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding}"
+                                                               FontFamily="{DynamicResource AppFont}"
+                                                               FontSize="11.5"
+                                                               Foreground="#8A5A00"
+                                                               TextWrapping="Wrap" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <TextBlock Text="Correct the flagged lines before saving — the quantities, not just the prices."
+                                               FontFamily="{DynamicResource AppFont}"
+                                               FontSize="11"
+                                               FontStyle="Italic"
+                                               Foreground="#8A5A00"
+                                               TextWrapping="Wrap"
+                                               Margin="0,8,0,0" />
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </Border>
 
