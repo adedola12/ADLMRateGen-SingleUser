@@ -71,37 +71,51 @@ namespace ADLMRateGen.Services
 
             lock (_sync)
             {
-                var dict = _materials.ToDictionary(
-                    m => m.MaterialName ?? string.Empty,
-                    StringComparer.OrdinalIgnoreCase);
+                // Grouped by name, never keyed by it. The library legitimately
+                // holds several rows under one name — the shipped defaults carry
+                // 500 rows for 477 distinct names, differing by unit or category.
+                // Keying threw ArgumentException on the first duplicate, and
+                // rebuilding the list from dictionary values would have dropped
+                // every duplicate row. Rows are updated in place so both the
+                // duplicates and the original ordering survive.
+                var byName = _materials
+                    .GroupBy(m => m.MaterialName ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
 
                 foreach (var item in incoming)
                 {
                     var key = item.MaterialName ?? string.Empty;
                     if (string.IsNullOrWhiteSpace(key)) continue;
 
-                    if (dict.TryGetValue(key, out var existing))
+                    if (byName.TryGetValue(key, out var existingRows))
                     {
-                        // Always update price from the incoming list
-                        existing.MaterialPrice = item.MaterialPrice;
+                        // Every row under the name takes the incoming price:
+                        // callers update by name, so leaving some rows stale
+                        // would make the library disagree with itself.
+                        foreach (var existing in existingRows)
+                        {
+                            // Always update price from the incoming list
+                            existing.MaterialPrice = item.MaterialPrice;
 
-                        // Update unit/category if provided (avoid overwriting with null/empty)
-                        if (!string.IsNullOrWhiteSpace(item.MaterialUnit))
-                            existing.MaterialUnit = item.MaterialUnit;
+                            // Update unit/category if provided (avoid overwriting with null/empty)
+                            if (!string.IsNullOrWhiteSpace(item.MaterialUnit))
+                                existing.MaterialUnit = item.MaterialUnit;
 
-                        if (!string.IsNullOrWhiteSpace(item.MaterialCategory))
-                            existing.MaterialCategory = item.MaterialCategory;
+                            if (!string.IsNullOrWhiteSpace(item.MaterialCategory))
+                                existing.MaterialCategory = item.MaterialCategory;
 
-                        // Keep any other user-specific fields on 'existing' intact
+                            // Keep any other user-specific fields on 'existing' intact
+                        }
                     }
                     else
                     {
-                        // New material entirely
-                        dict[key] = item;
+                        // New material entirely — appended, so existing rows keep
+                        // their position in the file.
+                        _materials.Add(item);
+                        byName[key] = new List<MaterialModel> { item };
                     }
                 }
 
-                _materials = dict.Values.ToList();
                 _dataSource.SaveMaterials(_materials);
             }
             RaiseChanged();

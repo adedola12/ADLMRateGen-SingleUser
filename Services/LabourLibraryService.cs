@@ -92,37 +92,44 @@ namespace ADLMRateGen.Services
 
             lock (_sync)
             {
-                var dict = _labours.ToDictionary(
-                    l => l.LabourName ?? string.Empty,
-                    StringComparer.OrdinalIgnoreCase);
+                // Grouped by name, never keyed by it — see the matching comment
+                // in MaterialLibraryService. Keying threw on the first duplicate
+                // name and would have dropped every duplicate row on save.
+                var byName = _labours
+                    .GroupBy(l => l.LabourName ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
 
                 foreach (var item in incoming)
                 {
                     var key = item.LabourName ?? string.Empty;
                     if (string.IsNullOrWhiteSpace(key)) continue;
 
-                    if (dict.TryGetValue(key, out var existing))
+                    if (byName.TryGetValue(key, out var existingRows))
                     {
-                        // Always update price from the incoming list
-                        existing.LabourPrice = item.LabourPrice;
+                        foreach (var existing in existingRows)
+                        {
+                            // Always update price from the incoming list
+                            existing.LabourPrice = item.LabourPrice;
 
-                        // Update unit/category if provided (avoid overwriting with null/empty)
-                        if (!string.IsNullOrWhiteSpace(item.LabourUnit))
-                            existing.LabourUnit = item.LabourUnit;
+                            // Update unit/category if provided (avoid overwriting with null/empty)
+                            if (!string.IsNullOrWhiteSpace(item.LabourUnit))
+                                existing.LabourUnit = item.LabourUnit;
 
-                        if (!string.IsNullOrWhiteSpace(item.LabourCategory))
-                            existing.LabourCategory = item.LabourCategory;
+                            if (!string.IsNullOrWhiteSpace(item.LabourCategory))
+                                existing.LabourCategory = item.LabourCategory;
 
-                        // Keep any other user-specific fields on 'existing' intact
+                            // Keep any other user-specific fields on 'existing' intact
+                        }
                     }
                     else
                     {
-                        // New labour entirely
-                        dict[key] = item;
+                        // New labour entirely — appended, so existing rows keep
+                        // their position in the file.
+                        _labours.Add(item);
+                        byName[key] = new List<LabourModel> { item };
                     }
                 }
 
-                _labours = dict.Values.ToList();
                 _dataSource.SaveLabours(_labours);
             }
 
