@@ -7,6 +7,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\ADLM Rate Generator Plugin.ico</ApplicationIcon>
+    <!-- v2.6.2: The library merge no longer keys on the material/labour name.
+         Keying threw on the first duplicate — and the shipped defaults carry
+         500 rows for 477 names — so harvesting on save silently did nothing,
+         and had it not thrown it would have written back one row per name. -->
     <!-- v2.6.1: AI-built rates kept their prices. A library reload — which every
          save triggers — was zeroing every AI line just before it was written to
          disk. Patch: fixes and UI feedback, no new behaviour. -->
@@ -19,9 +23,9 @@
          apps, replacing the MAC-based value that changed with the active network
          adapter and caused repeat DEVICE_MISMATCH sign-in failures. Minor rather
          than patch because device binding behaviour changes for every install. -->
-    <Version>2.6.1</Version>
-    <AssemblyVersion>2.6.1.0</AssemblyVersion>
-    <FileVersion>2.6.1.0</FileVersion>
+    <Version>2.6.2</Version>
+    <AssemblyVersion>2.6.2.0</AssemblyVersion>
+    <FileVersion>2.6.2.0</FileVersion>
   </PropertyGroup>
 
   <!-- The test project lives under this project's directory, so the SDK's

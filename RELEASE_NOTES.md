@@ -1,5 +1,46 @@
 # ADLM Rate Gen — Release Notes
 
+## v2.6.2
+
+### Fixed: saving a rate could not add to your library, and risked losing rows
+
+Your material and labour libraries can hold more than one entry under the same
+name — the same material at a different unit, or in a different category. The
+shipped material list does this 23 times.
+
+When a rate was saved, the step that adds new materials and labour to your
+library rebuilt the whole list keyed on the name. With duplicates present that
+step failed outright, and because the failure was caught and ignored, saving
+appeared to work while nothing was ever added to the library. Had it not failed,
+it would have written the list back with only one row per name and discarded the
+rest.
+
+The merge now keeps every row. Existing entries are updated in place, so
+duplicates and the order of your library are both preserved, and genuinely new
+items are added at the end. When an update matches a name held by several rows,
+all of them take the new price.
+
+If your library lost rows before this release, this does not bring them back —
+restore from a backup if you have one.
+
+---
+
+### Technical detail
+
+- `MaterialLibraryService.AddOrUpdateMaterials` and
+  `LabourLibraryService.AddOrUpdateLabours` used
+  `ToDictionary(m => m.MaterialName)`, which throws `ArgumentException` on a
+  duplicate key; `CustomRateEntryViewModel.SaveCustomRate` wraps `Harvest` in a
+  try/catch, so the throw was swallowed and the harvest silently no-opped.
+  Reassigning the backing list from `dict.Values` would also have dropped every
+  duplicate row.
+- Both now group by name and mutate the matched rows in place, appending only
+  unseen names, so row count and ordering are stable.
+- 5 new tests in `Tests/ADLMRateGen.Tests` (24 total), verified as a negative
+  control: against the previous implementation they fail 4/24.
+
+---
+
 ## v2.6.1
 
 ### Fixed: AI-built rates saved with every price at 0.00
