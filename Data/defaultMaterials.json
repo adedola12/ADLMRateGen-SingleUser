@@ -3498,5 +3498,474 @@
     "MaterialUnit": "1 Litre",
     "MaterialPrice": 3450.0,
     "MaterialCategory": "PORTLAND PAINTS"
+  },
+  {
+    "SerialNumber": 501,
+    "MaterialName": "4 core 70mm2 PVC/SWA/PVC copper cable",
+    "MaterialUnit": "m",
+    "MaterialPrice": 58050.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 502,
+    "MaterialName": "4 core 35mm2 PVC/SWA/PVC copper cable",
+    "MaterialUnit": "m",
+    "MaterialPrice": 49275.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 503,
+    "MaterialName": "4 core 35mm2 PVC/PVC copper cable",
+    "MaterialUnit": "m",
+    "MaterialPrice": 49275.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 504,
+    "MaterialName": "4 core 25mm2 PVC/PVC copper cable",
+    "MaterialUnit": "m",
+    "MaterialPrice": 25380.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 505,
+    "MaterialName": "5 core 6mm2 PVC/PVC copper cable",
+    "MaterialUnit": "m",
+    "MaterialPrice": 14175.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 506,
+    "MaterialName": "5 core 4mm2 PVC/PVC copper cable",
+    "MaterialUnit": "m",
+    "MaterialPrice": 8370.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 507,
+    "MaterialName": "1 core 35mm2 PVC/AWA/PVC copper cable",
+    "MaterialUnit": "m",
+    "MaterialPrice": 10125.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 508,
+    "MaterialName": "1 core 16mm2 PVC/AWA/PVC copper cable",
+    "MaterialUnit": "m",
+    "MaterialPrice": 6075.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 509,
+    "MaterialName": "1 core 16mm2 PVC/PVC copper cable",
+    "MaterialUnit": "m",
+    "MaterialPrice": 6075.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 510,
+    "MaterialName": "1 core 16mm2 flexible earth cable, yellow/green",
+    "MaterialUnit": "m",
+    "MaterialPrice": 6075.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 511,
+    "MaterialName": "12 core single mode fibre optic cable with LCUPC connectors",
+    "MaterialUnit": "m",
+    "MaterialPrice": 4725.0,
+    "MaterialCategory": "MEP - Cables & Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 512,
+    "MaterialName": "35mm2 bare copper earth conductor for ground grid",
+    "MaterialUnit": "m",
+    "MaterialPrice": 10530.0,
+    "MaterialCategory": "MEP - Earthing & Lightning Protection (supply & install)"
+  },
+  {
+    "SerialNumber": 513,
+    "MaterialName": "8mm copper round wire, earthing",
+    "MaterialUnit": "m",
+    "MaterialPrice": 22275.0,
+    "MaterialCategory": "MEP - Earthing & Lightning Protection (supply & install)"
+  },
+  {
+    "SerialNumber": 514,
+    "MaterialName": "Earth rod, copper, 19mm diameter x 3m long",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 56025.0,
+    "MaterialCategory": "MEP - Earthing & Lightning Protection (supply & install)"
+  },
+  {
+    "SerialNumber": 515,
+    "MaterialName": "Earth pit/chamber with ground rod",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 51300.0,
+    "MaterialCategory": "MEP - Earthing & Lightning Protection (supply & install)"
+  },
+  {
+    "SerialNumber": 516,
+    "MaterialName": "110mm diameter cable duct, laid in trench, complete",
+    "MaterialUnit": "m",
+    "MaterialPrice": 105300.0,
+    "MaterialCategory": "MEP - Cable Containment & Ducts (supply & install)"
+  },
+  {
+    "SerialNumber": 517,
+    "MaterialName": "75mm diameter cable duct, laid in trench, complete",
+    "MaterialUnit": "m",
+    "MaterialPrice": 38475.0,
+    "MaterialCategory": "MEP - Cable Containment & Ducts (supply & install)"
+  },
+  {
+    "SerialNumber": 518,
+    "MaterialName": "50mm diameter cable duct, laid in trench, complete",
+    "MaterialUnit": "m",
+    "MaterialPrice": 26325.0,
+    "MaterialCategory": "MEP - Cable Containment & Ducts (supply & install)"
+  },
+  {
+    "SerialNumber": 519,
+    "MaterialName": "25mm diameter cable duct, laid in trench, complete",
+    "MaterialUnit": "m",
+    "MaterialPrice": 16875.0,
+    "MaterialCategory": "MEP - Cable Containment & Ducts (supply & install)"
+  },
+  {
+    "SerialNumber": 520,
+    "MaterialName": "Hot dipped galvanised channel support 41 x 41 x 2.7mm",
+    "MaterialUnit": "m",
+    "MaterialPrice": 205200.0,
+    "MaterialCategory": "MEP - Cable Containment & Ducts (supply & install)"
+  },
+  {
+    "SerialNumber": 521,
+    "MaterialName": "LED ceiling fitting, 1 x 12W",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 168750.0,
+    "MaterialCategory": "MEP - Luminaires (supply & install)"
+  },
+  {
+    "SerialNumber": 522,
+    "MaterialName": "LED spot light, ceiling mounted, 1 x 7W",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 110000.0,
+    "MaterialCategory": "MEP - Luminaires (supply & install)"
+  },
+  {
+    "SerialNumber": 523,
+    "MaterialName": "LED panel light 600 x 600mm, 4000K",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 65000.0,
+    "MaterialCategory": "MEP - Luminaires (supply & install)"
+  },
+  {
+    "SerialNumber": 524,
+    "MaterialName": "LED batten/fluorescent fitting, 40W x 600mm",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 60000.0,
+    "MaterialCategory": "MEP - Luminaires (supply & install)"
+  },
+  {
+    "SerialNumber": 525,
+    "MaterialName": "External wall bracket (bulkhead) light, 20W",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 56250.0,
+    "MaterialCategory": "MEP - Luminaires (supply & install)"
+  },
+  {
+    "SerialNumber": 526,
+    "MaterialName": "Wall bracket fitting, 1 x 20W",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 48750.0,
+    "MaterialCategory": "MEP - Luminaires (supply & install)"
+  },
+  {
+    "SerialNumber": 527,
+    "MaterialName": "Mirror light, 10W",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 70000.0,
+    "MaterialCategory": "MEP - Luminaires (supply & install)"
+  },
+  {
+    "SerialNumber": 528,
+    "MaterialName": "Chandelier fitting, 4 x 20W",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 410000.0,
+    "MaterialCategory": "MEP - Luminaires (supply & install)"
+  },
+  {
+    "SerialNumber": 529,
+    "MaterialName": "13A 1 gang switched socket outlet",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 15000.0,
+    "MaterialCategory": "MEP - Switches & Socket Outlets (supply & install)"
+  },
+  {
+    "SerialNumber": 530,
+    "MaterialName": "20A DP switched socket outlet (appliance)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 22500.0,
+    "MaterialCategory": "MEP - Switches & Socket Outlets (supply & install)"
+  },
+  {
+    "SerialNumber": 531,
+    "MaterialName": "20A DP isolator switch (air conditioner/water heater)",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 25000.0,
+    "MaterialCategory": "MEP - Switches & Socket Outlets (supply & install)"
+  },
+  {
+    "SerialNumber": 532,
+    "MaterialName": "10A 1 way 1 gang switch",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 11875.0,
+    "MaterialCategory": "MEP - Switches & Socket Outlets (supply & install)"
+  },
+  {
+    "SerialNumber": 533,
+    "MaterialName": "10A 1 way 2 gang switch",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 17500.0,
+    "MaterialCategory": "MEP - Switches & Socket Outlets (supply & install)"
+  },
+  {
+    "SerialNumber": 534,
+    "MaterialName": "10A 2 way 1 gang switch",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 15000.0,
+    "MaterialCategory": "MEP - Switches & Socket Outlets (supply & install)"
+  },
+  {
+    "SerialNumber": 535,
+    "MaterialName": "10A 2 way 2 gang switch",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 22500.0,
+    "MaterialCategory": "MEP - Switches & Socket Outlets (supply & install)"
+  },
+  {
+    "SerialNumber": 536,
+    "MaterialName": "10A 2 way 3 gang switch",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 27500.0,
+    "MaterialCategory": "MEP - Switches & Socket Outlets (supply & install)"
+  },
+  {
+    "SerialNumber": 537,
+    "MaterialName": "20A 1 way 1 gang switch",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 20000.0,
+    "MaterialCategory": "MEP - Switches & Socket Outlets (supply & install)"
+  },
+  {
+    "SerialNumber": 538,
+    "MaterialName": "Convenience outlet, external",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 12825.0,
+    "MaterialCategory": "MEP - Switches & Socket Outlets (supply & install)"
+  },
+  {
+    "SerialNumber": 539,
+    "MaterialName": "Distribution board (DB) with MCBs, complete and labelled",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 475000.0,
+    "MaterialCategory": "MEP - Distribution & Switchgear (supply & install)"
+  },
+  {
+    "SerialNumber": 540,
+    "MaterialName": "Electric water heater, incl. 20A DP switch and connection",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 133750.0,
+    "MaterialCategory": "MEP - Distribution & Switchgear (supply & install)"
+  },
+  {
+    "SerialNumber": 541,
+    "MaterialName": "NEMA 4X outdoor enclosure, IP66, 1.5mm, lockable",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 132300.0,
+    "MaterialCategory": "MEP - Distribution & Switchgear (supply & install)"
+  },
+  {
+    "SerialNumber": 542,
+    "MaterialName": "ATS protective devices, complete",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 1147500.0,
+    "MaterialCategory": "MEP - Distribution & Switchgear (supply & install)"
+  },
+  {
+    "SerialNumber": 543,
+    "MaterialName": "Power distribution panel protective devices, complete",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 877500.0,
+    "MaterialCategory": "MEP - Distribution & Switchgear (supply & install)"
+  },
+  {
+    "SerialNumber": 544,
+    "MaterialName": "Point wiring, lighting point, concealed PVC conduit",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 35000.0,
+    "MaterialCategory": "MEP - Point Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 545,
+    "MaterialName": "Point wiring, socket/power point, concealed PVC conduit",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 47500.0,
+    "MaterialCategory": "MEP - Point Wiring (supply & install)"
+  },
+  {
+    "SerialNumber": 546,
+    "MaterialName": "Water closet (WC) suite, complete with cistern, seat and connections",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 112000.0,
+    "MaterialCategory": "MEP - Sanitary Fittings (supply & install)"
+  },
+  {
+    "SerialNumber": 547,
+    "MaterialName": "Wash hand basin (WHB) with pillar tap, waste, trap and brackets",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 65000.0,
+    "MaterialCategory": "MEP - Sanitary Fittings (supply & install)"
+  },
+  {
+    "SerialNumber": 548,
+    "MaterialName": "Kitchen sink, double bowl, with mixer tap, waste and trap",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 85000.0,
+    "MaterialCategory": "MEP - Sanitary Fittings (supply & install)"
+  },
+  {
+    "SerialNumber": 549,
+    "MaterialName": "Floor drain (FD) with trap and grating",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 33000.0,
+    "MaterialCategory": "MEP - Sanitary Fittings (supply & install)"
+  },
+  {
+    "SerialNumber": 550,
+    "MaterialName": "Inspection chamber (IC) complete with cover and benching",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 95000.0,
+    "MaterialCategory": "MEP - Sanitary Fittings (supply & install)"
+  },
+  {
+    "SerialNumber": 551,
+    "MaterialName": "Split unit air conditioner, 1HP, complete with pipework and brackets",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 525000.0,
+    "MaterialCategory": "MEP - Air Conditioning & Ventilation (supply & install)"
+  },
+  {
+    "SerialNumber": 552,
+    "MaterialName": "Split unit air conditioner, 2HP, complete with pipework and brackets",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 775000.0,
+    "MaterialCategory": "MEP - Air Conditioning & Ventilation (supply & install)"
+  },
+  {
+    "SerialNumber": 553,
+    "MaterialName": "Extractor fan, ceiling/duct mounted, with grille and connection",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 81250.0,
+    "MaterialCategory": "MEP - Air Conditioning & Ventilation (supply & install)"
+  },
+  {
+    "SerialNumber": 554,
+    "MaterialName": "Extractor fan, wall mounted, with external louvre and connection",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 68750.0,
+    "MaterialCategory": "MEP - Air Conditioning & Ventilation (supply & install)"
+  },
+  {
+    "SerialNumber": 555,
+    "MaterialName": "Ceiling fan complete with regulator",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 118750.0,
+    "MaterialCategory": "MEP - Air Conditioning & Ventilation (supply & install)"
+  },
+  {
+    "SerialNumber": 556,
+    "MaterialName": "Fire hydrant/landing valve with hose reel, nozzle and cabinet",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 1062500.0,
+    "MaterialCategory": "MEP - Fire Protection (supply & install)"
+  },
+  {
+    "SerialNumber": 557,
+    "MaterialName": "Fire alarm control panel, 8 zone, with battery back-up",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 525000.0,
+    "MaterialCategory": "MEP - Fire Protection (supply & install)"
+  },
+  {
+    "SerialNumber": 558,
+    "MaterialName": "Fire alarm sounder/bell",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 56250.0,
+    "MaterialCategory": "MEP - Fire Protection (supply & install)"
+  },
+  {
+    "SerialNumber": 559,
+    "MaterialName": "Fire extinguisher, dry powder/CO2, with bracket and signage",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 81250.0,
+    "MaterialCategory": "MEP - Fire Protection (supply & install)"
+  },
+  {
+    "SerialNumber": 560,
+    "MaterialName": "Smoke/heat detector, complete with base and connection",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 43750.0,
+    "MaterialCategory": "MEP - Fire Protection (supply & install)"
+  },
+  {
+    "SerialNumber": 561,
+    "MaterialName": "CCTV camera, incl. cabling to recorder",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 181250.0,
+    "MaterialCategory": "MEP - Security & Detection (supply & install)"
+  },
+  {
+    "SerialNumber": 562,
+    "MaterialName": "Electric fence energizer, Nemtek Wizord 2i or equal",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 398250.0,
+    "MaterialCategory": "MEP - Security & Detection (supply & install)"
+  },
+  {
+    "SerialNumber": 563,
+    "MaterialName": "Strobe light and 30W sounder/siren, external",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 317250.0,
+    "MaterialCategory": "MEP - Security & Detection (supply & install)"
+  },
+  {
+    "SerialNumber": 564,
+    "MaterialName": "Remote control device for fence energizer",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 65475.0,
+    "MaterialCategory": "MEP - Security & Detection (supply & install)"
+  },
+  {
+    "SerialNumber": 565,
+    "MaterialName": "Electric fence status indicator light",
+    "MaterialUnit": "No.",
+    "MaterialPrice": 4725.0,
+    "MaterialCategory": "MEP - Security & Detection (supply & install)"
+  },
+  {
+    "SerialNumber": 566,
+    "MaterialName": "Electric fence HT cable (S-series)",
+    "MaterialUnit": "m",
+    "MaterialPrice": 675.0,
+    "MaterialCategory": "MEP - Security & Detection (supply & install)"
+  },
+  {
+    "SerialNumber": 567,
+    "MaterialName": "Electric fence wire, 1.6mm stranded aluminium",
+    "MaterialUnit": "m",
+    "MaterialPrice": 540.0,
+    "MaterialCategory": "MEP - Security & Detection (supply & install)"
   }
 ]

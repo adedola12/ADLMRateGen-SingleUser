@@ -133,7 +133,24 @@ namespace ADLMRateGen.ViewModel
                 "AMERON PAINTS", "AMERON PAINTS - Finish Coating", "AMERON PAINTS - Anti-Fouling",
                 "AMERON PAINTS - Degreaser", "AMERON PAINTS - Etching", "AMERON PAINTS - Cleaners",
                 "AMERON PAINTS - Thinners", "AMERON PAINTS - Starter Liquid", "AMERON PAINTS - Solvent Free Epoxy",
-                "CARBOLINE PAINTS", "PORTLAND PAINTS"
+                "CARBOLINE PAINTS", "PORTLAND PAINTS",
+
+                // Mechanical, electrical and plumbing, added in catalog 2026.08.
+                // These carry INSTALLED rates, not bare material prices - the bills price
+                // MEP as "supply, fix, connect & commission" and the rates were taken as
+                // priced rather than split into material and labour. The category name
+                // says so, so a rate built from these must not add a fixing labour line.
+                "MEP - Cables & Wiring (supply & install)",
+                "MEP - Earthing & Lightning Protection (supply & install)",
+                "MEP - Cable Containment & Ducts (supply & install)",
+                "MEP - Luminaires (supply & install)",
+                "MEP - Switches & Socket Outlets (supply & install)",
+                "MEP - Distribution & Switchgear (supply & install)",
+                "MEP - Point Wiring (supply & install)",
+                "MEP - Sanitary Fittings (supply & install)",
+                "MEP - Air Conditioning & Ventilation (supply & install)",
+                "MEP - Fire Protection (supply & install)",
+                "MEP - Security & Detection (supply & install)"
             };
 
             // refresh the grid on currency change
