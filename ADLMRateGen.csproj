@@ -23,9 +23,16 @@
          apps, replacing the MAC-based value that changed with the active network
          adapter and caused repeat DEVICE_MISMATCH sign-in failures. Minor rather
          than patch because device binding behaviour changes for every install. -->
-    <Version>2.6.2</Version>
-    <AssemblyVersion>2.6.2.0</AssemblyVersion>
-    <FileVersion>2.6.2.0</FileVersion>
+    <!-- v2.7.0: First full price catalog refresh since launch (catalog 2026.08),
+         calibrated against three priced 2026 bills with cement, rebar, sand and
+         granite set from observed market prices. Adds a 67 row MEP section and an
+         MEP rate engine. Fixes three costing defects: mixing labour charged at the
+         day rate against an hourly quantity, fuel priced off the labourer rate at
+         30 sites, and the tonne/m3 unit mismatch on aggregates. Minor rather than
+         patch because every computed rate in the product changes. -->
+    <Version>2.7.0</Version>
+    <AssemblyVersion>2.7.0.0</AssemblyVersion>
+    <FileVersion>2.7.0.0</FileVersion>
   </PropertyGroup>
 
   <!-- The test project lives under this project's directory, so the SDK's
