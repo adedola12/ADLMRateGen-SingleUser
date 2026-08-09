@@ -2,6 +2,7 @@
 using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
 using ADLMRateGen.ViewModel.BlockWork;
+using ADLMRateGen.ViewModel.MepWork;
 using ADLMRateGen.ViewModel.CarbonOthers;
 using ADLMRateGen.ViewModel.ConcreteWork;
 using ADLMRateGen.ViewModel.CustomRate;
@@ -200,6 +201,9 @@ namespace ADLMRateGen.ViewModel
         private bool _isConcreteViewActive;
         public bool IsConcreteViewActive { get => _isConcreteViewActive; set { _isConcreteViewActive = value; RaisePropertyChanged(); } }
 
+        private bool _isMepWorkActive;
+        public bool IsMepWorkActive { get => _isMepWorkActive; set { _isMepWorkActive = value; RaisePropertyChanged(); } }
+
         private bool _isBlockworkActive;
         public bool IsBlockworkActive { get => _isBlockworkActive; set { _isBlockworkActive = value; RaisePropertyChanged(); } }
 
@@ -255,6 +259,7 @@ namespace ADLMRateGen.ViewModel
         public GroundWorkViewModel GroundWorkViewModel { get; }
         public ConcreteViewModel ConcreteViewModel { get; }
         public BlockworkViewModel BlockworkViewModel { get; }
+        public MepWorkViewModel MepWorkViewModel { get; }
         public FinishesViewModel FinishesViewModel { get; }
         public RoofWorkViewModel RoofWorkViewModel { get; }
         public WindowAndDoorViewModel WindowAndDoorViewModel { get; }
@@ -285,6 +290,7 @@ namespace ADLMRateGen.ViewModel
                 IsGroundworkActive = value == GroundWorkViewModel;
                 IsConcreteViewActive = value == ConcreteViewModel;
                 IsBlockworkActive = value == BlockworkViewModel;
+                IsMepWorkActive = value == MepWorkViewModel;
                 IsFinishesActive = value == FinishesViewModel;
                 IsRoofworkActive = value == RoofWorkViewModel;
                 IsWindowAndDoorActive = value == WindowAndDoorViewModel;
@@ -323,6 +329,7 @@ namespace ADLMRateGen.ViewModel
         public ICommand SelectedGroundworkViewCommand { get; }
         public ICommand SelectedConcreteWorkViewCommand { get; }
         public ICommand SelectedBlockworkViewCommand { get; }
+        public ICommand SelectedMepWorkViewCommand { get; }
         public ICommand SelectedFinishesViewCommand { get; }
         public ICommand SelectedRoofworkViewCommand { get; }
         public ICommand SelectedWindowAndDoorViewCommand { get; }
@@ -348,6 +355,7 @@ namespace ADLMRateGen.ViewModel
             GroundWorkViewModel groundworkVM,
             ConcreteViewModel concreteVM,
             BlockworkViewModel blockworkVM,
+            MepWorkViewModel mepWorkVM,
             FinishesViewModel finishesVM,
             RoofWorkViewModel roofVM,
             WindowAndDoorViewModel winDoorVM,
@@ -415,6 +423,7 @@ namespace ADLMRateGen.ViewModel
             GroundWorkViewModel = groundworkVM;
             ConcreteViewModel = concreteVM;
             BlockworkViewModel = blockworkVM;
+            MepWorkViewModel = mepWorkVM;
             FinishesViewModel = finishesVM;
             RoofWorkViewModel = roofVM;
             WindowAndDoorViewModel = winDoorVM;
@@ -522,6 +531,7 @@ namespace ADLMRateGen.ViewModel
             SelectedGroundworkViewCommand = new RelayCommand(_ => SelectedViewModel = groundworkVM);
             SelectedConcreteWorkViewCommand = new RelayCommand(_ => SelectedViewModel = concreteVM);
             SelectedBlockworkViewCommand = new RelayCommand(_ => SelectedViewModel = blockworkVM);
+            SelectedMepWorkViewCommand = new RelayCommand(_ => SelectedViewModel = mepWorkVM);
             SelectedFinishesViewCommand = new RelayCommand(_ => SelectedViewModel = finishesVM);
             SelectedRoofworkViewCommand = new RelayCommand(_ => SelectedViewModel = roofVM);
             SelectedWindowAndDoorViewCommand = new RelayCommand(_ => SelectedViewModel = winDoorVM);
@@ -555,6 +565,7 @@ namespace ADLMRateGen.ViewModel
             GroundWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             ConcreteViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             BlockworkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+            MepWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             FinishesViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             RoofWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             WindowAndDoorViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);

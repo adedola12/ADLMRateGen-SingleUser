@@ -10,6 +10,7 @@
         xmlns:ground="clr-namespace:ADLMRateGen.ViewModel.Groundwork"
         xmlns:concrete="clr-namespace:ADLMRateGen.ViewModel.ConcreteWork"
         xmlns:blockwork="clr-namespace:ADLMRateGen.ViewModel.BlockWork"
+        xmlns:mepwork="clr-namespace:ADLMRateGen.ViewModel.MepWork"
         xmlns:finishes="clr-namespace:ADLMRateGen.ViewModel.Finishes"
         xmlns:roof="clr-namespace:ADLMRateGen.ViewModel.RoofWork"
         xmlns:windowAndDoor="clr-namespace:ADLMRateGen.ViewModel.WindowAndDoor"
@@ -59,6 +60,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type blockwork:BlockworkViewModel}">
                 <view:BlockworkView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type mepwork:MepWorkViewModel}">
+                <view:MepWorkView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type finishes:FinishesViewModel}">
                 <view:FinishesView />

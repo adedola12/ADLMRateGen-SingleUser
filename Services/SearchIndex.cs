@@ -76,6 +76,17 @@ namespace ADLMRateGen.Services
 						vm.BlockworkViewModel.SelectedDetail = b;
 					}));
 
+			/* ───────── MEP work ───────── */
+			foreach (var m in vm.MepWorkViewModel.MepWorkItems)
+				_hits.Add(new SearchHit(
+					m.Description,
+					"MEP work",
+					() =>
+					{
+						vm.SelectedMepWorkViewCommand.Execute(null);
+						vm.MepWorkViewModel.SelectedDetail = m;
+					}));
+
 			/* ───────── finishes ───────── */
 			foreach (var f in vm.FinishesViewModel.FinishesItems)
 				_hits.Add(new SearchHit(

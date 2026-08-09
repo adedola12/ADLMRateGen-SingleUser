@@ -8,6 +8,7 @@ using ADLMRateGen.Services;
 using ADLMRateGen.View;
 using ADLMRateGen.ViewModel;
 using ADLMRateGen.ViewModel.BlockWork;
+using ADLMRateGen.ViewModel.MepWork;
 using ADLMRateGen.ViewModel.ConcreteWork;
 using ADLMRateGen.ViewModel.CustomRate;
 using ADLMRateGen.ViewModel.Finishes;
@@ -44,6 +45,7 @@ namespace ADLMRateGen
             var groundworkVM = new GroundWorkViewModel(libraryVM, labourLibraryVM);
             var concreteWorkVM = new ConcreteViewModel(libraryVM, labourLibraryVM);
             var blockworkVM = new BlockworkViewModel(libraryVM, labourLibraryVM, concreteWorkVM);
+            var mepWorkVM = new MepWorkViewModel(libraryVM, labourLibraryVM);
             var finishesVM = new FinishesViewModel(libraryVM, labourLibraryVM, blockworkVM);
             var roofworkVM = new RoofWorkViewModel(libraryVM, labourLibraryVM);
             var windowAndDoorVM = new WindowAndDoorViewModel(libraryVM, labourLibraryVM);
@@ -96,6 +98,7 @@ namespace ADLMRateGen
                 groundworkVM,
                 concreteWorkVM,
                 blockworkVM,
+                mepWorkVM,
                 finishesVM,
                 roofworkVM,
                 windowAndDoorVM,
