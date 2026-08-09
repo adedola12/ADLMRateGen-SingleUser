@@ -607,7 +607,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
             double mixerLineTotal = mixerCost * mixerQty;
 
-            double dieselPrice = GetLabourRate("Labourer") / 8;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 1, "Fuel (Diesel)", 30);
             double fuelCost = dieselPrice * literPerDay;
 
@@ -661,7 +661,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double operatorQty = UserRateEditStore.Current.Qty(SectionKey, 2, "Operator (per day)", 2);
 
             double mixerCost = GetLabourRate("Concrete mixer 21/14");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) *1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 2, "Fuel (Diesel)", 40);
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.2;
@@ -729,7 +729,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -744,7 +744,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
             double plantCostPerm3 = costPerHr / volPerHr;
 
             double mixingCrewduration = UserRateEditStore.Current.Qty(SectionKey, 3, "Mixing crew - labour.", 6);
-            double mixingCrewCost = ((GetLabourRate("Labourer")));
+            double mixingCrewCost = ((GetLabourRate("Labourer") / 8) * 1.4);
             double totalMixingCost = mixingCrewduration * mixingCrewCost;
 
             double finalMixing = (plantLabourQty * plantCostPerm3) + totalMixingCost;
@@ -838,7 +838,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -947,7 +947,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -1056,7 +1056,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -1165,7 +1165,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -1274,7 +1274,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -1383,7 +1383,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -1492,7 +1492,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -2663,7 +2663,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -2772,7 +2772,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -3007,7 +3007,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -3341,7 +3341,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -3451,7 +3451,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = GetLabourRate("Labourer") / 8;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
@@ -3527,7 +3527,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //LABOUR COST
             double mixerCost = GetLabourRate("Concrete mixer 10/7");
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = 30;
             double fuelCost = dieselPrice * literPerDay;
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;

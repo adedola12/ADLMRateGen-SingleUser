@@ -13,7 +13,11 @@ namespace ADLMRateGen.Services
 {
     public static class DataMigrator
     {
-        private const int CurrentDataVersion = 3;
+        // 4: refresh prices from the shipped catalog. Every prior version only ever
+        //    ADDED shipped rows (see MergeDefaults), so an install that had launched
+        //    once kept its original prices for good and the rate engine slowly went
+        //    stale. v4 brings prices forward while leaving user-priced rows alone.
+        private const int CurrentDataVersion = 4;
         private record VersionInfo(int Version);
 
         public static void EnsureMigrated()
@@ -91,6 +95,9 @@ namespace ADLMRateGen.Services
                         : null
                 );
 
+                // ---- bring prices forward, keeping anything the user priced ----
+                RefreshPrices();
+
                 WriteVersion(CurrentDataVersion);
             }
             catch (Exception ex)
@@ -106,6 +113,49 @@ namespace ADLMRateGen.Services
                     File.WriteAllText(logPath, $"DataMigrator failed at {DateTime.Now:O}\r\n\r\n{ex}");
                 }
                 catch { }
+            }
+        }
+
+        /// <summary>
+        /// Three-way merge of the shipped catalog into the user's library, against the
+        /// v1 snapshot the app ships as a baseline: rows still sitting at their old
+        /// default price are brought forward, rows the user changed are left alone.
+        /// <see cref="MergeDefaults"/> deliberately stays add-only and handles new rows.
+        /// </summary>
+        private static void RefreshPrices()
+        {
+            var shippedMaterials = AppPaths.FindShippedDefault("materials.json", "defaultMaterials.json");
+            var baseMaterials = AppPaths.FindShippedDefault("baselineMaterials.json");
+            if (shippedMaterials != null && baseMaterials != null)
+            {
+                var r = CatalogMigration.Run<MaterialModel>(
+                    workingFile: AppPaths.MaterialLibraryFile,
+                    defaultFile: shippedMaterials,
+                    seedBaselineFile: baseMaterials,
+                    keyOf: m => $"{m.MaterialName}|{m.MaterialUnit}|{m.MaterialCategory}",
+                    priceOf: m => m.MaterialPrice,
+                    setPrice: (m, p) => m.MaterialPrice = p);
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DataMigrator] materials {CatalogMigration.CatalogVersion}: ran={r.Ran} " +
+                    $"refreshed={r.Refreshed} kept={r.Preserved} added={r.Added} {r.Error}");
+            }
+
+            var shippedLabour = AppPaths.FindShippedDefault("labour.json", "defaultLabours.json");
+            var baseLabour = AppPaths.FindShippedDefault("baselineLabours.json");
+            if (shippedLabour != null && baseLabour != null)
+            {
+                var r = CatalogMigration.Run<LabourModel>(
+                    workingFile: AppPaths.LabourLibraryFile,
+                    defaultFile: shippedLabour,
+                    seedBaselineFile: baseLabour,
+                    keyOf: l => $"{l.LabourName}|{l.LabourUnit}|{l.LabourCategory}",
+                    priceOf: l => l.LabourPrice,
+                    setPrice: (l, p) => l.LabourPrice = p);
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"[DataMigrator] labour {CatalogMigration.CatalogVersion}: ran={r.Ran} " +
+                    $"refreshed={r.Refreshed} kept={r.Preserved} added={r.Added} {r.Error}");
             }
         }
 

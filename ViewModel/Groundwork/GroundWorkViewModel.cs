@@ -958,7 +958,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double labourQty = UserRateEditStore.Current.Qty(SectionKey, 7, "Labour", 2);
 
             double rollerCost = GetLabourRate("Static steel wheeled roller - (2.7 to 6 tonnes)");
-            double dieselPrice = GetLabourRate("Labourer") / 8;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;
             double banksmanCost = GetLabourRate("Semi skilled") * 1.4;
             double labourCost = GetLabourRate("Labourer") * 1.4;
@@ -1076,7 +1076,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             double rollerCost = GetLabourRate("Vibratory whelled roller (8 to 10 tons)");
 
-            double dieselPrice = GetLabourRate("Labourer") / 8;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 8, "Diesel", 250);
             double fuelCost = dieselPrice * literPerDay;
 
@@ -1136,7 +1136,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             double rollerCost = GetLabourRate("Vibratory whelled roller (8 to 10 tons)");
 
-            double dieselPrice = GetLabourRate("Labourer") / 8;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 9, "Diesel", 250);
             double fuelCost = dieselPrice * literPerDay;
 
@@ -1194,7 +1194,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             double rollerCost = GetLabourRate("Vibratory whelled roller (8 to 10 tons)");
 
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 10, "Diesel", 250);
             double fuelCost = dieselPrice * literPerDay;
 
@@ -1252,7 +1252,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             double tipperCost = GetLabourRate("Tipping lorry-10 ton");
 
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 11, "Diesel", 200);
             double fuelCost = dieselPrice * literPerDay;
 
@@ -1336,7 +1336,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
 
             double tipperCost = GetLabourRate("Tipping lorry-10 ton");
 
-            double dieselPrice = (GetLabourRate("Labourer") / 8) * 1.4;
+            double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 12, "Diesel", 200);
             double fuelCost = dieselPrice * literPerDay;
 

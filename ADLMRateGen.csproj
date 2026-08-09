@@ -40,6 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Data\baselineLabours.json" />
+    <None Remove="Data\baselineMaterials.json" />
     <None Remove="Data\defaultLabours.json" />
     <None Remove="Data\defaultMaterials.json" />
     <None Remove="Images\logoBlack.png" />
@@ -63,6 +65,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- v1 price snapshots: baseline for the DataMigrator v4 price refresh. -->
+    <Content Include="Data\baselineLabours.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\baselineMaterials.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\defaultLabours.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

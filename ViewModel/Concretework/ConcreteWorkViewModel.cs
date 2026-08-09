@@ -141,7 +141,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 		private ConcreteworkItem ComputeItem1()
 		{
 			double mixerCost = GetLabourRate("Concrete mixer 10/7");
-			double dieselPrice = GetLabourRate("Labourer") / 8;
+			double dieselPrice = GetMaterialPrice("Diesel");
 			double literPerDay = 30;
 			double fuelCost = dieselPrice * literPerDay;
 			double operatorCost = GetLabourRate("Heavy plant operator") * 1.4;

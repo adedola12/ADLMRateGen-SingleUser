@@ -3,3500 +3,3545 @@
     "SerialNumber": 1,
     "MaterialName": "Cement (50kg bag)",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 11500.0,
+    "MaterialPrice": 4300.00,
     "MaterialCategory": "Cement Based Products"
   },
   {
     "SerialNumber": 2,
     "MaterialName": "Cement (Jumbo bag)",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 69550.0,
+    "MaterialPrice": 26000.00,
     "MaterialCategory": "Cement Based Products"
   },
   {
     "SerialNumber": 3,
     "MaterialName": "White Cement",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 5600.0,
+    "MaterialPrice": 2100.00,
     "MaterialCategory": "Cement Based Products"
   },
   {
     "SerialNumber": 4,
     "MaterialName": "Coloured Cement",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 2650.0,
+    "MaterialPrice": 1000.00,
     "MaterialCategory": "Cement Based Products"
   },
   {
     "SerialNumber": 5,
     "MaterialName": "225 x 225 x 450mm (9 x 9 x 18\") Hollow blocks",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1350.0,
+    "MaterialPrice": 150.00,
     "MaterialCategory": "Cement Based Products"
   },
   {
     "SerialNumber": 6,
     "MaterialName": "150 x 225 x 450mm (6 x 9 x 18\") Hollow blocks",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1550.0,
+    "MaterialPrice": 175.00,
     "MaterialCategory": "Cement Based Products"
   },
   {
     "SerialNumber": 7,
     "MaterialName": "100 x 225 x 450mm (4 x 9 x 18\") Hollow blocks",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1450.0,
+    "MaterialPrice": 165.00,
     "MaterialCategory": "Cement Based Products"
   },
   {
     "SerialNumber": 8,
     "MaterialName": "EMACO S88CA (imported shrinkage compensated cement for concrete repair)",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 159000.0,
+    "MaterialPrice": 59500.00,
     "MaterialCategory": "Cement Based Products"
   },
   {
     "SerialNumber": 9,
     "MaterialName": "Loading and unloading cement",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 135.0,
+    "MaterialPrice": 50.00,
     "MaterialCategory": "Cement Based Products"
   },
   {
     "SerialNumber": 10,
     "MaterialName": "Loading and unloading blocks",
     "MaterialUnit": "No.",
-    "MaterialPrice": 135.0,
+    "MaterialPrice": 50.00,
     "MaterialCategory": "Cement Based Products"
   },
   {
     "SerialNumber": 11,
     "MaterialName": "Sharp Sand",
     "MaterialUnit": "m3",
-    "MaterialPrice": 4500.0,
+    "MaterialPrice": 842.11,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 12,
     "MaterialName": "Soft Sand",
     "MaterialUnit": "m3",
-    "MaterialPrice": 4900.0,
+    "MaterialPrice": 921.05,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 13,
     "MaterialName": "Filling Sand (Beach)",
     "MaterialUnit": "m3",
-    "MaterialPrice": 17600.0,
+    "MaterialPrice": 3289.47,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 14,
     "MaterialName": "Grit (for sand blasting)",
     "MaterialUnit": "m3",
-    "MaterialPrice": 308000.0,
+    "MaterialPrice": 57637.00,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 15,
     "MaterialName": "Laterite filling",
     "MaterialUnit": "m3",
-    "MaterialPrice": 4200.0,
+    "MaterialPrice": 789.47,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 16,
     "MaterialName": "Washed gravel (local)",
     "MaterialUnit": "m3",
-    "MaterialPrice": 7050.0,
+    "MaterialPrice": 1315.79,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 17,
     "MaterialName": "Unwashed gravel (local)",
     "MaterialUnit": "m3",
-    "MaterialPrice": 6350.0,
+    "MaterialPrice": 1184.21,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 18,
     "MaterialName": "Beach sand",
     "MaterialUnit": "m3",
-    "MaterialPrice": 22450.0,
+    "MaterialPrice": 4200.00,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 19,
     "MaterialName": "2-10mm",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 11250.0,
+    "MaterialPrice": 1200.00,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 20,
     "MaterialName": "5-15mm",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 17400.0,
+    "MaterialPrice": 1860.00,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 21,
     "MaterialName": "10-15mm",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 17400.0,
+    "MaterialPrice": 1860.00,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 22,
     "MaterialName": "15-25mm",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 17400.0,
+    "MaterialPrice": 1860.00,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 23,
     "MaterialName": "Hardcore filling",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 13500.0,
+    "MaterialPrice": 1440.00,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 24,
     "MaterialName": "Transportation",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 7500.0,
+    "MaterialPrice": 800.00,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 25,
     "MaterialName": "Terrazzo Chipping - White",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 440.0,
+    "MaterialPrice": 160.00,
     "MaterialCategory": "Terrazzo Products"
   },
   {
     "SerialNumber": 26,
     "MaterialName": "Terrazzo Chipping - Black",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 330.0,
+    "MaterialPrice": 120.00,
     "MaterialCategory": "Terrazzo Products"
   },
   {
     "SerialNumber": 27,
     "MaterialName": "Terrazzo Chipping - Brown",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 440.0,
+    "MaterialPrice": 160.00,
     "MaterialCategory": "Terrazzo Products"
   },
   {
     "SerialNumber": 28,
     "MaterialName": "Carborumdum stone (8 No. per set)",
     "MaterialUnit": "Stone",
-    "MaterialPrice": 1250.0,
+    "MaterialPrice": 450.00,
     "MaterialCategory": "Terrazzo Products"
   },
   {
     "SerialNumber": 29,
     "MaterialName": "Acid (Sodium Silicate Solution)",
     "MaterialUnit": "Packet",
-    "MaterialPrice": 2750.0,
+    "MaterialPrice": 1000.00,
     "MaterialCategory": "Terrazzo Products"
   },
   {
     "SerialNumber": 30,
     "MaterialName": "Wax polish",
     "MaterialUnit": "Tin",
-    "MaterialPrice": 3450.0,
+    "MaterialPrice": 1250.00,
     "MaterialCategory": "Terrazzo Products"
   },
   {
     "SerialNumber": 31,
     "MaterialName": "1/4\" diameter (350 pieces) - 6mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1800000.0,
+    "MaterialPrice": 380000.00,
     "MaterialCategory": "Mild Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 32,
     "MaterialName": "3/8\" diameter (180 pieces) - 10mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1800000.0,
+    "MaterialPrice": 380000.00,
     "MaterialCategory": "Mild Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 33,
     "MaterialName": "1/2\" diameter (112 pieces) - 12mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1800000.0,
+    "MaterialPrice": 380000.00,
     "MaterialCategory": "Mild Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 34,
     "MaterialName": "5/8\" diameter (70 pieces) - 16mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1800000.0,
+    "MaterialPrice": 380000.00,
     "MaterialCategory": "Mild Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 35,
     "MaterialName": "3/4\" diameter (45 pieces) - 18mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1800000.0,
+    "MaterialPrice": 380000.00,
     "MaterialCategory": "Mild Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 36,
     "MaterialName": "7/8\" diameter (36 pieces) - 20mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1800000.0,
+    "MaterialPrice": 380000.00,
     "MaterialCategory": "Mild Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 37,
     "MaterialName": "1\" diameter (27 pieces) - 25mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1800000.0,
+    "MaterialPrice": 380000.00,
     "MaterialCategory": "Mild Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 38,
     "MaterialName": "1/4\" diameter (350 pieces) - 6mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1700000.0,
+    "MaterialPrice": 350000.00,
     "MaterialCategory": "High Tensile Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 39,
     "MaterialName": "3/8\" diameter (133 pieces) - 10mm diameter",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1700000.0,
+    "MaterialPrice": 350000.00,
     "MaterialCategory": "High Tensile Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 40,
     "MaterialName": "1/2\" diameter (93 pieces) - 12mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1700000.0,
+    "MaterialPrice": 350000.00,
     "MaterialCategory": "High Tensile Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 41,
     "MaterialName": "5/8\" diameter (52 pieces) - 16mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1700000.0,
+    "MaterialPrice": 350000.00,
     "MaterialCategory": "High Tensile Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 42,
     "MaterialName": "3/4\" diameter (33 pieces) - 18mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1700000.0,
+    "MaterialPrice": 350000.00,
     "MaterialCategory": "High Tensile Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 43,
     "MaterialName": "7/8\" diameter (28 pieces) - 20mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1700000.0,
+    "MaterialPrice": 350000.00,
     "MaterialCategory": "High Tensile Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 44,
     "MaterialName": "1\" diameter (21 pieces) - 25mm diameter.",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 1700000.0,
+    "MaterialPrice": 350000.00,
     "MaterialCategory": "High Tensile Steel Bar Reinforcement"
   },
   {
     "SerialNumber": 45,
     "MaterialName": "A193 at 3.95kg/m2 size 4.8 x 2.4m x 3.02kg/m2",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 16500.0,
+    "MaterialPrice": 3438.75,
     "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
   },
   {
     "SerialNumber": 46,
     "MaterialName": "A252 at 3.02kg/m2 size 4.8 x 2.4m x 3.95kg/m2",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 0.0,
+    "MaterialPrice": 0.00,
     "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
   },
   {
     "SerialNumber": 47,
     "MaterialName": "A142 at 2.22kg/m2 size 4.8 x 2.4m x 2.2kg/m2",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 11100.0,
+    "MaterialPrice": 2310.00,
     "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
   },
   {
     "SerialNumber": 48,
     "MaterialName": "Binding Wire - 25kg roll",
     "MaterialUnit": "Roll",
-    "MaterialPrice": 15350.0,
+    "MaterialPrice": 3200.00,
     "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
   },
   {
     "SerialNumber": 49,
     "MaterialName": "6mm mesh size 40m x 2.1m",
     "MaterialUnit": "Roll",
-    "MaterialPrice": 45600.0,
+    "MaterialPrice": 9500.00,
     "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
   },
   {
     "SerialNumber": 50,
     "MaterialName": "6mm mesh size 30m x 2.1m",
     "MaterialUnit": "Roll",
-    "MaterialPrice": 36000.0,
+    "MaterialPrice": 7500.00,
     "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
   },
   {
     "SerialNumber": 51,
     "MaterialName": "6mm mesh size 25m x 2.1m",
     "MaterialUnit": "Roll",
-    "MaterialPrice": 31200.0,
+    "MaterialPrice": 6500.00,
     "MaterialCategory": "Mesh Reinforcement to B.S. 4483"
   },
   {
     "SerialNumber": 52,
     "MaterialName": "2x2\"x12' (50x50x3600mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 690.0,
+    "MaterialPrice": 250.00,
     "MaterialCategory": "Timber - Softwood"
   },
   {
     "SerialNumber": 53,
     "MaterialName": "2x3\"x12' (50x75x3600mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 1100.0,
+    "MaterialPrice": 400.00,
     "MaterialCategory": "Timber - Softwood"
   },
   {
     "SerialNumber": 54,
     "MaterialName": "2x4\"x12' (50x100x3600mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 1250.0,
+    "MaterialPrice": 450.00,
     "MaterialCategory": "Timber - Softwood"
   },
   {
     "SerialNumber": 55,
     "MaterialName": "2x6\"x12' (50x150x3600mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 2050.0,
+    "MaterialPrice": 750.00,
     "MaterialCategory": "Timber - Softwood"
   },
   {
     "SerialNumber": 56,
     "MaterialName": "1x12\"x12' (25x300x3600mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 2750.0,
+    "MaterialPrice": 1000.00,
     "MaterialCategory": "Timber - Softwood"
   },
   {
     "SerialNumber": 57,
     "MaterialName": "2x2\"x12' (50x50x3600mm) - Hardwood",
     "MaterialUnit": "Length",
-    "MaterialPrice": 220.0,
+    "MaterialPrice": 80.00,
     "MaterialCategory": "Timber - Hardwood"
   },
   {
     "SerialNumber": 58,
     "MaterialName": "2x3\"x12' (50x75x3600mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 630.0,
+    "MaterialPrice": 230.00,
     "MaterialCategory": "Timber - Hardwood"
   },
   {
     "SerialNumber": 59,
     "MaterialName": "2x4\"x12' (50x100x3600mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 770.0,
+    "MaterialPrice": 280.00,
     "MaterialCategory": "Timber - Hardwood"
   },
   {
     "SerialNumber": 60,
     "MaterialName": "2x6\"x12' (50x150x3600mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 825.0,
+    "MaterialPrice": 300.00,
     "MaterialCategory": "Timber - Hardwood"
   },
   {
     "SerialNumber": 61,
     "MaterialName": "1x12\"x12' (25x300x4200mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 2750.0,
+    "MaterialPrice": 1000.00,
     "MaterialCategory": "Timber - Hardwood"
   },
   {
     "SerialNumber": 62,
     "MaterialName": "2x4\"x12' (50x100x4200mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 470.0,
+    "MaterialPrice": 170.00,
     "MaterialCategory": "Timber - Hardwood"
   },
   {
     "SerialNumber": 63,
     "MaterialName": "2x12\"x12' (50x300x3600mm)",
     "MaterialUnit": "Length",
-    "MaterialPrice": 3850.0,
+    "MaterialPrice": 1400.00,
     "MaterialCategory": "Timber - Hardwood"
   },
   {
     "SerialNumber": 64,
     "MaterialName": "1/8\"x4x8' (3x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 4200.0,
+    "MaterialPrice": 1520.00,
     "MaterialCategory": "Plywood - White"
   },
   {
     "SerialNumber": 65,
     "MaterialName": "1/4\"x4x8' (6x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 4950.0,
+    "MaterialPrice": 1800.00,
     "MaterialCategory": "Plywood - White"
   },
   {
     "SerialNumber": 66,
     "MaterialName": "1/2\"x4x8' (12x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 7700.0,
+    "MaterialPrice": 2800.00,
     "MaterialCategory": "Plywood - White"
   },
   {
     "SerialNumber": 67,
     "MaterialName": "3/4\"x4x8' (18x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 9350.0,
+    "MaterialPrice": 3400.00,
     "MaterialCategory": "Plywood - White"
   },
   {
     "SerialNumber": 68,
     "MaterialName": "1\"x4x8' (25x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 9900.0,
+    "MaterialPrice": 3600.00,
     "MaterialCategory": "Plywood - White"
   },
   {
     "SerialNumber": 69,
     "MaterialName": "1/8\"x4x8' (3x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 4200.0,
+    "MaterialPrice": 1520.00,
     "MaterialCategory": "Plywood - Brown"
   },
   {
     "SerialNumber": 70,
     "MaterialName": "1/4\"x4x8' (6x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 4950.0,
+    "MaterialPrice": 1800.00,
     "MaterialCategory": "Plywood - Brown"
   },
   {
     "SerialNumber": 71,
     "MaterialName": "1/2\"x4x8' (12x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 7700.0,
+    "MaterialPrice": 2800.00,
     "MaterialCategory": "Plywood - Brown"
   },
   {
     "SerialNumber": 72,
     "MaterialName": "3/4\"x4x8' (18x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 9350.0,
+    "MaterialPrice": 3400.00,
     "MaterialCategory": "Plywood - Brown"
   },
   {
     "SerialNumber": 73,
     "MaterialName": "1\"x4x8' (25x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 9900.0,
+    "MaterialPrice": 3600.00,
     "MaterialCategory": "Plywood - Brown"
   },
   {
     "SerialNumber": 74,
     "MaterialName": "1/2\"x4x8' (12x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 5500.0,
+    "MaterialPrice": 2000.00,
     "MaterialCategory": "Particle Board"
   },
   {
     "SerialNumber": 75,
     "MaterialName": "3/4\"x4x8' (6x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 6900.0,
+    "MaterialPrice": 2500.00,
     "MaterialCategory": "Particle Board"
   },
   {
     "SerialNumber": 76,
     "MaterialName": "5/8\"x4x8' (16x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 4100.0,
+    "MaterialPrice": 1500.00,
     "MaterialCategory": "Particle Board"
   },
   {
     "SerialNumber": 77,
     "MaterialName": "1/4\"x4x8' (6x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 3300.0,
+    "MaterialPrice": 1200.00,
     "MaterialCategory": "Plywood - Veneer"
   },
   {
     "SerialNumber": 78,
     "MaterialName": "3/4\"x4x8' (18x1200x2400mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 9350.0,
+    "MaterialPrice": 3400.00,
     "MaterialCategory": "Plywood - Veneer"
   },
   {
     "SerialNumber": 79,
     "MaterialName": "Nails 1\"",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 12400.0,
+    "MaterialPrice": 4500.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 80,
     "MaterialName": "Nails 1 1/2\"",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 12400.0,
+    "MaterialPrice": 4500.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 81,
     "MaterialName": "Nails 2\"",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 12400.0,
+    "MaterialPrice": 4500.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 82,
     "MaterialName": "Nails 3\"",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 12400.0,
+    "MaterialPrice": 4500.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 83,
     "MaterialName": "Nails 4\"",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 12400.0,
+    "MaterialPrice": 4500.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 84,
     "MaterialName": "Nails 6\"",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 12400.0,
+    "MaterialPrice": 4500.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 85,
     "MaterialName": "Solignum (normal)",
     "MaterialUnit": "20 lit Gal",
-    "MaterialPrice": 2050.0,
+    "MaterialPrice": 750.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 86,
     "MaterialName": "Solignum (colourless)",
     "MaterialUnit": "5 lit Gal",
-    "MaterialPrice": 5200.0,
+    "MaterialPrice": 1900.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 87,
     "MaterialName": "Mould oil",
     "MaterialUnit": "Gal",
-    "MaterialPrice": 3150.0,
+    "MaterialPrice": 1150.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 88,
     "MaterialName": "Screw Nails 1/2\"",
     "MaterialUnit": "Pkt",
-    "MaterialPrice": 220.0,
+    "MaterialPrice": 80.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 89,
     "MaterialName": "Screw Nails 1\"",
     "MaterialUnit": "Pkt",
-    "MaterialPrice": 275.0,
+    "MaterialPrice": 100.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 90,
     "MaterialName": "Screw Nails 2\"",
     "MaterialUnit": "Pkt",
-    "MaterialPrice": 330.0,
+    "MaterialPrice": 120.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 91,
     "MaterialName": "Screw Nails 3\"",
     "MaterialUnit": "Pkt",
-    "MaterialPrice": 410.0,
+    "MaterialPrice": 150.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 92,
     "MaterialName": "Planing Timber One Face",
     "MaterialUnit": "No.",
-    "MaterialPrice": 55.0,
+    "MaterialPrice": 20.00,
     "MaterialCategory": "Timber Others"
   },
   {
     "SerialNumber": 93,
     "MaterialName": "2' (600mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 190.0,
+    "MaterialPrice": 70.00,
     "MaterialCategory": "Glasswork - Louver Blade-Plain"
   },
   {
     "SerialNumber": 94,
     "MaterialName": "3' (900mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 220.0,
+    "MaterialPrice": 80.00,
     "MaterialCategory": "Glasswork - Louver Blade-Plain"
   },
   {
     "SerialNumber": 95,
     "MaterialName": "2' (600mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 250.0,
+    "MaterialPrice": 90.00,
     "MaterialCategory": "Glasswork - Louver Blade-Obscured"
   },
   {
     "SerialNumber": 96,
     "MaterialName": "3' (900mm)",
     "MaterialUnit": "Piece",
-    "MaterialPrice": 275.0,
+    "MaterialPrice": 100.00,
     "MaterialCategory": "Glasswork - Louver Blade-Obscured"
   },
   {
     "SerialNumber": 97,
     "MaterialName": "Anodised Aluminium - Four Blade (Pair)",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 0.0,
+    "MaterialPrice": 0.00,
     "MaterialCategory": "Glasswork - Nacco Louver Carrier"
   },
   {
     "SerialNumber": 98,
     "MaterialName": "Anodised Aluminium - Six Blade (Pair)",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 0.0,
+    "MaterialPrice": 0.00,
     "MaterialCategory": "Glasswork - Nacco Louver Carrier"
   },
   {
     "SerialNumber": 99,
     "MaterialName": "Anodised Aluminium - Eight Blade (Pair)",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 0.0,
+    "MaterialPrice": 0.00,
     "MaterialCategory": "Glasswork - Nacco Louver Carrier"
   },
   {
     "SerialNumber": 100,
     "MaterialName": "Standard louver Carrier - Four Blade (Pair)",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 960.0,
+    "MaterialPrice": 350.00,
     "MaterialCategory": "Glasswork - Nacco Louver Carrier"
   },
   {
     "SerialNumber": 101,
     "MaterialName": "Standard louver Carrier - Six Blade (Pair)",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 1100.0,
+    "MaterialPrice": 400.00,
     "MaterialCategory": "Glasswork - Nacco Louver Carrier"
   },
   {
     "SerialNumber": 102,
     "MaterialName": "Standard louver Carrier - Eight Blade (Pair)",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 1250.0,
+    "MaterialPrice": 450.00,
     "MaterialCategory": "Glasswork - Nacco Louver Carrier"
   },
   {
     "SerialNumber": 103,
     "MaterialName": "24x36' (610x920mm) Sheet Glass 3mm",
     "MaterialUnit": "No.",
-    "MaterialPrice": 2000.0,
+    "MaterialPrice": 730.00,
     "MaterialCategory": "Glasswork - Sheet Glass 3mm"
   },
   {
     "SerialNumber": 104,
     "MaterialName": "24x38' (610x975mm) Sheet Glass 3mm",
     "MaterialUnit": "No.",
-    "MaterialPrice": 2000.0,
+    "MaterialPrice": 730.00,
     "MaterialCategory": "Glasswork - Sheet Glass 3mm"
   },
   {
     "SerialNumber": 105,
     "MaterialName": "36x36' (975x975mm) Sheet Glass 3mm",
     "MaterialUnit": "No.",
-    "MaterialPrice": 3150.0,
+    "MaterialPrice": 1150.00,
     "MaterialCategory": "Glasswork - Sheet Glass 3mm"
   },
   {
     "SerialNumber": 106,
     "MaterialName": "24x36' (610x920mm) Sheet Glass 4mm",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1900.0,
+    "MaterialPrice": 700.00,
     "MaterialCategory": "Glasswork - Sheet Glass 4mm"
   },
   {
     "SerialNumber": 107,
     "MaterialName": "24x38' (610x975mm) Sheet Glass 4mm",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1900.0,
+    "MaterialPrice": 700.00,
     "MaterialCategory": "Glasswork - Sheet Glass 4mm"
   },
   {
     "SerialNumber": 108,
     "MaterialName": "36x36' (975x975mm) Sheet Glass 4mm",
     "MaterialUnit": "No.",
-    "MaterialPrice": 2750.0,
+    "MaterialPrice": 1000.00,
     "MaterialCategory": "Glasswork - Sheet Glass 4mm"
   },
   {
     "SerialNumber": 109,
     "MaterialName": "24x36' (610x920mm) Sheet Glass 5mm",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1900.0,
+    "MaterialPrice": 690.00,
     "MaterialCategory": "Glasswork - Sheet Glass 5mm"
   },
   {
     "SerialNumber": 110,
     "MaterialName": "24x38' (610x975mm) Sheet Glass 5mm",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1900.0,
+    "MaterialPrice": 690.00,
     "MaterialCategory": "Glasswork - Sheet Glass 5mm"
   },
   {
     "SerialNumber": 111,
     "MaterialName": "36x36' (975x975mm) Sheet Glass 5mm",
     "MaterialUnit": "No.",
-    "MaterialPrice": 2700.0,
+    "MaterialPrice": 990.00,
     "MaterialCategory": "Glasswork - Sheet Glass 5mm"
   },
   {
     "SerialNumber": 112,
     "MaterialName": "6x6\" (150x150mm) - Royal Floor Tiles",
     "MaterialUnit": "m2",
-    "MaterialPrice": 2750.0,
+    "MaterialPrice": 1000.00,
     "MaterialCategory": "Finishes - Ceramic Floor Tiles"
   },
   {
     "SerialNumber": 113,
     "MaterialName": "8x8\" (200x200mm) Italian Floor Tiles",
     "MaterialUnit": "m2",
-    "MaterialPrice": 3700.0,
+    "MaterialPrice": 1350.00,
     "MaterialCategory": "Finishes - Ceramic Floor Tiles"
   },
   {
     "SerialNumber": 114,
     "MaterialName": "12x12\" (300x300mm) Brazilian Floor Tiles",
     "MaterialUnit": "m2",
-    "MaterialPrice": 3850.0,
+    "MaterialPrice": 1400.00,
     "MaterialCategory": "Finishes - Ceramic Floor Tiles"
   },
   {
     "SerialNumber": 115,
     "MaterialName": "Italian Floor Tiles (12x12\")",
     "MaterialUnit": "m2",
-    "MaterialPrice": 4100.0,
+    "MaterialPrice": 1500.00,
     "MaterialCategory": "Finishes - Ceramic Floor Tiles"
   },
   {
     "SerialNumber": 116,
     "MaterialName": "Spanish Floor Tiles (12x12\")",
     "MaterialUnit": "m2",
-    "MaterialPrice": 4000.0,
+    "MaterialPrice": 1450.00,
     "MaterialCategory": "Finishes - Ceramic Floor Tiles"
   },
   {
     "SerialNumber": 117,
     "MaterialName": "6x6\" (150x150mm - 72 pieces) - Brazilian Wall Tiles",
     "MaterialUnit": "m2",
-    "MaterialPrice": 3700.0,
+    "MaterialPrice": 1350.00,
     "MaterialCategory": "Finishes - Ceramic Wall Tiles"
   },
   {
     "SerialNumber": 118,
     "MaterialName": "Italian Wall Tiles (6x6\")",
     "MaterialUnit": "m2",
-    "MaterialPrice": 3000.0,
+    "MaterialPrice": 1100.00,
     "MaterialCategory": "Finishes - Ceramic Wall Tiles"
   },
   {
     "SerialNumber": 119,
     "MaterialName": "Abeokuta Wall Tiles (6x6\")",
     "MaterialUnit": "m2",
-    "MaterialPrice": 2150.0,
+    "MaterialPrice": 780.00,
     "MaterialCategory": "Finishes - Ceramic Wall Tiles"
   },
   {
     "SerialNumber": 120,
     "MaterialName": "Lagos Wall Tiles (6x6\") - Royal",
     "MaterialUnit": "m2",
-    "MaterialPrice": 2600.0,
+    "MaterialPrice": 950.00,
     "MaterialCategory": "Finishes - Ceramic Wall Tiles"
   },
   {
     "SerialNumber": 121,
     "MaterialName": "8x8\" (200x200mm) Wall Tiles",
     "MaterialUnit": "m2",
-    "MaterialPrice": 0.0,
+    "MaterialPrice": 0.00,
     "MaterialCategory": "Finishes - Ceramic Wall Tiles"
   },
   {
     "SerialNumber": 122,
     "MaterialName": "12x12\" (300x300mm) Wall Tiles",
     "MaterialUnit": "m2",
-    "MaterialPrice": 0.0,
+    "MaterialPrice": 0.00,
     "MaterialCategory": "Finishes - Ceramic Wall Tiles"
   },
   {
     "SerialNumber": 123,
     "MaterialName": "MCO ex PH",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 99000.0,
+    "MaterialPrice": 36000.00,
     "MaterialCategory": "Bituminous Products"
   },
   {
     "SerialNumber": 124,
     "MaterialName": "MCI ex PH",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 99000.0,
+    "MaterialPrice": 36000.00,
     "MaterialCategory": "Bituminous Products"
   },
   {
     "SerialNumber": 125,
     "MaterialName": "S125 ex PH",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 95500.0,
+    "MaterialPrice": 34734.00,
     "MaterialCategory": "Bituminous Products"
   },
   {
     "SerialNumber": 126,
     "MaterialName": "60/70 ex PH",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 107000.0,
+    "MaterialPrice": 39000.00,
     "MaterialCategory": "Bituminous Products"
   },
   {
     "SerialNumber": 127,
     "MaterialName": "80/100 ex PH",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 0.0,
+    "MaterialPrice": 0.00,
     "MaterialCategory": "Bituminous Products"
   },
   {
     "SerialNumber": 128,
     "MaterialName": "Colas Emulsion ex PH",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 93500.0,
+    "MaterialPrice": 34000.00,
     "MaterialCategory": "Bituminous Products"
   },
   {
     "SerialNumber": 129,
     "MaterialName": "Asphalt",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 27500.0,
+    "MaterialPrice": 10000.00,
     "MaterialCategory": "Bituminous Products"
   },
   {
     "SerialNumber": 130,
     "MaterialName": "Transportation",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 2200.0,
+    "MaterialPrice": 800.00,
     "MaterialCategory": "Bituminous Products"
   },
   {
     "SerialNumber": 131,
     "MaterialName": "Petrol",
     "MaterialUnit": "Litre",
-    "MaterialPrice": 900.0,
+    "MaterialPrice": 500.00,
     "MaterialCategory": "Fuels"
   },
   {
     "SerialNumber": 132,
     "MaterialName": "Diesel",
     "MaterialUnit": "Litre",
-    "MaterialPrice": 1200.0,
+    "MaterialPrice": 675.00,
     "MaterialCategory": "Fuels"
   },
   {
     "SerialNumber": 133,
     "MaterialName": "Gas (13 kg Cylinder)",
     "MaterialUnit": "Cylinder",
-    "MaterialPrice": 17550.0,
+    "MaterialPrice": 9750.00,
     "MaterialCategory": "Fuels"
   },
   {
     "SerialNumber": 134,
     "MaterialName": "Engine Oil - 4 litre.",
     "MaterialUnit": "Gal",
-    "MaterialPrice": 8100.0,
+    "MaterialPrice": 4500.00,
     "MaterialCategory": "Fuels"
   },
   {
     "SerialNumber": 135,
     "MaterialName": "Hydraulic Oil - 4 litre.",
     "MaterialUnit": "Gal",
-    "MaterialPrice": 2700.0,
+    "MaterialPrice": 1500.00,
     "MaterialCategory": "Fuels"
   },
   {
     "SerialNumber": 136,
     "MaterialName": "Aviation Fuel - Jet A1",
     "MaterialUnit": "Litre",
-    "MaterialPrice": 810.0,
+    "MaterialPrice": 450.00,
     "MaterialCategory": "Fuels"
   },
   {
     "SerialNumber": 137,
     "MaterialName": "Grease GR3 - 50kg drum",
     "MaterialUnit": "Drum",
-    "MaterialPrice": 45000.0,
+    "MaterialPrice": 25000.00,
     "MaterialCategory": "Fuels"
   },
   {
     "SerialNumber": 138,
     "MaterialName": "Grease GR3 - 300g can",
     "MaterialUnit": "Drum",
-    "MaterialPrice": 1100.0,
+    "MaterialPrice": 600.00,
     "MaterialCategory": "Fuels"
   },
   {
     "SerialNumber": 139,
     "MaterialName": "Mild steel plate size 2.4 x 1.2 x 1mm",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 6500.0,
+    "MaterialPrice": 1350.00,
     "MaterialCategory": "Structural Steel Plates"
   },
   {
     "SerialNumber": 140,
     "MaterialName": "Plate size 2.4 x 1.2 x 2mm",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 9350.0,
+    "MaterialPrice": 1950.00,
     "MaterialCategory": "Structural Steel Plates"
   },
   {
     "SerialNumber": 141,
     "MaterialName": "Plate size 2.4 x 1.2 x 3mm",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 13800.0,
+    "MaterialPrice": 2875.00,
     "MaterialCategory": "Structural Steel Plates"
   },
   {
     "SerialNumber": 142,
     "MaterialName": "Plate size 2.4 x 1.2 x 6mm",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 36000.0,
+    "MaterialPrice": 7500.00,
     "MaterialCategory": "Structural Steel Plates"
   },
   {
     "SerialNumber": 143,
     "MaterialName": "Plate size 2.4 x 1.2 x 8mm",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 55200.0,
+    "MaterialPrice": 11500.00,
     "MaterialCategory": "Structural Steel Plates"
   },
   {
     "SerialNumber": 144,
     "MaterialName": "Plate size 2.4 x 1.2 x 10mm",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 74400.0,
+    "MaterialPrice": 15500.00,
     "MaterialCategory": "Structural Steel Plates"
   },
   {
     "SerialNumber": 145,
     "MaterialName": "Plate size 2.4 x 1.2 x 13-16mm",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 74400.0,
+    "MaterialPrice": 15500.00,
     "MaterialCategory": "Structural Steel Plates"
   },
   {
     "SerialNumber": 146,
     "MaterialName": "Plate size 2.4 x 1.2 x 20mm",
     "MaterialUnit": "Sheet",
-    "MaterialPrice": 206500.0,
+    "MaterialPrice": 43000.00,
     "MaterialCategory": "Structural Steel Plates"
   },
   {
     "SerialNumber": 147,
     "MaterialName": "Structural Steel",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 720000.0,
+    "MaterialPrice": 150000.00,
     "MaterialCategory": "Structural Steel"
   },
   {
     "SerialNumber": 148,
     "MaterialName": "4'x4' (1200x1200mm x 3mm thick) Asbestos ceiling sheets",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1450.0,
+    "MaterialPrice": 520.73,
     "MaterialCategory": "Asa Ceilings Limited - Ceiling Boards"
   },
   {
     "SerialNumber": 149,
     "MaterialName": "4'x4' (1200x1200mm x 6mm thick) Asbestos ceiling sheets",
     "MaterialUnit": "No.",
-    "MaterialPrice": 3650.0,
+    "MaterialPrice": 1325.40,
     "MaterialCategory": "Asa Ceilings Limited - Ceiling Boards"
   },
   {
     "SerialNumber": 150,
     "MaterialName": "2'x2' (610x610x4mm) Decoceil decorative sheet (16 tiles per box)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 11500.0,
+    "MaterialPrice": 4184.03,
     "MaterialCategory": "Asa Ceilings Limited - Ceiling Boards"
   },
   {
     "SerialNumber": 151,
     "MaterialName": "2'x2' (600x600x13-15mm) Celotex acoustic ceiling tile (16 tiles per box) complete with aluminium suspension grid",
     "MaterialUnit": "Box",
-    "MaterialPrice": 35500.0,
+    "MaterialPrice": 12916.55,
     "MaterialCategory": "Asa Ceilings Limited - Ceiling Boards"
   },
   {
     "SerialNumber": 152,
     "MaterialName": "Ditto 12mm thick to be fixed to timber noggins",
     "MaterialUnit": "Box",
-    "MaterialPrice": 410.0,
+    "MaterialPrice": 150.00,
     "MaterialCategory": "Asa Ceilings Limited - Ceiling Boards"
   },
+
   {
     "SerialNumber": 153,
     "MaterialName": "Type 84C self lock 84mm wide x 6000mm long complete",
     "MaterialUnit": "m2",
-    "MaterialPrice": 39100.0,
+    "MaterialPrice": 14215.50,
     "MaterialCategory": "Luxalon Ceilings"
   },
   {
     "SerialNumber": 154,
     "MaterialName": "84R with open sides",
     "MaterialUnit": "m2",
-    "MaterialPrice": 39100.0,
+    "MaterialPrice": 14215.50,
     "MaterialCategory": "Luxalon Ceilings"
   },
   {
     "SerialNumber": 155,
     "MaterialName": "84R with flush sides",
     "MaterialUnit": "m2",
-    "MaterialPrice": 39100.0,
+    "MaterialPrice": 14215.50,
     "MaterialCategory": "Luxalon Ceilings"
   },
   {
     "SerialNumber": 156,
     "MaterialName": "Perforated 84C",
     "MaterialUnit": "m2",
-    "MaterialPrice": 51900.0,
+    "MaterialPrice": 18881.79,
     "MaterialCategory": "Luxalon Ceilings"
   },
   {
     "SerialNumber": 157,
     "MaterialName": "Perforated 200F panels",
     "MaterialUnit": "m2",
-    "MaterialPrice": 51900.0,
+    "MaterialPrice": 18881.79,
     "MaterialCategory": "Luxalon Ceilings"
   },
   {
     "SerialNumber": 158,
     "MaterialName": "Luxalon perforated nimbus panels size 300 x 1200mm",
     "MaterialUnit": "m2",
-    "MaterialPrice": 51900.0,
+    "MaterialPrice": 18881.79,
     "MaterialCategory": "Luxalon Ceilings"
   },
+
   {
     "SerialNumber": 159,
     "MaterialName": "Pannofeu design size 600 x 600 x 10mm thick",
     "MaterialUnit": "m2",
-    "MaterialPrice": 10450.0,
+    "MaterialPrice": 3800.00,
     "MaterialCategory": "Efisol Mineral Ceilings"
   },
   {
     "SerialNumber": 160,
     "MaterialName": "Efilith design size 600 x 600 x 12mm thick",
     "MaterialUnit": "m2",
-    "MaterialPrice": 11550.0,
+    "MaterialPrice": 4200.00,
     "MaterialCategory": "Efisol Mineral Ceilings"
   },
   {
     "SerialNumber": 161,
     "MaterialName": "Efidecor design size 600 x 1200 x 15mm thick",
     "MaterialUnit": "m2",
-    "MaterialPrice": 12250.0,
+    "MaterialPrice": 4450.00,
     "MaterialCategory": "Efisol Mineral Ceilings"
   },
   {
     "SerialNumber": 162,
     "MaterialName": "Ditto 25mm thick",
     "MaterialUnit": "m2",
-    "MaterialPrice": 15950.0,
+    "MaterialPrice": 5800.00,
     "MaterialCategory": "Efisol Mineral Ceilings"
   },
+
   {
     "SerialNumber": 163,
     "MaterialName": "4'x4' (1200x1200mm x 3mm thick) Asbestos ceiling sheets",
     "MaterialUnit": "No.",
-    "MaterialPrice": 865.0,
+    "MaterialPrice": 315.00,
     "MaterialCategory": "Nigerite Limited - Ceilings"
   },
   {
     "SerialNumber": 164,
     "MaterialName": "4'x4' (1200x1200mm x 6mm thick) Asbestos ceiling sheets",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1950.0,
+    "MaterialPrice": 714.00,
     "MaterialCategory": "Nigerite Limited - Ceilings"
   },
   {
     "SerialNumber": 165,
     "MaterialName": "2'x2' (610x610x4mm) Decoceil decorative sheet (16 tiles per box)",
     "MaterialUnit": "Box",
-    "MaterialPrice": 8650.0,
+    "MaterialPrice": 3150.00,
     "MaterialCategory": "Nigerite Limited - Ceilings"
   },
   {
     "SerialNumber": 166,
     "MaterialName": "2'x2' (595x595x4mm) Decoceil decorative sheet (16 tiles per box)",
     "MaterialUnit": "Box",
-    "MaterialPrice": 8650.0,
+    "MaterialPrice": 3150.00,
     "MaterialCategory": "Nigerite Limited - Ceilings"
   },
   {
     "SerialNumber": 167,
     "MaterialName": "2'x2' (610x610x4mm) Accoustile decorative sheet (16 tiles per box)",
     "MaterialUnit": "Box",
-    "MaterialPrice": 11500.0,
+    "MaterialPrice": 4190.00,
     "MaterialCategory": "Nigerite Limited - Ceilings"
   },
+
   {
     "SerialNumber": 168,
     "MaterialName": "300 x 300 x 1.3mm thick floor tiles (42 tiles per carton)",
     "MaterialUnit": "Carton",
-    "MaterialPrice": 2200.0,
+    "MaterialPrice": 802.50,
     "MaterialCategory": "PVC Floor Tiles"
   },
   {
     "SerialNumber": 169,
     "MaterialName": "Floor tiles 300 x 300, 56 tiles per carton",
     "MaterialUnit": "Carton",
-    "MaterialPrice": 3050.0,
+    "MaterialPrice": 1104.00,
     "MaterialCategory": "PVC Floor Tiles"
   },
   {
     "SerialNumber": 170,
     "MaterialName": "Floor tiles 1.6mm thick, 36 tiles per carton",
     "MaterialUnit": "Carton",
-    "MaterialPrice": 2900.0,
+    "MaterialPrice": 1055.00,
     "MaterialCategory": "PVC Floor Tiles"
   },
   {
     "SerialNumber": 171,
     "MaterialName": "Floor tiles 56 tiles per carton",
     "MaterialUnit": "Carton",
-    "MaterialPrice": 4600.0,
+    "MaterialPrice": 1680.00,
     "MaterialCategory": "PVC Floor Tiles"
   },
   {
     "SerialNumber": 172,
     "MaterialName": "Floor tiles 2.0mm thick (56 tiles per carton)",
     "MaterialUnit": "Carton",
-    "MaterialPrice": 5800.0,
+    "MaterialPrice": 2106.00,
     "MaterialCategory": "PVC Floor Tiles"
   },
   {
     "SerialNumber": 173,
     "MaterialName": "Floor tiles 3.0mm thick (38 tiles per carton)",
     "MaterialUnit": "Carton",
-    "MaterialPrice": 5900.0,
+    "MaterialPrice": 2145.00,
     "MaterialCategory": "PVC Floor Tiles"
   },
   {
     "SerialNumber": 174,
     "MaterialName": "Florflex adhesive (4 tins per carton)",
     "MaterialUnit": "Carton",
-    "MaterialPrice": 4950.0,
+    "MaterialPrice": 1800.00,
     "MaterialCategory": "PVC Floor Tiles"
   },
+
   {
     "SerialNumber": 175,
     "MaterialName": "0.55mm (24SWG) sheet, Stucco mill",
     "MaterialUnit": "m2",
-    "MaterialPrice": 2050.0,
+    "MaterialPrice": 750.00,
     "MaterialCategory": "Longspan Aluminium Roofing Sheet"
   },
   {
     "SerialNumber": 176,
     "MaterialName": "0.55mm (24SWG) sheet, coloured",
     "MaterialUnit": "m2",
-    "MaterialPrice": 2500.0,
+    "MaterialPrice": 910.00,
     "MaterialCategory": "Longspan Aluminium Roofing Sheet"
   },
   {
     "SerialNumber": 177,
     "MaterialName": "0.70mm (22SWG) sheet, Stucco mill",
     "MaterialUnit": "m2",
-    "MaterialPrice": 3900.0,
+    "MaterialPrice": 1422.00,
     "MaterialCategory": "Longspan Aluminium Roofing Sheet"
   },
   {
     "SerialNumber": 178,
     "MaterialName": "0.70mm (22SWG) sheet, coloured",
     "MaterialUnit": "m2",
-    "MaterialPrice": 4500.0,
+    "MaterialPrice": 1637.00,
     "MaterialCategory": "Longspan Aluminium Roofing Sheet"
   },
   {
     "SerialNumber": 179,
     "MaterialName": "1.20mm (22SWG) sheet, Stucco mill",
     "MaterialUnit": "m2",
-    "MaterialPrice": 5500.0,
+    "MaterialPrice": 2002.00,
     "MaterialCategory": "Longspan Aluminium Roofing Sheet"
   },
   {
     "SerialNumber": 180,
     "MaterialName": "1.20mm (22SWG) sheet, coloured",
     "MaterialUnit": "m2",
-    "MaterialPrice": 7300.0,
+    "MaterialPrice": 2649.00,
     "MaterialCategory": "Longspan Aluminium Roofing Sheet"
   },
   {
     "SerialNumber": 181,
     "MaterialName": "Angle ridge (Stucco mill) 0.7mm thick 600mm girth",
     "MaterialUnit": "m",
-    "MaterialPrice": 410.0,
+    "MaterialPrice": 150.00,
     "MaterialCategory": "Longspan Aluminium Roofing Sheet"
   },
   {
     "SerialNumber": 182,
     "MaterialName": "Eaves Flashing 850mm girth (stucco mill)",
     "MaterialUnit": "m",
-    "MaterialPrice": 3600.0,
+    "MaterialPrice": 1314.00,
     "MaterialCategory": "Longspan Aluminium Roofing Sheet"
   },
   {
     "SerialNumber": 183,
     "MaterialName": "Angle ridge coloured",
     "MaterialUnit": "m",
-    "MaterialPrice": 2400.0,
+    "MaterialPrice": 871.00,
     "MaterialCategory": "Longspan Aluminium Roofing Sheet"
   },
   {
     "SerialNumber": 184,
     "MaterialName": "Interlocking or flat wall cladding (equivalent)",
     "MaterialUnit": "m2",
-    "MaterialPrice": 2800.0,
+    "MaterialPrice": 1020.00,
     "MaterialCategory": "Longspan Aluminium Roofing Sheet"
   },
+
   {
     "SerialNumber": 185,
     "MaterialName": "3 1/2x8' (1050mm x 2400mm x 4mm thick)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 2200.0,
+    "MaterialPrice": 797.00,
     "MaterialCategory": "Nigerite Products - SLW Asbestos"
   },
   {
     "SerialNumber": 186,
     "MaterialName": "3 1/2x6' (1050mm x 1800mm x 4mm thick)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1650.0,
+    "MaterialPrice": 598.00,
     "MaterialCategory": "Nigerite Products - SLW Asbestos"
   },
   {
     "SerialNumber": 187,
     "MaterialName": "Two piece corrugated wing ridges, 1055mm long",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 1350.0,
+    "MaterialPrice": 490.00,
     "MaterialCategory": "Nigerite Products - SLW Asbestos"
   },
   {
     "SerialNumber": 188,
     "MaterialName": "Two piece flat wing ridges, 1055mm long",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 2550.0,
+    "MaterialPrice": 923.00,
     "MaterialCategory": "Nigerite Products - SLW Asbestos"
   },
   {
     "SerialNumber": 189,
     "MaterialName": "One piece flat wing ridges, 1070mm long",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1250.0,
+    "MaterialPrice": 452.00,
     "MaterialCategory": "Nigerite Products - SLW Asbestos"
   },
+
   {
     "SerialNumber": 190,
     "MaterialName": "3 1/2x12' (1097mm x 3600mm x 5mm thick)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 5400.0,
+    "MaterialPrice": 1958.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 191,
     "MaterialName": "3 1/2x10' (1097mm x 3000mm x 5mm thick)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 4600.0,
+    "MaterialPrice": 1674.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 192,
     "MaterialName": "3 1/2x8' (1097mm x 2400mm x 4.5mm thick)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 3300.0,
+    "MaterialPrice": 1192.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 193,
     "MaterialName": "3 1/2x6' (1097mm x 1800mm x 4.5mm thick)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 2450.0,
+    "MaterialPrice": 894.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 194,
     "MaterialName": "Two piece corrugated wing ridges, 1187mm long",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 2300.0,
+    "MaterialPrice": 830.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 195,
     "MaterialName": "Two piece flat wing ridges, 1187mm long",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 2750.0,
+    "MaterialPrice": 995.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 196,
     "MaterialName": "Two piece ventilation ridges, 1187mm long",
     "MaterialUnit": "Pair",
-    "MaterialPrice": 4600.0,
+    "MaterialPrice": 1672.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 197,
     "MaterialName": "One piece flat wing ridges, 1650mm long",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1250.0,
+    "MaterialPrice": 452.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 198,
     "MaterialName": "One piece cranked ridge, 1097mm long",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1900.0,
+    "MaterialPrice": 700.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 199,
     "MaterialName": "Corrugated barge board 2400mm long",
     "MaterialUnit": "No.",
-    "MaterialPrice": 2350.0,
+    "MaterialPrice": 847.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 200,
     "MaterialName": "Two piece corrugated ridge final 450mm long x 150mm wide",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1650.0,
+    "MaterialPrice": 600.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 201,
     "MaterialName": "Eaves finishing barge board, 1370mm long x 250mm high",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1650.0,
+    "MaterialPrice": 600.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 202,
     "MaterialName": "Eaves closure piece, 1048mm long",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1150.0,
+    "MaterialPrice": 419.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
   {
     "SerialNumber": 203,
     "MaterialName": "Apron flashing piece, 1187mm long x 336mm girth",
     "MaterialUnit": "No.",
-    "MaterialPrice": 2750.0,
+    "MaterialPrice": 1008.00,
     "MaterialCategory": "Nigerite Products - Super Seven Asbestos"
   },
+
   {
     "SerialNumber": 204,
     "MaterialName": "6 inch (50mm) (25kg Bag)",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 4400.0,
+    "MaterialPrice": 1600.00,
     "MaterialCategory": "Nails And Screws And Other Accessories"
   },
   {
     "SerialNumber": 205,
     "MaterialName": "3-4 inch (75-100mm) (25kg Bag)",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 3700.0,
+    "MaterialPrice": 1350.00,
     "MaterialCategory": "Nails And Screws And Other Accessories"
   },
   {
     "SerialNumber": 206,
     "MaterialName": "2 inch screws (50mm) (25kg Bag)",
     "MaterialUnit": "Bag",
-    "MaterialPrice": 16500.0,
+    "MaterialPrice": 6000.00,
     "MaterialCategory": "Nails And Screws And Other Accessories"
   },
   {
     "SerialNumber": 207,
     "MaterialName": "Drive Screws/Roofing Nails",
     "MaterialUnit": "No.",
-    "MaterialPrice": 95.0,
+    "MaterialPrice": 35.00,
     "MaterialCategory": "Nails And Screws And Other Accessories"
   },
   {
     "SerialNumber": 208,
     "MaterialName": "Hook Bolts (Roof Manufacturer's Specification)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 165.0,
+    "MaterialPrice": 60.00,
     "MaterialCategory": "Nails And Screws And Other Accessories"
   },
   {
     "SerialNumber": 209,
     "MaterialName": "Hook Bolts for asbestos",
     "MaterialUnit": "No.",
-    "MaterialPrice": 160.0,
+    "MaterialPrice": 58.00,
     "MaterialCategory": "Nails And Screws And Other Accessories"
   },
   {
     "SerialNumber": 210,
     "MaterialName": "Seam Bolts for asbestos",
     "MaterialUnit": "No.",
-    "MaterialPrice": 35.0,
+    "MaterialPrice": 12.00,
     "MaterialCategory": "Nails And Screws And Other Accessories"
   },
   {
     "SerialNumber": 211,
     "MaterialName": "Solignum",
     "MaterialUnit": "Gal",
-    "MaterialPrice": 2750.0,
+    "MaterialPrice": 1000.00,
     "MaterialCategory": "Nails And Screws And Other Accessories"
   },
+
   {
     "SerialNumber": 212,
     "MaterialName": "Imper 66 primer",
     "MaterialUnit": "Drum",
-    "MaterialPrice": 107000.0,
+    "MaterialPrice": 39000.00,
     "MaterialCategory": "Roof Felting"
   },
   {
     "SerialNumber": 213,
     "MaterialName": "Water proof membrane - parallon NT4 (10 x 1m)",
     "MaterialUnit": "Roll",
-    "MaterialPrice": 37100.0,
+    "MaterialPrice": 13500.00,
     "MaterialCategory": "Roof Felting"
   },
   {
     "SerialNumber": 214,
     "MaterialName": "Water proof membrane - Bitulene 180HP (10 x 1m)",
     "MaterialUnit": "Roll",
-    "MaterialPrice": 28900.0,
+    "MaterialPrice": 10500.00,
     "MaterialCategory": "Roof Felting"
   },
+
   {
     "SerialNumber": 215,
     "MaterialName": "Swan size 1.8 x 900mm",
     "MaterialUnit": "Bundle",
-    "MaterialPrice": 13750.0,
+    "MaterialPrice": 5000.00,
     "MaterialCategory": "Zinc Roofing Sheet"
   },
+
   {
     "SerialNumber": 216,
     "MaterialName": "Window size 1200 x 1200mm high",
     "MaterialUnit": "No.",
-    "MaterialPrice": 61800.0,
+    "MaterialPrice": 22474.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)"
   },
   {
     "SerialNumber": 217,
     "MaterialName": "Window size 1500 x 1200mm high",
     "MaterialUnit": "No.",
-    "MaterialPrice": 54400.0,
+    "MaterialPrice": 19783.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)"
   },
   {
     "SerialNumber": 218,
     "MaterialName": "Window size 1200 x 1500mm high",
     "MaterialUnit": "No.",
-    "MaterialPrice": 55150.0,
+    "MaterialPrice": 20059.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)"
   },
   {
     "SerialNumber": 219,
     "MaterialName": "Window size 1800 x 1200mm high",
     "MaterialUnit": "No.",
-    "MaterialPrice": 70400.0,
+    "MaterialPrice": 25594.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)"
   },
   {
     "SerialNumber": 220,
     "MaterialName": "Window size 2400 x 1200mm high",
     "MaterialUnit": "No.",
-    "MaterialPrice": 95500.0,
+    "MaterialPrice": 34719.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)"
   },
   {
     "SerialNumber": 221,
     "MaterialName": "Window size 600 x 900mm high",
     "MaterialUnit": "No.",
-    "MaterialPrice": 47400.0,
+    "MaterialPrice": 17242.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)"
   },
   {
     "SerialNumber": 222,
     "MaterialName": "Projected window size 1200 x 900mm high",
     "MaterialUnit": "No.",
-    "MaterialPrice": 49200.0,
+    "MaterialPrice": 17887.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)"
   },
   {
     "SerialNumber": 223,
     "MaterialName": "Projected window size 1200 x 1200mm high",
     "MaterialUnit": "No.",
-    "MaterialPrice": 75050.0,
+    "MaterialPrice": 27289.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)"
   },
+
   {
     "SerialNumber": 224,
     "MaterialName": "Window size 1200 x 1200mm high (Mylar Film Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 47900.0,
+    "MaterialPrice": 17421.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)"
   },
   {
     "SerialNumber": 225,
     "MaterialName": "Window size 1200 x 1500mm high (Mylar Film Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 54400.0,
+    "MaterialPrice": 19783.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)"
   },
   {
     "SerialNumber": 226,
     "MaterialName": "Window size 1500 x 1200mm high (Mylar Film Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 54400.0,
+    "MaterialPrice": 19783.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)"
   },
   {
     "SerialNumber": 227,
     "MaterialName": "Window size 1800 x 1200mm high (Mylar Film Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 60900.0,
+    "MaterialPrice": 22141.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)"
   },
   {
     "SerialNumber": 228,
     "MaterialName": "Window size 2400 x 1200mm high (Mylar Film Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 73950.0,
+    "MaterialPrice": 26884.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)"
   },
   {
     "SerialNumber": 229,
     "MaterialName": "Window size 600 x 900mm high (Mylar Film Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 28400.0,
+    "MaterialPrice": 10331.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)"
   },
   {
     "SerialNumber": 230,
     "MaterialName": "Projected window size 1200 x 1200mm high (Mylar Film Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 60400.0,
+    "MaterialPrice": 21971.00,
     "MaterialCategory": "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)"
   },
+
   {
     "SerialNumber": 231,
     "MaterialName": "Window size 1200 x 1200mm high (Bullet Proof Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 232000.0,
+    "MaterialPrice": 84283.00,
     "MaterialCategory": "Aluminium Doors And Windows - Bullet Proof Glazing"
   },
   {
     "SerialNumber": 232,
     "MaterialName": "Window size 1500 x 1200mm high (Bullet Proof Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 290500.0,
+    "MaterialPrice": 105593.00,
     "MaterialCategory": "Aluminium Doors And Windows - Bullet Proof Glazing"
   },
   {
     "SerialNumber": 233,
     "MaterialName": "Window size 1200 x 1800mm high (Bullet Proof Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 348500.0,
+    "MaterialPrice": 126779.00,
     "MaterialCategory": "Aluminium Doors And Windows - Bullet Proof Glazing"
   },
   {
     "SerialNumber": 234,
     "MaterialName": "Window size 1500 x 1800mm high (Bullet Proof Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 440500.0,
+    "MaterialPrice": 160130.00,
     "MaterialCategory": "Aluminium Doors And Windows - Bullet Proof Glazing"
   },
   {
     "SerialNumber": 235,
     "MaterialName": "Window size 2400 x 1800mm high (Bullet Proof Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 544000.0,
+    "MaterialPrice": 197793.00,
     "MaterialCategory": "Aluminium Doors And Windows - Bullet Proof Glazing"
   },
   {
     "SerialNumber": 236,
     "MaterialName": "Window size 1200 x 900mm high (Bullet Proof Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 172000.0,
+    "MaterialPrice": 62456.00,
     "MaterialCategory": "Aluminium Doors And Windows - Bullet Proof Glazing"
   },
+
   {
     "SerialNumber": 237,
     "MaterialName": "Single swing door size 900 x 2100mm high (Clear Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 220500.0,
+    "MaterialPrice": 80136.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)"
   },
   {
     "SerialNumber": 238,
     "MaterialName": "Double leaf single swing door size 1500 x 2100mm high (Clear Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 372500.0,
+    "MaterialPrice": 135394.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)"
   },
   {
     "SerialNumber": 239,
     "MaterialName": "Double leaf single swing door size 1800 x 2100mm high (Clear Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 375500.0,
+    "MaterialPrice": 136612.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)"
   },
   {
     "SerialNumber": 240,
     "MaterialName": "Double leaf double swing door size 1800 x 2100mm high (Clear Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 339000.0,
+    "MaterialPrice": 123320.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)"
   },
   {
     "SerialNumber": 241,
     "MaterialName": "Double leaf single swing door size 2100 x 2100mm high (Clear Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 170500.0,
+    "MaterialPrice": 61926.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)"
   },
   {
     "SerialNumber": 242,
     "MaterialName": "Double leaf double swing door size 2100 x 2100mm high (Clear Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 365000.0,
+    "MaterialPrice": 132806.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)"
   },
+
   {
     "SerialNumber": 243,
     "MaterialName": "Single swing door size 900 x 2100mm high (Bullet Proof Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 382000.0,
+    "MaterialPrice": 138918.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Bullet Proof)"
   },
   {
     "SerialNumber": 244,
     "MaterialName": "Double leaf single swing door size 1500 x 2100mm high (Bullet Proof Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 606500.0,
+    "MaterialPrice": 220588.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Bullet Proof)"
   },
   {
     "SerialNumber": 245,
     "MaterialName": "Double leaf single swing door size 1800 x 2100mm high (Bullet Proof Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 657000.0,
+    "MaterialPrice": 238971.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Bullet Proof)"
   },
   {
     "SerialNumber": 246,
     "MaterialName": "Double leaf double swing door size 1800 x 2100mm high (Bullet Proof Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 804000.0,
+    "MaterialPrice": 292404.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Bullet Proof)"
   },
   {
     "SerialNumber": 247,
     "MaterialName": "Double leaf single swing door size 2100 x 2100mm high (Bullet Proof Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 778500.0,
+    "MaterialPrice": 283088.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Bullet Proof)"
   },
   {
     "SerialNumber": 248,
     "MaterialName": "Double leaf double swing door size 2100 x 2100mm high (Bullet Proof Sheet Glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 866000.0,
+    "MaterialPrice": 314897.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Bullet Proof)"
   },
+
   {
     "SerialNumber": 249,
     "MaterialName": "Single swing door size 900 x 2100mm high (Georgian wired glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 235500.0,
+    "MaterialPrice": 85721.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Georgian Wired)"
   },
   {
     "SerialNumber": 250,
     "MaterialName": "Double swing door size 1500 x 2100mm high (Georgian wired glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 398000.0,
+    "MaterialPrice": 144704.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Georgian Wired)"
   },
   {
     "SerialNumber": 251,
     "MaterialName": "Double swing door size 1800 x 2100mm high (Georgian wired glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 406500.0,
+    "MaterialPrice": 147784.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Georgian Wired)"
   },
+
   {
     "SerialNumber": 252,
     "MaterialName": "Single swing door size 900 x 2100mm high (Georgian wired with Mylar)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 118500.0,
+    "MaterialPrice": 43161.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Georgian Wired, Mylar)"
   },
   {
     "SerialNumber": 253,
     "MaterialName": "Double swing door size 1500 x 2100mm high (Georgian wired with Mylar)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 326500.0,
+    "MaterialPrice": 118652.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Georgian Wired, Mylar)"
   },
   {
     "SerialNumber": 254,
     "MaterialName": "Double swing door size 1800 x 2100mm high (Georgian wired with Mylar)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 353500.0,
+    "MaterialPrice": 128540.00,
     "MaterialCategory": "Aluminium Doors And Windows - Entrance Doors (Georgian Wired, Mylar)"
   },
+
   {
     "SerialNumber": 255,
     "MaterialName": "Single swing door size 900 x 2100mm high with overhead fixed light (Clear glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 232500.0,
+    "MaterialPrice": 84550.00,
     "MaterialCategory": "Aluminium Doors And Windows - Composite (Clear Glazing)"
   },
   {
     "SerialNumber": 256,
     "MaterialName": "Single swing door size 900 x 2100mm high with side fixed glazing (Clear glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 234500.0,
+    "MaterialPrice": 85247.00,
     "MaterialCategory": "Aluminium Doors And Windows - Composite (Clear Glazing)"
   },
   {
     "SerialNumber": 257,
     "MaterialName": "Double swing door size 1800 x 2100mm high with side fixed glazing and overhead fixed light (Clear glazing)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 429000.0,
+    "MaterialPrice": 155927.00,
     "MaterialCategory": "Aluminium Doors And Windows - Composite (Clear Glazing)"
   },
+
   {
     "SerialNumber": 258,
     "MaterialName": "Single swing door size 900 x 2100mm high (Vandal Proof)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 136500.0,
+    "MaterialPrice": 49623.00,
     "MaterialCategory": "Aluminium Doors And Windows - Steel Doors (Vandal Proof)"
   },
   {
     "SerialNumber": 259,
     "MaterialName": "Double swing door size 1500 x 2100mm high (Vandal Proof)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 243000.0,
+    "MaterialPrice": 88293.00,
     "MaterialCategory": "Aluminium Doors And Windows - Steel Doors (Vandal Proof)"
   },
   {
     "SerialNumber": 260,
     "MaterialName": "Double swing cold room door size 1800 x 2100mm high (Vandal Proof)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 278500.0,
+    "MaterialPrice": 101191.00,
     "MaterialCategory": "Aluminium Doors And Windows - Steel Doors (Vandal Proof)"
   },
+
   {
     "SerialNumber": 261,
     "MaterialName": "Single swing door size 900 x 2100mm high (Bullet Proof)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 227000.0,
+    "MaterialPrice": 82500.00,
     "MaterialCategory": "Aluminium Doors And Windows - Steel Doors (Bullet Proof)"
   },
   {
     "SerialNumber": 262,
     "MaterialName": "Double swing door size 1500 x 2100mm high (Bullet Proof)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 340500.0,
+    "MaterialPrice": 123750.00,
     "MaterialCategory": "Aluminium Doors And Windows - Steel Doors (Bullet Proof)"
   },
   {
     "SerialNumber": 263,
     "MaterialName": "Double swing cold room door size 1800 x 2100mm high (Bullet Proof)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 454000.0,
+    "MaterialPrice": 165000.00,
     "MaterialCategory": "Aluminium Doors And Windows - Steel Doors (Bullet Proof)"
   },
+
   {
     "SerialNumber": 264,
     "MaterialName": "Insulated wall panel for cold room (100mm thick)",
     "MaterialUnit": "m2",
-    "MaterialPrice": 15900.0,
+    "MaterialPrice": 5778.00,
     "MaterialCategory": "Insulated Wall Panels"
   },
   {
     "SerialNumber": 265,
     "MaterialName": "Insulated wall panel (50mm thick)",
     "MaterialUnit": "m2",
-    "MaterialPrice": 30300.0,
+    "MaterialPrice": 11012.00,
     "MaterialCategory": "Insulated Wall Panels"
   },
+
   {
     "SerialNumber": 266,
     "MaterialName": "Curtain wall - Normal",
     "MaterialUnit": "m2",
-    "MaterialPrice": 59300.0,
+    "MaterialPrice": 21560.00,
     "MaterialCategory": "Curtain Wall"
   },
   {
     "SerialNumber": 267,
     "MaterialName": "Curtain wall - Insulated",
     "MaterialUnit": "m2",
-    "MaterialPrice": 75450.0,
+    "MaterialPrice": 27444.00,
     "MaterialCategory": "Curtain Wall"
   },
+
   {
     "SerialNumber": 268,
     "MaterialName": "44mm Solid core flush door (900 x 2100mm)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 12400.0,
+    "MaterialPrice": 4500.00,
     "MaterialCategory": "Timber Doors"
   },
   {
     "SerialNumber": 269,
     "MaterialName": "Door (750 x 2100mm)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 11000.0,
+    "MaterialPrice": 4000.00,
     "MaterialCategory": "Timber Doors"
   },
   {
     "SerialNumber": 270,
     "MaterialName": "44mm Double faced paneled door (900 x 2100mm)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 13750.0,
+    "MaterialPrice": 5000.00,
     "MaterialCategory": "Timber Doors"
   },
   {
     "SerialNumber": 271,
     "MaterialName": "Door (750 x 2100mm) – double faced",
     "MaterialUnit": "No.",
-    "MaterialPrice": 11000.0,
+    "MaterialPrice": 4000.00,
     "MaterialCategory": "Timber Doors"
   },
   {
     "SerialNumber": 272,
     "MaterialName": "44mm Single faced paneled door (900 x 2100mm)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 11000.0,
+    "MaterialPrice": 4000.00,
     "MaterialCategory": "Timber Doors"
   },
   {
     "SerialNumber": 273,
     "MaterialName": "Door (750 x 2100mm) – single faced",
     "MaterialUnit": "No.",
-    "MaterialPrice": 9600.0,
+    "MaterialPrice": 3500.00,
     "MaterialCategory": "Timber Doors"
   },
+
   {
     "SerialNumber": 274,
     "MaterialName": "Window size 1200 x 1500mm high (Casement)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 82500.0,
+    "MaterialPrice": 30000.00,
     "MaterialCategory": "Casement Window"
   },
   {
     "SerialNumber": 275,
     "MaterialName": "Window size 1200 x 1200mm high (Casement)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 71500.0,
+    "MaterialPrice": 26000.00,
     "MaterialCategory": "Casement Window"
   },
   {
     "SerialNumber": 276,
     "MaterialName": "Window size 1200 x 750mm high (Casement)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 63250.0,
+    "MaterialPrice": 23000.00,
     "MaterialCategory": "Casement Window"
   },
   {
     "SerialNumber": 277,
     "MaterialName": "Window size 600 x 600mm high (Casement)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 24750.0,
+    "MaterialPrice": 9000.00,
     "MaterialCategory": "Casement Window"
   },
   {
     "SerialNumber": 278,
     "MaterialName": "Window size 500 x 550mm high (Casement)",
     "MaterialUnit": "No.",
-    "MaterialPrice": 22000.0,
+    "MaterialPrice": 8000.00,
     "MaterialCategory": "Casement Window"
   },
   {
     "SerialNumber": 279,
     "MaterialName": "Mortise Lock",
     "MaterialUnit": "No.",
-    "MaterialPrice": 8250.0,
+    "MaterialPrice": 3000.00,
     "MaterialCategory": "Casement Window"
   },
+
   {
     "SerialNumber": 280,
     "MaterialName": "White Emulsion (High Quality)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 1300.0,
+    "MaterialPrice": 480.00,
     "MaterialCategory": "Paints - Emulsion"
   },
   {
     "SerialNumber": 281,
     "MaterialName": "Coloured Emulsion (High Quality)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 1150.0,
+    "MaterialPrice": 420.00,
     "MaterialCategory": "Paints - Emulsion"
   },
   {
     "SerialNumber": 282,
     "MaterialName": "White Emulsion (Low Quality)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 880.0,
+    "MaterialPrice": 320.00,
     "MaterialCategory": "Paints - Emulsion"
   },
   {
     "SerialNumber": 283,
     "MaterialName": "Coloured Emulsion (Low Quality)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 410.0,
+    "MaterialPrice": 150.00,
     "MaterialCategory": "Paints - Emulsion"
   },
   {
     "SerialNumber": 284,
     "MaterialName": "Emulsion Paint (All Colours)",
     "MaterialUnit": "20 Litre",
-    "MaterialPrice": 14450.0,
+    "MaterialPrice": 5250.00,
     "MaterialCategory": "Paints - Emulsion"
   },
   {
     "SerialNumber": 285,
     "MaterialName": "Super Quartz Brilliant White",
     "MaterialUnit": "20 Litre",
-    "MaterialPrice": 12400.0,
+    "MaterialPrice": 4500.00,
     "MaterialCategory": "Paints - Emulsion"
   },
   {
     "SerialNumber": 286,
     "MaterialName": "Superoll off-white",
     "MaterialUnit": "20 Litre",
-    "MaterialPrice": 6900.0,
+    "MaterialPrice": 2500.00,
     "MaterialCategory": "Paints - Emulsion"
   },
   {
     "SerialNumber": 287,
     "MaterialName": "Superoll Colours",
     "MaterialUnit": "20 Litre",
-    "MaterialPrice": 11000.0,
+    "MaterialPrice": 4000.00,
     "MaterialCategory": "Paints - Emulsion"
   },
+
   {
     "SerialNumber": 288,
     "MaterialName": "White Gloss (High Quality)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 3850.0,
+    "MaterialPrice": 1400.00,
     "MaterialCategory": "Paints - Gloss Oil"
   },
   {
     "SerialNumber": 289,
     "MaterialName": "Coloured Gloss Oil Paint (High Quality)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 3300.0,
+    "MaterialPrice": 1200.00,
     "MaterialCategory": "Paints - Gloss Oil"
   },
   {
     "SerialNumber": 290,
     "MaterialName": "White Gloss (Low Quality)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 2600.0,
+    "MaterialPrice": 950.00,
     "MaterialCategory": "Paints - Gloss Oil"
   },
   {
     "SerialNumber": 291,
     "MaterialName": "Coloured Gloss (Low Quality)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 1800.0,
+    "MaterialPrice": 650.00,
     "MaterialCategory": "Paints - Gloss Oil"
   },
   {
     "SerialNumber": 292,
     "MaterialName": "Gloss Paint (All Colours)",
     "MaterialUnit": "20 Litre",
-    "MaterialPrice": 27500.0,
+    "MaterialPrice": 10000.00,
     "MaterialCategory": "Paints - Gloss Oil"
   },
   {
     "SerialNumber": 293,
     "MaterialName": "Poly Filla 1.8Kg Pack.",
     "MaterialUnit": "Pack",
-    "MaterialPrice": 1500.0,
+    "MaterialPrice": 550.00,
     "MaterialCategory": "Paints - Gloss Oil"
   },
+
   {
     "SerialNumber": 294,
     "MaterialName": "Chlorinated Rubber Finish",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 9600.0,
+    "MaterialPrice": 3500.00,
     "MaterialCategory": "Paints - Chlorinated"
   },
   {
     "SerialNumber": 295,
     "MaterialName": "Chlorinated Rubber (High Build) Finish",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 12400.0,
+    "MaterialPrice": 4500.00,
     "MaterialCategory": "Paints - Chlorinated"
   },
   {
     "SerialNumber": 296,
     "MaterialName": "Chlorinated Rubber Undercoat",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 8950.0,
+    "MaterialPrice": 3250.00,
     "MaterialCategory": "Paints - Chlorinated"
   },
   {
     "SerialNumber": 297,
     "MaterialName": "Chlorinated Rubber Thinner",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 8950.0,
+    "MaterialPrice": 3250.00,
     "MaterialCategory": "Paints - Chlorinated"
   },
   {
     "SerialNumber": 298,
     "MaterialName": "Chlorinated Rubber Primer",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 16150.0,
+    "MaterialPrice": 5875.00,
     "MaterialCategory": "Paints - Chlorinated"
   },
   {
     "SerialNumber": 299,
     "MaterialName": "Epoxy Enamel",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 11400.0,
+    "MaterialPrice": 4150.00,
     "MaterialCategory": "Paints - Chlorinated"
   },
+
   {
     "SerialNumber": 300,
     "MaterialName": "Pealux Marine Undercoat",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 4950.0,
+    "MaterialPrice": 1800.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 301,
     "MaterialName": "Pealux Marine Undercoat (20 Litre)",
     "MaterialUnit": "20 Litre",
-    "MaterialPrice": 0.0,
+    "MaterialPrice": 0.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 302,
     "MaterialName": "Pealux Vinyl Enamel",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 0.0,
+    "MaterialPrice": 0.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 303,
     "MaterialName": "Pealux Anti Fungi/Algae Emulsion",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 3150.0,
+    "MaterialPrice": 1150.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 304,
     "MaterialName": "Pealux Superior Emulsion",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 14450.0,
+    "MaterialPrice": 5250.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 305,
     "MaterialName": "Peacotex Textured Finish (B/W)",
     "MaterialUnit": "20 Litre",
-    "MaterialPrice": 14300.0,
+    "MaterialPrice": 5200.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 306,
     "MaterialName": "Peacotex Textured Finish (Standard White)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 9500.0,
+    "MaterialPrice": 3450.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 307,
     "MaterialName": "Peacotex Textured Finish (Various Colours)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 13600.0,
+    "MaterialPrice": 4950.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 308,
     "MaterialName": "Enamel Epoxy, 2 Part Colour, Mobil Beige",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 11700.0,
+    "MaterialPrice": 4250.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 309,
     "MaterialName": "Enamel, Alkyd Colour Black",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 6200.0,
+    "MaterialPrice": 2250.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 310,
     "MaterialName": "Gloss Peatone Synt. Colour Golden Yellow",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 6200.0,
+    "MaterialPrice": 2250.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 311,
     "MaterialName": "Enamel, Vinyl. Colour Yellow",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 11700.0,
+    "MaterialPrice": 4250.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 312,
     "MaterialName": "Post Office Red Paint",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 6200.0,
+    "MaterialPrice": 2250.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 313,
     "MaterialName": "Deep Blue Mobil Colour Gloss Paint",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 6200.0,
+    "MaterialPrice": 2250.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 314,
     "MaterialName": "Black Deck Paint",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 13600.0,
+    "MaterialPrice": 4950.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 315,
     "MaterialName": "Artic Blue Paint",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 13600.0,
+    "MaterialPrice": 4950.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 316,
     "MaterialName": "Mobil Beige Epoxy Enamel",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 11700.0,
+    "MaterialPrice": 4250.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 317,
     "MaterialName": "Golden Yellow Epoxy Enamel",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 11700.0,
+    "MaterialPrice": 4250.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 318,
     "MaterialName": "Epoxy 2 Part, Colour Post Office Red",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 11700.0,
+    "MaterialPrice": 4250.00,
     "MaterialCategory": "Paints - Peacock"
   },
   {
     "SerialNumber": 319,
     "MaterialName": "Epoxy 2 Part, Colour Deep Blue",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 11700.0,
+    "MaterialPrice": 4250.00,
     "MaterialCategory": "Paints - Peacock"
   },
+
   {
     "SerialNumber": 320,
     "MaterialName": "Reflective Road Marking Paint",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 6900.0,
+    "MaterialPrice": 2500.00,
     "MaterialCategory": "Paints - Road"
   },
   {
     "SerialNumber": 321,
     "MaterialName": "Non-Reflective Road Marking Paint",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 6900.0,
+    "MaterialPrice": 2500.00,
     "MaterialCategory": "Paints - Road"
   },
+
   {
     "SerialNumber": 322,
     "MaterialName": "Non Cellulose Lacquer paint (Matt)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 6900.0,
+    "MaterialPrice": 2500.00,
     "MaterialCategory": "Paints - Wood"
   },
   {
     "SerialNumber": 323,
     "MaterialName": "Non Cellulose Lacquer paint (Sanding Sealer)",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 5650.0,
+    "MaterialPrice": 2050.00,
     "MaterialCategory": "Paints - Wood"
   },
   {
     "SerialNumber": 324,
     "MaterialName": "General Purpose Thinner",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 6900.0,
+    "MaterialPrice": 2500.00,
     "MaterialCategory": "Paints - Wood"
   },
   {
     "SerialNumber": 325,
     "MaterialName": "Nitro Cellulose Thinner",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 8000.0,
+    "MaterialPrice": 2900.00,
     "MaterialCategory": "Paints - Wood"
   },
   {
     "SerialNumber": 326,
     "MaterialName": "Urethane Thinner",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 3150.0,
+    "MaterialPrice": 1150.00,
     "MaterialCategory": "Paints - Wood"
   },
   {
     "SerialNumber": 327,
     "MaterialName": "Wood Primer",
     "MaterialUnit": "4 Litre",
-    "MaterialPrice": 3150.0,
+    "MaterialPrice": 1150.00,
     "MaterialCategory": "Paints - Wood"
   },
+
   {
     "SerialNumber": 328,
     "MaterialName": "Inorganic Zinc Silicate (Dimetcote 6, Redish Grey)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 43550.0,
+    "MaterialPrice": 15840.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 329,
     "MaterialName": "Modified Epoxy Zinc Rich primer (Amercoat 62, Redish Grey)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 50500.0,
+    "MaterialPrice": 18360.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 330,
     "MaterialName": "Zinc Rich Epoxy (Amercoat 64, Pale Red)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 49500.0,
+    "MaterialPrice": 18000.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 331,
     "MaterialName": "Zinc Rich Epoxy (Amercoat 68, Redish Grey)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 49500.0,
+    "MaterialPrice": 18000.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 332,
     "MaterialName": "Zinc Rich Epoxy (Amercoat 124, Grey)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 49500.0,
+    "MaterialPrice": 18000.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 333,
     "MaterialName": "Epoxy primer/Tiecoat (Amercoat 71, Oxide Red)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23750.0,
+    "MaterialPrice": 8640.00,
     "MaterialCategory": "AMERON PAINTS"
   },
+
   {
     "SerialNumber": 334,
     "MaterialName": "Epoxy Mastic (Amerlock 400AL, Aluminium Grey)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 36650.0,
+    "MaterialPrice": 13320.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 335,
     "MaterialName": "Epoxy Mastic (Amerlock 400C, White)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 31700.0,
+    "MaterialPrice": 11520.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 336,
     "MaterialName": "Ditto but Dark Grey BS637",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 30700.0,
+    "MaterialPrice": 11160.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 337,
     "MaterialName": "Ditto but Black",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 27700.0,
+    "MaterialPrice": 10080.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 338,
     "MaterialName": "Ditto but Oxide Red",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 30700.0,
+    "MaterialPrice": 11160.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 339,
     "MaterialName": "Ditto but Blue 5010",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 30700.0,
+    "MaterialPrice": 11160.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 340,
     "MaterialName": "Ditto but Ral 7032",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 30700.0,
+    "MaterialPrice": 11160.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 341,
     "MaterialName": "Ditto but Light Grey",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 31700.0,
+    "MaterialPrice": 11520.00,
     "MaterialCategory": "AMERON PAINTS"
   },
+
   {
     "SerialNumber": 342,
     "MaterialName": "Multipurpose Polymaide Epoxy (Amercoat 385, Off White)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 25750.0,
+    "MaterialPrice": 9360.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 343,
     "MaterialName": "Ditto but Pearl Grey",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 24750.0,
+    "MaterialPrice": 9000.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 344,
     "MaterialName": "Ditto but Mobil Beige F38",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 25750.0,
+    "MaterialPrice": 9360.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 345,
     "MaterialName": "Ditto but Ral 7036",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 24750.0,
+    "MaterialPrice": 9000.00,
     "MaterialCategory": "AMERON PAINTS"
   },
+
   {
     "SerialNumber": 346,
     "MaterialName": "Rust Penetrating Sealer (Preprime 167, Clear)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 45550.0,
+    "MaterialPrice": 16560.00,
     "MaterialCategory": "AMERON PAINTS"
   },
+
   {
     "SerialNumber": 347,
     "MaterialName": "High Build Epoxy (Amercoat 78HBB, Black)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 24750.0,
+    "MaterialPrice": 9000.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 348,
     "MaterialName": "Ditto but Brown",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 24750.0,
+    "MaterialPrice": 9000.00,
     "MaterialCategory": "AMERON PAINTS"
   },
+
   {
     "SerialNumber": 349,
     "MaterialName": "Multipurpose Epoxy Coating (Bar-Rust 235, Off white)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 31700.0,
+    "MaterialPrice": 11520.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 350,
     "MaterialName": "High Performance Modified Epoxy (Amercoat 90S, White)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 29700.0,
+    "MaterialPrice": 10800.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 351,
     "MaterialName": "Ditto but Pearl Grey",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 29700.0,
+    "MaterialPrice": 10800.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 352,
     "MaterialName": "High Solids Glassflake Epoxy Coating (Amerlock 400GFA, Off white)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38600.0,
+    "MaterialPrice": 14040.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 353,
     "MaterialName": "Solvent Free Epoxy Coating (Tideguard 171A, Grey)",
     "MaterialUnit": "1 Kg",
-    "MaterialPrice": 15850.0,
+    "MaterialPrice": 5760.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 354,
     "MaterialName": "Ditto but Pearl Grey",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 29700.0,
+    "MaterialPrice": 10800.00,
     "MaterialCategory": "AMERON PAINTS"
   },
+
   {
     "SerialNumber": 355,
     "MaterialName": "Single pack hot spot indicators (Amercoat 37-B1, Blue 175)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 227500.0,
+    "MaterialPrice": 82800.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 356,
     "MaterialName": "Amercoat 37-G1, Green 260",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 227500.0,
+    "MaterialPrice": 82800.00,
     "MaterialCategory": "AMERON PAINTS"
   },
+
   {
     "SerialNumber": 357,
     "MaterialName": "Heat Resistant Silicone Coating (Amercoat 878, Aluminium 500c)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 39600.0,
+    "MaterialPrice": 14400.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 358,
     "MaterialName": "Siloxane High Heat Coating (PSX 892HS, Aluminium 400c)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 76250.0,
+    "MaterialPrice": 27720.00,
     "MaterialCategory": "AMERON PAINTS"
   },
+
   {
     "SerialNumber": 359,
     "MaterialName": "Engineered Siloxane Coating (PSX 700, Shell Yellow 4)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 136500.0,
+    "MaterialPrice": 49680.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 360,
     "MaterialName": "Ditto but Shell Green 9",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 136500.0,
+    "MaterialPrice": 49680.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 361,
     "MaterialName": "Ditto but Black",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 123000.0,
+    "MaterialPrice": 44640.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 362,
     "MaterialName": "Ditto but Dark Grey BS637",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 123000.0,
+    "MaterialPrice": 44640.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 363,
     "MaterialName": "Ditto but Sign Red 3001",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 136500.0,
+    "MaterialPrice": 49680.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 364,
     "MaterialName": "Ditto but Ral 7040",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 123000.0,
+    "MaterialPrice": 44640.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 365,
     "MaterialName": "Ditto but White 9010",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 123000.0,
+    "MaterialPrice": 44640.00,
     "MaterialCategory": "AMERON PAINTS"
   },
   {
     "SerialNumber": 366,
     "MaterialName": "Alkyd Finish (Amercoat 5405, White)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 27700.0,
+    "MaterialPrice": 10080.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 367,
     "MaterialName": "Amercoat 52HS, Black",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 22750.0,
+    "MaterialPrice": 8280.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 368,
     "MaterialName": "Shell Green 9",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 28700.0,
+    "MaterialPrice": 10440.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 369,
     "MaterialName": "OSHA S/Red",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 33650.0,
+    "MaterialPrice": 12240.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 370,
     "MaterialName": "Sign Red 3001",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 33650.0,
+    "MaterialPrice": 12240.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 371,
     "MaterialName": "Blue 5010",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 28700.0,
+    "MaterialPrice": 10440.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 372,
     "MaterialName": "OSHA S/Yellow",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 33650.0,
+    "MaterialPrice": 12240.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 373,
     "MaterialName": "Sign Green 6032",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 28700.0,
+    "MaterialPrice": 10440.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 374,
     "MaterialName": "Polyamide-cured Epoxy Topcoat (Amercoat 72S, Aluminium 9006)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 27700.0,
+    "MaterialPrice": 10080.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 375,
     "MaterialName": "Aliphatic Polyurethane (Amercoat 450S, White)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38600.0,
+    "MaterialPrice": 14040.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 376,
     "MaterialName": "Ditto but Black (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38600.0,
+    "MaterialPrice": 14040.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 377,
     "MaterialName": "Ditto but OSHA S/Red (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 54450.0,
+    "MaterialPrice": 19800.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 378,
     "MaterialName": "Ditto but Shell Green 9 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 49500.0,
+    "MaterialPrice": 18000.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 379,
     "MaterialName": "Ditto but Light Green (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 41600.0,
+    "MaterialPrice": 15120.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 380,
     "MaterialName": "Ditto but OSHA S/Yellow (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 59400.0,
+    "MaterialPrice": 21600.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 381,
     "MaterialName": "Ditto but Mobil Beige F38 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38600.0,
+    "MaterialPrice": 14040.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 382,
     "MaterialName": "Ditto but Mobil Yellow (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 59400.0,
+    "MaterialPrice": 21600.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 383,
     "MaterialName": "Ditto but Dark Grey BS637 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38600.0,
+    "MaterialPrice": 14040.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 384,
     "MaterialName": "Ditto but Sign Red 3001 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 59400.0,
+    "MaterialPrice": 21600.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 385,
     "MaterialName": "Ditto but Blue 5010 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 41600.0,
+    "MaterialPrice": 15120.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 386,
     "MaterialName": "Ditto but Int. Orange (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 54450.0,
+    "MaterialPrice": 19800.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 387,
     "MaterialName": "Ditto but Aluminium natural stain (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38600.0,
+    "MaterialPrice": 14040.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 388,
     "MaterialName": "Ditto but Green 6002 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 49500.0,
+    "MaterialPrice": 18000.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 389,
     "MaterialName": "Ditto but Sign Green 6032 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 49500.0,
+    "MaterialPrice": 18000.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 390,
     "MaterialName": "Ditto but Grey 7032 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38600.0,
+    "MaterialPrice": 14040.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 391,
     "MaterialName": "Ditto but Light Grey 7035 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38600.0,
+    "MaterialPrice": 14040.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 392,
     "MaterialName": "Ditto but Medium Grey 7038 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38600.0,
+    "MaterialPrice": 14040.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 393,
     "MaterialName": "Ditto but Grey 7040 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38600.0,
+    "MaterialPrice": 14040.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
   {
     "SerialNumber": 394,
     "MaterialName": "Ditto but Brown 8002 (Finish Coating)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 41600.0,
+    "MaterialPrice": 15120.00,
     "MaterialCategory": "AMERON PAINTS - Finish Coating"
   },
+
   {
     "SerialNumber": 395,
     "MaterialName": "Self Polish (Amercoat 73EP, Brown)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 37600.0,
+    "MaterialPrice": 13680.00,
     "MaterialCategory": "AMERON PAINTS - Anti-Fouling"
   },
   {
     "SerialNumber": 396,
     "MaterialName": "Amercoat 70, Red",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 37600.0,
+    "MaterialPrice": 13680.00,
     "MaterialCategory": "AMERON PAINTS - Anti-Fouling"
   },
   {
     "SerialNumber": 397,
     "MaterialName": "Ditto but Black (Anti-Fouling)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 37600.0,
+    "MaterialPrice": 13680.00,
     "MaterialCategory": "AMERON PAINTS - Anti-Fouling"
   },
   {
     "SerialNumber": 398,
     "MaterialName": "Oil and Grease Remover (Amercoat 57 OC)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 11900.0,
+    "MaterialPrice": 4320.00,
     "MaterialCategory": "AMERON PAINTS - Degreaser"
   },
+
   {
     "SerialNumber": 399,
     "MaterialName": "Zinc Treatment Etch Primer (Amercoat 59 TW)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 11900.0,
+    "MaterialPrice": 4320.00,
     "MaterialCategory": "AMERON PAINTS - Etching"
   },
+
   {
     "SerialNumber": 400,
     "MaterialName": "Amercoat 12",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 11900.0,
+    "MaterialPrice": 4320.00,
     "MaterialCategory": "AMERON PAINTS - Cleaners"
   },
   {
     "SerialNumber": 401,
     "MaterialName": "Amercoat 175",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 9900.0,
+    "MaterialPrice": 3600.00,
     "MaterialCategory": "AMERON PAINTS - Cleaners"
   },
   {
     "SerialNumber": 402,
     "MaterialName": "Amercoat 8",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 13850.0,
+    "MaterialPrice": 5040.00,
     "MaterialCategory": "AMERON PAINTS - Thinners"
   },
   {
     "SerialNumber": 403,
     "MaterialName": "Amercoat 9HF",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 13850.0,
+    "MaterialPrice": 5040.00,
     "MaterialCategory": "AMERON PAINTS - Thinners"
   },
   {
     "SerialNumber": 404,
     "MaterialName": "Amercoat 65",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 10900.0,
+    "MaterialPrice": 3960.00,
     "MaterialCategory": "AMERON PAINTS - Thinners"
   },
   {
     "SerialNumber": 405,
     "MaterialName": "Amercoat 911",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 13850.0,
+    "MaterialPrice": 5040.00,
     "MaterialCategory": "AMERON PAINTS - Thinners"
   },
   {
     "SerialNumber": 406,
     "MaterialName": "Amercoat 920",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 13850.0,
+    "MaterialPrice": 5040.00,
     "MaterialCategory": "AMERON PAINTS - Thinners"
   },
   {
     "SerialNumber": 407,
     "MaterialName": "Devoe T4",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 13850.0,
+    "MaterialPrice": 5040.00,
     "MaterialCategory": "AMERON PAINTS - Thinners"
   },
   {
     "SerialNumber": 408,
     "MaterialName": "Devoe T10",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 13850.0,
+    "MaterialPrice": 5040.00,
     "MaterialCategory": "AMERON PAINTS - Thinners"
   },
+
   {
     "SerialNumber": 409,
     "MaterialName": "For Tideguard (Amercoat 171)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23750.0,
+    "MaterialPrice": 8640.00,
     "MaterialCategory": "AMERON PAINTS - Starter Liquid"
   },
+
   {
     "SerialNumber": 410,
     "MaterialName": "Solvent Free Epoxy Coating System (Amercoat 2209, Clear)",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 47500.0,
+    "MaterialPrice": 17280.00,
     "MaterialCategory": "AMERON PAINTS - Solvent Free Epoxy"
   },
+
   {
     "SerialNumber": 411,
     "MaterialName": "White Emulsion (High Quality) - Carboline 3300",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 16450.0,
+    "MaterialPrice": 5990.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 412,
     "MaterialName": "Coloured Emulsion (High Quality) - Carboline 3300",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 16450.0,
+    "MaterialPrice": 5990.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 413,
     "MaterialName": "Emulsion Paint (All Colours) - Carboline 3300",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 16450.0,
+    "MaterialPrice": 5990.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 414,
     "MaterialName": "Super Quartz Brilliant White - Carboline 3300",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 16450.0,
+    "MaterialPrice": 5990.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 415,
     "MaterialName": "Superoll off-white - Carboline 3300",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 16450.0,
+    "MaterialPrice": 5990.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 416,
     "MaterialName": "Superoll Colours - Carboline 3300",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 16450.0,
+    "MaterialPrice": 5990.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 417,
     "MaterialName": "White Gloss (High Quality) - Carboline 4685",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 19150.0,
+    "MaterialPrice": 6969.60,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 418,
     "MaterialName": "Coloured Gloss Oil Paint (High Quality) - Carboline 4685",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 15750.0,
+    "MaterialPrice": 5731.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 419,
     "MaterialName": "White Gloss (Low Quality) - Carboline 4685",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 19150.0,
+    "MaterialPrice": 6969.60,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 420,
     "MaterialName": "Coloured Gloss (Low Quality) - Carboline 4685",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 15750.0,
+    "MaterialPrice": 5731.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 421,
     "MaterialName": "Gloss Paint (All Colours) - Carboline 4685",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 19150.0,
+    "MaterialPrice": 6969.60,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 422,
     "MaterialName": "Bright Aluminium - Carboline 1265",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 14100.0,
+    "MaterialPrice": 5133.60,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 423,
     "MaterialName": "Aluminium Paint - Carboline 4685",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 19150.0,
+    "MaterialPrice": 6969.60,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 424,
     "MaterialName": "High Temperature Aluminium Paint - Carboline 4633",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 26250.0,
+    "MaterialPrice": 9540.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 425,
     "MaterialName": "High Build Epoxy Finish - Carboline 890",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38300.0,
+    "MaterialPrice": 13932.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 426,
     "MaterialName": "High Build Epoxy White - Carboline 890",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38300.0,
+    "MaterialPrice": 13932.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 427,
     "MaterialName": "Intermediate Coat H. B. Epoxy, 5-6 Mils - Carboline 890",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38300.0,
+    "MaterialPrice": 13932.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 428,
     "MaterialName": "Coaltar Epoxy - Carbomastic 200, Black/Brown",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 19400.0,
+    "MaterialPrice": 7048.80,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 429,
     "MaterialName": "Surface Tolerant Epoxy Thinner - Thinner 10",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 6050.0,
+    "MaterialPrice": 2196.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 430,
     "MaterialName": "Silicone Aluminium (540O Cent) - Carboline 4631",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 52500.0,
+    "MaterialPrice": 19087.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 431,
     "MaterialName": "Surface Tolerant Epoxy (Flowlines) - Carbomastic 15 L.O.",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38750.0,
+    "MaterialPrice": 14083.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 432,
     "MaterialName": "Alkaline Resistant Primer, Red - Carboline 193",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 17750.0,
+    "MaterialPrice": 6458.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 433,
     "MaterialName": "Moisture Tolerant Wet Surface Primer - Dampcoat 1208",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 60100.0,
+    "MaterialPrice": 21859.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 434,
     "MaterialName": "Red Oxide Primer - Carboline 193",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 17750.0,
+    "MaterialPrice": 6458.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 435,
     "MaterialName": "Alkyd Thinner - Thinner 10",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 6050.0,
+    "MaterialPrice": 2196.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 436,
     "MaterialName": "Alkyd Undercoat White - Carboline GP 64",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 14100.0,
+    "MaterialPrice": 5133.60,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 437,
     "MaterialName": "Alkyd Undercoat Mild Grey - Carboline GP 64",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 14100.0,
+    "MaterialPrice": 5133.60,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 438,
     "MaterialName": "Alkyd Gloss, White - Carboline AD 51",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 15750.0,
+    "MaterialPrice": 5731.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 439,
     "MaterialName": "Alkyd Gloss, Mobil blue - Carboline AD 51",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 15750.0,
+    "MaterialPrice": 5731.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 440,
     "MaterialName": "Vinyl Thinner - Thinner 10",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 6050.0,
+    "MaterialPrice": 2196.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 441,
     "MaterialName": "High Build Vinyl - Carboline 938 H.B.",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 15950.0,
+    "MaterialPrice": 5796.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 442,
     "MaterialName": "Surface Tolerant Primer - Carbomastic 15 L.O.",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38750.0,
+    "MaterialPrice": 14083.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 443,
     "MaterialName": "Etch Primer - Carboline GP 18",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 14100.0,
+    "MaterialPrice": 5133.60,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 444,
     "MaterialName": "Alkali Resistant Primer - Carboline 193",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 17750.0,
+    "MaterialPrice": 6458.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 445,
     "MaterialName": "Tie Coat Primer - Carboline 193",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 17750.0,
+    "MaterialPrice": 6458.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 446,
     "MaterialName": "Yatch Varnish - Carboline 193",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 17750.0,
+    "MaterialPrice": 6458.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 447,
     "MaterialName": "Wet Steel Primer A+B Dampcoat 1208",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 60100.0,
+    "MaterialPrice": 21859.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 448,
     "MaterialName": "Zinc Phosphate Primer (Alkyds) - Carboline GP 18",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 13700.0,
+    "MaterialPrice": 4989.60,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 449,
     "MaterialName": "Zinc Rich Epoxy Primer - Carboline 658",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 34500.0,
+    "MaterialPrice": 12542.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 450,
     "MaterialName": "Zinc Silicate Primer - Carbozinc 11",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 36350.0,
+    "MaterialPrice": 13219.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 451,
     "MaterialName": "Zinc Silicate Thinner - Thinner 33",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 8400.0,
+    "MaterialPrice": 3060.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 452,
     "MaterialName": "Urethane Thinner - Thinner 25",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 7750.0,
+    "MaterialPrice": 2815.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 453,
     "MaterialName": "Prime Coat, Inorganic Zinc Silicate, 2-3 Mils - Carbozinc 12",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 30700.0,
+    "MaterialPrice": 11167.20,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 454,
     "MaterialName": "Alkyd Enamel (Mobil Colour) - Carboline 4685",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23150.0,
+    "MaterialPrice": 8424.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 455,
     "MaterialName": "High Gloss Marine Enamel Paint - Carboline 4685",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23150.0,
+    "MaterialPrice": 8424.00,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 456,
     "MaterialName": "Marine Undercoat - Carboline 4685",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 18550.0,
+    "MaterialPrice": 6746.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 457,
     "MaterialName": "Surface Tolerant Primer - Carbomastic 15 L.O.",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 36150.0,
+    "MaterialPrice": 13154.40,
     "MaterialCategory": "CARBOLINE PAINTS"
   },
   {
     "SerialNumber": 458,
     "MaterialName": "Polyurethane Finish - Carboline 134",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 31450.0,
+    "MaterialPrice": 11440.80,
     "MaterialCategory": "CARBOLINE PAINTS - Polyurethane"
   },
   {
     "SerialNumber": 459,
     "MaterialName": "Polythane, Dark Green - Carboline 134",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 35300.0,
+    "MaterialPrice": 12844.80,
     "MaterialCategory": "CARBOLINE PAINTS - Polyurethane"
   },
   {
     "SerialNumber": 460,
     "MaterialName": "Polythane Epoxy Mobil Beige - Carboline 134",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 31450.0,
+    "MaterialPrice": 11440.80,
     "MaterialCategory": "CARBOLINE PAINTS - Polyurethane"
   },
   {
     "SerialNumber": 461,
     "MaterialName": "Polythane Epoxy White - Carboline 134",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 31450.0,
+    "MaterialPrice": 11440.80,
     "MaterialCategory": "CARBOLINE PAINTS - Polyurethane"
   },
   {
     "SerialNumber": 462,
     "MaterialName": "Floor Paints - Carboline 1345",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 44900.0,
+    "MaterialPrice": 16329.60,
     "MaterialCategory": "CARBOLINE PAINTS - Floor"
   },
   {
     "SerialNumber": 463,
     "MaterialName": "Non Skid (Deck) Paints - Carboline 890",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 29250.0,
+    "MaterialPrice": 10634.40,
     "MaterialCategory": "CARBOLINE PAINTS - Floor"
   },
   {
     "SerialNumber": 464,
     "MaterialName": "Epoxy Thinner - Thinner 15",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 7100.0,
+    "MaterialPrice": 2577.60,
     "MaterialCategory": "CARBOLINE PAINTS - Floor"
   },
   {
     "SerialNumber": 465,
     "MaterialName": "Epoxy Equipment Cleaner - Thinner 2",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 5050.0,
+    "MaterialPrice": 1836.00,
     "MaterialCategory": "CARBOLINE PAINTS - Floor"
   },
   {
     "SerialNumber": 466,
     "MaterialName": "General Purpose Equipment Cleaner - Thinner 2",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 5050.0,
+    "MaterialPrice": 1836.00,
     "MaterialCategory": "CARBOLINE PAINTS - Floor"
   },
   {
     "SerialNumber": 467,
     "MaterialName": "Chlorinated Rubber Finish - Carboline 938",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 20300.0,
+    "MaterialPrice": 7380.00,
     "MaterialCategory": "CARBOLINE PAINTS - Chlorinated"
   },
   {
     "SerialNumber": 468,
     "MaterialName": "Chlorinated Rubber (High Build) Finish - Carboline 938 HB",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 16150.0,
+    "MaterialPrice": 5875.20,
     "MaterialCategory": "CARBOLINE PAINTS - Chlorinated"
   },
   {
     "SerialNumber": 469,
     "MaterialName": "Chlorinated Rubber Undercoat - Carboline 938 Primer",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 20300.0,
+    "MaterialPrice": 7380.00,
     "MaterialCategory": "CARBOLINE PAINTS - Chlorinated"
   },
   {
     "SerialNumber": 470,
     "MaterialName": "Chlorinated Rubber Thinner - Thinner 10",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 6150.0,
+    "MaterialPrice": 2239.20,
     "MaterialCategory": "CARBOLINE PAINTS - Chlorinated"
   },
   {
     "SerialNumber": 471,
     "MaterialName": "Pealux Marine Undercoat - Carboline 888",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 18550.0,
+    "MaterialPrice": 6753.60,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 472,
     "MaterialName": "Pealux Vinyl Enamel - Carboline 938-2",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23000.0,
+    "MaterialPrice": 8359.20,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 473,
     "MaterialName": "Pealux Superior Emulsion - Carboline 3300",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 12550.0,
+    "MaterialPrice": 4557.60,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 474,
     "MaterialName": "Peacotex Textured Finish (B/W) - Carboline 3300",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 12550.0,
+    "MaterialPrice": 4557.60,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 475,
     "MaterialName": "Peacotex Textured Finish (Standard White) - Carboline 3300",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 12550.0,
+    "MaterialPrice": 4557.60,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 476,
     "MaterialName": "Peacotex Textured Finish (Various Colours) - Carboline 3300",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 12550.0,
+    "MaterialPrice": 4557.60,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 477,
     "MaterialName": "Enamel Epoxy, 2 Part Colour, Mobil Beige - Carboline 801",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 30850.0,
+    "MaterialPrice": 11224.80,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 478,
     "MaterialName": "Enamel, Alkyd Colour Black - Carboline 4685",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23150.0,
+    "MaterialPrice": 8424.00,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 479,
     "MaterialName": "Enamel, Vinyl. Colour Yellow - Carboline 938-2",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23000.0,
+    "MaterialPrice": 8366.40,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 480,
     "MaterialName": "Post Office Red Paint - Carboline 938-2",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23000.0,
+    "MaterialPrice": 8366.40,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 481,
     "MaterialName": "Deep Blue Mobil Colour Gloss Paint - Carboline 938-2",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23000.0,
+    "MaterialPrice": 8366.40,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 482,
     "MaterialName": "Black Deck Paint - Carboline 938-2",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23000.0,
+    "MaterialPrice": 8366.40,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 483,
     "MaterialName": "Artic Blue Paint - Carboline 938-2",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23000.0,
+    "MaterialPrice": 8366.40,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 484,
     "MaterialName": "Mobil Beige Epoxy Enamel - Carboline 938-2",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23000.0,
+    "MaterialPrice": 8366.40,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 485,
     "MaterialName": "Golden Yellow Epoxy Enamel - Carboline 938-2",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 23000.0,
+    "MaterialPrice": 8366.40,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 486,
     "MaterialName": "Epoxy 2 Part, Colour Post Office Red - Carboline 801",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 30850.0,
+    "MaterialPrice": 11224.80,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 487,
     "MaterialName": "Epoxy 2 Part, Colour Deep Blue - Carboline 801",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 38200.0,
+    "MaterialPrice": 13896.00,
     "MaterialCategory": "CARBOLINE PAINTS - Peacock"
   },
   {
     "SerialNumber": 488,
     "MaterialName": "White Emulsion (High Quality) - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 675.0,
+    "MaterialPrice": 245.25,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 489,
     "MaterialName": "Coloured Emulsion (High Quality) - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 575.0,
+    "MaterialPrice": 208.50,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 490,
     "MaterialName": "White Emulsion (Low Quality) - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 315.0,
+    "MaterialPrice": 115.31,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 491,
     "MaterialName": "Coloured Emulsion (Low Quality) - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 305.0,
+    "MaterialPrice": 110.06,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 492,
     "MaterialName": "Emulsion Paint (All Colours) - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 370.0,
+    "MaterialPrice": 134.50,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 493,
     "MaterialName": "Super Quartz Brilliant White - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 680.0,
+    "MaterialPrice": 247.11,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 494,
     "MaterialName": "Superoll off-white - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 895.0,
+    "MaterialPrice": 325.58,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 495,
     "MaterialName": "Superoll Colours - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 560.0,
+    "MaterialPrice": 204.32,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 496,
     "MaterialName": "White Gloss (High Quality) - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 835.0,
+    "MaterialPrice": 303.00,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 497,
     "MaterialName": "Coloured Gloss Oil Paint (High Quality) - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 795.0,
+    "MaterialPrice": 288.56,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 498,
     "MaterialName": "Bright Aluminium - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 1500.0,
+    "MaterialPrice": 550.00,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 499,
     "MaterialName": "Red Oxide Primer - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 540.0,
+    "MaterialPrice": 196.68,
     "MaterialCategory": "PORTLAND PAINTS"
   },
   {
     "SerialNumber": 500,
     "MaterialName": "Amerlock 400c - Hempel",
     "MaterialUnit": "1 Litre",
-    "MaterialPrice": 3450.0,
+    "MaterialPrice": 1250.00,
     "MaterialCategory": "PORTLAND PAINTS"
   }
 ]
