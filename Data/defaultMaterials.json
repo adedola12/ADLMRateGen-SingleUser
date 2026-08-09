@@ -31,7 +31,7 @@
     "SerialNumber": 5,
     "MaterialName": "225 x 225 x 450mm (9 x 9 x 18\") Hollow blocks",
     "MaterialUnit": "No.",
-    "MaterialPrice": 1350.0,
+    "MaterialPrice": 1300.0,
     "MaterialCategory": "Cement Based Products"
   },
   {
@@ -73,98 +73,98 @@
     "SerialNumber": 11,
     "MaterialName": "Sharp Sand",
     "MaterialUnit": "m3",
-    "MaterialPrice": 4500.0,
+    "MaterialPrice": 6500.0,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 12,
     "MaterialName": "Soft Sand",
     "MaterialUnit": "m3",
-    "MaterialPrice": 4900.0,
+    "MaterialPrice": 7100.0,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 13,
     "MaterialName": "Filling Sand (Beach)",
     "MaterialUnit": "m3",
-    "MaterialPrice": 17600.0,
+    "MaterialPrice": 25400.0,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 14,
     "MaterialName": "Grit (for sand blasting)",
     "MaterialUnit": "m3",
-    "MaterialPrice": 308000.0,
+    "MaterialPrice": 445000.0,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 15,
     "MaterialName": "Laterite filling",
     "MaterialUnit": "m3",
-    "MaterialPrice": 4200.0,
+    "MaterialPrice": 6100.0,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 16,
     "MaterialName": "Washed gravel (local)",
     "MaterialUnit": "m3",
-    "MaterialPrice": 7050.0,
+    "MaterialPrice": 10150.0,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 17,
     "MaterialName": "Unwashed gravel (local)",
     "MaterialUnit": "m3",
-    "MaterialPrice": 6350.0,
+    "MaterialPrice": 9150.0,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 18,
     "MaterialName": "Beach sand",
     "MaterialUnit": "m3",
-    "MaterialPrice": 22450.0,
+    "MaterialPrice": 32400.0,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 19,
     "MaterialName": "2-10mm",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 11250.0,
+    "MaterialPrice": 6150.0,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 20,
     "MaterialName": "5-15mm",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 17400.0,
+    "MaterialPrice": 9500.0,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 21,
     "MaterialName": "10-15mm",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 17400.0,
+    "MaterialPrice": 9500.0,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 22,
     "MaterialName": "15-25mm",
-    "MaterialUnit": "Tonne",
-    "MaterialPrice": 17400.0,
+    "MaterialUnit": "m3",
+    "MaterialPrice": 9500.0,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 23,
     "MaterialName": "Hardcore filling",
-    "MaterialUnit": "Tonne",
-    "MaterialPrice": 13500.0,
+    "MaterialUnit": "m3",
+    "MaterialPrice": 7350.0,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 24,
     "MaterialName": "Transportation",
     "MaterialUnit": "Tonne",
-    "MaterialPrice": 7500.0,
+    "MaterialPrice": 4100.0,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
