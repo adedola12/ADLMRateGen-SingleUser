@@ -133,6 +133,7 @@
 
 
                     <DataGridTemplateColumn Header="Labour Item"
+                                            SortMemberPath="LabourName"
                                             Width="*">
 
                         <DataGridTemplateColumn.CellTemplate>

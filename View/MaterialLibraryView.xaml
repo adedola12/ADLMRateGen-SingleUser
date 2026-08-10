@@ -142,6 +142,7 @@
 
 
                     <DataGridTemplateColumn Header="Material Name"
+                                            SortMemberPath="MaterialName"
                                             Width="*">
 
                         <DataGridTemplateColumn.CellTemplate>

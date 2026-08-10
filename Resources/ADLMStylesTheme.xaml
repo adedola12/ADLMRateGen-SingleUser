@@ -1427,7 +1427,7 @@
         <Setter Property="CanUserResizeColumns"
                 Value="False" />
         <Setter Property="CanUserSortColumns"
-                Value="False" />
+                Value="True" />
         <Setter Property="GridLinesVisibility"
                 Value="Horizontal" />
         <Setter Property="HorizontalGridLinesBrush"

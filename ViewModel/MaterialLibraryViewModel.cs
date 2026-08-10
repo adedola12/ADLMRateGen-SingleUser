@@ -104,54 +104,9 @@ namespace ADLMRateGen.ViewModel
             ClearDatabaseCommand = new DelegateCommand(o => ClearDatabase());
             UpdatePricesCommand = new DelegateCommand(_ => UpdatePricesFromMongo());
 
-            MaterialCategory = new ObservableCollection<string>
-            {
-                "All", "Cement Based Products", "Earthwork And Filling Materials", "Crushed Rock Products", "Terrazzo Products",
-                "Mild Steel Bar Reinforcement", "High Tensile Steel Bar Reinforcement", "Mesh Reinforcement to B.S. 4483",
-                "Timber - Softwood", "Timber - Hardwood", "Plywood - White", "Plywood - Brown", "Particle Board",
-                "Plywood - Veneer", "Timber Others", "Glasswork - Louver Blade-Plain", "Glasswork - Louver Blade-Obscured",
-                "Glasswork - Nacco Louver Carrier", "Glasswork - Sheet Glass 3mm", "Glasswork - Sheet Glass 4mm",
-                "Glasswork - Sheet Glass 5mm", "Finishes - Ceramic Floor Tiles", "Finishes - Ceramic Wall Tiles",
-                "Bituminous Products", "Fuels", "Structural Steel Plates", "Structural Steel",
-                "Asa Ceilings Limited - Ceiling Boards", "Luxalon Ceilings", "Efisol Mineral Ceilings",
-                "Nigerite Limited - Ceilings", "PVC Floor Tiles", "Longspan Aluminium Roofing Sheet",
-                "Nigerite Products - SLW Asbestos", "Nigerite Products - Super Seven Asbestos",
-                "Nails And Screws And Other Accessories", "Roof Felting", "Zinc Roofing Sheet",
-                "Aluminium Doors And Windows - Natural Anodised (Plain Glazing)",
-                "Aluminium Doors And Windows - Natural Anodised (Mylar Film Glazing)",
-                "Aluminium Doors And Windows - Bullet Proof Glazing",
-                "Aluminium Doors And Windows - Entrance Doors (Clear Sheet Glazing)",
-                "Aluminium Doors And Windows - Entrance Doors (Bullet Proof)",
-                "Aluminium Doors And Windows - Entrance Doors (Georgian Wired)",
-                "Aluminium Doors And Windows - Entrance Doors (Georgian Wired, Mylar)",
-                "Aluminium Doors And Windows - Composite (Clear Glazing)",
-                "Aluminium Doors And Windows - Steel Doors (Vandal Proof)",
-                "Aluminium Doors And Windows - Steel Doors (Bullet Proof)",
-                "Insulated Wall Panels", "Curtain Wall",
-                "Timber Doors", "Casement Window", "Paints - Emulsion", "Paints - Gloss Oil",
-                "Paints - Chlorinated", "Paints - Peacock", "Paints - Road", "Paints - Wood",
-                "AMERON PAINTS", "AMERON PAINTS - Finish Coating", "AMERON PAINTS - Anti-Fouling",
-                "AMERON PAINTS - Degreaser", "AMERON PAINTS - Etching", "AMERON PAINTS - Cleaners",
-                "AMERON PAINTS - Thinners", "AMERON PAINTS - Starter Liquid", "AMERON PAINTS - Solvent Free Epoxy",
-                "CARBOLINE PAINTS", "PORTLAND PAINTS",
+            MaterialCategory = new ObservableCollection<string>();
+            RefreshCategories();
 
-                // Mechanical, electrical and plumbing, added in catalog 2026.08.
-                // These carry INSTALLED rates, not bare material prices - the bills price
-                // MEP as "supply, fix, connect & commission" and the rates were taken as
-                // priced rather than split into material and labour. The category name
-                // says so, so a rate built from these must not add a fixing labour line.
-                "MEP - Cables & Wiring (supply & install)",
-                "MEP - Earthing & Lightning Protection (supply & install)",
-                "MEP - Cable Containment & Ducts (supply & install)",
-                "MEP - Luminaires (supply & install)",
-                "MEP - Switches & Socket Outlets (supply & install)",
-                "MEP - Distribution & Switchgear (supply & install)",
-                "MEP - Point Wiring (supply & install)",
-                "MEP - Sanitary Fittings (supply & install)",
-                "MEP - Air Conditioning & Ventilation (supply & install)",
-                "MEP - Fire Protection (supply & install)",
-                "MEP - Security & Detection (supply & install)"
-            };
 
             // refresh the grid on currency change
             CurrencyService.Instance.PropertyChanged += (_, e) =>
@@ -159,6 +114,40 @@ namespace ADLMRateGen.ViewModel
                 if (e.PropertyName == nameof(CurrencyService.Rate))
                     MaterialCollectionView.Refresh();
             };
+        }
+
+
+        /// <summary>
+        /// Rebuild the category dropdown from the library itself.
+        ///
+        /// This was a hardcoded list of ~70 strings, which failed in two ways. Any
+        /// category the list did not know about was unreachable — "Custom Rate" rows
+        /// harvested from a saved rate, and the MEP categories added in catalog
+        /// 2026.08, could never be filtered to. And when the cloud sync blanked every
+        /// category (the server was not sending one), the dropdown still looked
+        /// perfectly healthy while matching nothing, which is what made the bug so
+        /// hard to see. Deriving the list from the data means the dropdown can never
+        /// again disagree with what is in the library.
+        /// </summary>
+        private void RefreshCategories()
+        {
+            var selected = SelectedMaterialCategory;
+
+            var found = MaterialLibrary
+                .Select(m => m.MaterialCategory)
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            MaterialCategory.Clear();
+            MaterialCategory.Add("All");
+            foreach (var c in found) MaterialCategory.Add(c);
+
+            // Keep the user's selection if it still exists, otherwise fall back to All
+            // rather than leaving the box on a value that now filters everything out.
+            SelectedMaterialCategory =
+                selected != null && MaterialCategory.Contains(selected) ? selected : "All";
         }
 
         private void ApplyFilter()
@@ -421,6 +410,7 @@ namespace ADLMRateGen.ViewModel
             // keep the shared service in sync too
             MaterialLibraryService.Initialize(_ds);
 
+            RefreshCategories();     // the cloud sync can introduce whole new categories
             ApplyFilter();           // refresh CollectionView / grid
             LibraryChanged?.Invoke();// keep search index, etc., up to date
         }

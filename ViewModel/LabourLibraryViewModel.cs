@@ -90,7 +90,8 @@ namespace ADLMRateGen.ViewModel
             LabourCollectionView.Filter = _ => true;
             ApplyFilter();
 
-            LabourCategory = new ObservableCollection<string> { "All", "Labour", "Plant", "Small Plant" };
+            LabourCategory = new ObservableCollection<string>();
+            RefreshCategories();
 
             SearchLabourCommand = new DelegateCommand(_ => ApplyFilter());
             ClearDatabaseCommand = new DelegateCommand(_ => ClearDatabase());
@@ -113,6 +114,33 @@ namespace ADLMRateGen.ViewModel
         }
 
         /* ───────── filtering helper ───────── */
+
+        /// <summary>
+        /// Rebuild the category dropdown from the library itself, for the same reason
+        /// the material one does. The hardcoded list here was only three values —
+        /// "Labour", "Plant", "Small Plant" — so any other category in the data was
+        /// unreachable, and when the cloud sync blanked every LabourCategory the
+        /// dropdown still looked fine while matching nothing.
+        /// </summary>
+        private void RefreshCategories()
+        {
+            var selected = SelectedLabourCategory;
+
+            var found = LabourLibrary
+                .Select(l => l.LabourCategory)
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            LabourCategory.Clear();
+            LabourCategory.Add("All");
+            foreach (var c in found) LabourCategory.Add(c);
+
+            SelectedLabourCategory =
+                selected != null && LabourCategory.Contains(selected) ? selected : "All";
+        }
+
         private void ApplyFilter()
         {
             LabourCollectionView.Filter = o =>
@@ -355,6 +383,7 @@ namespace ADLMRateGen.ViewModel
 
             LabourLibraryService.Initialize(_ds);
 
+            RefreshCategories();     // the cloud sync can introduce whole new categories
             ApplyFilter();
             LibraryChanged?.Invoke();
         }
