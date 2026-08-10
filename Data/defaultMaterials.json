@@ -73,14 +73,14 @@
     "SerialNumber": 11,
     "MaterialName": "Sharp Sand",
     "MaterialUnit": "m3",
-    "MaterialPrice": 6500.0,
+    "MaterialPrice": 16170.0,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
     "SerialNumber": 12,
     "MaterialName": "Soft Sand",
     "MaterialUnit": "m3",
-    "MaterialPrice": 7100.0,
+    "MaterialPrice": 10339.0,
     "MaterialCategory": "Earthwork And Filling Materials"
   },
   {
@@ -150,14 +150,14 @@
     "SerialNumber": 22,
     "MaterialName": "15-25mm",
     "MaterialUnit": "m3",
-    "MaterialPrice": 9500.0,
+    "MaterialPrice": 29800.0,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
     "SerialNumber": 23,
     "MaterialName": "Hardcore filling",
     "MaterialUnit": "m3",
-    "MaterialPrice": 7350.0,
+    "MaterialPrice": 7840.0,
     "MaterialCategory": "Crushed Rock Products"
   },
   {
