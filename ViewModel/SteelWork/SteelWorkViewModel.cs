@@ -255,7 +255,10 @@ namespace ADLMRateGen.ViewModel.SteelWork
 
             Func<SteelworkItem>[] all =
             {
-                ComputeItem1, ComputeItem2, ComputeItem3
+                ComputeItem1, ComputeItem2, ComputeItem3,
+                ComputeItem4, ComputeItem5, ComputeItem6, ComputeItem7,
+                ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11,
+                ComputeItem12
             };
 
             SteelworkItem? fresh = null;
@@ -344,7 +347,10 @@ namespace ADLMRateGen.ViewModel.SteelWork
         {
             Func<SteelworkItem>[] computeMethods =
             {
-                ComputeItem1, ComputeItem2, ComputeItem3
+                ComputeItem1, ComputeItem2, ComputeItem3,
+                ComputeItem4, ComputeItem5, ComputeItem6, ComputeItem7,
+                ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11,
+                ComputeItem12
             };
 
             foreach (var compute in computeMethods)
@@ -732,5 +738,218 @@ namespace ADLMRateGen.ViewModel.SteelWork
                 SteelWorkBreakdownLines = breakdown
             };
         }
+
+        /* ─────────────────── STRUCTURAL STEELWORK ───────────────────
+         *
+         * Items 1-3 are surface preparation. Until now that was the whole
+         * section: the product could clean steel but could not price any.
+         *
+         * Items 4-11 are the structural work. Each is supply, fabricate and
+         * erect, because that is how a Nigerian bill measures it, and each is
+         * offered per tonne AND per kg, because steelwork is taken off both ways:
+         * tonnage from a steel schedule, kilos from a detailed takeoff.
+         *
+         * The per-kg items divide the per-tonne net by 1000 rather than running
+         * their own build-up, so the two can never drift apart. Change a
+         * quantity on the tonne item and the kg item follows.
+         *
+         * Protective treatment is deliberately NOT included. Items 1-3 price it
+         * separately, which is the convention, and folding it in here would
+         * double count for anyone who bills both.
+         */
+
+        /// <summary>
+        /// Shared structural steel build-up, per tonne. Every section type uses the
+        /// same shape and differs only in the material row it draws from, since
+        /// fabrication and erection effort per tonne is broadly the same whether the
+        /// steel arrives as a beam, a column or a channel.
+        /// </summary>
+        private (double net, ObservableCollection<SteelWorkBreakdownLine> lines) StructuralSteelPerTonne(
+            int itemNo, string materialName, string materialLabel,
+            double defaultGangHours, double defaultCraneHours)
+        {
+            double sectionCost = GetMaterialPrice(materialName);
+            double plateCost = GetMaterialPrice("Steel plate, supply");
+
+            double sectionQty = UserRateEditStore.Current.Qty(SectionKey, itemNo, materialLabel, 1);
+            double offcutPer = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Add for offcuts and fabrication waste.", 5);
+            double cleatPer = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Connection plates, cleats and base plates", 4);
+
+            double sectionTotal = sectionCost * sectionQty;
+            double offcut = sectionTotal * (offcutPer / 100);
+            double cleats = plateCost * (cleatPer / 100);
+            double materialTotal = sectionTotal + offcut + cleats;
+
+            // Labour, expressed the way every other engine does it: day rate over 8
+            // hours with the 1.4 gang factor.
+            double welderCost = (GetLabourRate("Welder") / 8) * 1.4;
+            double fixerCost = (GetLabourRate("Steelfixer") / 8) * 1.4;
+            double labourerCost = (GetLabourRate("Labourer") / 8) * 1.4;
+            double foremanCost = (GetLabourRate("Foreman") / 8) * 1.4;
+
+            double gangHours = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Fabrication and erection gang", defaultGangHours);
+            double welderQty = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Welder", 1);
+            double fixerQty = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Steelfixer", 1);
+            double labourerQty = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Labourer", 2);
+            double foremanQty = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Foreman", 0.5);
+
+            double gangPerHour = welderCost * welderQty + fixerCost * fixerQty
+                               + labourerCost * labourerQty + foremanCost * foremanQty;
+            double labourTotal = gangPerHour * gangHours;
+
+            // Plant. The crane is the erection cost and is the reason a tonne of
+            // steel in the air costs more than a tonne on the ground.
+            double weldPlantCost = GetLabourRate("Welding machine (big)") / 8;
+            double torchCost = GetLabourRate("Gas torch and 50 or 70mm burner.") / 8;
+            double craneCost = GetLabourRate("Mobile crane-30 ton") / 8;
+
+            double craneHours = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Mobile crane, erection", defaultCraneHours);
+            double weldPlantTotal = weldPlantCost * gangHours;
+            double torchTotal = torchCost * gangHours;
+            double craneTotal = craneCost * craneHours;
+            double plantTotal = weldPlantTotal + torchTotal + craneTotal;
+
+            double net = materialTotal + labourTotal + plantTotal;
+
+            var lines = new ObservableCollection<SteelWorkBreakdownLine>
+            {
+                new SteelWorkBreakdownLine{ComponentName=materialLabel, Quantity=sectionQty, Unit="Tonne", UnitPrice=sectionCost, TotalPrice=sectionTotal},
+                new SteelWorkBreakdownLine{ComponentName="Add for offcuts and fabrication waste.", Quantity=offcutPer, Unit="%", TotalPrice=offcut},
+                new SteelWorkBreakdownLine{ComponentName="Connection plates, cleats and base plates", Quantity=cleatPer, Unit="%", UnitPrice=plateCost, TotalPrice=cleats},
+                new SteelWorkBreakdownLine{ComponentName="Total Material", TotalPrice=materialTotal},
+
+                new SteelWorkBreakdownLine{ComponentName="Welder", Quantity=welderQty, Unit="N/hr", UnitPrice=welderCost, TotalPrice=welderCost*welderQty},
+                new SteelWorkBreakdownLine{ComponentName="Steelfixer", Quantity=fixerQty, Unit="N/hr", UnitPrice=fixerCost, TotalPrice=fixerCost*fixerQty},
+                new SteelWorkBreakdownLine{ComponentName="Labourer", Quantity=labourerQty, Unit="N/hr", UnitPrice=labourerCost, TotalPrice=labourerCost*labourerQty},
+                new SteelWorkBreakdownLine{ComponentName="Foreman", Quantity=foremanQty, Unit="N/hr", UnitPrice=foremanCost, TotalPrice=foremanCost*foremanQty},
+                new SteelWorkBreakdownLine{ComponentName="Gang Cost per hour", TotalPrice=gangPerHour},
+                new SteelWorkBreakdownLine{ComponentName="Fabrication and erection gang", Quantity=gangHours, Unit="hr/Tonne", TotalPrice=labourTotal},
+
+                new SteelWorkBreakdownLine{ComponentName="Welding machine (big)", Quantity=gangHours, Unit="hr", UnitPrice=weldPlantCost, TotalPrice=weldPlantTotal},
+                new SteelWorkBreakdownLine{ComponentName="Gas torch and burner", Quantity=gangHours, Unit="hr", UnitPrice=torchCost, TotalPrice=torchTotal},
+                new SteelWorkBreakdownLine{ComponentName="Mobile crane, erection", Quantity=craneHours, Unit="hr/Tonne", UnitPrice=craneCost, TotalPrice=craneTotal},
+                new SteelWorkBreakdownLine{ComponentName="Total Plant", TotalPrice=plantTotal},
+
+                new SteelWorkBreakdownLine{ComponentName="Total", TotalPrice=net},
+            };
+
+            return (net, lines);
+        }
+
+        private SteelworkItem StructuralItem(int itemNo, string materialName, string materialLabel,
+                                             string description, bool perKg,
+                                             double gangHours = 10, double craneHours = 1.5)
+        {
+            var (netPerTonne, lines) = StructuralSteelPerTonne(itemNo, materialName, materialLabel, gangHours, craneHours);
+
+            // The kg rate is the tonne rate over 1000, never a separate build-up,
+            // so the two cannot disagree.
+            double net = perKg ? netPerTonne / 1000.0 : netPerTonne;
+            if (perKg)
+            {
+                lines.Add(new SteelWorkBreakdownLine
+                {
+                    ComponentName = "Rate per kg (tonne rate / 1000)",
+                    Quantity = 1000,
+                    Unit = "kg/Tonne",
+                    TotalPrice = net
+                });
+            }
+
+            var ohp = ApplyOHP(net);
+            return new SteelworkItem
+            {
+                ItemNo = itemNo,
+                Description = description,
+                Unit = perKg ? "kg" : "Tonne",
+                NetCost = Math.Round(net, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 2),
+                ProfitValue = Math.Round(ohp.profitVal, 2),
+                TotalCost = Math.Round(ohp.total, 2),
+                SteelWorkBreakdownLines = lines
+            };
+        }
+
+        private SteelworkItem ComputeItem4() => StructuralItem(4,
+            "Universal beam (I section), supply", "Universal beam (I section)",
+            "Universal beam (I section) in structural steelwork; supply, fabricate, hoist and erect, including cleats, base plates and bolted connections", false);
+
+        private SteelworkItem ComputeItem5() => StructuralItem(5,
+            "Universal beam (I section), supply", "Universal beam (I section)",
+            "Universal beam (I section) in structural steelwork; supply, fabricate, hoist and erect, measured per kilogramme", true);
+
+        private SteelworkItem ComputeItem6() => StructuralItem(6,
+            "Universal column (H section), supply", "Universal column (H section)",
+            "Universal column (H section) in structural steelwork; supply, fabricate, hoist and erect, including base plates, holding down bolts and bolted connections", false);
+
+        private SteelworkItem ComputeItem7() => StructuralItem(7,
+            "Universal column (H section), supply", "Universal column (H section)",
+            "Universal column (H section) in structural steelwork; supply, fabricate, hoist and erect, measured per kilogramme", true);
+
+        // Angles and channels are lighter work per tonne: more pieces, but simpler
+        // connections and far less crane time than a main frame member.
+        private SteelworkItem ComputeItem8() => StructuralItem(8,
+            "Rolled steel angle, supply", "Rolled steel angle",
+            "Rolled steel angle in bracing, purlins and secondary steelwork; supply, fabricate and fix", false, 12, 0.6);
+
+        private SteelworkItem ComputeItem9() => StructuralItem(9,
+            "Rolled steel angle, supply", "Rolled steel angle",
+            "Rolled steel angle in bracing, purlins and secondary steelwork; supply, fabricate and fix, measured per kilogramme", true, 12, 0.6);
+
+        private SteelworkItem ComputeItem10() => StructuralItem(10,
+            "Rolled steel channel, supply", "Rolled steel channel",
+            "Rolled steel channel in beams, runners and secondary steelwork; supply, fabricate, hoist and fix", false, 11, 1.0);
+
+        private SteelworkItem ComputeItem11() => StructuralItem(11,
+            "Steel plate, supply", "Steel plate",
+            "Steel plate in gussets, cleats, base plates and stiffeners; supply, cut, drill and weld", false, 14, 0.5);
+
+        // 12 ── Fillet weld, measured per metre of run
+        private SteelworkItem ComputeItem12()
+        {
+            const int no = 12;
+            double welderCost = (GetLabourRate("Welder") / 8) * 1.4;
+            double labourerCost = (GetLabourRate("Labourer") / 8) * 1.4;
+            double weldPlantCost = GetLabourRate("Welding machine (big)") / 8;
+            double electrodeCost = GetMaterialPrice("Steel plate, supply (per kg)");
+
+            double runHours = UserRateEditStore.Current.Qty(SectionKey, no, "Welding gang", 0.35);
+            double welderQty = UserRateEditStore.Current.Qty(SectionKey, no, "Welder", 1);
+            double labourerQty = UserRateEditStore.Current.Qty(SectionKey, no, "Labourer", 1);
+            // Electrode consumption for a 6mm fillet is roughly 0.35 kg per metre of
+            // run. Priced off the plate row because the library has no electrode row.
+            double electrodeQty = UserRateEditStore.Current.Qty(SectionKey, no, "Welding electrodes", 0.35);
+
+            double gangPerHour = welderCost * welderQty + labourerCost * labourerQty;
+            double labourTotal = gangPerHour * runHours;
+            double plantTotal = weldPlantCost * runHours;
+            double electrodeTotal = electrodeCost * electrodeQty;
+            double net = electrodeTotal + labourTotal + plantTotal;
+
+            var ohp = ApplyOHP(net);
+            var lines = new ObservableCollection<SteelWorkBreakdownLine>
+            {
+                new SteelWorkBreakdownLine{ComponentName="Welding electrodes", Quantity=electrodeQty, Unit="kg/m", UnitPrice=electrodeCost, TotalPrice=electrodeTotal},
+                new SteelWorkBreakdownLine{ComponentName="Welder", Quantity=welderQty, Unit="N/hr", UnitPrice=welderCost, TotalPrice=welderCost*welderQty},
+                new SteelWorkBreakdownLine{ComponentName="Labourer", Quantity=labourerQty, Unit="N/hr", UnitPrice=labourerCost, TotalPrice=labourerCost*labourerQty},
+                new SteelWorkBreakdownLine{ComponentName="Gang Cost per hour", TotalPrice=gangPerHour},
+                new SteelWorkBreakdownLine{ComponentName="Welding gang", Quantity=runHours, Unit="hr/m", TotalPrice=labourTotal},
+                new SteelWorkBreakdownLine{ComponentName="Welding machine (big)", Quantity=runHours, Unit="hr", UnitPrice=weldPlantCost, TotalPrice=plantTotal},
+                new SteelWorkBreakdownLine{ComponentName="Total", TotalPrice=net},
+            };
+
+            return new SteelworkItem
+            {
+                ItemNo = no,
+                Description = "6mm continuous fillet weld to structural steelwork; prepared, welded and dressed",
+                Unit = "m",
+                NetCost = Math.Round(net, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 2),
+                ProfitValue = Math.Round(ohp.profitVal, 2),
+                TotalCost = Math.Round(ohp.total, 2),
+                SteelWorkBreakdownLines = lines
+            };
+        }
+
     }
 }
