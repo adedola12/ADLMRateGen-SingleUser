@@ -251,7 +251,9 @@ namespace ADLMRateGen.ViewModel.RoofWork
             {
                 ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6,
                 ComputeItem7, ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12,
-                ComputeItem13, ComputeItem14, ComputeItem15, ComputeItem16
+                ComputeItem13, ComputeItem14, ComputeItem15, ComputeItem16,
+                ComputeItem17, ComputeItem18, ComputeItem19, ComputeItem20,
+                ComputeItem21, ComputeItem22
             };
 
             RoofWorkItem? fresh = null;
@@ -342,7 +344,9 @@ namespace ADLMRateGen.ViewModel.RoofWork
             {
                 ComputeItem1, ComputeItem2, ComputeItem3, ComputeItem4, ComputeItem5, ComputeItem6,
                 ComputeItem7, ComputeItem8, ComputeItem9, ComputeItem10, ComputeItem11, ComputeItem12,
-                ComputeItem13, ComputeItem14, ComputeItem15, ComputeItem16
+                ComputeItem13, ComputeItem14, ComputeItem15, ComputeItem16,
+                ComputeItem17, ComputeItem18, ComputeItem19, ComputeItem20,
+                ComputeItem21, ComputeItem22
             };
 
             foreach (var compute in computeMethods)
@@ -1793,6 +1797,405 @@ namespace ADLMRateGen.ViewModel.RoofWork
                 "to steel or wooden purlins with hook bolts. (open roof space)",
                 Unit = "m",
                 NetCost = Math.Round(netCostPerSqm, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 2),
+                ProfitValue = Math.Round(ohp.profitVal, 2),
+                TotalCost = Math.Round(ohp.total, 2),
+                RoofWorkBreakdownLines = breakdown
+            };
+        }
+
+
+        /* ─────────────────────── ROOF CARPENTRY ───────────────────────
+         *
+         * Items 1-16 are roof COVERING. Several of their own descriptions say
+         * "laid on purlins (measured separately)", and until now nothing
+         * measured them: the product priced the sheeting and nothing holding it
+         * up. Items 17-22 are the carpentry.
+         *
+         * Timber is hardwood, which is what a Nigerian roof is actually framed
+         * in. The softwood rows exist for joinery and cost more.
+         *
+         * Quantities are per square metre of roof area ON SLOPE, except the
+         * wall plate and fascia which are linear. Every one is editable, so a
+         * QS working to different centres overrides the spacing rather than
+         * rebuilding the rate.
+         */
+
+        /// <summary>Shared gang cost per hour: headman, carpenter and labourer, 1.4 gang factor.</summary>
+        private double CarpentryGangPerHour(int itemNo, out double headmanRate, out double carpenterRate,
+                                            out double labourRate, out double headmanCost,
+                                            out double carpenterCost, out double labourCost)
+        {
+            headmanCost = (GetLabourRate("Headman") / 8) * 1.4;
+            carpenterCost = (GetLabourRate("Carpenter") / 8) * 1.4;
+            labourCost = (GetLabourRate("Labourer") / 8) * 1.4;
+
+            double headmanQty = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Headman", 1);
+            double carpenterQty = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Tradesman (Carpenter)", 2);
+            double labourQty = UserRateEditStore.Current.Qty(SectionKey, itemNo, "Labour", 1);
+
+            headmanRate = headmanCost * headmanQty;
+            carpenterRate = carpenterCost * carpenterQty;
+            labourRate = labourCost * labourQty;
+
+            return headmanRate + carpenterRate + labourRate;
+        }
+
+        /// <summary>
+        /// One timber component of a carpentry rate. Lengths per unit is derived from
+        /// the spacing and the 3600mm stock length, so a QS changing centres gets the
+        /// right number of lengths without doing the arithmetic.
+        /// </summary>
+        private static double LengthsPerUnit(double runPerUnitM, double stockLengthM = 3.6)
+            => stockLengthM <= 0 ? 0 : runPerUnitM / stockLengthM;
+
+        // 17 ── Wall plate, per metre
+        private RoofWorkItem ComputeItem17()
+        {
+            const int no = 17;
+            double plateCost = GetMaterialPrice("2x4\"x12' (50x100x3600mm)");
+            double nailCost = GetMaterialPrice("Nails 4\"");
+            double treatCost = GetMaterialPrice("Solignum (normal)");
+
+            double plateQty = UserRateEditStore.Current.Qty(SectionKey, no, "50 x 100mm hardwood wall plate", LengthsPerUnit(1.0));
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, no, "Add for waste and cutting.", 10);
+            double nailQty = UserRateEditStore.Current.Qty(SectionKey, no, "Nails 4\"", 0.008);
+            double treatQty = UserRateEditStore.Current.Qty(SectionKey, no, "Solignum anti-termite treatment", 0.02);
+
+            double plateRate = plateCost * plateQty;
+            double waste = plateRate * (wastePer / 100);
+            double nailRate = nailCost * nailQty;
+            double treatRate = treatCost * treatQty;
+            double totalMaterialCost = plateRate + waste + nailRate + treatRate;
+
+            double gang = CarpentryGangPerHour(no, out var hR, out var cR, out var lR, out var hC, out var cC, out var lC);
+            double hrsPerM = UserRateEditStore.Current.Qty(SectionKey, no, "Total Gang Cost per m", 0.12);
+            double labourPerM = gang * hrsPerM;
+
+            double net = totalMaterialCost + labourPerM;
+            var ohp = ApplyOHP(net);
+
+            var breakdown = new ObservableCollection<RoofWorkBreakdownLine>
+            {
+                new RoofWorkBreakdownLine{ ComponentName="50 x 100mm hardwood wall plate", Quantity=plateQty, Unit="Length/m", UnitPrice=plateCost, TotalPrice=plateRate},
+                new RoofWorkBreakdownLine{ ComponentName="Add for waste and cutting.", Quantity=wastePer, Unit="%", TotalPrice=waste},
+                new RoofWorkBreakdownLine{ ComponentName="Nails 4\"", Quantity=nailQty, Unit="Bag/m", UnitPrice=nailCost, TotalPrice=nailRate},
+                new RoofWorkBreakdownLine{ ComponentName="Solignum anti-termite treatment", Quantity=treatQty, Unit="Gal/m", UnitPrice=treatCost, TotalPrice=treatRate},
+                new RoofWorkBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialCost},
+                new RoofWorkBreakdownLine{ ComponentName="Headman", Quantity=1, Unit="N/hr", UnitPrice=hC, TotalPrice=hR},
+                new RoofWorkBreakdownLine{ ComponentName="Tradesman (Carpenter)", Quantity=2, Unit="N/hr", UnitPrice=cC, TotalPrice=cR},
+                new RoofWorkBreakdownLine{ ComponentName="Labour", Quantity=1, Unit="N/hr", UnitPrice=lC, TotalPrice=lR},
+                new RoofWorkBreakdownLine{ ComponentName="Gang Cost per hour", TotalPrice=gang},
+                new RoofWorkBreakdownLine{ ComponentName="Total Gang Cost per m", Quantity=hrsPerM, Unit="hr/m", TotalPrice=labourPerM},
+                new RoofWorkBreakdownLine{ ComponentName="Total", TotalPrice=net},
+            };
+
+            return new RoofWorkItem
+            {
+                ItemNo = no,
+                Description = "50 x 100mm hardwood wall plate; bedded in cement mortar on blockwork, levelled, " +
+                              "anchored and treated with anti-termite solution",
+                Unit = "m",
+                NetCost = Math.Round(net, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 2),
+                ProfitValue = Math.Round(ohp.profitVal, 2),
+                TotalCost = Math.Round(ohp.total, 2),
+                RoofWorkBreakdownLines = breakdown
+            };
+        }
+
+        // 18 ── Rafters, per m2 of roof on slope
+        private RoofWorkItem ComputeItem18()
+        {
+            const int no = 18;
+            double rafterCost = GetMaterialPrice("2x4\"x12' (50x100x3600mm)");
+            double nailCost = GetMaterialPrice("Nails 4\"");
+            double treatCost = GetMaterialPrice("Solignum (normal)");
+
+            // 600mm centres: 1 / 0.6 = 1.667 m of rafter in every m2.
+            double spacing = UserRateEditStore.Current.Qty(SectionKey, no, "Rafter spacing (centres)", 0.6);
+            double rafterQty = UserRateEditStore.Current.Qty(SectionKey, no, "50 x 100mm hardwood rafters",
+                                  LengthsPerUnit(spacing > 0 ? 1.0 / spacing : 0));
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, no, "Add for waste and cutting.", 12);
+            double nailQty = UserRateEditStore.Current.Qty(SectionKey, no, "Nails 4\"", 0.015);
+            double treatQty = UserRateEditStore.Current.Qty(SectionKey, no, "Solignum anti-termite treatment", 0.03);
+
+            double rafterRate = rafterCost * rafterQty;
+            double waste = rafterRate * (wastePer / 100);
+            double nailRate = nailCost * nailQty;
+            double treatRate = treatCost * treatQty;
+            double totalMaterialCost = rafterRate + waste + nailRate + treatRate;
+
+            double gang = CarpentryGangPerHour(no, out var hR, out var cR, out var lR, out var hC, out var cC, out var lC);
+            double hrs = UserRateEditStore.Current.Qty(SectionKey, no, "Total Gang Cost per m2", 0.25);
+            double labourPerSqm = gang * hrs;
+
+            double net = totalMaterialCost + labourPerSqm;
+            var ohp = ApplyOHP(net);
+
+            var breakdown = new ObservableCollection<RoofWorkBreakdownLine>
+            {
+                new RoofWorkBreakdownLine{ ComponentName="Rafter spacing (centres)", Quantity=spacing, Unit="m"},
+                new RoofWorkBreakdownLine{ ComponentName="50 x 100mm hardwood rafters", Quantity=rafterQty, Unit="Length/m2", UnitPrice=rafterCost, TotalPrice=rafterRate},
+                new RoofWorkBreakdownLine{ ComponentName="Add for waste and cutting.", Quantity=wastePer, Unit="%", TotalPrice=waste},
+                new RoofWorkBreakdownLine{ ComponentName="Nails 4\"", Quantity=nailQty, Unit="Bag/m2", UnitPrice=nailCost, TotalPrice=nailRate},
+                new RoofWorkBreakdownLine{ ComponentName="Solignum anti-termite treatment", Quantity=treatQty, Unit="Gal/m2", UnitPrice=treatCost, TotalPrice=treatRate},
+                new RoofWorkBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialCost},
+                new RoofWorkBreakdownLine{ ComponentName="Headman", Quantity=1, Unit="N/hr", UnitPrice=hC, TotalPrice=hR},
+                new RoofWorkBreakdownLine{ ComponentName="Tradesman (Carpenter)", Quantity=2, Unit="N/hr", UnitPrice=cC, TotalPrice=cR},
+                new RoofWorkBreakdownLine{ ComponentName="Labour", Quantity=1, Unit="N/hr", UnitPrice=lC, TotalPrice=lR},
+                new RoofWorkBreakdownLine{ ComponentName="Gang Cost per hour", TotalPrice=gang},
+                new RoofWorkBreakdownLine{ ComponentName="Total Gang Cost per m2", Quantity=hrs, Unit="hr/m2", TotalPrice=labourPerSqm},
+                new RoofWorkBreakdownLine{ ComponentName="Total", TotalPrice=net},
+            };
+
+            return new RoofWorkItem
+            {
+                ItemNo = no,
+                Description = "50 x 100mm hardwood rafters at 600mm centres; cut, fitted, spiked to wall plate and " +
+                              "ridge, and treated with anti-termite solution",
+                Unit = "m2",
+                NetCost = Math.Round(net, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 2),
+                ProfitValue = Math.Round(ohp.profitVal, 2),
+                TotalCost = Math.Round(ohp.total, 2),
+                RoofWorkBreakdownLines = breakdown
+            };
+        }
+
+        // 19 ── Purlins, per m2 of roof on slope
+        private RoofWorkItem ComputeItem19()
+        {
+            const int no = 19;
+            double purlinCost = GetMaterialPrice("2x3\"x12' (50x75x3600mm) - Hardwood");
+            double nailCost = GetMaterialPrice("Nails 3\"");
+            double treatCost = GetMaterialPrice("Solignum (normal)");
+
+            double spacing = UserRateEditStore.Current.Qty(SectionKey, no, "Purlin spacing (centres)", 0.9);
+            double purlinQty = UserRateEditStore.Current.Qty(SectionKey, no, "50 x 75mm hardwood purlins",
+                                  LengthsPerUnit(spacing > 0 ? 1.0 / spacing : 0));
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, no, "Add for waste and cutting.", 10);
+            double nailQty = UserRateEditStore.Current.Qty(SectionKey, no, "Nails 3\"", 0.012);
+            double treatQty = UserRateEditStore.Current.Qty(SectionKey, no, "Solignum anti-termite treatment", 0.02);
+
+            double purlinRate = purlinCost * purlinQty;
+            double waste = purlinRate * (wastePer / 100);
+            double nailRate = nailCost * nailQty;
+            double treatRate = treatCost * treatQty;
+            double totalMaterialCost = purlinRate + waste + nailRate + treatRate;
+
+            double gang = CarpentryGangPerHour(no, out var hR, out var cR, out var lR, out var hC, out var cC, out var lC);
+            double hrs = UserRateEditStore.Current.Qty(SectionKey, no, "Total Gang Cost per m2", 0.15);
+            double labourPerSqm = gang * hrs;
+
+            double net = totalMaterialCost + labourPerSqm;
+            var ohp = ApplyOHP(net);
+
+            var breakdown = new ObservableCollection<RoofWorkBreakdownLine>
+            {
+                new RoofWorkBreakdownLine{ ComponentName="Purlin spacing (centres)", Quantity=spacing, Unit="m"},
+                new RoofWorkBreakdownLine{ ComponentName="50 x 75mm hardwood purlins", Quantity=purlinQty, Unit="Length/m2", UnitPrice=purlinCost, TotalPrice=purlinRate},
+                new RoofWorkBreakdownLine{ ComponentName="Add for waste and cutting.", Quantity=wastePer, Unit="%", TotalPrice=waste},
+                new RoofWorkBreakdownLine{ ComponentName="Nails 3\"", Quantity=nailQty, Unit="Bag/m2", UnitPrice=nailCost, TotalPrice=nailRate},
+                new RoofWorkBreakdownLine{ ComponentName="Solignum anti-termite treatment", Quantity=treatQty, Unit="Gal/m2", UnitPrice=treatCost, TotalPrice=treatRate},
+                new RoofWorkBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialCost},
+                new RoofWorkBreakdownLine{ ComponentName="Headman", Quantity=1, Unit="N/hr", UnitPrice=hC, TotalPrice=hR},
+                new RoofWorkBreakdownLine{ ComponentName="Tradesman (Carpenter)", Quantity=2, Unit="N/hr", UnitPrice=cC, TotalPrice=cR},
+                new RoofWorkBreakdownLine{ ComponentName="Labour", Quantity=1, Unit="N/hr", UnitPrice=lC, TotalPrice=lR},
+                new RoofWorkBreakdownLine{ ComponentName="Gang Cost per hour", TotalPrice=gang},
+                new RoofWorkBreakdownLine{ ComponentName="Total Gang Cost per m2", Quantity=hrs, Unit="hr/m2", TotalPrice=labourPerSqm},
+                new RoofWorkBreakdownLine{ ComponentName="Total", TotalPrice=net},
+            };
+
+            return new RoofWorkItem
+            {
+                ItemNo = no,
+                Description = "50 x 75mm hardwood purlins at 900mm centres; cut, fitted and spiked to rafters, " +
+                              "treated with anti-termite solution",
+                Unit = "m2",
+                NetCost = Math.Round(net, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 2),
+                ProfitValue = Math.Round(ohp.profitVal, 2),
+                TotalCost = Math.Round(ohp.total, 2),
+                RoofWorkBreakdownLines = breakdown
+            };
+        }
+
+        // 20 ── Ceiling noggins / battens, per m2
+        private RoofWorkItem ComputeItem20()
+        {
+            const int no = 20;
+            double noggingCost = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
+            double nailCost = GetMaterialPrice("Nails 3\"");
+            double treatCost = GetMaterialPrice("Solignum (normal)");
+
+            double spacing = UserRateEditStore.Current.Qty(SectionKey, no, "Nogging spacing (centres)", 0.6);
+            double noggingQty = UserRateEditStore.Current.Qty(SectionKey, no, "50 x 50mm hardwood ceiling noggings",
+                                   LengthsPerUnit(spacing > 0 ? 1.0 / spacing : 0));
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, no, "Add for waste and cutting.", 10);
+            double nailQty = UserRateEditStore.Current.Qty(SectionKey, no, "Nails 3\"", 0.010);
+            double treatQty = UserRateEditStore.Current.Qty(SectionKey, no, "Solignum anti-termite treatment", 0.02);
+
+            double noggingRate = noggingCost * noggingQty;
+            double waste = noggingRate * (wastePer / 100);
+            double nailRate = nailCost * nailQty;
+            double treatRate = treatCost * treatQty;
+            double totalMaterialCost = noggingRate + waste + nailRate + treatRate;
+
+            double gang = CarpentryGangPerHour(no, out var hR, out var cR, out var lR, out var hC, out var cC, out var lC);
+            double hrs = UserRateEditStore.Current.Qty(SectionKey, no, "Total Gang Cost per m2", 0.12);
+            double labourPerSqm = gang * hrs;
+
+            double net = totalMaterialCost + labourPerSqm;
+            var ohp = ApplyOHP(net);
+
+            var breakdown = new ObservableCollection<RoofWorkBreakdownLine>
+            {
+                new RoofWorkBreakdownLine{ ComponentName="Nogging spacing (centres)", Quantity=spacing, Unit="m"},
+                new RoofWorkBreakdownLine{ ComponentName="50 x 50mm hardwood ceiling noggings", Quantity=noggingQty, Unit="Length/m2", UnitPrice=noggingCost, TotalPrice=noggingRate},
+                new RoofWorkBreakdownLine{ ComponentName="Add for waste and cutting.", Quantity=wastePer, Unit="%", TotalPrice=waste},
+                new RoofWorkBreakdownLine{ ComponentName="Nails 3\"", Quantity=nailQty, Unit="Bag/m2", UnitPrice=nailCost, TotalPrice=nailRate},
+                new RoofWorkBreakdownLine{ ComponentName="Solignum anti-termite treatment", Quantity=treatQty, Unit="Gal/m2", UnitPrice=treatCost, TotalPrice=treatRate},
+                new RoofWorkBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialCost},
+                new RoofWorkBreakdownLine{ ComponentName="Headman", Quantity=1, Unit="N/hr", UnitPrice=hC, TotalPrice=hR},
+                new RoofWorkBreakdownLine{ ComponentName="Tradesman (Carpenter)", Quantity=2, Unit="N/hr", UnitPrice=cC, TotalPrice=cR},
+                new RoofWorkBreakdownLine{ ComponentName="Labour", Quantity=1, Unit="N/hr", UnitPrice=lC, TotalPrice=lR},
+                new RoofWorkBreakdownLine{ ComponentName="Gang Cost per hour", TotalPrice=gang},
+                new RoofWorkBreakdownLine{ ComponentName="Total Gang Cost per m2", Quantity=hrs, Unit="hr/m2", TotalPrice=labourPerSqm},
+                new RoofWorkBreakdownLine{ ComponentName="Total", TotalPrice=net},
+            };
+
+            return new RoofWorkItem
+            {
+                ItemNo = no,
+                Description = "50 x 50mm hardwood ceiling noggings at 600mm centres; cut, fitted and nailed to " +
+                              "rafters or ceiling joists to receive ceiling finish",
+                Unit = "m2",
+                NetCost = Math.Round(net, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 2),
+                ProfitValue = Math.Round(ohp.profitVal, 2),
+                TotalCost = Math.Round(ohp.total, 2),
+                RoofWorkBreakdownLines = breakdown
+            };
+        }
+
+        // 21 ── Fascia board, per metre
+        private RoofWorkItem ComputeItem21()
+        {
+            const int no = 21;
+            double fasciaCost = GetMaterialPrice("1x12\"x12' (25x300x4200mm)");
+            double nailCost = GetMaterialPrice("Nails 3\"");
+            double treatCost = GetMaterialPrice("Solignum (normal)");
+
+            double fasciaQty = UserRateEditStore.Current.Qty(SectionKey, no, "25 x 300mm hardwood fascia board", LengthsPerUnit(1.0, 4.2));
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, no, "Add for waste and cutting.", 12);
+            double nailQty = UserRateEditStore.Current.Qty(SectionKey, no, "Nails 3\"", 0.006);
+            double treatQty = UserRateEditStore.Current.Qty(SectionKey, no, "Solignum anti-termite treatment", 0.02);
+
+            double fasciaRate = fasciaCost * fasciaQty;
+            double waste = fasciaRate * (wastePer / 100);
+            double nailRate = nailCost * nailQty;
+            double treatRate = treatCost * treatQty;
+            double totalMaterialCost = fasciaRate + waste + nailRate + treatRate;
+
+            double gang = CarpentryGangPerHour(no, out var hR, out var cR, out var lR, out var hC, out var cC, out var lC);
+            double hrsPerM = UserRateEditStore.Current.Qty(SectionKey, no, "Total Gang Cost per m", 0.15);
+            double labourPerM = gang * hrsPerM;
+
+            double net = totalMaterialCost + labourPerM;
+            var ohp = ApplyOHP(net);
+
+            var breakdown = new ObservableCollection<RoofWorkBreakdownLine>
+            {
+                new RoofWorkBreakdownLine{ ComponentName="25 x 300mm hardwood fascia board", Quantity=fasciaQty, Unit="Length/m", UnitPrice=fasciaCost, TotalPrice=fasciaRate},
+                new RoofWorkBreakdownLine{ ComponentName="Add for waste and cutting.", Quantity=wastePer, Unit="%", TotalPrice=waste},
+                new RoofWorkBreakdownLine{ ComponentName="Nails 3\"", Quantity=nailQty, Unit="Bag/m", UnitPrice=nailCost, TotalPrice=nailRate},
+                new RoofWorkBreakdownLine{ ComponentName="Solignum anti-termite treatment", Quantity=treatQty, Unit="Gal/m", UnitPrice=treatCost, TotalPrice=treatRate},
+                new RoofWorkBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialCost},
+                new RoofWorkBreakdownLine{ ComponentName="Headman", Quantity=1, Unit="N/hr", UnitPrice=hC, TotalPrice=hR},
+                new RoofWorkBreakdownLine{ ComponentName="Tradesman (Carpenter)", Quantity=2, Unit="N/hr", UnitPrice=cC, TotalPrice=cR},
+                new RoofWorkBreakdownLine{ ComponentName="Labour", Quantity=1, Unit="N/hr", UnitPrice=lC, TotalPrice=lR},
+                new RoofWorkBreakdownLine{ ComponentName="Gang Cost per hour", TotalPrice=gang},
+                new RoofWorkBreakdownLine{ ComponentName="Total Gang Cost per m", Quantity=hrsPerM, Unit="hr/m", TotalPrice=labourPerM},
+                new RoofWorkBreakdownLine{ ComponentName="Total", TotalPrice=net},
+            };
+
+            return new RoofWorkItem
+            {
+                ItemNo = no,
+                Description = "25 x 300mm hardwood fascia board; wrought, cut to length, fixed to rafter feet and " +
+                              "treated, including mitres at angles",
+                Unit = "m",
+                NetCost = Math.Round(net, 2),
+                OverheadValue = Math.Round(ohp.overheadVal, 2),
+                ProfitValue = Math.Round(ohp.profitVal, 2),
+                TotalCost = Math.Round(ohp.total, 2),
+                RoofWorkBreakdownLines = breakdown
+            };
+        }
+
+        // 22 ── Complete roof carpentry, per m2 of roof on slope
+        private RoofWorkItem ComputeItem22()
+        {
+            const int no = 22;
+            double rafterCost = GetMaterialPrice("2x4\"x12' (50x100x3600mm)");
+            double purlinCost = GetMaterialPrice("2x3\"x12' (50x75x3600mm) - Hardwood");
+            double ridgeCost = GetMaterialPrice("2x6\"x12' (50x150x3600mm)");
+            double nailCost = GetMaterialPrice("Nails 4\"");
+            double treatCost = GetMaterialPrice("Solignum (normal)");
+
+            double rafterQty = UserRateEditStore.Current.Qty(SectionKey, no, "50 x 100mm rafters at 600mm centres", LengthsPerUnit(1.0 / 0.6));
+            double purlinQty = UserRateEditStore.Current.Qty(SectionKey, no, "50 x 75mm purlins at 900mm centres", LengthsPerUnit(1.0 / 0.9));
+            double plateQty = UserRateEditStore.Current.Qty(SectionKey, no, "50 x 100mm wall plate", LengthsPerUnit(0.15));
+            double strutQty = UserRateEditStore.Current.Qty(SectionKey, no, "50 x 150mm ridge board, struts and bracing", LengthsPerUnit(0.25));
+            double wastePer = UserRateEditStore.Current.Qty(SectionKey, no, "Add for waste and cutting.", 12);
+            double nailQty = UserRateEditStore.Current.Qty(SectionKey, no, "Nails 4\"", 0.035);
+            double treatQty = UserRateEditStore.Current.Qty(SectionKey, no, "Solignum anti-termite treatment", 0.06);
+
+            double rafterRate = rafterCost * rafterQty;
+            double purlinRate = purlinCost * purlinQty;
+            double plateRate = rafterCost * plateQty;
+            double strutRate = ridgeCost * strutQty;
+            double timberSub = rafterRate + purlinRate + plateRate + strutRate;
+            double waste = timberSub * (wastePer / 100);
+            double nailRate = nailCost * nailQty;
+            double treatRate = treatCost * treatQty;
+            double totalMaterialCost = timberSub + waste + nailRate + treatRate;
+
+            double gang = CarpentryGangPerHour(no, out var hR, out var cR, out var lR, out var hC, out var cC, out var lC);
+            double hrs = UserRateEditStore.Current.Qty(SectionKey, no, "Total Gang Cost per m2", 0.55);
+            double labourPerSqm = gang * hrs;
+
+            double net = totalMaterialCost + labourPerSqm;
+            var ohp = ApplyOHP(net);
+
+            var breakdown = new ObservableCollection<RoofWorkBreakdownLine>
+            {
+                new RoofWorkBreakdownLine{ ComponentName="50 x 100mm rafters at 600mm centres", Quantity=rafterQty, Unit="Length/m2", UnitPrice=rafterCost, TotalPrice=rafterRate},
+                new RoofWorkBreakdownLine{ ComponentName="50 x 75mm purlins at 900mm centres", Quantity=purlinQty, Unit="Length/m2", UnitPrice=purlinCost, TotalPrice=purlinRate},
+                new RoofWorkBreakdownLine{ ComponentName="50 x 100mm wall plate", Quantity=plateQty, Unit="Length/m2", UnitPrice=rafterCost, TotalPrice=plateRate},
+                new RoofWorkBreakdownLine{ ComponentName="50 x 150mm ridge board, struts and bracing", Quantity=strutQty, Unit="Length/m2", UnitPrice=ridgeCost, TotalPrice=strutRate},
+                new RoofWorkBreakdownLine{ ComponentName="Sub-total: timber", TotalPrice=timberSub},
+                new RoofWorkBreakdownLine{ ComponentName="Add for waste and cutting.", Quantity=wastePer, Unit="%", TotalPrice=waste},
+                new RoofWorkBreakdownLine{ ComponentName="Nails 4\"", Quantity=nailQty, Unit="Bag/m2", UnitPrice=nailCost, TotalPrice=nailRate},
+                new RoofWorkBreakdownLine{ ComponentName="Solignum anti-termite treatment", Quantity=treatQty, Unit="Gal/m2", UnitPrice=treatCost, TotalPrice=treatRate},
+                new RoofWorkBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialCost},
+                new RoofWorkBreakdownLine{ ComponentName="Headman", Quantity=1, Unit="N/hr", UnitPrice=hC, TotalPrice=hR},
+                new RoofWorkBreakdownLine{ ComponentName="Tradesman (Carpenter)", Quantity=2, Unit="N/hr", UnitPrice=cC, TotalPrice=cR},
+                new RoofWorkBreakdownLine{ ComponentName="Labour", Quantity=1, Unit="N/hr", UnitPrice=lC, TotalPrice=lR},
+                new RoofWorkBreakdownLine{ ComponentName="Gang Cost per hour", TotalPrice=gang},
+                new RoofWorkBreakdownLine{ ComponentName="Total Gang Cost per m2", Quantity=hrs, Unit="hr/m2", TotalPrice=labourPerSqm},
+                new RoofWorkBreakdownLine{ ComponentName="Total", TotalPrice=net},
+            };
+
+            return new RoofWorkItem
+            {
+                ItemNo = no,
+                Description = "Complete hardwood roof carpentry; 50 x 100mm rafters at 600mm centres, 50 x 75mm " +
+                              "purlins at 900mm centres, wall plate, ridge board, struts and bracing, cut, fitted, " +
+                              "spiked and treated with anti-termite solution",
+                Unit = "m2",
+                NetCost = Math.Round(net, 2),
                 OverheadValue = Math.Round(ohp.overheadVal, 2),
                 ProfitValue = Math.Round(ohp.profitVal, 2),
                 TotalCost = Math.Round(ohp.total, 2),
