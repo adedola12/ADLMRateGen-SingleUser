@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -12,6 +12,16 @@ namespace ADLMRateGen.Services
     /// <summary>
     /// Converts server DTO [{ sn, description, unit, price }] into
     /// local Material/Labour JSON and persists to AppData.
+    ///
+    /// PRICES THE USER EDITED ARE NEVER OVERWRITTEN HERE.
+    /// This used to write "master rows + rows you added yourself", which meant a
+    /// price edited on a master row was in neither list and was destroyed on every
+    /// sign-in, silently and with no way back. Now every edit is carried forward,
+    /// and where the server has genuinely moved a price the disagreement is parked
+    /// in PriceConflicts for the user to accept or ignore. Nothing is discarded on
+    /// their behalf.
+    ///
+    /// The library is also archived before each write, so any of this is undoable.
     /// </summary>
     public static class DataSourceCloudSync
     {
@@ -36,6 +46,43 @@ namespace ADLMRateGen.Services
 
                     });
                 }
+            }
+
+            // An empty payload is never a real catalog. Treated as data it would
+            // reduce the library to the user's own rows and destroy everything
+            // else, so a bad response or a state with no rows yet would look
+            // exactly like a wipe. Leave the library alone and let the caller
+            // report the failure.
+            if (master.Count == 0) return;
+
+            // 1a) What is on disk right now, before the server overwrites it. This
+            //     is the only place the user's edits still exist.
+            List<MaterialModel> local;
+            try { local = new MaterialJsonDataSource(AppPaths.MaterialLibraryFile).LoadMaterials()?.ToList() ?? new(); }
+            catch { local = new List<MaterialModel>(); }
+
+            // 1b) Baseline records what the cloud sent last time, so a price the
+            //     user typed can be told apart from a price the server sent.
+            var edits = SyncBaseline.FindEdits(local, master, null, null);
+
+            // The server's prices, captured before the preservation step below
+            // overwrites them in place.
+            var serverPrices = SyncBaseline.Snapshot(master);
+
+            // Take a copy before touching anything, so the whole write can be undone.
+            LibraryArchive.Create("before price sync");
+
+            // 1c) Carry every edit forward. The server value is remembered so the
+            //     user can still switch to it later from the conflicts prompt.
+            if (edits.Count > 0)
+            {
+                var keep = edits.ToDictionary(e => e.RowKey, e => e.YourPrice, StringComparer.OrdinalIgnoreCase);
+                foreach (var m in master)
+                {
+                    if (keep.TryGetValue(SyncBaseline.Key(m.MaterialName, m.MaterialUnit), out var mine))
+                        m.MaterialPrice = mine;
+                }
+                PriceConflicts.Record(edits);
             }
 
             // 2) Bring the latest user rows from the server cache
@@ -79,6 +126,11 @@ namespace ADLMRateGen.Services
             var ds = new MaterialJsonDataSource(AppPaths.MaterialLibraryFile);
             ds.SaveMaterials(merged);
             MaterialLibraryService.Initialize(ds); // keep the in-memory cache fresh
+
+            // 5) Record what the SERVER sent, not what was saved. The two differ
+            //    wherever an edit was preserved, and that difference is exactly
+            //    what keeps the edit recognisable as an edit next time.
+            SyncBaseline.WriteMaterials(serverPrices);
         }
 
 
@@ -102,6 +154,32 @@ namespace ADLMRateGen.Services
 
                     });
                 }
+            }
+
+            // Same guard as materials: an empty payload would wipe the library.
+            if (master.Count == 0) return;
+
+            // 1a) Same protection as materials: read the local rows before the
+            //     server replaces them, and carry any edited price forward.
+            List<LabourModel> local;
+            try { local = new LabourJsonDataSource(AppPaths.LabourLibraryFile).LoadLabours()?.ToList() ?? new(); }
+            catch { local = new List<LabourModel>(); }
+
+            var edits = SyncBaseline.FindEdits(null, null, local, master);
+
+            var serverPrices = SyncBaseline.Snapshot(master);
+
+            LibraryArchive.Create("before price sync");
+
+            if (edits.Count > 0)
+            {
+                var keep = edits.ToDictionary(e => e.RowKey, e => e.YourPrice, StringComparer.OrdinalIgnoreCase);
+                foreach (var l in master)
+                {
+                    if (keep.TryGetValue(SyncBaseline.Key(l.LabourName, l.LabourUnit), out var mine))
+                        l.LabourPrice = mine;
+                }
+                PriceConflicts.Record(edits);
             }
 
             // 2) Latest user rows
@@ -142,8 +220,51 @@ namespace ADLMRateGen.Services
             var ds = new LabourJsonDataSource(AppPaths.LabourLibraryFile);
             ds.SaveLabours(merged);
             LabourLibraryService.Initialize(ds);
-        }
-    
 
-}
+            SyncBaseline.WriteLabour(serverPrices);
+        }
+
+
+        /* ---------- accepting the server's price after all ---------- */
+
+        /// <summary>
+        /// Apply the server price to rows the user has agreed to give up. Called
+        /// from the conflicts prompt, never automatically.
+        /// </summary>
+        public static void AcceptServerPrices(IEnumerable<SyncBaseline.EditedRow> rows)
+        {
+            var list = rows?.ToList() ?? new List<SyncBaseline.EditedRow>();
+            if (list.Count == 0) return;
+
+            LibraryArchive.Create("before accepting new prices", force: true);
+
+            var mat = list.Where(r => !r.IsLabour)
+                          .ToDictionary(r => r.RowKey, r => r.ServerPrice, StringComparer.OrdinalIgnoreCase);
+            if (mat.Count > 0)
+            {
+                var ds = new MaterialJsonDataSource(AppPaths.MaterialLibraryFile);
+                var rowsOnDisk = ds.LoadMaterials()?.ToList() ?? new List<MaterialModel>();
+                foreach (var m in rowsOnDisk)
+                    if (mat.TryGetValue(SyncBaseline.Key(m.MaterialName, m.MaterialUnit), out var p))
+                        m.MaterialPrice = p;
+                ds.SaveMaterials(rowsOnDisk);
+                MaterialLibraryService.Initialize(ds);
+            }
+
+            var lab = list.Where(r => r.IsLabour)
+                          .ToDictionary(r => r.RowKey, r => r.ServerPrice, StringComparer.OrdinalIgnoreCase);
+            if (lab.Count > 0)
+            {
+                var ds = new LabourJsonDataSource(AppPaths.LabourLibraryFile);
+                var rowsOnDisk = ds.LoadLabours()?.ToList() ?? new List<LabourModel>();
+                foreach (var l in rowsOnDisk)
+                    if (lab.TryGetValue(SyncBaseline.Key(l.LabourName, l.LabourUnit), out var p))
+                        l.LabourPrice = p;
+                ds.SaveLabours(rowsOnDisk);
+                LabourLibraryService.Initialize(ds);
+            }
+
+            PriceConflicts.Resolve(list);
+        }
+    }
 }

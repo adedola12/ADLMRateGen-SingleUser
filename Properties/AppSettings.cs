@@ -24,6 +24,20 @@ namespace ADLMRateGen.Properties
             set { _cache.Zone = value ?? string.Empty; Save(); }
         }
 
+        /// <summary>
+        /// The pricing state this install last saw on the ADLM account.
+        ///
+        /// Kept so a state changed on the website can be told apart from the one
+        /// already in use here. Without it the app cannot know whether a differing
+        /// account state is a fresh choice to follow or simply an older setting the
+        /// user has since overridden in the app, and it would fight the picker.
+        /// </summary>
+        public static string? LastKnownAccountState
+        {
+            get => _cache.LastKnownAccountState;
+            set { _cache.LastKnownAccountState = value ?? string.Empty; Save(); }
+        }
+
         private static SettingsModel Load()
         {
             try
@@ -52,6 +66,7 @@ namespace ADLMRateGen.Properties
         private class SettingsModel
         {
             public string Zone { get; set; } = string.Empty;
+            public string LastKnownAccountState { get; set; } = string.Empty;
         }
     }
 }

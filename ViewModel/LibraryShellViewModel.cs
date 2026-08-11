@@ -2,6 +2,7 @@
 using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using ADLMRateGen.View;
@@ -80,6 +81,10 @@ namespace ADLMRateGen.ViewModel
 			// Re-pull the master library for the new state. Without this the picker
 			// would change a setting and nothing else, which is worse than not
 			// offering it: the user would believe they had repriced.
+			//
+			// Any price the user edited themselves survives this: the sync carries
+			// edits forward and parks the disagreement in PriceConflicts instead of
+			// overwriting. It also archives first, so the whole change can be undone.
 			IsSyncingLocation = true;
 			try
 			{
@@ -88,6 +93,7 @@ namespace ADLMRateGen.ViewModel
 				{
 					MaterialLibraryViewModel.ReloadFromDisk();
 					LabourLibraryViewModel.ReloadFromDisk();
+					RefreshArchives();
 				}
 				else if (!string.IsNullOrWhiteSpace(res.Message))
 				{
@@ -107,7 +113,103 @@ namespace ADLMRateGen.ViewModel
 			}
 		}
 
-	
+		/* ───────────────── your prices vs the server's ───────────────── */
+
+		/// <summary>
+		/// Rows where a price the user typed disagrees with a price the server has
+		/// since moved. The user's figure is already in force: the sync preserved
+		/// it. This is an offer to switch, not a warning that something was lost.
+		/// </summary>
+		public IReadOnlyList<SyncBaseline.EditedRow> PriceConflicts_Rows => PriceConflicts.Pending;
+
+		public bool HasPriceConflicts => PriceConflicts.Any;
+
+		public string PriceConflictSummary
+		{
+			get
+			{
+				var n = PriceConflicts.Count;
+				if (n == 0) return "";
+				return n == 1
+					? "1 rate you edited has a newer published price. Yours is being used."
+					: $"{n} rates you edited have newer published prices. Yours are being used.";
+			}
+		}
+
+		public ICommand UseServerPricesCommand { get; }
+		public ICommand KeepMyPricesCommand { get; }
+
+		private void RaiseConflictState()
+		{
+			// The sync runs off the UI thread, and Archives is an ObservableCollection
+			// bound to a list, so this has to come back to the dispatcher.
+			var d = Application.Current?.Dispatcher;
+			if (d != null && !d.CheckAccess()) { d.Invoke(RaiseConflictState); return; }
+
+			RaisePropertyChanged(nameof(PriceConflicts_Rows));
+			RaisePropertyChanged(nameof(HasPriceConflicts));
+			RaisePropertyChanged(nameof(PriceConflictSummary));
+		}
+
+		/* ───────────────── archive and undo ───────────────── */
+
+		/// <summary>
+		/// Snapshots taken before anything rewrote the library. The most recent is
+		/// first, because undoing the last thing that happened is what this is for
+		/// nearly every time.
+		/// </summary>
+		public ObservableCollection<LibraryArchive.Entry> Archives { get; } = new();
+
+		private LibraryArchive.Entry _selectedArchive;
+		public LibraryArchive.Entry SelectedArchive
+		{
+			get => _selectedArchive;
+			set { _selectedArchive = value; RaisePropertyChanged(); }
+		}
+
+		private bool _isArchiveOpen;
+		public bool IsArchiveOpen
+		{
+			get => _isArchiveOpen;
+			set { _isArchiveOpen = value; RaisePropertyChanged(); }
+		}
+
+		public ICommand OpenArchiveCommand { get; }
+		public ICommand RestoreCommand { get; }
+
+		private void RefreshArchives()
+		{
+			Archives.Clear();
+			foreach (var e in LibraryArchive.List()) Archives.Add(e);
+			SelectedArchive = Archives.FirstOrDefault();
+		}
+
+		private void RestoreSelected()
+		{
+			var pick = SelectedArchive;
+			if (pick == null) return;
+
+			var ask = MessageBox.Show(
+				$"Restore the material and labour libraries as they were on {pick.TakenAt:dd MMM yyyy} at {pick.TakenAt:HH:mm}?\n\n"
+				+ $"{pick.MaterialRows} materials and {pick.LabourRows} labour rates will be put back.\n\n"
+				+ "The current library is archived first, so this can itself be undone.",
+				"Restore library", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+			if (ask != MessageBoxResult.OK) return;
+
+			if (LibraryArchive.Restore(pick.Id))
+			{
+				MaterialLibraryViewModel.ReloadFromDisk();
+				LabourLibraryViewModel.ReloadFromDisk();
+				PriceConflicts.KeepMine();   // the restored figures are now the ones in force
+				IsArchiveOpen = false;
+				RefreshArchives();
+			}
+			else
+			{
+				MessageBox.Show("That archive could not be read, so nothing was changed.",
+					"Restore library", MessageBoxButton.OK, MessageBoxImage.Warning);
+			}
+		}
 
 		private readonly UserControl _materialView = new MaterialLibraryView();
 		private readonly UserControl _labourView = new LabourLibraryView();
@@ -183,6 +285,37 @@ namespace ADLMRateGen.ViewModel
 			MaterialLibraryViewModel.EditMaterialRequested += m => RequestEditMaterial?.Invoke(m);
 			LabourLibraryViewModel.EditLabourRequested += l => RequestEditLabour?.Invoke(l);   // ← added
 
+			OpenArchiveCommand = new RelayCommand(_ =>
+			{
+				RefreshArchives();
+				IsArchiveOpen = !IsArchiveOpen;
+			});
+
+			RestoreCommand = new RelayCommand(_ => RestoreSelected());
+
+			UseServerPricesCommand = new RelayCommand(_ =>
+			{
+				var rows = PriceConflicts.Pending;
+				if (rows.Count == 0) return;
+
+				var ask = MessageBox.Show(
+					$"Replace your own figures on {rows.Count} rate(s) with the newly published prices?\n\n"
+					+ "Your current library is archived first, so this can be undone.",
+					"Use published prices", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+				if (ask != MessageBoxResult.OK) return;
+
+				DataSourceCloudSync.AcceptServerPrices(rows);
+				MaterialLibraryViewModel.ReloadFromDisk();
+				LabourLibraryViewModel.ReloadFromDisk();
+				RefreshArchives();
+			});
+
+			// Nothing to write: their prices are already the ones in use. This only
+			// takes the notice down.
+			KeepMyPricesCommand = new RelayCommand(_ => PriceConflicts.KeepMine());
+
+			PriceConflicts.Changed += RaiseConflictState;
+			RefreshArchives();
 		}
 	}
 }
