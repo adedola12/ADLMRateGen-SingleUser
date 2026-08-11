@@ -1,478 +1,590 @@
 [
   {
     "SerialNumber": 1,
-    "LabourName": "Skilled/Artisan",
-    "LabourUnit": "",
-    "LabourPrice": 8400.0,
+    "LabourName": "Carpenter",
+    "LabourUnit": "day",
+    "LabourPrice": 14000,
     "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 2,
-    "LabourName": "Semi skilled",
-    "LabourUnit": "",
-    "LabourPrice": 7500.0,
+    "LabourName": "Electrician (skilled)",
+    "LabourUnit": "day",
+    "LabourPrice": 10000,
     "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 3,
-    "LabourName": "Labourer",
-    "LabourUnit": "",
-    "LabourPrice": 5400.0,
+    "LabourName": "Electrician mate",
+    "LabourUnit": "day",
+    "LabourPrice": 7000,
     "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 4,
-    "LabourName": "Headman",
-    "LabourUnit": "",
-    "LabourPrice": 11100.0,
+    "LabourName": "Foreman",
+    "LabourUnit": "day",
+    "LabourPrice": 15000,
     "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 5,
-    "LabourName": "Foreman",
-    "LabourUnit": "",
-    "LabourPrice": 11100.0,
+    "LabourName": "Glazier",
+    "LabourUnit": "day",
+    "LabourPrice": 14000,
     "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 6,
-    "LabourName": "Light vehicle driver",
-    "LabourUnit": "",
-    "LabourPrice": 5400.0,
+    "LabourName": "Headman",
+    "LabourUnit": "day",
+    "LabourPrice": 12000,
     "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 7,
-    "LabourName": "Heavy vehicle driver",
-    "LabourUnit": "",
-    "LabourPrice": 13500.0,
+    "LabourName": "Heavy plant operator",
+    "LabourUnit": "day",
+    "LabourPrice": 25000,
     "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 8,
-    "LabourName": "Light plant operator",
-    "LabourUnit": "",
-    "LabourPrice": 13500.0,
+    "LabourName": "Heavy vehicle driver",
+    "LabourUnit": "day",
+    "LabourPrice": 12500,
     "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 9,
-    "LabourName": "Heavy plant operator",
-    "LabourUnit": "",
-    "LabourPrice": 18000.0,
+    "LabourName": "Labourer",
+    "LabourUnit": "day",
+    "LabourPrice": 5500,
     "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 10,
-    "LabourName": "Welder",
-    "LabourUnit": "",
-    "LabourPrice": 18000.0,
+    "LabourName": "Light plant operator",
+    "LabourUnit": "day",
+    "LabourPrice": 15000,
     "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 11,
-    "LabourName": "Concrete mixer 21/14",
-    "LabourUnit": "",
-    "LabourPrice": 37500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Light vehicle driver",
+    "LabourUnit": "day",
+    "LabourPrice": 12000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 12,
-    "LabourName": "Concrete mixer 14/10",
-    "LabourUnit": "",
-    "LabourPrice": 30000.0,
-    "LabourCategory": "Plant"
+    "LabourName": "MEP foreman",
+    "LabourUnit": "day",
+    "LabourPrice": 15000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 13,
-    "LabourName": "Concrete mixer 10/7",
-    "LabourUnit": "",
-    "LabourPrice": 22500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Mason",
+    "LabourUnit": "day",
+    "LabourPrice": 14000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 14,
-    "LabourName": "Compressor",
-    "LabourUnit": "",
-    "LabourPrice": 87500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Pipefitter (PPR fusion and uPVC solvent welding)",
+    "LabourUnit": "day",
+    "LabourPrice": 10000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 15,
-    "LabourName": "Dumper",
-    "LabourUnit": "",
-    "LabourPrice": 37500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Plumber (skilled)",
+    "LabourUnit": "day",
+    "LabourPrice": 10000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 16,
-    "LabourName": "Excavator 635",
-    "LabourUnit": "",
-    "LabourPrice": 87500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Plumber mate",
+    "LabourUnit": "day",
+    "LabourPrice": 7000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 17,
-    "LabourName": "Excavator 935",
-    "LabourUnit": "",
-    "LabourPrice": 112500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Semi skilled",
+    "LabourUnit": "day",
+    "LabourPrice": 7000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 18,
-    "LabourName": "Excavator-JCB 3C or similar model",
-    "LabourUnit": "",
-    "LabourPrice": 87500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Skilled/Artisan",
+    "LabourUnit": "day",
+    "LabourPrice": 10000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 19,
-    "LabourName": "Payloader 635",
-    "LabourUnit": "",
-    "LabourPrice": 112500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Steelfixer",
+    "LabourUnit": "day",
+    "LabourPrice": 14000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 20,
-    "LabourName": "Payloader 935",
-    "LabourUnit": "",
-    "LabourPrice": 137500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Tiler",
+    "LabourUnit": "day",
+    "LabourPrice": 14000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 21,
-    "LabourName": "Mobile crane-30 ton",
-    "LabourUnit": "",
-    "LabourPrice": 137500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Welder",
+    "LabourUnit": "day",
+    "LabourPrice": 15000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 22,
-    "LabourName": "Mobile crane-60 ton",
-    "LabourUnit": "",
-    "LabourPrice": 162500.0,
-    "LabourCategory": "Plant"
+    "LabourName": "Wireman / cable puller",
+    "LabourUnit": "day",
+    "LabourPrice": 7000,
+    "LabourCategory": "Labour"
   },
   {
     "SerialNumber": 23,
-    "LabourName": "Mobile crane-80 ton",
-    "LabourUnit": "",
-    "LabourPrice": 187500.0,
+    "LabourName": "Barge (100 ton capacity)",
+    "LabourUnit": "day",
+    "LabourPrice": 12000000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 24,
-    "LabourName": "Crane-80 ton - crawler track type.",
-    "LabourUnit": "",
-    "LabourPrice": 237500.0,
+    "LabourName": "Bulldozer D4",
+    "LabourUnit": "day",
+    "LabourPrice": 400000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 25,
-    "LabourName": "Crane-120 ton - crawler track type.",
-    "LabourUnit": "",
-    "LabourPrice": 0.0,
+    "LabourName": "Bulldozer D6",
+    "LabourUnit": "day",
+    "LabourPrice": 550000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 26,
-    "LabourName": "Crane-150 ton - crawler track type.",
-    "LabourUnit": "",
-    "LabourPrice": 0.0,
+    "LabourName": "Bulldozer D8",
+    "LabourUnit": "day",
+    "LabourPrice": 950000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 27,
-    "LabourName": "Bulldozer D4",
-    "LabourUnit": "",
-    "LabourPrice": 87500.0,
+    "LabourName": "Compressor",
+    "LabourUnit": "day",
+    "LabourPrice": 35000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 28,
-    "LabourName": "Bulldozer D6",
-    "LabourUnit": "",
-    "LabourPrice": 112500.0,
+    "LabourName": "Concrete mixer 10/7",
+    "LabourUnit": "day",
+    "LabourPrice": 50000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 29,
-    "LabourName": "Bulldozer D8",
-    "LabourUnit": "",
-    "LabourPrice": 137500.0,
+    "LabourName": "Concrete mixer 14/10",
+    "LabourUnit": "day",
+    "LabourPrice": 60000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 30,
-    "LabourName": "Tipping lorry-10 ton",
-    "LabourUnit": "",
-    "LabourPrice": 25000.0,
+    "LabourName": "Concrete mixer 21/14",
+    "LabourUnit": "day",
+    "LabourPrice": 50000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 31,
-    "LabourName": "Tipping lorry-20 ton",
-    "LabourUnit": "",
-    "LabourPrice": 37500.0,
+    "LabourName": "Crane-120 ton - crawler track type.",
+    "LabourUnit": "day",
+    "LabourPrice": 1300000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 32,
-    "LabourName": "Tipping lorry-30 ton",
-    "LabourUnit": "",
-    "LabourPrice": 50000.0,
+    "LabourName": "Crane-150 ton - crawler track type.",
+    "LabourUnit": "day",
+    "LabourPrice": 1300000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 33,
-    "LabourName": "Grader (Cat 1406)",
-    "LabourUnit": "",
-    "LabourPrice": 112500.0,
+    "LabourName": "Crane-80 ton - crawler track type.",
+    "LabourUnit": "day",
+    "LabourPrice": 800000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 34,
-    "LabourName": "Plate compactor",
-    "LabourUnit": "",
-    "LabourPrice": 13750.0,
+    "LabourName": "Dumper",
+    "LabourUnit": "day",
+    "LabourPrice": 200000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 35,
-    "LabourName": "Static steel wheeled roller - (2.7 to 6 tonnes)",
-    "LabourUnit": "",
-    "LabourPrice": 62500.0,
+    "LabourName": "Excavator 635",
+    "LabourUnit": "day",
+    "LabourPrice": 350000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 36,
-    "LabourName": "Static steel wheeled roller - (6 to 12.7 tonnes)",
-    "LabourUnit": "",
-    "LabourPrice": 87500.0,
+    "LabourName": "Excavator 935",
+    "LabourUnit": "day",
+    "LabourPrice": 550000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 37,
-    "LabourName": "Pneumatic tired roller (2.7 to 10 tonnes)",
-    "LabourUnit": "",
-    "LabourPrice": 71250.0,
+    "LabourName": "Excavator-JCB 3C or similar model",
+    "LabourUnit": "day",
+    "LabourPrice": 300000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 38,
-    "LabourName": "Pneumatic tired roller (10 to 20 tonnes)",
-    "LabourUnit": "",
-    "LabourPrice": 81250.0,
+    "LabourName": "Generator - 1.5/5 KVA",
+    "LabourUnit": "day",
+    "LabourPrice": 18500,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 39,
-    "LabourName": "Pneumatic tired roller (20 to 31.8 tonnes)",
-    "LabourUnit": "",
-    "LabourPrice": 112500.0,
+    "LabourName": "Generator - 10/15 KVA",
+    "LabourUnit": "day",
+    "LabourPrice": 25000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 40,
-    "LabourName": "Generator - 250 KVA",
-    "LabourUnit": "",
-    "LabourPrice": 125000.0,
+    "LabourName": "Generator - 125 KVA",
+    "LabourUnit": "day",
+    "LabourPrice": 180000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 41,
-    "LabourName": "Generator - 200 KVA",
-    "LabourUnit": "",
-    "LabourPrice": 106000.0,
+    "LabourName": "Generator - 150 KVA",
+    "LabourUnit": "day",
+    "LabourPrice": 220000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 42,
-    "LabourName": "Generator - 150 KVA",
-    "LabourUnit": "",
-    "LabourPrice": 100000.0,
+    "LabourName": "Generator - 200 KVA",
+    "LabourUnit": "day",
+    "LabourPrice": 300000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 43,
-    "LabourName": "Generator - 125 KVA",
-    "LabourUnit": "",
-    "LabourPrice": 87500.0,
+    "LabourName": "Generator - 250 KVA",
+    "LabourUnit": "day",
+    "LabourPrice": 50000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 44,
-    "LabourName": "Generator - 50/80 KVA",
-    "LabourUnit": "",
-    "LabourPrice": 62500.0,
+    "LabourName": "Generator - 27/35 KVA",
+    "LabourUnit": "day",
+    "LabourPrice": 50000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 45,
-    "LabourName": "Generator - 27/35 KVA",
-    "LabourUnit": "",
-    "LabourPrice": 37500.0,
+    "LabourName": "Generator - 50/80 KVA",
+    "LabourUnit": "day",
+    "LabourPrice": 80000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 46,
-    "LabourName": "Generator - 10/15 KVA",
-    "LabourUnit": "",
-    "LabourPrice": 25000.0,
+    "LabourName": "Grader (Cat 1406)",
+    "LabourUnit": "day",
+    "LabourPrice": 350000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 47,
-    "LabourName": "Generator - 1.5/5 KVA",
-    "LabourUnit": "",
-    "LabourPrice": 8750.0,
+    "LabourName": "Mobile crane-30 ton",
+    "LabourUnit": "day",
+    "LabourPrice": 400000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 48,
-    "LabourName": "Vibratory whelled roller (8 to 10 tons)",
-    "LabourUnit": "",
-    "LabourPrice": 87500.0,
+    "LabourName": "Mobile crane-60 ton",
+    "LabourUnit": "day",
+    "LabourPrice": 600000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 49,
-    "LabourName": "Vibratory whelled roller (10 to 20 tons)",
-    "LabourUnit": "",
-    "LabourPrice": 112500.0,
+    "LabourName": "Mobile crane-80 ton",
+    "LabourUnit": "day",
+    "LabourPrice": 800000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 50,
     "LabourName": "Paving Machine 4 - 8 ft laying width.",
-    "LabourUnit": "",
-    "LabourPrice": 112500.0,
+    "LabourUnit": "day",
+    "LabourPrice": 3500000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 51,
-    "LabourName": "Barge (100 ton capacity)",
-    "LabourUnit": "",
-    "LabourPrice": 250000.0,
+    "LabourName": "Payloader 635",
+    "LabourUnit": "day",
+    "LabourPrice": 300000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 52,
-    "LabourName": "Gas torch and 50 or 70mm burner.",
-    "LabourUnit": "",
-    "LabourPrice": 3750.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Payloader 935",
+    "LabourUnit": "day",
+    "LabourPrice": 400000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 53,
-    "LabourName": "Sand Pot for sand blasting",
-    "LabourUnit": "",
-    "LabourPrice": 12500.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Plate compactor",
+    "LabourUnit": "day",
+    "LabourPrice": 45000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 54,
-    "LabourName": "Respiratory gear for sand blasting",
-    "LabourUnit": "",
-    "LabourPrice": 5000.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Pneumatic tired roller (10 to 20 tonnes)",
+    "LabourUnit": "day",
+    "LabourPrice": 60000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 55,
-    "LabourName": "Terrazzo Machine",
-    "LabourUnit": "",
-    "LabourPrice": 11250.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Pneumatic tired roller (2.7 to 10 tonnes)",
+    "LabourUnit": "day",
+    "LabourPrice": 45000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 56,
-    "LabourName": "Spraying machine",
-    "LabourUnit": "",
-    "LabourPrice": 12500.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Pneumatic tired roller (20 to 31.8 tonnes)",
+    "LabourUnit": "day",
+    "LabourPrice": 180000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 57,
-    "LabourName": "Power Brush",
-    "LabourUnit": "",
-    "LabourPrice": 3750.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Static steel wheeled roller - (2.7 to 6 tonnes)",
+    "LabourUnit": "day",
+    "LabourPrice": 45000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 58,
-    "LabourName": "Jack - Hammer (Small)",
-    "LabourUnit": "",
-    "LabourPrice": 12500.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Static steel wheeled roller - (6 to 12.7 tonnes)",
+    "LabourUnit": "day",
+    "LabourPrice": 80000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 59,
-    "LabourName": "Jack - Hammer (Medium)",
-    "LabourUnit": "",
-    "LabourPrice": 18750.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Tipping lorry-10 ton",
+    "LabourUnit": "day",
+    "LabourPrice": 150000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 60,
-    "LabourName": "Jack - Hammer (Big)",
-    "LabourUnit": "",
-    "LabourPrice": 25000.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Tipping lorry-20 ton",
+    "LabourUnit": "day",
+    "LabourPrice": 200000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 61,
-    "LabourName": "Concrete cutting machine",
-    "LabourUnit": "",
-    "LabourPrice": 7500.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Tipping lorry-30 ton",
+    "LabourUnit": "day",
+    "LabourPrice": 250000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 62,
-    "LabourName": "Poker vibrator (mechanical)",
-    "LabourUnit": "",
-    "LabourPrice": 25000.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Vibratory whelled roller (10 to 20 tons)",
+    "LabourUnit": "day",
+    "LabourPrice": 120000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 63,
-    "LabourName": "Poker vibrator (electrical)",
-    "LabourUnit": "",
-    "LabourPrice": 16250.0,
-    "LabourCategory": "Small Plant"
+    "LabourName": "Vibratory whelled roller (8 to 10 tons)",
+    "LabourUnit": "day",
+    "LabourPrice": 80000,
+    "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 64,
-    "LabourName": "Concrete pumping machine (Dry - mix)",
-    "LabourUnit": "",
-    "LabourPrice": 0.0,
+    "LabourName": "Cable rod set and draw tape",
+    "LabourUnit": "day",
+    "LabourPrice": 6000,
     "LabourCategory": "Small Plant"
   },
   {
     "SerialNumber": 65,
-    "LabourName": "Concrete pumping machine (Wet - mix)",
-    "LabourUnit": "",
-    "LabourPrice": 0.0,
+    "LabourName": "Concrete cutting machine",
+    "LabourUnit": "day",
+    "LabourPrice": 5000,
     "LabourCategory": "Small Plant"
   },
   {
     "SerialNumber": 66,
-    "LabourName": "Welding machine (small)",
-    "LabourUnit": "",
-    "LabourPrice": 12500.0,
+    "LabourName": "Concrete pumping machine (Dry - mix)",
+    "LabourUnit": "day",
+    "LabourPrice": 250000,
     "LabourCategory": "Small Plant"
   },
   {
     "SerialNumber": 67,
-    "LabourName": "Welding machine (big)",
-    "LabourUnit": "",
-    "LabourPrice": 21250.0,
+    "LabourName": "Concrete pumping machine (Wet - mix)",
+    "LabourUnit": "day",
+    "LabourPrice": 250000,
     "LabourCategory": "Small Plant"
   },
   {
     "SerialNumber": 68,
     "LabourName": "Cutting machine",
-    "LabourUnit": "",
-    "LabourPrice": 3750.0,
+    "LabourUnit": "day",
+    "LabourPrice": 1500,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 69,
+    "LabourName": "Earth resistance tester (megger)",
+    "LabourUnit": "day",
+    "LabourPrice": 25000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 70,
+    "LabourName": "Gas torch and 50 or 70mm burner.",
+    "LabourUnit": "day",
+    "LabourPrice": 1500,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 71,
+    "LabourName": "Jack - Hammer (Big)",
+    "LabourUnit": "day",
+    "LabourPrice": 10000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 72,
+    "LabourName": "Jack - Hammer (Medium)",
+    "LabourUnit": "day",
+    "LabourPrice": 10000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 73,
+    "LabourName": "Jack - Hammer (Small)",
+    "LabourUnit": "day",
+    "LabourPrice": 5000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 74,
+    "LabourName": "PPR fusion welding machine; 20 to 63mm",
+    "LabourUnit": "day",
+    "LabourPrice": 18000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 75,
+    "LabourName": "Pipe threading machine; up to 50mm",
+    "LabourUnit": "day",
+    "LabourPrice": 20000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 76,
+    "LabourName": "Poker vibrator (electrical)",
+    "LabourUnit": "day",
+    "LabourPrice": 10000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 77,
+    "LabourName": "Poker vibrator (mechanical)",
+    "LabourUnit": "day",
+    "LabourPrice": 10000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 78,
+    "LabourName": "Power Brush",
+    "LabourUnit": "day",
+    "LabourPrice": 1500,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 79,
+    "LabourName": "Respiratory gear for sand blasting",
+    "LabourUnit": "day",
+    "LabourPrice": 2000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 80,
+    "LabourName": "Sand Pot for sand blasting",
+    "LabourUnit": "day",
+    "LabourPrice": 5000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 81,
+    "LabourName": "Spraying machine",
+    "LabourUnit": "day",
+    "LabourPrice": 5000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 82,
+    "LabourName": "Terrazzo Machine",
+    "LabourUnit": "day",
+    "LabourPrice": 4500,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 83,
+    "LabourName": "Welding machine (big)",
+    "LabourUnit": "day",
+    "LabourPrice": 20000,
+    "LabourCategory": "Small Plant"
+  },
+  {
+    "SerialNumber": 84,
+    "LabourName": "Welding machine (small)",
+    "LabourUnit": "day",
+    "LabourPrice": 5000,
     "LabourCategory": "Small Plant"
   }
 ]

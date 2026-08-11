@@ -149,7 +149,13 @@ namespace ADLMRateGen.Services
                     workingFile: AppPaths.LabourLibraryFile,
                     defaultFile: shippedLabour,
                     seedBaselineFile: baseLabour,
-                    keyOf: l => $"{l.LabourName}|{l.LabourUnit}|{l.LabourCategory}",
+                    // Keyed on name and category, NOT unit. Labour names are unique inside
+                    // a zone (84 rows, 84 distinct names), so the unit adds nothing to
+                    // identity and including it makes the key brittle: the master library
+                    // gave every labour row the unit "day" in July while the bundled file
+                    // still had it blank, so a unit-bearing key would treat all 84 rows as
+                    // new, add them alongside the user's 84, and leave every trade twice.
+                    keyOf: l => $"{l.LabourName}|{l.LabourCategory}",
                     priceOf: l => l.LabourPrice,
                     setPrice: (l, p) => l.LabourPrice = p);
 
