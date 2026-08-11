@@ -367,7 +367,8 @@ namespace ADLMRateGen.ViewModel.SteelWork
         {
             if (_computeEngine == null) return;
 
-            var defs = ComputeCatalogStore.Items;
+            // Only this section: the store holds every section (see ItemsFor).
+            var defs = ComputeCatalogStore.ItemsFor(SectionKey);
             if (defs == null || defs.Count == 0)
             {
                 System.Diagnostics.Debug.WriteLine($"[ComputeCatalog] No items loaded for section '{SectionKey}'.");

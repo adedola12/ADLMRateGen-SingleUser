@@ -24,6 +24,33 @@ namespace ADLMRateGen.Services
         public static IReadOnlyList<ComputeItemDefinition> Items { get; private set; }
             = Array.Empty<ComputeItemDefinition>();
 
+        /// <summary>
+        /// The cloud items belonging to one section.
+        ///
+        /// Always use this rather than <see cref="Items"/> from a section view model.
+        /// The store holds EVERY section's items, so iterating Items directly makes a
+        /// section append another section's rates. It also used to appear to work: the
+        /// refresh wrote only the fetched section to disk, so the store happened to
+        /// contain just that one — until another section synced and replaced it. Every
+        /// section but Carbon and Others is hardcoded and merely appends cloud items,
+        /// so the loss was invisible there; Carbon and Others is entirely cloud-driven,
+        /// so it rendered empty.
+        /// </summary>
+        public static IReadOnlyList<ComputeItemDefinition> ItemsFor(string sectionKey)
+        {
+            var snapshot = Items;
+            if (string.IsNullOrWhiteSpace(sectionKey)) return snapshot;
+
+            var f = sectionKey.Trim();
+            var matched = new List<ComputeItemDefinition>();
+            foreach (var d in snapshot)
+            {
+                if ((d.section ?? "").IndexOf(f, StringComparison.OrdinalIgnoreCase) >= 0)
+                    matched.Add(d);
+            }
+            return matched;
+        }
+
         public static string FilePath =>
             Path.Combine(UserLibrarySync.UserDataFolder, "compute-items.json");
 
@@ -187,17 +214,31 @@ namespace ADLMRateGen.Services
                     if (cursor == null) break; // done
                 }
 
-                // optional local filter by section
+                // The WHOLE catalogue is persisted, never just the requested section.
+                //
+                // This used to filter `all` down to sectionFilter and save that, which
+                // made the shared store hold one section at a time. Ten section view
+                // models each call this with their own key, so it was last-writer-wins:
+                // a section with no cloud items of its own fetched everything, filtered
+                // to zero, and wrote an EMPTY file — wiping the other sections' items.
+                // All 26 cloud items currently belong to "carbon", so any other section
+                // syncing emptied the store and Carbon and Others rendered blank.
+                //
+                // sectionFilter now only decides what this call REPORTS. Readers select
+                // their own section through ItemsFor().
+                var forCaller = all;
                 if (!string.IsNullOrWhiteSpace(sectionFilter))
                 {
                     var f = sectionFilter.Trim();
-                    all = all.FindAll(x =>
+                    forCaller = all.FindAll(x =>
                         (x.section ?? "").IndexOf(f, StringComparison.OrdinalIgnoreCase) >= 0);
                 }
 
-                LastApiItemCount = all.Count;
+                LastApiItemCount = forCaller.Count;
                 LastApiSyncUtc = DateTime.UtcNow;
-                LastApiMessage = $"Compute sync OK. Items={all.Count}. Saved to disk.";
+                LastApiMessage = string.IsNullOrWhiteSpace(sectionFilter)
+                    ? $"Compute sync OK. Items={all.Count}. Saved to disk."
+                    : $"Compute sync OK. Items={forCaller.Count} in '{sectionFilter}' of {all.Count} total. Saved to disk.";
 
                 SaveToDisk(all);
                 return true;
