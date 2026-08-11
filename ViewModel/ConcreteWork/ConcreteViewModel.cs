@@ -3207,7 +3207,7 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 
             //MATERIAL COST
             double plyWoodLengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 28, "18mm plywood", 0.35);
-            double boardPrice = GetMaterialPrice("3/4\"x4x8'(18x1200x2400mm)");
+            double boardPrice = GetMaterialPrice("3/4\"x4x8' (18x1200x2400mm)");
             double totalBoardPrice = boardPrice * plyWoodLengthPerm2;
 
             double propsAndBraceLengthPerm2 = UserRateEditStore.Current.Qty(SectionKey, 28, "50 x 75mm props and braces.", 1.56);

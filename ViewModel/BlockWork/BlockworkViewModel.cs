@@ -1613,7 +1613,7 @@ namespace ADLMRateGen.ViewModel.BlockWork
         private BlockworkItem ComputeItem16()
         {
             //MATERIAL COST
-            double plywoodPrice = GetMaterialPrice("3/4\"x4x8'(18x1200x2400mm)");
+            double plywoodPrice = GetMaterialPrice("3/4\"x4x8' (18x1200x2400mm)");
             double hardwoodPrice = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
             double solignumPrice = GetMaterialPrice("Solignum (normal)")/20;
 
@@ -1683,7 +1683,7 @@ namespace ADLMRateGen.ViewModel.BlockWork
         private BlockworkItem ComputeItem17()
         {
             //MATERIAL COST
-            double plywoodPrice = GetMaterialPrice("3/4\"x4x8'(18x1200x2400mm)");
+            double plywoodPrice = GetMaterialPrice("3/4\"x4x8' (18x1200x2400mm)");
             double hardwoodPrice = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
             double solignumPrice = GetMaterialPrice("Solignum (normal)") / 20;
 
@@ -1753,7 +1753,7 @@ namespace ADLMRateGen.ViewModel.BlockWork
         private BlockworkItem ComputeItem18()
         {
             //MATERIAL COST
-            double plywoodPrice = GetMaterialPrice("3/4\"x4x8'(18x1200x2400mm)");
+            double plywoodPrice = GetMaterialPrice("3/4\"x4x8' (18x1200x2400mm)");
             double hardwoodPrice = GetMaterialPrice("2x2\"x12' (50x50x3600mm) - Hardwood");
             double solignumPrice = GetMaterialPrice("Solignum (normal)") / 20;
 

@@ -643,8 +643,8 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
 
         private WindowAndDoorItem ComputeItem4()
         {
-            double windowCost = GetMaterialPrice("Window size 900 x 600mm high");
-            double windowQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Window size 900 x 600mm high.", 1);
+            double windowCost = GetMaterialPrice("Window size 600 x 900mm high");
+            double windowQty = UserRateEditStore.Current.Qty(SectionKey, 4, "Window size 600 x 900mm high.", 1);
             double transportPer = UserRateEditStore.Current.Qty(SectionKey, 4, "Add for Transportation to site and handling", 5);
 
             double windowRate = windowCost * windowQty;
@@ -663,7 +663,7 @@ namespace ADLMRateGen.ViewModel.WindowAndDoor
 
             var breakdown = new ObservableCollection<WindowAndDoorBreakdownLine>
             {
-                new WindowAndDoorBreakdownLine{ ComponentName="Window size 900 x 600mm high.", Quantity=windowQty, Unit="no", UnitPrice= windowCost, TotalPrice=windowRate},
+                new WindowAndDoorBreakdownLine{ ComponentName="Window size 600 x 900mm high.", Quantity=windowQty, Unit="no", UnitPrice= windowCost, TotalPrice=windowRate},
                 new WindowAndDoorBreakdownLine{ ComponentName="Add for Transportation to site and handling", Quantity=transportPer, Unit="%", TotalPrice=windowTransport},
                 new WindowAndDoorBreakdownLine{ ComponentName="Total Material", TotalPrice=totalMaterialCost},
                 new WindowAndDoorBreakdownLine{ ComponentName="Tradesman (Glaziers)", Quantity=glazierLabourQty, Unit="N/hr", UnitPrice=glazierLabourCost, TotalPrice=glazierLabourRate},
