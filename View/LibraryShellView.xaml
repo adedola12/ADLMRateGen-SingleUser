@@ -14,9 +14,29 @@
               VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
+                <ColumnDefinition Width="210" />
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="220" />
             </Grid.ColumnDefinitions>
+
+            <!-- Pricing location. Sits beside the tabs because it governs both
+                 the material and the labour library, not one of them. -->
+            <StackPanel Grid.Column="1"
+                        Margin="12,0,12,0"
+                        VerticalAlignment="Center">
+                <ComboBox ItemsSource="{Binding States}"
+                          SelectedItem="{Binding SelectedState, Mode=TwoWay}"
+                          DisplayMemberPath="Label"
+                          IsEnabled="{Binding IsLocationPickerEnabled}"
+                          ToolTip="The state you are pricing in. Prices are graded by geopolitical zone, so states in the same zone read alike until one is priced individually."
+                          Height="34"
+                          VerticalContentAlignment="Center" />
+                <TextBlock Text="{Binding LocationNote}"
+                           FontSize="10"
+                           Margin="4,2,0,0"
+                           Opacity="0.7"
+                           Foreground="{DynamicResource Blue900Brush}" />
+            </StackPanel>
 
             <Border CornerRadius="16"
                     SnapsToDevicePixels="True"
@@ -50,7 +70,7 @@
             <!-- Add button -->
 
 
-            <Button Grid.Column="2"
+            <Button Grid.Column="3"
                     Command="{Binding AddCommand}"
                     Style="{DynamicResource PrimaryButton}"
                     HorizontalAlignment="Right"
