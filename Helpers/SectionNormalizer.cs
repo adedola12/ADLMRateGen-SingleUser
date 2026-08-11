@@ -27,6 +27,10 @@ namespace ADLMRateGen.Services
             if (s.Contains("concrete")) return SectionKeys.Concrete;
             if (s.Contains("finish")) return SectionKeys.Finishes;
             if (s.Contains("block")) return SectionKeys.Blockwork;
+            // Ahead of the carbon/other catch-all, which would otherwise swallow
+            // anything containing "other".
+            if (s.Contains("mep") || s.Contains("mechanical") || s.Contains("electric")
+                || s.Contains("plumb")) return SectionKeys.Mep;
             if (s.Contains("carbon") || s.Contains("other")) return SectionKeys.CarbonOthers;
 
             // if it's already canonical, return it

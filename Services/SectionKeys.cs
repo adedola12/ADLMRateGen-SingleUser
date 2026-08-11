@@ -11,6 +11,7 @@
         public const string Paint = "paint";
         public const string Steelwork = "steelwork";
         public const string CarbonOthers = "carbon";
+        public const string Mep = "mep";
 
         public static readonly string[] All =
         {
@@ -22,7 +23,8 @@
             DoorsWindows,
             Paint,
             Steelwork,
-            CarbonOthers // ✅ IMPORTANT: add this
+            CarbonOthers, // ✅ IMPORTANT: add this
+            Mep
         };
     }
 }

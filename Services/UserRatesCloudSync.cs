@@ -1,4 +1,4 @@
-using ADLMRateGen.ViewModel;
+﻿using ADLMRateGen.ViewModel;
 using ADLMRateGen.ViewModel.CustomRate;
 using System;
 using System.Collections;
@@ -609,6 +609,7 @@ namespace ADLMRateGen.Services
             yield return (SectionKeys.Paint, "Painting", vm.PaintWorkViewModel);
             yield return (SectionKeys.Steelwork, "Steelwork", vm.SteelWorkViewModel);
             yield return (SectionKeys.CarbonOthers, "Carbon and Others", vm.CarbonOthersViewModel);
+            yield return (SectionKeys.Mep, "MEP Works", vm.MepWorkViewModel);
         }
 
         private static IEnumerable<RateOverridePayload> BuildSectionOverrides(string sectionKey, string sectionLabel, object viewModel)

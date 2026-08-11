@@ -1,4 +1,4 @@
-using ADLMRateGen.Command;
+﻿using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
 using ADLMRateGen.View;
@@ -31,6 +31,10 @@ namespace ADLMRateGen.ViewModel.MepWork
 	/// </summary>
 	public class MepWorkViewModel : ViewModelBase
 	{
+		/// <summary>Registered in <see cref="Services.SectionKeys"/>, so MEP rates take part
+		/// in user quantity overrides and sync to QUIV and HERON like every other section.</summary>
+		public const string SectionKey = Services.SectionKeys.Mep;
+
 		private readonly GetItemsFromDB _helper;
 
 		private double _overheadPercent = 10.0;
@@ -141,9 +145,51 @@ namespace ADLMRateGen.ViewModel.MepWork
 				if (e.PropertyName is nameof(CurrencyService.Rate) or nameof(CurrencyService.Code))
 					RecomputeAll();
 			};
+
+			Services.UserRateEditStore.Current.OverridesChanged += (_, __) =>
+			{
+				var disp = System.Windows.Application.Current?.Dispatcher;
+				if (disp == null || disp.CheckAccess()) RecomputeAll();
+				else disp.BeginInvoke((Action)RecomputeAll);
+			};
 		}
 
 		private void OnLibraryChanged() => RecomputeAll();
+
+		/// <summary>
+		/// Rebuild a single item after the user edits one of its quantities, without
+		/// rebuilding the whole grid and losing the open detail view.
+		/// </summary>
+		public void RecomputeItemInPlace(int itemNo)
+		{
+			var existing = MepWorkItems.FirstOrDefault(i => i.ItemNo == itemNo);
+			if (existing == null) return;
+
+			var rebuilt = new ObservableCollection<MepWorkItem>();
+			var saved = MepWorkItems;
+			try
+			{
+				MepWorkItems = rebuilt;
+				BuildMepWorkItems();
+			}
+			finally
+			{
+				MepWorkItems = saved;
+			}
+
+			var fresh = rebuilt.FirstOrDefault(i => i.ItemNo == itemNo);
+			if (fresh == null) return;
+
+			existing.NetCost = fresh.NetCost;
+			existing.OverheadValue = fresh.OverheadValue;
+			existing.ProfitValue = fresh.ProfitValue;
+			existing.TotalCost = fresh.TotalCost;
+
+			existing.MepBreakdownLine.Clear();
+			foreach (var line in fresh.MepBreakdownLine) existing.MepBreakdownLine.Add(line);
+
+			MepWorkCollectionView?.Refresh();
+		}
 
 		private void RecomputeAll()
 		{
@@ -199,11 +245,15 @@ namespace ADLMRateGen.ViewModel.MepWork
 		private MepWorkItem Compose(string section, string description, string unit,
 									params (string catalogName, double qty, string qtyUnit)[] parts)
 		{
+			int itemNo = ++_itemNo;
 			var lines = new ObservableCollection<MepWorkBreakdownLine>();
 			double net = 0;
 
-			foreach (var (catalogName, qty, qtyUnit) in parts)
+			foreach (var (catalogName, defaultQty, qtyUnit) in parts)
 			{
+				// A quantity the user edited on this line wins over the shipped default,
+				// exactly as in the concrete and blockwork engines.
+				double qty = Services.UserRateEditStore.Current.Qty(SectionKey, itemNo, catalogName, defaultQty);
 				double unitPrice = Price(catalogName);
 				double total = unitPrice * qty;
 				net += total;
@@ -250,7 +300,7 @@ namespace ADLMRateGen.ViewModel.MepWork
 
 			return new MepWorkItem
 			{
-				ItemNo = ++_itemNo,
+				ItemNo = itemNo,
 				Section = section,
 				Description = description,
 				Unit = unit,
