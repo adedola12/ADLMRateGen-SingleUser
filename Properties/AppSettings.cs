@@ -24,19 +24,11 @@ namespace ADLMRateGen.Properties
             set { _cache.Zone = value ?? string.Empty; Save(); }
         }
 
-        /// <summary>
-        /// The pricing state this install last saw on the ADLM account.
-        ///
-        /// Kept so a state changed on the website can be told apart from the one
-        /// already in use here. Without it the app cannot know whether a differing
-        /// account state is a fresh choice to follow or simply an older setting the
-        /// user has since overridden in the app, and it would fight the picker.
-        /// </summary>
-        public static string? LastKnownAccountState
-        {
-            get => _cache.LastKnownAccountState;
-            set { _cache.LastKnownAccountState = value ?? string.Empty; Save(); }
-        }
+        // LastKnownAccountState is gone. It existed to reconcile an in-app state
+        // picker with the account's, and there is no in-app picker: the profile on
+        // the website is the only place a pricing location is set, so there is
+        // nothing left to reconcile. The field stays in SettingsModel so an
+        // existing settings.json still parses.
 
         private static SettingsModel Load()
         {

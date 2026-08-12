@@ -31,87 +31,31 @@ namespace ADLMRateGen.ViewModel
 		/* ───────────────── pricing location ───────────────── */
 
 		/// <summary>
-		/// The 36 states and the FCT. Prices are graded by zone, so states inside a
-		/// zone read the same until one of them is priced individually. Picking a
-		/// state is still the right control to give a QS: it is what their job is
-		/// in, and it is what lets their state diverge later.
+		/// Where the prices on screen came from.
+		///
+		/// Read-only on purpose. The pricing location is set on the ADLM profile on
+		/// the website and arrives here on the next sign-in. There used to be a
+		/// picker here as well, which meant two places could disagree about where a
+		/// user prices from and nothing said which had won. Removing the control
+		/// should not remove the answer, so the note stays.
+		///
+		/// Names the zone, not just the state, because prices are evidenced at zone
+		/// level: two states in the same zone read alike until one is priced on its
+		/// own, and a screen that hid that would make it look like a fault.
 		/// </summary>
-		public IReadOnlyList<NigerianState> States => NigerianStates.All;
-
-		private NigerianState _selectedState;
-		public NigerianState SelectedState
+		public string LocationNote
 		{
-			get => _selectedState;
-			set
+			get
 			{
-				if (_selectedState?.Key == value?.Key) return;
-				_selectedState = value;
-				RaisePropertyChanged();
-				RaisePropertyChanged(nameof(LocationNote));
-				if (value != null) ApplyStateChange(value);
+				var state = NigerianStates.Find(MasterLibrarySyncService.ResolveState());
+				return state == null
+					? ""
+					: $"{state.Label}: priced from {state.Zone.Replace('_', ' ')} rates. Set this on your ADLM profile.";
 			}
 		}
 
-		/// <summary>Shown under the picker so the zone the price actually came from is visible.</summary>
-		public string LocationNote =>
-			_selectedState == null
-				? ""
-				: $"Priced from {_selectedState.Zone.Replace('_', ' ')} rates";
-
-		private bool _isSyncingLocation;
-		public bool IsSyncingLocation
-		{
-			get => _isSyncingLocation;
-			private set
-			{
-				_isSyncingLocation = value;
-				RaisePropertyChanged();
-				RaisePropertyChanged(nameof(IsLocationPickerEnabled));
-			}
-		}
-
-		/// <summary>Inverted here rather than in XAML: there is no bool-to-bool
-		/// converter in this project, only bool-to-Visibility.</summary>
-		public bool IsLocationPickerEnabled => !_isSyncingLocation;
-
-		private async void ApplyStateChange(NigerianState state)
-		{
-			MasterLibrarySyncService.SetState(state.Key);
-
-			// Re-pull the master library for the new state. Without this the picker
-			// would change a setting and nothing else, which is worse than not
-			// offering it: the user would believe they had repriced.
-			//
-			// Any price the user edited themselves survives this: the sync carries
-			// edits forward and parks the disagreement in PriceConflicts instead of
-			// overwriting. It also archives first, so the whole change can be undone.
-			IsSyncingLocation = true;
-			try
-			{
-				var res = await MasterLibrarySyncService.SyncAsync();
-				if (res.Ok)
-				{
-					MaterialLibraryViewModel.ReloadFromDisk();
-					LabourLibraryViewModel.ReloadFromDisk();
-					RefreshArchives();
-				}
-				else if (!string.IsNullOrWhiteSpace(res.Message))
-				{
-					// Sign-in required is the common case and is not an error worth a dialog.
-					System.Diagnostics.Debug.WriteLine($"[Location] {res.Message}");
-				}
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(
-					$"Could not load prices for {state.Label}.\n\n{ex.Message}",
-					"Location", MessageBoxButton.OK, MessageBoxImage.Warning);
-			}
-			finally
-			{
-				IsSyncingLocation = false;
-			}
-		}
+		/// <summary>Call after a sync so the note follows the account.</summary>
+		public void RefreshLocationNote() => RaisePropertyChanged(nameof(LocationNote));
 
 		/* ───────────────── your prices vs the server's ───────────────── */
 
@@ -265,11 +209,6 @@ namespace ADLMRateGen.ViewModel
 		{
 			MaterialLibraryViewModel = materialLibraryVm;
 			LabourLibraryViewModel = labourLibraryVm;
-
-			// Seed the picker from the saved setting WITHOUT going through the
-			// property, so opening the library does not fire a sync on every launch.
-			_selectedState = NigerianStates.Find(MasterLibrarySyncService.ResolveState())
-							 ?? NigerianStates.Find(NigerianStates.DefaultKey);
 
 			// set the views’ data contexts
 			_materialView.DataContext = MaterialLibraryViewModel;

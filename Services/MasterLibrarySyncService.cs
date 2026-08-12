@@ -69,34 +69,7 @@ namespace ADLMRateGen.Services
             return key;
         }
 
-        /// <summary>
-        /// Adopt a state chosen on the website.
-        ///
-        /// The rule is "a change on the account wins once". If the account's state
-        /// differs from the one this install last saw there, the user changed it on
-        /// the website and the app follows. If it matches, the app keeps whatever
-        /// was picked here. Comparing against the account's PREVIOUS value rather
-        /// than the local one is what stops the two fighting: without it, every
-        /// sync would drag the app back to the website's state and the in-app
-        /// picker would appear to do nothing.
-        /// </summary>
-        private static bool ShouldFollowAccount(string accountState, out string key)
-        {
-            key = NigerianStates.Normalize(accountState);
-            if (key == null) return false;
-
-            var lastSeen = NigerianStates.Normalize(AppSettings.LastKnownAccountState);
-            AppSettings.LastKnownAccountState = key;
-
-            if (lastSeen == null) return false;   // first sight, do not override a local choice
-            if (lastSeen == key) return false;    // account unchanged
-            return key != ResolveState();         // changed, and we are not already on it
-        }
-
         public static async Task<SyncResult> SyncAsync(CancellationToken ct = default)
-            => await SyncAsync(followAccount: true, ct);
-
-        private static async Task<SyncResult> SyncAsync(bool followAccount, CancellationToken ct)
         {
             var result = new SyncResult { Zone = ResolveZone(), State = ResolveState() };
 
@@ -107,27 +80,32 @@ namespace ADLMRateGen.Services
                 return result;
             }
 
-            // Send both. `state` is what the server prices on now; `zone` is kept so
-            // an older server that predates state support still answers correctly
-            // rather than falling through to the account default.
-            var zoneKey = NigerianStates.ZoneFor(result.State) ?? result.Zone;
-            var query = "/rategen/master?state=" + Uri.EscapeDataString(result.State)
-                      + "&zone=" + Uri.EscapeDataString(zoneKey);
-
-            using (var doc = await auth.GetJsonAsync(query, ct))
+            // Deliberately asks for "my prices" without naming a state.
+            //
+            // The pricing location lives on the ADLM profile and nowhere else. The
+            // server already falls back to the account's state, so sending one from
+            // here would let a stale local setting silently override the profile,
+            // which is exactly what having a single source of truth is meant to
+            // prevent. The install used to ship with this setting defaulted to
+            // "Lagos", so that override would have hit every user who had never
+            // touched it.
+            using (var doc = await auth.GetJsonAsync("/rategen/master", ct))
             {
                 var root = doc.RootElement;
 
-                // Follow a location the user changed on the website. Checked before
-                // anything is written, so the library is only ever saved once, with
-                // the right state's prices.
-                if (followAccount &&
-                    root.TryGetProperty("accountState", out var acct) &&
-                    acct.ValueKind == JsonValueKind.String &&
-                    ShouldFollowAccount(acct.GetString(), out var followKey))
+                // Record where the server actually priced from, so the library can
+                // say so on screen. This is the app following the account, never
+                // the other way round.
+                if (root.TryGetProperty("state", out var st) &&
+                    st.ValueKind == JsonValueKind.String)
                 {
-                    SetState(followKey);
-                    return await SyncAsync(followAccount: false, ct);
+                    var key = NigerianStates.Normalize(st.GetString());
+                    if (key != null)
+                    {
+                        SetState(key);
+                        result.State = key;
+                        result.Zone = NigerianStates.Find(key)?.Label ?? result.Zone;
+                    }
                 }
 
                 if (root.TryGetProperty("materials", out var mats) &&

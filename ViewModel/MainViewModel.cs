@@ -283,6 +283,12 @@ namespace ADLMRateGen.ViewModel
                 _selectedViewModel = value;
 
                 IsLibraryShellActive = value == LibraryShellViewModel;
+
+                // The pricing location is set on the website, so it can change
+                // between one look at the library and the next. Re-read it on the
+                // way in rather than showing whatever it was at startup.
+                if (IsLibraryShellActive) LibraryShellViewModel?.RefreshLocationNote();
+
                 IsMaterialInputActive = value == MaterialPriceViewModel;
                 IsMaterialLibraryActive = value == MaterialLibraryViewModel;
                 IsLabourInputActive = value == LabourPriceViewModel;
