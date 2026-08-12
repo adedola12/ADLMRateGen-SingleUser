@@ -22,29 +22,24 @@
               VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="210" />
-                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="240" />
                 <ColumnDefinition Width="220" />
             </Grid.ColumnDefinitions>
 
-            <!-- Pricing location. Sits beside the tabs because it governs both
-                 the material and the labour library, not one of them. -->
-            <StackPanel Grid.Column="1"
-                        Margin="12,0,12,0"
-                        VerticalAlignment="Center">
-                <ComboBox ItemsSource="{Binding States}"
-                          SelectedItem="{Binding SelectedState, Mode=TwoWay}"
-                          DisplayMemberPath="Label"
-                          IsEnabled="{Binding IsLocationPickerEnabled}"
-                          ToolTip="The state you are pricing in. Prices are graded by geopolitical zone, so states in the same zone read alike until one is priced individually."
-                          Height="34"
-                          VerticalContentAlignment="Center" />
-                <TextBlock Text="{Binding LocationNote}"
-                           FontSize="10"
-                           Margin="4,2,0,0"
-                           Opacity="0.7"
-                           Foreground="{DynamicResource Blue900Brush}" />
-            </StackPanel>
+            <!-- Pricing location is set on the ADLM website, on your profile, and
+                 arrives here on the next sign-in. The picker used to sit here too,
+                 which meant two places could disagree about where you price from.
+                 The note stays so the screen still says which zone your prices come
+                 from — removing the control should not remove the answer. -->
+            <TextBlock Grid.Column="1"
+                       Text="{Binding LocationNote}"
+                       Margin="12,0,12,0"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       FontSize="11"
+                       Opacity="0.75"
+                       ToolTip="Set your pricing location on your ADLM profile on the website. It applies here on your next sign-in."
+                       Foreground="{DynamicResource Blue900Brush}" />
 
             <Border CornerRadius="16"
                     SnapsToDevicePixels="True"
@@ -75,77 +70,15 @@
 
 
 
-            <!-- Undo. Every sync, state change and price acceptance archives the
-                 library first, so this is always able to go back. -->
-            <Grid Grid.Column="2"
-                  VerticalAlignment="Center">
-                <Button Command="{Binding OpenArchiveCommand}"
-                        Height="34"
-                        Padding="10,0"
-                        ToolTip="Go back to an earlier copy of the material and labour libraries">
-                    <TextBlock Text="Undo…"
-                               VerticalAlignment="Center" />
-                </Button>
-
-                <Popup IsOpen="{Binding IsArchiveOpen, Mode=TwoWay}"
-                       StaysOpen="False"
-                       Placement="Bottom"
-                       AllowsTransparency="True"
-                       PopupAnimation="Fade">
-                    <Border Background="{DynamicResource MainBg}"
-                            BorderBrush="{DynamicResource Blue900Brush}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="12"
-                            Width="380">
-                        <StackPanel>
-                            <TextBlock Text="Restore an earlier library"
-                                       FontWeight="SemiBold"
-                                       Margin="0,0,0,6" />
-                            <TextBlock Text="Pick a point to go back to. The current library is archived first, so a restore can itself be undone."
-                                       TextWrapping="Wrap"
-                                       FontSize="11"
-                                       Opacity="0.75"
-                                       Margin="0,0,0,8" />
-                            <ListBox ItemsSource="{Binding Archives}"
-                                     SelectedItem="{Binding SelectedArchive, Mode=TwoWay}"
-                                     DisplayMemberPath="Label"
-                                     MaxHeight="220" />
-                            <TextBlock Text="No earlier copies yet."
-                                       FontSize="11"
-                                       Opacity="0.7"
-                                       Margin="2,6,0,0">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Visibility"
-                                                Value="Collapsed" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Archives.Count}"
-                                                         Value="0">
-                                                <Setter Property="Visibility"
-                                                        Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <Button Command="{Binding RestoreCommand}"
-                                    Style="{DynamicResource PrimaryButton}"
-                                    HorizontalAlignment="Right"
-                                    Margin="0,10,0,0"
-                                    Padding="14,4">
-                                <TextBlock Text="Restore"
-                                           Style="{StaticResource BtnText}" />
-                            </Button>
-                        </StackPanel>
-                    </Border>
-                </Popup>
-            </Grid>
+            <!-- The library Undo now lives in the header, as its own icon
+                 (ClockRotateLeft), so it is reachable without the toolbar and
+                 does not share the Undo arrow with Reset all rate edits.
+                 See Controls/Header.xaml. -->
 
             <!-- Add button -->
 
 
-            <Button Grid.Column="3"
+            <Button Grid.Column="2"
                     Command="{Binding AddCommand}"
                     Style="{DynamicResource PrimaryButton}"
                     HorizontalAlignment="Right"

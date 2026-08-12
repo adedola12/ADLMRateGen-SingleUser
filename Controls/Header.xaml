@@ -277,6 +277,81 @@
                                       Foreground="{DynamicResource Blue900Brush}" />
                     </Button>
 
+                    <!-- Library Undo — restores an earlier copy of the material and
+                         labour libraries. Deliberately NOT the Undo arrow: that one
+                         belongs to Reset all rate edits above, and two different
+                         destructive actions must not share a symbol. ClockRotateLeft
+                         reads as "go back to an earlier point", which is what this is.
+                         Only shown on the Library screen, since that is what it acts on. -->
+                    <Grid Visibility="{Binding IsLibraryShellActive, Converter={StaticResource BoolToVisibility}}">
+                        <Button x:Name="LibraryUndoButton"
+                                Margin="0,0,4,0"
+                                Style="{StaticResource HeaderActionButtonStyle}"
+                                Command="{Binding LibraryShellViewModel.OpenArchiveCommand}"
+                                ToolTip="Undo library changes — go back to an earlier copy of the material and labour libraries.">
+                            <fa:IconBlock Icon="ClockRotateLeft"
+                                          Width="16"
+                                          Height="16"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Foreground="{DynamicResource Blue900Brush}" />
+                        </Button>
+
+                        <Popup IsOpen="{Binding LibraryShellViewModel.IsArchiveOpen, Mode=TwoWay}"
+                               StaysOpen="False"
+                               Placement="Bottom"
+                               AllowsTransparency="True"
+                               PopupAnimation="Fade">
+                            <Border Background="{DynamicResource MainBg}"
+                                    BorderBrush="{DynamicResource Blue900Brush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="12"
+                                    Width="380">
+                                <StackPanel>
+                                    <TextBlock Text="Restore an earlier library"
+                                               FontWeight="SemiBold"
+                                               Margin="0,0,0,6" />
+                                    <TextBlock Text="Pick a point to go back to. The current library is archived first, so a restore can itself be undone."
+                                               TextWrapping="Wrap"
+                                               FontSize="11"
+                                               Opacity="0.75"
+                                               Margin="0,0,0,8" />
+                                    <ListBox ItemsSource="{Binding LibraryShellViewModel.Archives}"
+                                             SelectedItem="{Binding LibraryShellViewModel.SelectedArchive, Mode=TwoWay}"
+                                             DisplayMemberPath="Label"
+                                             MaxHeight="220" />
+                                    <TextBlock Text="No earlier copies yet."
+                                               FontSize="11"
+                                               Opacity="0.7"
+                                               Margin="2,6,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility"
+                                                        Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding LibraryShellViewModel.Archives.Count}"
+                                                                 Value="0">
+                                                        <Setter Property="Visibility"
+                                                                Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <Button Command="{Binding LibraryShellViewModel.RestoreCommand}"
+                                            Style="{DynamicResource PrimaryButton}"
+                                            HorizontalAlignment="Right"
+                                            Margin="0,10,0,0"
+                                            Padding="14,4">
+                                        <TextBlock Text="Restore"
+                                                   Style="{StaticResource BtnText}" />
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </Popup>
+                    </Grid>
+
                     <Grid>
                         <Button x:Name="BellButton"
                                 Style="{StaticResource HeaderActionButtonStyle}"
