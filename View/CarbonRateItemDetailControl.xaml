@@ -98,22 +98,48 @@
                                             <ColumnDefinition Width="110" />
                                             <ColumnDefinition Width="120" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0"
-                                                   Text="{Binding ComponentName}"
-                                                   FontFamily="{DynamicResource PoppinsFont}"
-                                                   FontSize="16" Foreground="{DynamicResource Blue900Brush}"
-                                                   TextWrapping="Wrap" Padding="10,0">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="FontWeight" Value="Normal" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsTotalLine}" Value="True">
-                                                            <Setter Property="FontWeight" Value="Bold" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
+                                        <!-- The component name opens the library at the row it is
+                                             priced from. A rate that looks wrong is nearly always
+                                             one line that is wrong, and hunting 600 rows by eye to
+                                             find it is the slow part. Rendered as a plain TextBlock
+                                             when there is nothing to open, so the overhead, profit
+                                             and uplift rows do not look clickable. -->
+                                        <Grid Grid.Column="0">
+                                            <Button Padding="10,0"
+                                                    HorizontalContentAlignment="Left"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Cursor="Hand"
+                                                    Command="{Binding Tag.OpenInLibraryCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="Open this item in the library to see or change its price"
+                                                    Visibility="{Binding CanOpenInLibrary, Converter={StaticResource BoolVis}}">
+                                                <TextBlock Text="{Binding ComponentName}"
+                                                           FontFamily="{DynamicResource PoppinsFont}"
+                                                           FontSize="16"
+                                                           Foreground="{DynamicResource Blue900Brush}"
+                                                           TextDecorations="Underline"
+                                                           TextWrapping="Wrap" />
+                                            </Button>
+
+                                            <TextBlock Text="{Binding ComponentName}"
+                                                       FontFamily="{DynamicResource PoppinsFont}"
+                                                       FontSize="16" Foreground="{DynamicResource Blue900Brush}"
+                                                       TextWrapping="Wrap" Padding="10,0"
+                                                       Visibility="{Binding CanOpenInLibrary, Converter={StaticResource InvBoolVis}}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="FontWeight" Value="Normal" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsTotalLine}" Value="True">
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding Quantity}"
                                                    FontFamily="{DynamicResource PoppinsFont}"

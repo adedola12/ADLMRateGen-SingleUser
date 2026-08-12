@@ -83,11 +83,25 @@ namespace ADLMRateGen
 
             _popup = PopupHost;
 
-            // Carbon: open details in same popup host
+            // Carbon: open details in same popup host.
+            //
+            // DataContext is the rate item, because the whole template binds to it.
+            // The view model goes on Tag so the breakdown lines can reach
+            // OpenInLibraryCommand: without it that binding resolves against the
+            // item, finds no such command, and fails silently with a dead link.
             carbonVM.RequestShowDetails += item =>
             {
-                _popup.Show(new CarbonRateItemDetailControl { DataContext = item });
+                _popup.Show(new CarbonRateItemDetailControl
+                {
+                    DataContext = item,
+                    Tag = carbonVM,
+                });
             };
+
+            // Clicking a component navigates to the library, so the detail popup
+            // has to come down with it. Left open it would sit over the row the
+            // user was sent to look at.
+            carbonVM.RequestOpenInLibrary += (_, __) => _popup.Hide();
 
             // 4) MainViewModel
             var mainVM = new MainViewModel(

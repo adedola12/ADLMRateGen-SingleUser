@@ -22,6 +22,22 @@ namespace ADLMRateGen.ViewModel.CarbonOthers
 
         // keep compatibility with your "bold total line" trigger
         public bool IsTotalLine { get; set; } = false;
+
+        /// <summary>
+        /// The library row this line is priced from, kept separately from
+        /// ComponentName because that is decorated for display ("material: Cement")
+        /// and would not match anything if it were used as a lookup.
+        /// </summary>
+        public string RefName { get; set; } = "";
+
+        /// <summary>"material" or "labour". Decides which library tab to open.</summary>
+        public string RefKind { get; set; } = "";
+
+        /// <summary>
+        /// False for the overhead, profit and uplift rows, which are percentages
+        /// rather than library items and have nothing to open.
+        /// </summary>
+        public bool CanOpenInLibrary => !string.IsNullOrWhiteSpace(RefName);
     }
 
     public class CarbonRateItem
@@ -77,6 +93,16 @@ namespace ADLMRateGen.ViewModel.CarbonOthers
             ItemsView.Filter = FilterItem;
 
             RecomputeCommand = new DelegateCommand(_ => Rebuild());
+            // (OpenInLibraryCommand is declared with the other commands below.)
+
+            // Open the library at the row a breakdown line is priced from, so a
+            // rate that looks wrong can be traced to the figure behind it and
+            // corrected there, rather than the user hunting 600 rows by eye.
+            OpenInLibraryCommand = new DelegateCommand(p =>
+            {
+                if (p is CarbonRateBreakdownLine line && line.CanOpenInLibrary)
+                    RequestOpenInLibrary?.Invoke(line.RefKind, line.RefName);
+            });
             FilterCommand = new DelegateCommand(_ => ToggleNetCostFilter());
             SortCommand = new DelegateCommand(_ => CycleSort());
             RefreshRemoteCommand = new DelegateCommand(async _ => await RefreshRemoteAsync());
@@ -150,6 +176,16 @@ namespace ADLMRateGen.ViewModel.CarbonOthers
         }
 
         public ICommand RecomputeCommand { get; }
+
+        /// <summary>Opens the library at the row a breakdown line is priced from.</summary>
+        public ICommand OpenInLibraryCommand { get; }
+
+        /// <summary>
+        /// (kind, name) of a library row the user wants to see. Handled by
+        /// MainViewModel, which owns navigation; this view model should not know
+        /// how the shell switches screens.
+        /// </summary>
+        public event Action<string, string> RequestOpenInLibrary;
         public ICommand ShowDetailsCommand { get; }
         public ICommand FilterCommand { get; }
         public ICommand SortCommand { get; }
@@ -286,7 +322,9 @@ namespace ADLMRateGen.ViewModel.CarbonOthers
                             Quantity = (double)l.Qty,
                             Unit = l.Unit ?? "",
                             UnitPrice = (double)l.UnitPrice,
-                            TotalPrice = (double)l.Total
+                            TotalPrice = (double)l.Total,
+                            RefName = l.Name ?? "",
+                            RefKind = (l.Kind ?? "").ToString()
                         });
                     }
 

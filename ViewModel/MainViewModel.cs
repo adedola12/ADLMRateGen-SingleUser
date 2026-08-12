@@ -275,6 +275,41 @@ namespace ADLMRateGen.ViewModel
 
         /* ───────── View switching ───────── */
         private ViewModelBase _selectedViewModel = null!;
+        /// <summary>
+        /// Show the library open at one row, so a component in a rate build-up can
+        /// be traced to the price behind it and edited there.
+        ///
+        /// Filters rather than scrolls: the name is put in the library's search box
+        /// so the row is the only one on screen and stays found if the user changes
+        /// its price and the list re-sorts. Any category filter already applied is
+        /// cleared first, since a row outside it would otherwise be filtered out and
+        /// the screen would look empty for no visible reason.
+        /// </summary>
+        public void OpenLibraryAt(string kind, string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            var isLabour = string.Equals(kind, "labour", StringComparison.OrdinalIgnoreCase);
+
+            // "All" rather than null: the filter treats them the same, but null
+            // leaves the category dropdown showing blank, which reads as a broken
+            // control rather than as no filter.
+            if (isLabour)
+            {
+                LabourLibraryViewModel.SelectedLabourCategory = "All";
+                LabourLibraryViewModel.SearchTerm = name;
+                LibraryShellViewModel.IsLabourTab = true;
+            }
+            else
+            {
+                MaterialLibraryViewModel.SelectedMaterialCategory = "All";
+                MaterialLibraryViewModel.SearchTerm = name;
+                LibraryShellViewModel.IsMaterialTab = true;
+            }
+
+            SelectedViewModel = LibraryShellViewModel;
+        }
+
         public ViewModelBase SelectedViewModel
         {
             get => _selectedViewModel;
@@ -578,6 +613,8 @@ namespace ADLMRateGen.ViewModel
             PaintWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             SteelWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             CarbonOthersViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
+
+            CarbonOthersViewModel.RequestOpenInLibrary += OpenLibraryAt;
             GroundWorkViewModel.PropertyChanged += OnSectionRateStateChanged;
             ConcreteViewModel.PropertyChanged += OnSectionRateStateChanged;
             BlockworkViewModel.PropertyChanged += OnSectionRateStateChanged;
