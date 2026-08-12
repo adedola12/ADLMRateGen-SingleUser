@@ -34,6 +34,13 @@ namespace ADLMRateGen.ViewModel.CarbonOthers
         public string RefKind { get; set; } = "";
 
         /// <summary>
+        /// Same shared command every other section's breakdown uses, so there is
+        /// one implementation rather than two that can drift.
+        /// </summary>
+        public System.Windows.Input.ICommand OpenInLibraryCommand
+            => ADLMRateGen.Helpers.LibraryLink.OpenCommand;
+
+        /// <summary>
         /// False for the overhead, profit and uplift rows, which are percentages
         /// rather than library items and have nothing to open.
         /// </summary>
@@ -93,16 +100,6 @@ namespace ADLMRateGen.ViewModel.CarbonOthers
             ItemsView.Filter = FilterItem;
 
             RecomputeCommand = new DelegateCommand(_ => Rebuild());
-            // (OpenInLibraryCommand is declared with the other commands below.)
-
-            // Open the library at the row a breakdown line is priced from, so a
-            // rate that looks wrong can be traced to the figure behind it and
-            // corrected there, rather than the user hunting 600 rows by eye.
-            OpenInLibraryCommand = new DelegateCommand(p =>
-            {
-                if (p is CarbonRateBreakdownLine line && line.CanOpenInLibrary)
-                    RequestOpenInLibrary?.Invoke(line.RefKind, line.RefName);
-            });
             FilterCommand = new DelegateCommand(_ => ToggleNetCostFilter());
             SortCommand = new DelegateCommand(_ => CycleSort());
             RefreshRemoteCommand = new DelegateCommand(async _ => await RefreshRemoteAsync());
@@ -177,15 +174,9 @@ namespace ADLMRateGen.ViewModel.CarbonOthers
 
         public ICommand RecomputeCommand { get; }
 
-        /// <summary>Opens the library at the row a breakdown line is priced from.</summary>
-        public ICommand OpenInLibraryCommand { get; }
-
-        /// <summary>
-        /// (kind, name) of a library row the user wants to see. Handled by
-        /// MainViewModel, which owns navigation; this view model should not know
-        /// how the shell switches screens.
-        /// </summary>
-        public event Action<string, string> RequestOpenInLibrary;
+        // Opening a component in the library is handled by Helpers.LibraryLink,
+        // the one implementation shared by all ten sections. The command lives on
+        // the breakdown line itself, so nothing is needed here.
         public ICommand ShowDetailsCommand { get; }
         public ICommand FilterCommand { get; }
         public ICommand SortCommand { get; }

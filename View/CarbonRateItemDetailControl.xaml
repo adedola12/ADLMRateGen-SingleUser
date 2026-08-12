@@ -110,9 +110,8 @@
                                                     Background="Transparent"
                                                     BorderThickness="0"
                                                     Cursor="Hand"
-                                                    Command="{Binding Tag.OpenInLibraryCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}"
+                                                    Command="{Binding OpenInLibraryCommand}"
+                                                    CommandParameter="{Binding ComponentName}"
                                                     ToolTip="Open this item in the library to see or change its price"
                                                     Visibility="{Binding CanOpenInLibrary, Converter={StaticResource BoolVis}}">
                                                 <TextBlock Text="{Binding ComponentName}"

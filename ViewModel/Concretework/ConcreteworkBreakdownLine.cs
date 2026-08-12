@@ -66,5 +66,17 @@ namespace ADLMRateGen.ViewModel.ConcreteWork
 		/// <summary>True when the Quantity cell should accept user edits in the breakdown popup.
 		/// Sub-total / total rows are read-only (they are computed sums).</summary>
 		public bool IsEditableQuantity => !IsTotalLine;
-	}
+	
+        /// <summary>
+        /// Opens the library at the row this line is priced from. Shared across
+        /// every section so there is one implementation rather than ten.
+        /// </summary>
+        public System.Windows.Input.ICommand OpenInLibraryCommand
+            => ADLMRateGen.Helpers.LibraryLink.OpenCommand;
+
+        /// <summary>False for totals, warnings and percentage rows, which are not
+        /// library items and must not render as links.</summary>
+        public bool CanOpenInLibrary
+            => ADLMRateGen.Helpers.LibraryLink.CanOpen(ComponentName);
+}
 }

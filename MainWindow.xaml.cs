@@ -83,25 +83,11 @@ namespace ADLMRateGen
 
             _popup = PopupHost;
 
-            // Carbon: open details in same popup host.
-            //
-            // DataContext is the rate item, because the whole template binds to it.
-            // The view model goes on Tag so the breakdown lines can reach
-            // OpenInLibraryCommand: without it that binding resolves against the
-            // item, finds no such command, and fails silently with a dead link.
+            // Carbon: open details in same popup host
             carbonVM.RequestShowDetails += item =>
             {
-                _popup.Show(new CarbonRateItemDetailControl
-                {
-                    DataContext = item,
-                    Tag = carbonVM,
-                });
+                _popup.Show(new CarbonRateItemDetailControl { DataContext = item });
             };
-
-            // Clicking a component navigates to the library, so the detail popup
-            // has to come down with it. Left open it would sit over the row the
-            // user was sent to look at.
-            carbonVM.RequestOpenInLibrary += (_, __) => _popup.Hide();
 
             // 4) MainViewModel
             var mainVM = new MainViewModel(
@@ -127,6 +113,20 @@ namespace ADLMRateGen
 
             // 5) Set DataContext
             DataContext = mainVM;
+
+            // Every section's breakdown links into the library through
+            // LibraryLink. MainViewModel already pointed it at the navigation; this
+            // wraps that to also close the detail popup, which only the window can
+            // reach. Without it the popup stays up over the row the user was just
+            // sent to look at, in all ten sections.
+            //
+            // Assigned after the view model is built so this wrapper wins.
+            var navigate = Helpers.LibraryLink.Navigate;
+            Helpers.LibraryLink.Navigate = (kind, name) =>
+            {
+                _popup.Hide();
+                navigate?.Invoke(kind, name);
+            };
 
             // 6) React to ToggleSidebarCommand by snapping the column width
             mainVM.PropertyChanged += OnMainVmPropertyChanged;

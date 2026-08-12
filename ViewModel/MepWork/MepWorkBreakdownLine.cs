@@ -1,4 +1,4 @@
-namespace ADLMRateGen.ViewModel.MepWork
+﻿namespace ADLMRateGen.ViewModel.MepWork
 {
 	public class MepWorkBreakdownLine : ViewModelBase
 	{
@@ -37,5 +37,17 @@ namespace ADLMRateGen.ViewModel.MepWork
 		public bool IsTotalLine =>
 			!string.IsNullOrEmpty(ComponentName)
 			&& ComponentName.IndexOf("total", System.StringComparison.OrdinalIgnoreCase) >= 0;
-	}
+	
+        /// <summary>
+        /// Opens the library at the row this line is priced from. Shared across
+        /// every section so there is one implementation rather than ten.
+        /// </summary>
+        public System.Windows.Input.ICommand OpenInLibraryCommand
+            => ADLMRateGen.Helpers.LibraryLink.OpenCommand;
+
+        /// <summary>False for totals, warnings and percentage rows, which are not
+        /// library items and must not render as links.</summary>
+        public bool CanOpenInLibrary
+            => ADLMRateGen.Helpers.LibraryLink.CanOpen(ComponentName);
+}
 }

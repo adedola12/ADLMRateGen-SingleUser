@@ -614,7 +614,25 @@ namespace ADLMRateGen.ViewModel
             SteelWorkViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
             CarbonOthersViewModel.PropertyChanged += (_, __) => _index.Rebuild(this);
 
-            CarbonOthersViewModel.RequestOpenInLibrary += OpenLibraryAt;
+
+            // One wiring for every section's breakdown. Each line binds straight to
+            // LibraryLink.OpenCommand, so nothing has to be threaded through the
+            // other nine view models.
+            Helpers.LibraryLink.Navigate = OpenLibraryAt;
+            Helpers.LibraryLink.IsMaterial = n =>
+                MaterialLibraryViewModel.MaterialLibrary.Any(
+                    m => string.Equals(m.MaterialName, n, StringComparison.OrdinalIgnoreCase));
+            Helpers.LibraryLink.IsLabour = n =>
+                LabourLibraryViewModel.LabourLibrary.Any(
+                    l => string.Equals(l.LabourName, n, StringComparison.OrdinalIgnoreCase));
+            Helpers.LibraryLink.MaterialContains = n =>
+                MaterialLibraryViewModel.MaterialLibrary.Any(
+                    m => m.MaterialName != null &&
+                         m.MaterialName.IndexOf(n, StringComparison.OrdinalIgnoreCase) >= 0);
+            Helpers.LibraryLink.LabourContains = n =>
+                LabourLibraryViewModel.LabourLibrary.Any(
+                    l => l.LabourName != null &&
+                         l.LabourName.IndexOf(n, StringComparison.OrdinalIgnoreCase) >= 0);
             GroundWorkViewModel.PropertyChanged += OnSectionRateStateChanged;
             ConcreteViewModel.PropertyChanged += OnSectionRateStateChanged;
             BlockworkViewModel.PropertyChanged += OnSectionRateStateChanged;
