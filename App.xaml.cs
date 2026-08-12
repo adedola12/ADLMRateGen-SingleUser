@@ -86,6 +86,12 @@ namespace ADLMRateGen
                 // Commercial use (uncomment and put your key):
                 // ExcelPackage.License.SetCommercial("<YOUR_EPPLUS_LICENSE_KEY>");
 
+                // Clear any leftover API host variable from an old installer,
+                // before anything reads a URL. FirstLive would ignore it anyway,
+                // but leaving it on the machine means the guard can never be
+                // retired. See AppEnvironment.RemoveRetiredHostOverrides.
+                Helpers.AppEnvironment.RemoveRetiredHostOverrides();
+
                 // 3) Migrations + data initialization
                 DataMigrator.EnsureMigrated();
 

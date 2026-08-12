@@ -48,6 +48,56 @@ namespace ADLMRateGen.Helpers
         public static string? LocalJwtSecret => GetOptional("ADLM_RATEGEN_LOCAL_JWT_SECRET");
 
         /// <summary>
+        /// Delete any user environment variable still pointing at the retired
+        /// Render host.
+        ///
+        /// FirstLive already ignores those values, so nothing depends on this to
+        /// work today. The difference is that ignoring is permanent: the stale
+        /// variable stays on the machine, and the guard above has to live forever
+        /// to keep stepping over it. Removing it fixes the cause, so once enough
+        /// installs have run this, the guard can go.
+        ///
+        /// Deletes rather than corrects, because the right value is not this
+        /// method's to decide: with the variable gone, ApiBaseUrl falls through to
+        /// the current default, and the InstallerHub rewrites the fleet-wide one
+        /// when it next needs to.
+        ///
+        /// User scope only. A machine-scope value would need administrator rights,
+        /// and a normal launch does not have them.
+        /// </summary>
+        public static void RemoveRetiredHostOverrides()
+        {
+            foreach (var name in new[] { "ADLM_RATEGEN_API_BASE_URL", "ADLM_API_BASE_URL" })
+            {
+                try
+                {
+                    var value = Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.User);
+                    if (string.IsNullOrWhiteSpace(value)) continue;
+                    if (value.IndexOf(RetiredApiHost, StringComparison.OrdinalIgnoreCase) < 0) continue;
+
+                    Environment.SetEnvironmentVariable(name, null, EnvironmentVariableTarget.User);
+
+                    // The process copy was inherited at launch and is not affected
+                    // by the change above, so clear it too. Without this the app
+                    // would keep reading the stale value until it restarted.
+                    Environment.SetEnvironmentVariable(name, null);
+
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[AppEnvironment] Removed {name}, which pointed at the retired host {RetiredApiHost}.");
+                }
+                catch (System.Security.SecurityException)
+                {
+                    // No permission to write user environment. The guard in
+                    // FirstLive still protects this launch, so carry on.
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[AppEnvironment] Could not clean {name}: {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
         /// First variable that is set and does not name the retired host.
         /// </summary>
         private static string? FirstLive(params string[] names)
