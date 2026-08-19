@@ -50,6 +50,7 @@
     <None Remove="Data\baselineLabours.json" />
     <None Remove="Data\baselineMaterials.json" />
     <None Remove="Data\defaultLabours.json" />
+    <None Remove="Data\labourSpecs.json" />
     <None Remove="Data\defaultMaterials.json" />
     <None Remove="Images\logoBlack.png" />
     <None Remove="Images\logoBlue.png" />
@@ -80,6 +81,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\defaultLabours.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\labourSpecs.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\defaultMaterials.json">

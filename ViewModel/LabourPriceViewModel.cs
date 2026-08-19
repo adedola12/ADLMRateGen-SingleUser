@@ -1,3 +1,4 @@
+using ADLMRateGen.Helpers;
 using System;
 using System.Windows.Input;
 using ADLMRateGen.Command;
@@ -26,9 +27,21 @@ namespace ADLMRateGen.ViewModel
                 {
                     _labourName = value;
                     RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(Spec));
+                    RaisePropertyChanged(nameof(HasSpec));
                 }
             }
         }
+
+        /// <summary>
+        /// Reference specification and expected output for the item being edited,
+        /// or null where none is recorded. Read-only: a day rate is a proxy for an
+        /// output, and this is here so the person setting the rate can see the
+        /// output it has to cover.
+        /// </summary>
+        public LabourSpec? Spec => LabourSpecs.Find(LabourName);
+
+        public bool HasSpec => Spec != null;
 
         /// <summary>
         /// Price shown in the edit dialog – always in the CURRENT display currency.
