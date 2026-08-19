@@ -372,21 +372,21 @@
   },
   {
     "SerialNumber": 54,
-    "LabourName": "Pneumatic tired roller (10 to 20 tonnes)",
+    "LabourName": "Pneumatic tyred roller (10 to 20 tonnes)",
     "LabourUnit": "day",
     "LabourPrice": 60000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 55,
-    "LabourName": "Pneumatic tired roller (2.7 to 10 tonnes)",
+    "LabourName": "Pneumatic tyred roller (2.7 to 10 tonnes)",
     "LabourUnit": "day",
     "LabourPrice": 45000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 56,
-    "LabourName": "Pneumatic tired roller (20 to 31.8 tonnes)",
+    "LabourName": "Pneumatic tyred roller (20 to 31.8 tonnes)",
     "LabourUnit": "day",
     "LabourPrice": 180000,
     "LabourCategory": "Plant"
@@ -428,14 +428,14 @@
   },
   {
     "SerialNumber": 62,
-    "LabourName": "Vibratory whelled roller (10 to 20 tons)",
+    "LabourName": "Vibratory wheeled roller (10 to 20 tons)",
     "LabourUnit": "day",
     "LabourPrice": 120000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 63,
-    "LabourName": "Vibratory whelled roller (8 to 10 tons)",
+    "LabourName": "Vibratory wheeled roller (8 to 10 tons)",
     "LabourUnit": "day",
     "LabourPrice": 80000,
     "LabourCategory": "Plant"
