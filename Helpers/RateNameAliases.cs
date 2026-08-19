@@ -42,6 +42,9 @@ namespace ADLMRateGen.Helpers
                 "Vibratory wheeled roller (10 to 20 tonnes)",
             },
 
+            // "1406" is not a Cat model; it is "140G" with the G read as a 6.
+            new[] { "Grader (Cat 1406)", "Grader (Cat 140G)" },
+
             // A pneumatic roller runs on tyres; corrected 2026-08.
             new[] { "Pneumatic tired roller (2.7 to 10 tonnes)",  "Pneumatic tyred roller (2.7 to 10 tonnes)" },
             new[] { "Pneumatic tired roller (10 to 20 tonnes)",   "Pneumatic tyred roller (10 to 20 tonnes)" },
