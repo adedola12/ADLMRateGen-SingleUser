@@ -716,6 +716,25 @@ namespace ADLMRateGen.ViewModel
             return ok;
         }
 
+        /// <summary>
+        /// One-line reason for a sync step that threw. Unwraps the aggregate/inner
+        /// exception so the caller sees the server's message rather than a wrapper.
+        /// </summary>
+        private static string Describe(Exception ex)
+        {
+            var e = ex;
+            while (e.InnerException != null && (e is AggregateException || string.IsNullOrWhiteSpace(e.Message)))
+                e = e.InnerException;
+
+            var msg = (e.Message ?? "").Trim();
+            if (e is TaskCanceledException || e is TimeoutException)
+                msg = string.IsNullOrWhiteSpace(msg) ? "Timed out." : msg;
+            if (string.IsNullOrWhiteSpace(msg))
+                msg = e.GetType().Name;
+
+            return msg.Length > 200 ? msg.Substring(0, 200) + "…" : msg;
+        }
+
         private static bool Is404(Exception ex)
         {
             if (ex is HttpRequestException hre)
@@ -773,7 +792,7 @@ namespace ADLMRateGen.ViewModel
                         return;
                     }
 
-                    results.Add($"Rates: FAIL");
+                    results.Add($"Rates: FAIL — {Describe(ex)}");
                 }
 
                 // ✅ 2) Compute Catalog
@@ -803,7 +822,7 @@ namespace ADLMRateGen.ViewModel
                     if (Is404(ex))
                         results.Add("Compute: SKIPPED (404 Not Found)");
                     else
-                        results.Add("Compute: FAIL");
+                        results.Add($"Compute: FAIL — {Describe(ex)}");
                 }
 
                 // ✅ 3) Materials/labour master prices — single source of truth.
@@ -830,7 +849,11 @@ namespace ADLMRateGen.ViewModel
                     if (Is404(ex))
                         results.Add("Master prices: SKIPPED (404 Not Found)");
                     else
-                        results.Add("Master prices: FAIL");
+                        // The exception already carries the HTTP status and the
+                        // server's own error text; discarding it left the dialog
+                        // saying only "FAIL", which is undiagnosable from a
+                        // customer's screenshot.
+                        results.Add($"Master prices: FAIL — {Describe(ex)}");
                 }
 
                 // Refresh local UI

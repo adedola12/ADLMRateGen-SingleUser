@@ -93,6 +93,18 @@ namespace ADLMRateGen.Services
             {
                 var root = doc.RootElement;
 
+                // GetJsonRawAsync turns 404 and 204 into the literal "[]", so a
+                // missing or empty response arrives here as an ARRAY. Every
+                // TryGetProperty below throws on a non-object, which surfaced as a
+                // bare "Master prices: FAIL" that read like a crash rather than
+                // "the server had nothing for you". Say so instead.
+                if (root.ValueKind != JsonValueKind.Object)
+                {
+                    result.Message =
+                        "The server returned no master prices (empty or missing response).";
+                    return result;
+                }
+
                 // Record where the server actually priced from, so the library can
                 // say so on screen. This is the app following the account, never
                 // the other way round.

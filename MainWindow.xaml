@@ -218,19 +218,9 @@
                                            Visibility="{Binding DataContext.IsSidebarCollapsed, ElementName=Root, Converter={StaticResource InvBoolVis}}" />
                             </StackPanel>
                         </Button>
-                        <!-- ── Sync button ── -->
-                        <Button Command="{Binding RefreshCloudDataCommand}"
-                                ToolTip="Sync from Cloud"
-                                Width="38" Height="32"
-                                Margin="0,4"
-                                Style="{StaticResource SidebarSubButton}">
-                            <fa:IconImage Icon="SyncAlt" Width="16" Height="16" />
-                        </Button>
-                        <TextBlock Text="{Binding CloudSyncStatus}"
-                                   Margin="8,0,0,0"
-                                   VerticalAlignment="Center"
-                                   Opacity="0.8"
-                                   Visibility="{Binding IsSidebarCollapsed, Converter={StaticResource InvBoolVis}}" />
+                        <!-- Sync from Cloud moved to the header action group, where the
+                             other app-wide actions live. Its status now rides on that
+                             button's tooltip. -->
                         <!-- ── Section label (Figma: Mont SemiBold 16px, #091E39) ── -->
                         <TextBlock Text="Item of works"
                                    FontFamily="{DynamicResource AppFont}"
