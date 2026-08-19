@@ -152,6 +152,25 @@
             <TextBox Text="{Binding NewLabourCategory}"
                      Style="{StaticResource FigmaInputReadOnly}" />
 
+            <!-- Notes: the estimator's own specification for a rate they added.
+                 Optional, and the panel below shows it in place of the bundled
+                 reference — a rate you added yourself has no bundled entry. -->
+            <TextBlock Text="Specification / notes (optional)"
+                       FontFamily="{DynamicResource AppFont}"
+                       FontSize="12.8"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource HintGrey}"
+                       Margin="0,18,0,8" />
+            <TextBox Text="{Binding NewLabourNote, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource FigmaInput}"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     VerticalContentAlignment="Top"
+                     MinHeight="86"
+                     MaxHeight="150"
+                     VerticalScrollBarVisibility="Auto"
+                     ToolTip="What the item is and what it produces in a day — so anyone pricing against this rate can see what it has to cover." />
+
             <!-- Save / Update Button -->
             <Button Margin="0,32,0,0"
                     HorizontalAlignment="Stretch"

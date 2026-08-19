@@ -41,9 +41,12 @@ namespace ADLMRateGen.Services
             public string unit { get; set; } = "";
             public decimal price { get; set; }
             public string? category { get; set; }
+
+            /// <summary>The estimator's own specification for a rate they added.</summary>
+            public string? note { get; set; }
         }
 
-        private record RateRow(int sn, string description, string unit, decimal price, string? category);
+        private record RateRow(int sn, string description, string unit, decimal price, string? category, string? note = null);
 
         private sealed class LibraryPayload
         {
@@ -65,9 +68,9 @@ namespace ADLMRateGen.Services
             get { lock (_gate) return _myMaterials.Select(r => (r.sn, r.description, r.unit, r.price, r.category)).ToList(); }
         }
 
-        public IReadOnlyList<(int sn, string description, string unit, decimal price, string? category)> MyLabour
+        public IReadOnlyList<(int sn, string description, string unit, decimal price, string? category, string? note)> MyLabour
         {
-            get { lock (_gate) return _myLabour.Select(r => (r.sn, r.description, r.unit, r.price, r.category)).ToList(); }
+            get { lock (_gate) return _myLabour.Select(r => (r.sn, r.description, r.unit, r.price, r.category, r.note)).ToList(); }
         }
 
         public async Task LoadAsync()
@@ -107,7 +110,8 @@ namespace ADLMRateGen.Services
                             el.GetProperty("description").GetString() ?? "",
                             el.GetProperty("unit").GetString() ?? "",
                             el.GetProperty("price").GetDecimal(),
-                            el.TryGetProperty("category", out var c) ? (c.GetString() ?? "") : null
+                            el.TryGetProperty("category", out var c) ? (c.GetString() ?? "") : null,
+                            el.TryGetProperty("note", out var n) ? n.GetString() : null
                         ));
                     }
                 }
@@ -151,7 +155,8 @@ namespace ADLMRateGen.Services
                     l.LabourName ?? "",
                     l.LabourUnit ?? "",
                     l.LabourPrice,
-                    string.IsNullOrWhiteSpace(l.LabourCategory) ? null : l.LabourCategory
+                    string.IsNullOrWhiteSpace(l.LabourCategory) ? null : l.LabourCategory,
+                    string.IsNullOrWhiteSpace(l.LabourNote) ? null : l.LabourNote
                 ));
             }
             await PushAsync();
@@ -186,9 +191,10 @@ namespace ADLMRateGen.Services
                 var desc = l.LabourName ?? existing?.description ?? "";
                 var unit = l.LabourUnit ?? existing?.unit ?? "";
                 var cat = !string.IsNullOrWhiteSpace(l.LabourCategory) ? l.LabourCategory : existing?.category;
+                var note = !string.IsNullOrWhiteSpace(l.LabourNote) ? l.LabourNote : existing?.note;
 
                 _myLabour.RemoveAll(x => x.sn == l.SerialNumber);
-                _myLabour.Add(new RateRow(l.SerialNumber, desc, unit, l.LabourPrice, cat));
+                _myLabour.Add(new RateRow(l.SerialNumber, desc, unit, l.LabourPrice, cat, note));
             }
             await PushAsync();
         }
@@ -215,7 +221,7 @@ namespace ADLMRateGen.Services
                 {
                     baseVersion = ver > 0 ? ver : (int?)null,
                     materials = mats.Select(r => new RateItemDto { sn = r.sn, description = r.description, unit = r.unit, price = r.price, category = r.category }).ToArray(),
-                    labour = labs.Select(r => new RateItemDto { sn = r.sn, description = r.description, unit = r.unit, price = r.price, category = r.category }).ToArray()
+                    labour = labs.Select(r => new RateItemDto { sn = r.sn, description = r.description, unit = r.unit, price = r.price, category = r.category, note = r.note }).ToArray()
                 };
 
                 using var doc = await auth.PutJsonAsync("/rategen/library", payload);

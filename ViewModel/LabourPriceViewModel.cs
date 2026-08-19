@@ -13,6 +13,7 @@ namespace ADLMRateGen.ViewModel
         private decimal _labourPrice;      // displayed in current currency
         private string _labourUnit;
         private string _newLabourCategory;
+        private string _newLabourNote;
         private LabourModel? _editingLabour;
 
         public event Action<LabourModel> LabourSaved;
@@ -34,12 +35,49 @@ namespace ADLMRateGen.ViewModel
         }
 
         /// <summary>
+        /// The estimator's own specification for this rate. Only rates they add
+        /// carry one; the shipped catalogue has its reference text bundled, which
+        /// is why the panel below shows whichever of the two exists.
+        /// </summary>
+        public string NewLabourNote
+        {
+            get => _newLabourNote;
+            set
+            {
+                if (_newLabourNote != value)
+                {
+                    _newLabourNote = value;
+                    RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(Spec));
+                    RaisePropertyChanged(nameof(HasSpec));
+                }
+            }
+        }
+
+        /// <summary>
         /// Reference specification and expected output for the item being edited,
         /// or null where none is recorded. Read-only: a day rate is a proxy for an
         /// output, and this is here so the person setting the rate can see the
         /// output it has to cover.
+        ///
+        /// A note the user typed wins over the bundled entry. They know their own
+        /// plant better than a published table does, and a rate they added has no
+        /// bundled entry at all.
         /// </summary>
-        public LabourSpec? Spec => LabourSpecs.Find(LabourName);
+        public LabourSpec? Spec
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(NewLabourNote))
+                    return new LabourSpec
+                    {
+                        Spec = NewLabourNote,
+                        Source = "Your own note"
+                    };
+
+                return LabourSpecs.Find(LabourName);
+            }
+        }
 
         public bool HasSpec => Spec != null;
 
@@ -110,6 +148,7 @@ namespace ADLMRateGen.ViewModel
         public LabourPriceViewModel()
         {
             _newLabourCategory = string.Empty;
+            _newLabourNote = string.Empty;
             EditingLabour = null;
             SaveLabourCommand = new DelegateCommand(o => SaveLabour(), o => !IsEditing);
             UpdateLabourCommand = new DelegateCommand(o => UpdateLabour(), o => IsEditing);
@@ -133,6 +172,7 @@ namespace ADLMRateGen.ViewModel
             LabourUnit = labour.LabourUnit;
             LabourPrice = CurrencyService.Instance.FromNgn(labour.LabourPrice); // NGN → display
             NewLabourCategory = labour.LabourCategory ?? string.Empty;
+            NewLabourNote = labour.LabourNote ?? string.Empty;
         }
 
         private void SaveLabour()
@@ -150,6 +190,7 @@ namespace ADLMRateGen.ViewModel
                     LabourUnit = this.LabourUnit,
                     LabourPrice = priceNgn,
                     LabourCategory = categoryToUse,
+                    LabourNote = NewLabourNote ?? string.Empty,
                 };
                 LabourSaved?.Invoke(newLabour);
                 ClearInputFields();
@@ -167,6 +208,7 @@ namespace ADLMRateGen.ViewModel
                 string categoryToUse = !string.IsNullOrEmpty(NewLabourCategory)
                     ? NewLabourCategory : EditingLabour.LabourCategory;
                 EditingLabour.LabourCategory = categoryToUse;
+                EditingLabour.LabourNote = NewLabourNote ?? string.Empty;
 
                 LabourSaved?.Invoke(EditingLabour);
                 ClearInputFields();
@@ -180,6 +222,7 @@ namespace ADLMRateGen.ViewModel
             LabourUnit = string.Empty;
             LabourPrice = 0;
             NewLabourCategory = string.Empty;
+            NewLabourNote = string.Empty;
         }
     }
 }

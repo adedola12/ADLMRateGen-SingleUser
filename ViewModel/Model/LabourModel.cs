@@ -19,6 +19,7 @@ namespace ADLMRateGen.ViewModel.Model
         private string? _labourUnit;
         private decimal _labourPrice;
         private string? _labourcategory;
+        private string? _labourNote;
 
         public int SerialNumber
         {
@@ -77,6 +78,25 @@ namespace ADLMRateGen.ViewModel.Model
                 {
                     _labourcategory = value;
                     OnPropertyChanged(nameof(LabourCategory));
+                }
+            }
+        }
+
+        /// <summary>
+        /// The estimator's own specification for this rate: what it is and what it
+        /// produces. Only rates a user adds carry one — the shipped catalogue has
+        /// its reference text in Data/labourSpecs.json instead, which is why the
+        /// popup shows whichever of the two exists.
+        /// </summary>
+        public string LabourNote
+        {
+            get => _labourNote;
+            set
+            {
+                if (_labourNote != value)
+                {
+                    _labourNote = value;
+                    OnPropertyChanged(nameof(LabourNote));
                 }
             }
         }

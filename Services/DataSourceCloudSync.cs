@@ -215,7 +215,8 @@ namespace ADLMRateGen.Services
                     LabourName   = r.description,
                     LabourUnit   = r.unit,
                     LabourPrice  = r.price,
-                    LabourCategory = r.category ?? ""
+                    LabourCategory = r.category ?? "",
+                    LabourNote   = r.note ?? ""
                 })
                 .ToList();
 
