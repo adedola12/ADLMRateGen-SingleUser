@@ -535,15 +535,21 @@
                                                                Foreground="{DynamicResource CellTextBrush}" />
                                                 </StackPanel>
 
+                                                <!-- Compact: the popup is narrow, so the shared
+                                                     secondary style is scaled down here. -->
                                                 <Button Grid.Column="2"
                                                         Click="ReopenPriceReview_Click"
-                                                        Padding="10,4"
-                                                        Cursor="Hand"
+                                                        Style="{DynamicResource SecondaryButton}"
+                                                        Height="30"
+                                                        MinWidth="76"
+                                                        FontSize="12"
+                                                        Padding="10,0"
                                                         VerticalAlignment="Center"
                                                         ToolTip="Open the price review in the library">
                                                     <TextBlock Text="Review"
                                                                FontFamily="{DynamicResource PoppinsFont}"
-                                                               FontSize="11.5" />
+                                                               FontSize="12"
+                                                               FontWeight="SemiBold" />
                                                 </Button>
                                             </Grid>
                                         </Border>

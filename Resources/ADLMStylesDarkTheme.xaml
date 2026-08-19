@@ -968,6 +968,72 @@
         </Setter>
     </Style>
 
+    <!-- The quiet half of a pair. Same shape and height as PrimaryButton so the
+         two sit level, but outlined rather than filled, because the pair asks a
+         question and neither answer should shout over the other. -->
+    <Style x:Key="SecondaryButton"
+           TargetType="Button"
+           BasedOn="{StaticResource RectButton}">
+        <Setter Property="Background"
+                Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource BorderBrushLight}" />
+        <Setter Property="BorderThickness"
+                Value="1.2" />
+        <Setter Property="FontSize"
+                Value="19" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource Blue900Brush}" />
+        <Setter Property="MinWidth"
+                Value="150" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="brd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="12">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}"
+                                          RecognizesAccessKey="True"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="brd"
+                                    Property="Background"
+                                    Value="{DynamicResource HoverLightBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter TargetName="brd"
+                                    Property="Opacity"
+                                    Value="0.45" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Companion to BtnText, which paints itself for a filled button. -->
+    <Style x:Key="BtnTextSecondary"
+           TargetType="TextBlock">
+        <Setter Property="FontSize"
+                Value="19" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="TextAlignment"
+                Value="Center" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource Blue900Brush}" />
+    </Style>
+
     <Style x:Key="PrimaryButtonCus"
            TargetType="Button"
            BasedOn="{StaticResource RectButton}">
