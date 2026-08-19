@@ -82,7 +82,7 @@
                     Command="{Binding AddCommand}"
                     Style="{DynamicResource PrimaryButton}"
                     HorizontalAlignment="Right"
-                    Foreground="{StaticResource LightGrayBrush}"
+                    Foreground="{DynamicResource LightGrayBrush}"
                     Margin="0,0,12,0">
                 <TextBlock Text="{Binding AddButtonText}"
                            Style="{StaticResource BtnText}" />

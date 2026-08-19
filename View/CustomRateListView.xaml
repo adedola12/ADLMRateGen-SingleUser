@@ -125,7 +125,7 @@
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Description}"
                                                    TextTrimming="CharacterEllipsis"
-                                                   Foreground="{StaticResource Blue900Brush}"
+                                                   Foreground="{DynamicResource Blue900Brush}"
                                                    Style="{StaticResource CenterCellText}">
                                             <TextBlock.InputBindings>
                                                 <MouseBinding MouseAction="LeftClick"

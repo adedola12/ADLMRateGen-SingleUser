@@ -214,7 +214,7 @@
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Description}"
                                                    ToolTip="{Binding Description}"
-                                                   Foreground="{StaticResource Blue900Brush}"
+                                                   Foreground="{DynamicResource Blue900Brush}"
                                                    Style="{StaticResource TableDescriptionText}">
                                             <TextBlock.InputBindings>
                                                 <MouseBinding MouseAction="LeftClick"

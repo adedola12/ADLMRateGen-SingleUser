@@ -51,14 +51,14 @@
                                       VerticalAlignment="Center"
                                       HorizontalAlignment="Left"
                                       Margin="8,8,0,0"
-                                      Foreground="{StaticResource BorderBrushLight}"
+                                      Foreground="{DynamicResource BorderBrushLight}"
                                       Panel.ZIndex="1" />
 
                         <TextBlock Text="⌘F"
                                    VerticalAlignment="Center"
                                    HorizontalAlignment="Right"
                                    Margin="0,0,8,0"
-                                   Foreground="{StaticResource BorderBrushLight}" />
+                                   Foreground="{DynamicResource BorderBrushLight}" />
                     </Grid>
 
                     <!-- Filter -->
@@ -150,7 +150,7 @@
                                 <TextBlock Text="{Binding MaterialName}"
                                            TextTrimming="CharacterEllipsis"
                                            FontFamily="{StaticResource PoppinsFont}"
-                                           Foreground="{StaticResource Blue900Brush}">
+                                           Foreground="{DynamicResource Blue900Brush}">
                                     <TextBlock.InputBindings>
                                         <MouseBinding MouseAction="LeftClick"
                                                       Command="{Binding DataContext.EditMaterialCommand,

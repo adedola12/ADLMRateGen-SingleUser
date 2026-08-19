@@ -157,12 +157,22 @@ namespace ADLMRateGen.Services
                 .GroupBy(m => Key(m.MaterialName, m.MaterialUnit), StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(g => g.Key, g => g.First().MaterialPrice, StringComparer.OrdinalIgnoreCase);
 
+            // One edit per key. A library can hold two rows with the same name and
+            // unit — a duplicate import, or a row the user re-added by hand — and
+            // emitting an edit for each produced a list with repeated RowKeys.
+            // Every consumer builds a dictionary off RowKey, so that threw
+            // "An item with the same key has already been added" and took the whole
+            // sync down. The incoming side was already grouped; the local side was
+            // not. Match it, keeping the first differing row as the user's intent.
+            var seenMat = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var m in localMaterials ?? Enumerable.Empty<MaterialModel>())
             {
                 var k = Key(m.MaterialName, m.MaterialUnit);
                 if (!baseMat.TryGetValue(k, out var wasSynced)) continue;   // a row the user added, not a master row
                 if (m.MaterialPrice == wasSynced) continue;                 // untouched
                 if (!incMat.TryGetValue(k, out var incoming)) continue;     // cloud no longer sends it, nothing to clash with
+                if (!seenMat.Add(k)) continue;                              // duplicate row, already recorded
 
                 edits.Add(new EditedRow
                 {
@@ -176,12 +186,15 @@ namespace ADLMRateGen.Services
                 .GroupBy(l => Key(l.LabourName, l.LabourUnit), StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(g => g.Key, g => g.First().LabourPrice, StringComparer.OrdinalIgnoreCase);
 
+            var seenLab = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var l in localLabour ?? Enumerable.Empty<LabourModel>())
             {
                 var k = Key(l.LabourName, l.LabourUnit);
                 if (!baseLab.TryGetValue(k, out var wasSynced)) continue;
                 if (l.LabourPrice == wasSynced) continue;
                 if (!incLab.TryGetValue(k, out var incoming)) continue;
+                if (!seenLab.Add(k)) continue;                              // duplicate row, already recorded
 
                 edits.Add(new EditedRow
                 {
