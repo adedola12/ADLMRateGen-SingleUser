@@ -428,14 +428,14 @@
   },
   {
     "SerialNumber": 62,
-    "LabourName": "Vibratory wheeled roller (10 to 20 tons)",
+    "LabourName": "Vibratory wheeled roller (10 to 20 tonnes)",
     "LabourUnit": "day",
     "LabourPrice": 120000,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 63,
-    "LabourName": "Vibratory wheeled roller (8 to 10 tons)",
+    "LabourName": "Vibratory wheeled roller (8 to 10 tonnes)",
     "LabourUnit": "day",
     "LabourPrice": 80000,
     "LabourCategory": "Plant"

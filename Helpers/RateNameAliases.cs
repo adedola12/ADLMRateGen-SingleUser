@@ -25,9 +25,22 @@ namespace ADLMRateGen.Helpers
         /// <summary>Every spelling a row has been known by, grouped together.</summary>
         private static readonly string[][] Groups =
         {
-            // "whelled" is not a word; corrected 2026-08.
-            new[] { "Vibratory whelled roller (8 to 10 tons)",  "Vibratory wheeled roller (8 to 10 tons)" },
-            new[] { "Vibratory whelled roller (10 to 20 tons)", "Vibratory wheeled roller (10 to 20 tons)" },
+            // "whelled" is not a word, and these two said "tons" where every other
+            // parenthetical range in the catalogue says "tonnes"; corrected 2026-08.
+            // All three spellings sit in one group so a build asking for any of
+            // them finds the row.
+            new[]
+            {
+                "Vibratory whelled roller (8 to 10 tons)",
+                "Vibratory wheeled roller (8 to 10 tons)",
+                "Vibratory wheeled roller (8 to 10 tonnes)",
+            },
+            new[]
+            {
+                "Vibratory whelled roller (10 to 20 tons)",
+                "Vibratory wheeled roller (10 to 20 tons)",
+                "Vibratory wheeled roller (10 to 20 tonnes)",
+            },
 
             // A pneumatic roller runs on tyres; corrected 2026-08.
             new[] { "Pneumatic tired roller (2.7 to 10 tonnes)",  "Pneumatic tyred roller (2.7 to 10 tonnes)" },
