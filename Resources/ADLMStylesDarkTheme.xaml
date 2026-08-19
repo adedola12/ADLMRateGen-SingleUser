@@ -971,13 +971,23 @@
     <!-- The quiet half of a pair. Same shape and height as PrimaryButton so the
          two sit level, but outlined rather than filled, because the pair asks a
          question and neither answer should shout over the other. -->
+    <!-- Outlined-button surface. BorderBrushLight is the divider colour, which
+         here equals the card background, so an outlined control needs its own
+         pair or it vanishes into whatever it sits on. -->
+    <SolidColorBrush x:Key="SecondaryBtnBg" Color="#122A4A" />
+    <SolidColorBrush x:Key="SecondaryBtnBorder" Color="#3D5F8C" />
+
+    <!-- Price movement, lifted for legibility against the navy card. -->
+    <SolidColorBrush x:Key="PriceUpBrush" Color="#FB923C" />
+    <SolidColorBrush x:Key="PriceDownBrush" Color="#4ADE80" />
+
     <Style x:Key="SecondaryButton"
            TargetType="Button"
            BasedOn="{StaticResource RectButton}">
         <Setter Property="Background"
-                Value="{DynamicResource BackgroundBrush}" />
+                Value="{DynamicResource SecondaryBtnBg}" />
         <Setter Property="BorderBrush"
-                Value="{DynamicResource BorderBrushLight}" />
+                Value="{DynamicResource SecondaryBtnBorder}" />
         <Setter Property="BorderThickness"
                 Value="1.2" />
         <Setter Property="FontSize"

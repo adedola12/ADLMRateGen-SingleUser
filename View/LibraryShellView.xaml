@@ -329,12 +329,12 @@
                                                         <DataTrigger Binding="{Binding IsIncrease}"
                                                                      Value="True">
                                                             <Setter Property="Foreground"
-                                                                    Value="#C2410C" />
+                                                                    Value="{DynamicResource PriceUpBrush}" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding IsIncrease}"
                                                                      Value="False">
                                                             <Setter Property="Foreground"
-                                                                    Value="#15803D" />
+                                                                    Value="{DynamicResource PriceDownBrush}" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
