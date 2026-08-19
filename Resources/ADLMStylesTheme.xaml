@@ -985,6 +985,11 @@
     <!-- The quiet half of a pair. Same shape and height as PrimaryButton so the
          two sit level, but outlined rather than filled, because the pair asks a
          question and neither answer should shout over the other. -->
+    <!-- Text sitting on a filled dark button. Not BackgroundBrush: the dark
+         theme repurposes white as its page colour (#313E45), so borrowing it
+         here put dark grey text on a mid-blue button. -->
+    <SolidColorBrush x:Key="OnDarkButtonText" Color="#FFFFFF" />
+
     <!-- Outlined-button surface. BorderBrushLight is the divider colour, which in
          the dark theme equals the card background, so an outlined control needs
          its own pair or it vanishes into whatever it sits on. -->

@@ -200,7 +200,7 @@
                                    FontFamily="{DynamicResource AppFont}"
                                    FontSize="18"
                                    FontWeight="Medium"
-                                   Foreground="{DynamicResource BackgroundBrush}"
+                                   Foreground="{DynamicResource OnDarkButtonText}"
                                    TextAlignment="Center" />
                     </DataTemplate>
                 </Button.ContentTemplate>
