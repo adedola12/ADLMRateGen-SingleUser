@@ -985,6 +985,29 @@
     <!-- The quiet half of a pair. Same shape and height as PrimaryButton so the
          two sit level, but outlined rather than filled, because the pair asks a
          question and neither answer should shout over the other. -->
+    <!-- Screen watermark. Tiled and rotated so it cannot be cropped out of a
+         partial capture, and drawn in the app itself rather than stamped onto a
+         screenshot afterwards: no Windows API lets a process reach into what
+         Snipping Tool or a phone camera captured, so the only mark that reliably
+         survives every route off the screen is one that is genuinely on it.
+
+         Opacity is a compromise — high enough to read in a photograph of the
+         monitor, low enough not to fight the figures underneath. The asset is
+         per-theme because a navy logo at this opacity vanishes on a dark page. -->
+    <ImageBrush x:Key="WatermarkBrush"
+                ImageSource="/Images/logoBlack.png"
+                Opacity="0.030"
+                TileMode="Tile"
+                Viewport="0,0,440,440"
+                ViewportUnits="Absolute"
+                Stretch="Uniform"
+                AlignmentX="Center"
+                AlignmentY="Center">
+        <ImageBrush.RelativeTransform>
+            <RotateTransform Angle="-30" CenterX="0.5" CenterY="0.5" />
+        </ImageBrush.RelativeTransform>
+    </ImageBrush>
+
     <!-- Text sitting on a filled dark button. Not BackgroundBrush: the dark
          theme repurposes white as its page colour (#313E45), so borrowing it
          here put dark grey text on a mid-blue button. -->
