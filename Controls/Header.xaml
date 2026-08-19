@@ -487,13 +487,74 @@
                                         </Button>
                                     </DockPanel>
 
-                                    <TextBlock Grid.Row="1"
-                                               Margin="0,8,0,0"
-                                               Text="You are all caught up."
-                                               FontFamily="{DynamicResource PoppinsFont}"
-                                               FontSize="12"
-                                               Foreground="{DynamicResource Grey700}"
-                                               Visibility="{Binding Notifications.Count, Converter={StaticResource EmptyCollectionToVisibility}}" />
+                                    <StackPanel Grid.Row="1">
+
+                                        <!-- A hidden price review is the one notification
+                                             that has to be reachable again, so it is pinned
+                                             here rather than added to the message list. -->
+                                        <Border Margin="0,10,0,0"
+                                                Padding="12"
+                                                CornerRadius="14"
+                                                Background="{DynamicResource MainBg}"
+                                                BorderBrush="{DynamicResource Blue900Brush}"
+                                                BorderThickness="1"
+                                                Visibility="{Binding LibraryShellViewModel.HasHiddenPriceConflicts, Converter={StaticResource BoolVis}}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Width="30"
+                                                        Height="30"
+                                                        Background="{DynamicResource LightGrayBrush}"
+                                                        CornerRadius="10"
+                                                        VerticalAlignment="Top">
+                                                    <fa:IconBlock Icon="Tags"
+                                                                  Width="12"
+                                                                  Height="12"
+                                                                  Foreground="{DynamicResource Blue900Brush}"
+                                                                  HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center" />
+                                                </Border>
+
+                                                <StackPanel Grid.Column="1"
+                                                            Margin="12,0,10,0"
+                                                            VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding LibraryShellViewModel.PriceConflictSummary}"
+                                                               TextWrapping="Wrap"
+                                                               FontFamily="{DynamicResource PoppinsFont}"
+                                                               FontSize="11.5"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource CellTextBrush}" />
+                                                    <TextBlock Text="You put this review away."
+                                                               FontFamily="{DynamicResource PoppinsFont}"
+                                                               FontSize="10.5"
+                                                               Opacity="0.7"
+                                                               Foreground="{DynamicResource CellTextBrush}" />
+                                                </StackPanel>
+
+                                                <Button Grid.Column="2"
+                                                        Click="ReopenPriceReview_Click"
+                                                        Padding="10,4"
+                                                        Cursor="Hand"
+                                                        VerticalAlignment="Center"
+                                                        ToolTip="Open the price review in the library">
+                                                    <TextBlock Text="Review"
+                                                               FontFamily="{DynamicResource PoppinsFont}"
+                                                               FontSize="11.5" />
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+
+                                        <TextBlock Margin="0,8,0,0"
+                                                   Text="You are all caught up."
+                                                   FontFamily="{DynamicResource PoppinsFont}"
+                                                   FontSize="12"
+                                                   Foreground="{DynamicResource Grey700}"
+                                                   Visibility="{Binding Notifications.Count, Converter={StaticResource EmptyCollectionToVisibility}}" />
+                                    </StackPanel>
 
                                     <ScrollViewer Grid.Row="2"
                                                   Margin="0,12,0,0"

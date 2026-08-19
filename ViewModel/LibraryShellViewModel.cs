@@ -1,4 +1,5 @@
-﻿using ADLMRateGen.Command;
+﻿using System;
+using ADLMRateGen.Command;
 using ADLMRateGen.Helpers;
 using ADLMRateGen.Services;
 using System.Collections.Generic;
@@ -64,9 +65,21 @@ namespace ADLMRateGen.ViewModel
 		/// since moved. The user's figure is already in force: the sync preserved
 		/// it. This is an offer to switch, not a warning that something was lost.
 		/// </summary>
-		public IReadOnlyList<SyncBaseline.EditedRow> PriceConflicts_Rows => PriceConflicts.Pending;
+		public ObservableCollection<PriceConflictRow> PriceConflictRows { get; } = new();
 
 		public bool HasPriceConflicts => PriceConflicts.Any;
+
+		/// <summary>
+		/// Hiding is not deciding. The rows stay pending so the bell can bring the
+		/// review back; only <see cref="KeepMyPricesCommand"/> and
+		/// <see cref="UseServerPricesCommand"/> actually settle anything.
+		/// </summary>
+		private bool _isPriceConflictsHidden;
+
+		public bool IsPriceConflictPanelVisible => HasPriceConflicts && !_isPriceConflictsHidden;
+
+		/// <summary>There is a review waiting, but the user put it away.</summary>
+		public bool HasHiddenPriceConflicts => HasPriceConflicts && _isPriceConflictsHidden;
 
 		public string PriceConflictSummary
 		{
@@ -75,13 +88,79 @@ namespace ADLMRateGen.ViewModel
 				var n = PriceConflicts.Count;
 				if (n == 0) return "";
 				return n == 1
-					? "1 rate you edited has a newer published price. Yours is being used."
-					: $"{n} rates you edited have newer published prices. Yours are being used.";
+					? "1 rate you edited has a newer published price"
+					: $"{n} rates you edited have newer published prices";
 			}
+		}
+
+		/// <summary>Your figures are already the ones in force; this is an offer.</summary>
+		public string PriceConflictDetail =>
+			PriceConflicts.Count == 1
+				? "Yours is being used. Tick it to take the published price instead."
+				: "Yours are being used. Tick the ones you want to take the published price.";
+
+		public int SelectedConflictCount => PriceConflictRows.Count(r => r.IsSelected);
+
+		public string SelectionSummary =>
+			$"{SelectedConflictCount} of {PriceConflictRows.Count} selected";
+
+		public bool HasSelectedConflicts => SelectedConflictCount > 0;
+
+		/// <summary>Tri-state so the header box shows a dash on a partial selection.</summary>
+		public bool? AllConflictsSelected
+		{
+			get
+			{
+				if (PriceConflictRows.Count == 0) return false;
+				var n = SelectedConflictCount;
+				if (n == 0) return false;
+				if (n == PriceConflictRows.Count) return true;
+				return null;
+			}
+			set
+			{
+				// A click on an indeterminate box means "take all of them".
+				var target = value ?? true;
+				foreach (var r in PriceConflictRows) r.IsSelected = target;
+				RaiseSelectionState();
+			}
+		}
+
+		private void RaiseSelectionState()
+		{
+			RaisePropertyChanged(nameof(SelectedConflictCount));
+			RaisePropertyChanged(nameof(SelectionSummary));
+			RaisePropertyChanged(nameof(HasSelectedConflicts));
+			RaisePropertyChanged(nameof(AllConflictsSelected));
+		}
+
+		private void RebuildConflictRows()
+		{
+			// Selections the user has already made survive a re-sync that leaves the
+			// same row pending.
+			var kept = PriceConflictRows
+				.ToDictionary(r => (r.IsLabour ? "L|" : "M|") + r.Source.RowKey,
+							  r => r.IsSelected,
+							  StringComparer.OrdinalIgnoreCase);
+
+			PriceConflictRows.Clear();
+			foreach (var e in PriceConflicts.Pending)
+			{
+				var row = new PriceConflictRow(e);
+				if (kept.TryGetValue((e.IsLabour ? "L|" : "M|") + e.RowKey, out var wasSelected))
+					row.IsSelected = wasSelected;
+				row.SelectionChanged = RaiseSelectionState;
+				PriceConflictRows.Add(row);
+			}
+
+			// A review that has emptied out should not reopen itself later.
+			if (!PriceConflicts.Any) _isPriceConflictsHidden = false;
 		}
 
 		public ICommand UseServerPricesCommand { get; }
 		public ICommand KeepMyPricesCommand { get; }
+		public ICommand HidePriceConflictsCommand { get; }
+		public ICommand ShowPriceConflictsCommand { get; }
 
 		private void RaiseConflictState()
 		{
@@ -90,9 +169,14 @@ namespace ADLMRateGen.ViewModel
 			var d = Application.Current?.Dispatcher;
 			if (d != null && !d.CheckAccess()) { d.Invoke(RaiseConflictState); return; }
 
-			RaisePropertyChanged(nameof(PriceConflicts_Rows));
+			RebuildConflictRows();
+
 			RaisePropertyChanged(nameof(HasPriceConflicts));
+			RaisePropertyChanged(nameof(IsPriceConflictPanelVisible));
+			RaisePropertyChanged(nameof(HasHiddenPriceConflicts));
 			RaisePropertyChanged(nameof(PriceConflictSummary));
+			RaisePropertyChanged(nameof(PriceConflictDetail));
+			RaiseSelectionState();
 		}
 
 		/* ───────────────── archive and undo ───────────────── */
@@ -232,26 +316,48 @@ namespace ADLMRateGen.ViewModel
 
 			RestoreCommand = new RelayCommand(_ => RestoreSelected());
 
+			// Both buttons act on the ticked rows only, so a user can take three of
+			// five published prices and keep their own on the rest. Rows left
+			// unticked stay pending and the panel stays up with what is left.
 			UseServerPricesCommand = new RelayCommand(_ =>
 			{
-				var rows = PriceConflicts.Pending;
+				var rows = PriceConflictRows.Where(r => r.IsSelected).Select(r => r.Source).ToList();
 				if (rows.Count == 0) return;
 
 				var ask = MessageBox.Show(
-					$"Replace your own figures on {rows.Count} rate(s) with the newly published prices?\n\n"
+					$"Take the published price on {rows.Count} rate(s), replacing your own figure?\n\n"
 					+ "Your current library is archived first, so this can be undone.",
 					"Use published prices", MessageBoxButton.OKCancel, MessageBoxImage.Question);
 				if (ask != MessageBoxResult.OK) return;
 
-				DataSourceCloudSync.AcceptServerPrices(rows);
+				DataSourceCloudSync.AcceptServerPrices(rows);   // resolves them as it goes
 				MaterialLibraryViewModel.ReloadFromDisk();
 				LabourLibraryViewModel.ReloadFromDisk();
 				RefreshArchives();
 			});
 
 			// Nothing to write: their prices are already the ones in use. This only
-			// takes the notice down.
-			KeepMyPricesCommand = new RelayCommand(_ => PriceConflicts.KeepMine());
+			// stops the app asking about the ticked rows again.
+			KeepMyPricesCommand = new RelayCommand(_ =>
+			{
+				var rows = PriceConflictRows.Where(r => r.IsSelected).Select(r => r.Source).ToList();
+				if (rows.Count == 0) return;
+				PriceConflicts.Resolve(rows);
+			});
+
+			HidePriceConflictsCommand = new RelayCommand(_ =>
+			{
+				_isPriceConflictsHidden = true;
+				RaisePropertyChanged(nameof(IsPriceConflictPanelVisible));
+				RaisePropertyChanged(nameof(HasHiddenPriceConflicts));
+			});
+
+			ShowPriceConflictsCommand = new RelayCommand(_ =>
+			{
+				_isPriceConflictsHidden = false;
+				RaisePropertyChanged(nameof(IsPriceConflictPanelVisible));
+				RaisePropertyChanged(nameof(HasHiddenPriceConflicts));
+			});
 
 			PriceConflicts.Changed += RaiseConflictState;
 			RefreshArchives();

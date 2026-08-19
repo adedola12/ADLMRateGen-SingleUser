@@ -59,6 +59,21 @@ namespace ADLMCivilPlugin.Controls
             }
         }
 
+        /// <summary>
+        /// Bring back a price review the user hid. The panel lives in the library
+        /// shell, so this also navigates there — reopening something onto a screen
+        /// the user cannot see would look like nothing happened — and closes the
+        /// notifications popup on the way out.
+        /// </summary>
+        private void ReopenPriceReview_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not MainViewModel vm) return;
+
+            vm.LibraryShellViewModel?.ShowPriceConflictsCommand?.Execute(null);
+            vm.SelectedLibraryShellViewCommand?.Execute(null);
+            vm.IsNotificationsOpen = false;
+        }
+
         private void UpdateThemeIcon(bool isDark)
         {
             ColorModeIcon.Icon = isDark ? IconChar.Sun : IconChar.Moon;
