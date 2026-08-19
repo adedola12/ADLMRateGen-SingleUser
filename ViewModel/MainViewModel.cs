@@ -859,6 +859,14 @@ namespace ADLMRateGen.ViewModel
                 // Refresh local UI
                 MaterialLibraryViewModel.ReloadFromDisk();
                 LabourLibraryViewModel.ReloadFromDisk();
+
+                // The sync is what learns the account's pricing location: the server
+                // answers with the state it priced from and MasterLibrarySyncService
+                // persists it. Until now only navigating into the library re-read
+                // that, so a user already sitting on the library watched the note
+                // keep the old state while the prices underneath were the new one.
+                LibraryShellViewModel?.RefreshLocationNote();
+
                 _index.Rebuild(this);
 
                 LastCloudSyncAt = DateTime.Now;

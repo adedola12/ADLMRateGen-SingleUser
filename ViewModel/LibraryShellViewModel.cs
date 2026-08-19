@@ -56,7 +56,14 @@ namespace ADLMRateGen.ViewModel
 		}
 
 		/// <summary>Call after a sync so the note follows the account.</summary>
-		public void RefreshLocationNote() => RaisePropertyChanged(nameof(LocationNote));
+		public void RefreshLocationNote()
+		{
+			// The sync finishes off the UI thread, so come back before raising.
+			var d = Application.Current?.Dispatcher;
+			if (d != null && !d.CheckAccess()) { d.Invoke(RefreshLocationNote); return; }
+
+			RaisePropertyChanged(nameof(LocationNote));
+		}
 
 		/* ───────────────── your prices vs the server's ───────────────── */
 
