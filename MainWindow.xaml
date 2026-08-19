@@ -591,21 +591,11 @@
                             Panel.ZIndex="99" />
 
             <!--────────  SCREEN WATERMARK  ─────────
-                 Above everything including the popups, because a capture of an
-                 open rate breakdown is exactly the one worth marking. Never hit
-                 testable: it covers the whole window, so anything else would
-                 swallow every click in the app.
-
-                 Only shown once signed in. There is nothing to protect on the
-                 sign-in screen, and a watermark over a password field just
-                 looks broken. -->
-            <Rectangle x:Name="Watermark"
-                       Panel.ZIndex="100"
-                       IsHitTestVisible="False"
-                       Focusable="False"
-                       Fill="{DynamicResource WatermarkBrush}"
-                       Visibility="{Binding DataContext.IsLoggedIn,
-                                            ElementName=Root,
-                                            Converter={StaticResource BoolVis}}" />
+                 Deliberately NOT drawn on screen. The mark is applied to the
+                 captured image instead — see Services/ScreenshotWatermark.cs —
+                 so the app stays clean to work in and a screenshot still carries
+                 its source. WatermarkBrush is kept in the themes for the day
+                 someone wants the always-on version back; it covers a photograph
+                 of the monitor, which the clipboard route cannot. -->
     </Grid>
 </Window>
