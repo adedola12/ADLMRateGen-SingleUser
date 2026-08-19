@@ -252,6 +252,51 @@
                 <StackPanel Orientation="Horizontal"
                             Margin="0,0,10,0"
                             VerticalAlignment="Center">
+                    <!-- Welcome-banner toggle — collapsing the banner hands its
+                         height to the rate table, roughly doubling visible rows. -->
+                    <Button Margin="0,0,4,0"
+                            Style="{StaticResource HeaderActionButtonStyle}"
+                            Command="{Binding ToggleWelcomeBannerCommand}">
+                        <Button.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text"
+                                                    Value="Show welcome banner" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsWelcomeBannerVisible}"
+                                                             Value="True">
+                                                    <Setter Property="Text"
+                                                            Value="Hide welcome banner — more room for rates" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </ToolTip>
+                        </Button.ToolTip>
+                        <fa:IconBlock Width="16"
+                                      Height="16"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Foreground="{DynamicResource Blue900Brush}">
+                            <fa:IconBlock.Style>
+                                <Style TargetType="fa:IconBlock">
+                                    <Setter Property="Icon"
+                                            Value="ChevronDown" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsWelcomeBannerVisible}"
+                                                     Value="True">
+                                            <Setter Property="Icon"
+                                                    Value="ChevronUp" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </fa:IconBlock.Style>
+                        </fa:IconBlock>
+                    </Button>
+
                     <Button x:Name="ColorModeButton"
                             Margin="0,0,4,0"
                             Style="{StaticResource HeaderActionButtonStyle}"

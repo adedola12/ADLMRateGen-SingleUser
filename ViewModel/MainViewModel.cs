@@ -378,6 +378,26 @@ namespace ADLMRateGen.ViewModel
         public ICommand SelectedSteelworkViewCommand { get; }
         public ICommand SelectedCustomRateInputViewCommand { get; }
         public ICommand SelectedCustomRateViewCommand { get; }
+        /* ───────── dashboard chrome ───────── */
+        private readonly UiPreferences _uiPreferences = UiPreferences.Load();
+
+        /// <summary>
+        /// Welcome banner on the dashboard. Collapsing it hands its 260px back to the
+        /// rate table below, which roughly doubles the rows visible at once.
+        /// </summary>
+        public bool IsWelcomeBannerVisible
+        {
+            get => _uiPreferences.ShowWelcomeBanner;
+            set
+            {
+                if (_uiPreferences.ShowWelcomeBanner == value) return;
+                _uiPreferences.ShowWelcomeBanner = value;
+                _uiPreferences.Save();
+                RaisePropertyChanged();
+            }
+        }
+
+        public ICommand ToggleWelcomeBannerCommand { get; }
         public ICommand LogoutCommand { get; }
         public ICommand OpenYoutubeCommand { get; }
         public ICommand HelpCommand { get; }
@@ -594,6 +614,7 @@ namespace ADLMRateGen.ViewModel
             });
             OpenYoutubeCommand = new RelayCommand(_ => OpenYoutube());
             HelpCommand = new RelayCommand(_ => SendHelpEmail());
+            ToggleWelcomeBannerCommand = new RelayCommand(_ => IsWelcomeBannerVisible = !IsWelcomeBannerVisible);
             ExportAllRatesCommand = new RelayCommand(_ => ExportAllToExcel());
             ExportBillCsvCommand = new RelayCommand(_ => ExportBillToCsv());
 

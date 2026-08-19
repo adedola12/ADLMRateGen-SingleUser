@@ -51,7 +51,7 @@
                     Padding="24"
                     SnapsToDevicePixels="True"
                     Grid.Row="1"
-                    Margin="0,22,0,-22">
+                    Margin="0,22,0,0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

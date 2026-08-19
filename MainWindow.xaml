@@ -468,6 +468,8 @@
                             Margin="12 0 12 10"
                             Height="250"
                             CornerRadius="18"
+                            Visibility="{Binding IsWelcomeBannerVisible,
+                                                 Converter={StaticResource BoolVis}}"
                             SnapsToDevicePixels="True">
                         <Border.Background>
                             <ImageBrush ImageSource="/Resources/Backdrop.png"
