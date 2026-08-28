@@ -48,6 +48,7 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--yes") args.yes = true;
+    else if (a === "--allow-kind-change") args.allowKindChange = true;
     else if (a === "--file") args.file = argv[++i];
     else if (a === "--version") args.version = argv[++i];
     else if (a === "--product") args.product = argv[++i];
@@ -121,14 +122,43 @@ console.log(`API       ${base}`);
 const { item: current } = await api(base, token, `/admin/deployments/${args.product}`);
 if (!current) die(`No deployment record for "${args.product}". Refusing to invent one.`);
 
-console.log(`\nLive now  version ${current.version || "(unset)"}`);
+// Kind is inferred from the file extension, exactly as the server does it, so
+// what is printed here is what will be stored.
+const kind = fileName.toLowerCase().endsWith(".zip") ? "zip" : "file";
+const liveKind = String(current.packageKind || "").trim() || "(unset)";
+
+console.log(`\nLive now  version ${current.version || "(unset)"}  [${liveKind}]`);
 console.log(`          ${current.packageUri || "(no package)"}`);
-console.log(`Shipping  version ${args.version}`);
+console.log(`Shipping  version ${args.version}  [${kind}]`);
 
 if (current.version === args.version) {
   console.log(
     `\n! The record already says ${args.version}. Continuing will replace that package.`,
   );
+}
+
+// The kind and the operations have to agree, and nothing else checks that.
+//
+// On 28 Aug 2026 this script pushed an Inno installer .exe over a deployment
+// whose operations were `copyDirectory` from `source: "app"` — zip semantics.
+// It preserved the operations perfectly and changed the package out from under
+// them, so the record verified clean and could not install: there is no app/
+// directory inside a setup executable. The version was unchanged too, so the
+// breakage stayed mostly invisible.
+//
+// Changing kind is therefore a decision about how the product installs, not a
+// detail of which file you happened to point at. It needs saying out loud.
+if (liveKind !== "(unset)" && kind !== liveKind) {
+  const ops = (current.operations || []).map((o) => `${o.type}(${o.source || "."})`);
+  console.log(`\n! PACKAGE KIND CHANGES: ${liveKind} → ${kind}`);
+  console.log(`  The stored operations are: ${ops.join(", ") || "(none)"}`);
+  console.log(`  A "zip" package is extracted and its folders copied by those`);
+  console.log(`  operations; a "file" package is not. If they no longer match,`);
+  console.log(`  the record will verify clean and still fail to install.`);
+  if (!args.allowKindChange) {
+    die("Refusing. Ship the matching package type, or pass --allow-kind-change if this is deliberate.");
+  }
+  console.log("  --allow-kind-change given; continuing.");
 }
 
 if (!args.yes) {
@@ -181,6 +211,7 @@ const problems = [];
 if (check.version !== args.version) problems.push(`version is ${check.version}`);
 if (check.sha256 !== sha256) problems.push(`sha256 is ${check.sha256 || "(unset)"}`);
 if (check.packageUri !== presigned.packageUri) problems.push(`packageUri is ${check.packageUri}`);
+if (check.packageKind !== kind) problems.push(`packageKind is ${check.packageKind}`);
 if (check.enabled === false) problems.push("the deployment is disabled");
 if ((saved.operations?.length ?? 0) !== (current.operations?.length ?? 0)) {
   problems.push(
