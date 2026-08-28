@@ -50,7 +50,7 @@
                     Padding="24"
                     SnapsToDevicePixels="True"
                     Grid.Row="1"
-                    Margin="0,22,0,-22">
+                    Margin="0,22,0,0">
 
                 <Grid>
 
@@ -208,7 +208,7 @@
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Description}"
                                                    ToolTip="{Binding Description}"
-                                                   Foreground="{StaticResource Blue900Brush}"
+                                                   Foreground="{DynamicResource Blue900Brush}"
                                                    Style="{StaticResource TableDescriptionText}">
                                             <TextBlock.InputBindings>
                                                 <MouseBinding MouseAction="LeftClick"

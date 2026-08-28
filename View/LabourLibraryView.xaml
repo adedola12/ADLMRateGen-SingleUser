@@ -46,12 +46,12 @@
                                    FontSize="14"
                                    VerticalAlignment="Center"
                                    Margin="8,0,0,0"
-                                   Foreground="{StaticResource BorderBrushLight}" />
+                                   Foreground="{DynamicResource BorderBrushLight}" />
                         <TextBlock Text="⌘F"
                                    VerticalAlignment="Center"
                                    HorizontalAlignment="Right"
                                    Margin="0,0,8,0"
-                                   Foreground="{StaticResource BorderBrushLight}" />
+                                   Foreground="{DynamicResource BorderBrushLight}" />
                     </Grid>
 
                     <!-- category filter -->
@@ -141,7 +141,7 @@
                                 <TextBlock Text="{Binding LabourName}"
                                            TextTrimming="CharacterEllipsis"
                                            FontFamily="{StaticResource PoppinsFont}"
-                                           Foreground="{StaticResource Blue900Brush}">
+                                           Foreground="{DynamicResource Blue900Brush}">
                                     <TextBlock.InputBindings>
                                         <MouseBinding MouseAction="LeftClick"
                                                      

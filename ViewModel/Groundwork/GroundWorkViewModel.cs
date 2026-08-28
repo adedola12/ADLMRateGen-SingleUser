@@ -1075,7 +1075,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double banksmanQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Banksman (Semi skilled)", 2);
             double labourQty = UserRateEditStore.Current.Qty(SectionKey, 8, "Labour", 2);
 
-            double rollerCost = GetLabourRate("Vibratory whelled roller (8 to 10 tons)");
+            double rollerCost = GetLabourRate("Vibratory wheeled roller (8 to 10 tonnes)");
 
             double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 8, "Diesel", 250);
@@ -1135,7 +1135,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double banksmanQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Banksman (Semi skilled)", 2);
             double labourQty = UserRateEditStore.Current.Qty(SectionKey, 9, "Labour", 2);
 
-            double rollerCost = GetLabourRate("Vibratory whelled roller (8 to 10 tons)");
+            double rollerCost = GetLabourRate("Vibratory wheeled roller (8 to 10 tonnes)");
 
             double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 9, "Diesel", 250);
@@ -1193,7 +1193,7 @@ namespace ADLMRateGen.ViewModel.Groundwork
             double banksmanQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Banksman (Semi skilled)", 2);
             double labourQty = UserRateEditStore.Current.Qty(SectionKey, 10, "Labour", 2);
 
-            double rollerCost = GetLabourRate("Vibratory whelled roller (8 to 10 tons)");
+            double rollerCost = GetLabourRate("Vibratory wheeled roller (8 to 10 tonnes)");
 
             double dieselPrice = GetMaterialPrice("Diesel");
             double literPerDay = UserRateEditStore.Current.Qty(SectionKey, 10, "Diesel", 250);

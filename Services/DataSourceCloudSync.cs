@@ -76,7 +76,10 @@ namespace ADLMRateGen.Services
             //     user can still switch to it later from the conflicts prompt.
             if (edits.Count > 0)
             {
-                var keep = edits.ToDictionary(e => e.RowKey, e => e.YourPrice, StringComparer.OrdinalIgnoreCase);
+                // Grouped, not ToDictionary: a repeated RowKey here used to throw and
+                // abort the sync rather than lose one row.
+                var keep = edits.GroupBy(e => e.RowKey, StringComparer.OrdinalIgnoreCase)
+                                .ToDictionary(g => g.Key, g => g.First().YourPrice, StringComparer.OrdinalIgnoreCase);
                 foreach (var m in master)
                 {
                     if (keep.TryGetValue(SyncBaseline.Key(m.MaterialName, m.MaterialUnit), out var mine))
@@ -119,7 +122,26 @@ namespace ADLMRateGen.Services
             }
 
             // 4) Merge & save
-            var merged = master.Concat(userRows)
+            //
+            // A user row naming an item master already carries is the user's PRICE
+            // for that item, not a second item. Concatenating produced visible
+            // twins — same name, unit and price, one with the master category and
+            // one blank — and a repeated key is what crashed FindEdits. Fold the
+            // user's price onto the master row and keep master's category.
+            var masterByKey = new Dictionary<string, MaterialModel>(StringComparer.OrdinalIgnoreCase);
+            foreach (var m in master)
+                masterByKey[SyncBaseline.Key(m.MaterialName, m.MaterialUnit)] = m;
+
+            var extraUserRows = new List<MaterialModel>();
+            foreach (var u in userRows)
+            {
+                if (masterByKey.TryGetValue(SyncBaseline.Key(u.MaterialName, u.MaterialUnit), out var hit))
+                    hit.MaterialPrice = u.MaterialPrice;
+                else
+                    extraUserRows.Add(u);
+            }
+
+            var merged = master.Concat(extraUserRows)
                                .OrderBy(m => m.SerialNumber)
                                .ToList();
 
@@ -173,7 +195,10 @@ namespace ADLMRateGen.Services
 
             if (edits.Count > 0)
             {
-                var keep = edits.ToDictionary(e => e.RowKey, e => e.YourPrice, StringComparer.OrdinalIgnoreCase);
+                // Grouped, not ToDictionary: a repeated RowKey here used to throw and
+                // abort the sync rather than lose one row.
+                var keep = edits.GroupBy(e => e.RowKey, StringComparer.OrdinalIgnoreCase)
+                                .ToDictionary(g => g.Key, g => g.First().YourPrice, StringComparer.OrdinalIgnoreCase);
                 foreach (var l in master)
                 {
                     if (keep.TryGetValue(SyncBaseline.Key(l.LabourName, l.LabourUnit), out var mine))
@@ -190,7 +215,8 @@ namespace ADLMRateGen.Services
                     LabourName   = r.description,
                     LabourUnit   = r.unit,
                     LabourPrice  = r.price,
-                    LabourCategory = r.category ?? ""
+                    LabourCategory = r.category ?? "",
+                    LabourNote   = r.note ?? ""
                 })
                 .ToList();
 
@@ -212,8 +238,21 @@ namespace ADLMRateGen.Services
                 }
             }
 
-            // 4) Merge & save
-            var merged = master.Concat(userRows)
+            // 4) Merge & save — same twinning fix as materials above.
+            var masterByKey = new Dictionary<string, LabourModel>(StringComparer.OrdinalIgnoreCase);
+            foreach (var l in master)
+                masterByKey[SyncBaseline.Key(l.LabourName, l.LabourUnit)] = l;
+
+            var extraUserRows = new List<LabourModel>();
+            foreach (var u in userRows)
+            {
+                if (masterByKey.TryGetValue(SyncBaseline.Key(u.LabourName, u.LabourUnit), out var hit))
+                    hit.LabourPrice = u.LabourPrice;
+                else
+                    extraUserRows.Add(u);
+            }
+
+            var merged = master.Concat(extraUserRows)
                                .OrderBy(l => l.SerialNumber)
                                .ToList();
 
@@ -239,7 +278,8 @@ namespace ADLMRateGen.Services
             LibraryArchive.Create("before accepting new prices", force: true);
 
             var mat = list.Where(r => !r.IsLabour)
-                          .ToDictionary(r => r.RowKey, r => r.ServerPrice, StringComparer.OrdinalIgnoreCase);
+                          .GroupBy(r => r.RowKey, StringComparer.OrdinalIgnoreCase)
+                          .ToDictionary(g => g.Key, g => g.First().ServerPrice, StringComparer.OrdinalIgnoreCase);
             if (mat.Count > 0)
             {
                 var ds = new MaterialJsonDataSource(AppPaths.MaterialLibraryFile);
@@ -252,7 +292,8 @@ namespace ADLMRateGen.Services
             }
 
             var lab = list.Where(r => r.IsLabour)
-                          .ToDictionary(r => r.RowKey, r => r.ServerPrice, StringComparer.OrdinalIgnoreCase);
+                          .GroupBy(r => r.RowKey, StringComparer.OrdinalIgnoreCase)
+                          .ToDictionary(g => g.Key, g => g.First().ServerPrice, StringComparer.OrdinalIgnoreCase);
             if (lab.Count > 0)
             {
                 var ds = new LabourJsonDataSource(AppPaths.LabourLibraryFile);

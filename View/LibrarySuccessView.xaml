@@ -65,7 +65,7 @@
                                        FontFamily="{DynamicResource AppFont}"
                                        FontSize="20"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource BackgroundBrush}"
+                                       Foreground="{DynamicResource OnDarkButtonText}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center" />
                         </Border>

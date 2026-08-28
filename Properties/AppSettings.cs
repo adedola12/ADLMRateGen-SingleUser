@@ -27,8 +27,10 @@ namespace ADLMRateGen.Properties
         // LastKnownAccountState is gone. It existed to reconcile an in-app state
         // picker with the account's, and there is no in-app picker: the profile on
         // the website is the only place a pricing location is set, so there is
-        // nothing left to reconcile. The field stays in SettingsModel so an
-        // existing settings.json still parses.
+        // nothing left to reconcile. It was kept in SettingsModel on the belief
+        // that an existing settings.json would otherwise fail to parse, but
+        // System.Text.Json skips members it does not recognise, so the key is
+        // simply ignored on read and drops out on the next write.
 
         private static SettingsModel Load()
         {
@@ -58,7 +60,6 @@ namespace ADLMRateGen.Properties
         private class SettingsModel
         {
             public string Zone { get; set; } = string.Empty;
-            public string LastKnownAccountState { get; set; } = string.Empty;
         }
     }
 }

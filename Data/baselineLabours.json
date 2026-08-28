@@ -225,7 +225,7 @@
   },
   {
     "SerialNumber": 33,
-    "LabourName": "Grader (Cat 1406)",
+    "LabourName": "Grader (Cat 140G)",
     "LabourUnit": "",
     "LabourPrice": 45000.00,
     "LabourCategory": "Plant"
@@ -253,21 +253,21 @@
   },
   {
     "SerialNumber": 37,
-    "LabourName": "Pneumatic tired roller (2.7 to 10 tonnes)",
+    "LabourName": "Pneumatic tyred roller (2.7 to 10 tonnes)",
     "LabourUnit": "",
     "LabourPrice": 28500.00,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 38,
-    "LabourName": "Pneumatic tired roller (10 to 20 tonnes)",
+    "LabourName": "Pneumatic tyred roller (10 to 20 tonnes)",
     "LabourUnit": "",
     "LabourPrice": 32500.00,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 39,
-    "LabourName": "Pneumatic tired roller (20 to 31.8 tonnes)",
+    "LabourName": "Pneumatic tyred roller (20 to 31.8 tonnes)",
     "LabourUnit": "",
     "LabourPrice": 45000.00,
     "LabourCategory": "Plant"
@@ -330,14 +330,14 @@
   },
   {
     "SerialNumber": 48,
-    "LabourName": "Vibratory whelled roller (8 to 10 tons)",
+    "LabourName": "Vibratory wheeled roller (8 to 10 tonnes)",
     "LabourUnit": "",
     "LabourPrice": 35000.00,
     "LabourCategory": "Plant"
   },
   {
     "SerialNumber": 49,
-    "LabourName": "Vibratory whelled roller (10 to 20 tons)",
+    "LabourName": "Vibratory wheeled roller (10 to 20 tonnes)",
     "LabourUnit": "",
     "LabourPrice": 45000.00,
     "LabourCategory": "Plant"

@@ -131,6 +131,11 @@ namespace ADLMRateGen
             // 6) React to ToggleSidebarCommand by snapping the column width
             mainVM.PropertyChanged += OnMainVmPropertyChanged;
 
+            // Screenshots of this app carry the ADLM mark. Applied to the captured
+            // image rather than drawn on screen, so there is nothing over the
+            // figures while somebody is working. See ScreenshotWatermark.
+            Loaded += (_, __) => ADLMRateGen.Services.ScreenshotWatermark.Attach(this);
+
             // 7) Connect to Mongo after the window is up so startup does not block on DNS/network.
             Loaded += async (_, __) =>
             {

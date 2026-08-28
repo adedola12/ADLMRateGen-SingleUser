@@ -1,0 +1,609 @@
+{
+  "_readme": [
+    "Reference specification and expected output for labour and plant rates.",
+    "",
+    "Shown at the foot of the labour edit popup so an estimator can sanity-check a",
+    "day rate against what the item actually produces in a day.",
+    "",
+    "Every 'output' is a RANGE with the assumption it rests on, never a single",
+    "figure. Published sources disagree by a factor of two for the same machine —",
+    "one gives 27 m3/hr for a 75 hp dozer in clay and 43.5 in sand and gravel —",
+    "because output is governed by soil, haul distance, operator and site far more",
+    "than by the machine. A single authoritative-looking number in an estimating",
+    "tool would be read as a promise, so the basis travels with the figure.",
+    "",
+    "Keyed by LabourName. Lookups go through RateNameAliases, so an entry keeps",
+    "working after the catalogue is renamed.",
+    "",
+    "Fields: spec, output, basis, running, source. Any may be omitted.",
+    "An item with no entry simply shows nothing — absence is not an error."
+  ],
+  "Bulldozer D4": {
+    "spec": "Cat D4-class crawler dozer. ~130 hp, ~9 t operating weight, straight or semi-U blade.",
+    "output": "60-110 m3/hr bulk push",
+    "basis": "15-30 m haul, common earth, competent operator. Clay drops it by roughly a third; sand and gravel lifts it.",
+    "running": "Diesel ~12-18 l/hr",
+    "source": "Caterpillar published specifications; earthmoving productivity tables (planningengineer.net)"
+  },
+  "Bulldozer D6": {
+    "spec": "Cat D6-class crawler dozer. Up to 345 hp (C9.3 ACERT), ~23 t operating weight, blade capacity to ~7.3 t.",
+    "output": "150-250 m3/hr bulk push",
+    "basis": "30 m haul, common earth. Longer hauls fall away sharply — beyond ~60 m a scraper or truck haul is usually cheaper.",
+    "running": "Diesel ~25-35 l/hr",
+    "source": "Caterpillar / Hawthorne Cat D6 technical specifications; earthmoving productivity tables"
+  },
+  "Bulldozer D8": {
+    "spec": "Cat D8-class crawler dozer. ~350-450 hp, ~38-40 t operating weight, U or semi-U blade.",
+    "output": "250-400 m3/hr bulk push",
+    "basis": "30 m haul, common earth. The usual choice for mass excavation and heavy ripping.",
+    "running": "Diesel ~40-55 l/hr",
+    "source": "Caterpillar published specifications; earthmoving productivity tables"
+  },
+  "Vibratory wheeled roller (8 to 10 tonnes)": {
+    "spec": "Single or double drum vibratory roller, 8-10 t operating weight.",
+    "output": "80-95 m3/hr compacted, or roughly 600-750 m2/hr of layer",
+    "basis": "150-200 mm loose layer, 4-6 passes, granular fill at optimum moisture. Cohesive soils need more passes.",
+    "running": "Diesel ~8-12 l/hr",
+    "source": "Standard productivity of construction machinery tables (vibratory roller ~91 m3/hr, ~731 m3/day)"
+  },
+  "Vibratory wheeled roller (10 to 20 tonnes)": {
+    "spec": "Heavy single drum vibratory roller, 10-20 t operating weight.",
+    "output": "95-140 m3/hr compacted",
+    "basis": "200-250 mm loose layer, 4-6 passes, granular fill. Suits subgrade and sub-base on road and large platform work.",
+    "running": "Diesel ~12-18 l/hr",
+    "source": "Standard productivity of construction machinery tables"
+  },
+  "Pneumatic tyred roller (2.7 to 10 tonnes)": {
+    "spec": "Multi-wheel pneumatic tyred roller, 2.7-10 t, ballastable.",
+    "output": "60-90 m3/hr compacted",
+    "basis": "Kneading action — used for sealing and finishing asphalt and for cohesive fills where a vibrating drum is unsuitable.",
+    "running": "Diesel ~6-10 l/hr",
+    "source": "Standard productivity of construction machinery tables"
+  },
+  "Pneumatic tyred roller (10 to 20 tonnes)": {
+    "spec": "Multi-wheel pneumatic tyred roller, 10-20 t, ballastable.",
+    "output": "90-130 m3/hr compacted",
+    "basis": "Intermediate rolling on asphalt, or proof rolling of formation.",
+    "running": "Diesel ~10-15 l/hr",
+    "source": "Standard productivity of construction machinery tables"
+  },
+  "Pneumatic tyred roller (20 to 31.8 tonnes)": {
+    "spec": "Heavy ballasted pneumatic tyred roller, 20-31.8 t.",
+    "output": "130-180 m3/hr compacted",
+    "basis": "Heavy proof rolling and deep lift compaction on highway work.",
+    "running": "Diesel ~15-22 l/hr",
+    "source": "Standard productivity of construction machinery tables"
+  },
+  "Static steel wheeled roller - (2.7 to 6 tonnes)": {
+    "spec": "Tandem or three-wheel static steel roller, 2.7-6 t, no vibration.",
+    "output": "40-70 m3/hr compacted, or roughly 400-600 m2/hr",
+    "basis": "Finishing passes and thin layers. Static rolling is for surface regularity, not deep compaction.",
+    "running": "Diesel ~4-7 l/hr",
+    "source": "Standard productivity of construction machinery tables"
+  },
+  "Static steel wheeled roller - (6 to 12.7 tonnes)": {
+    "spec": "Tandem static steel roller, 6-12.7 t.",
+    "output": "70-110 m3/hr compacted",
+    "basis": "Breakdown and finish rolling on asphalt; final passes on granular formation.",
+    "running": "Diesel ~7-11 l/hr",
+    "source": "Standard productivity of construction machinery tables"
+  },
+  "Generator - 1.5/5 KVA": {
+    "spec": "Small portable petrol or diesel set, 1.5-5 kVA (~1.2-4 kW usable).",
+    "output": "Runs hand tools, site lighting, a small vibrator poker",
+    "basis": "kW is about 0.8 x kVA at unity-ish site loads. Size to about 75% load for fuel economy and engine life.",
+    "running": "~0.6-1.5 l/hr",
+    "source": "Diesel generator fuel consumption charts (John F Hunt, FW Power)"
+  },
+  "Generator - 10/15 KVA": {
+    "spec": "Small site set, 10-15 kVA (~8-12 kW usable).",
+    "output": "Site office, lighting, small plant",
+    "basis": "At 15 kVA: about 1.8 l/hr at half load, 3.2 l/hr at full.",
+    "running": "~1.8-3.2 l/hr",
+    "source": "Diesel generator fuel consumption charts (John F Hunt, FW Power)"
+  },
+  "Generator - 27/35 KVA": {
+    "spec": "Site set, 27-35 kVA (~22-28 kW usable).",
+    "output": "Mixed site load: mixer, vibrators, lighting, welding at low duty",
+    "basis": "Roughly a quarter of rated kVA in litres per hour at full load.",
+    "running": "~5-8 l/hr",
+    "source": "Diesel generator fuel consumption charts"
+  },
+  "Generator - 50/80 KVA": {
+    "spec": "Site set, 50-80 kVA (~40-64 kW usable).",
+    "output": "Whole small site, or a tower crane on light duty",
+    "basis": "Fuel is close to linear with load, not with rating — a lightly loaded set still burns a third of full-load fuel.",
+    "running": "~10-17 l/hr",
+    "source": "Diesel generator fuel consumption charts"
+  },
+  "Generator - 125 KVA": {
+    "spec": "Medium set, 125 kVA (~100 kW usable).",
+    "output": "Main site supply for a medium project",
+    "basis": "A 100 kVA class set burns about 11 l/hr at half load and about 21 l/hr at full.",
+    "running": "~14-26 l/hr",
+    "source": "Diesel generator fuel consumption charts (asogenset, Econo Solar)"
+  },
+  "Generator - 150 KVA": {
+    "spec": "Medium set, 150 kVA (~120 kW usable).",
+    "output": "Main site supply, batching plant, multiple tower cranes",
+    "basis": "Sized on starting current as much as running load — motors draw several times running current on start.",
+    "running": "~17-31 l/hr",
+    "source": "Diesel generator fuel consumption charts"
+  },
+  "Generator - 200 KVA": {
+    "spec": "Large set, 200 kVA (~160 kW usable).",
+    "output": "Main supply for a large site",
+    "basis": "Fuel dominates the hire cost at this size — at Nigerian diesel prices a full-load day can exceed the day rate itself.",
+    "running": "~23-42 l/hr",
+    "source": "Diesel generator fuel consumption charts"
+  },
+  "Generator - 250 KVA": {
+    "spec": "Large set, 250 kVA (~200 kW usable).",
+    "output": "Main supply for a large site or batching plant",
+    "basis": "At 250 kVA: about 25 l/hr at half load and about 50 l/hr at full.",
+    "running": "~25-50 l/hr",
+    "source": "Diesel generator fuel consumption charts (John F Hunt)"
+  },
+  "Concrete mixer 10/7": {
+    "spec": "Tilting drum mixer. 10 cu ft drum, 7 cu ft batch — about 0.20 m3 of mixed concrete per batch.",
+    "output": "2.5-3.5 m3/hr",
+    "basis": "About 12-15 batches an hour on a 4-5 minute cycle including charge and discharge. Batch capacity is 60-80% of drum volume because the drum mixes at an angle.",
+    "running": "Diesel ~1.5-2.5 l/hr, or electric",
+    "source": "Concrete mixer capacity guides (AMIX Systems, EZG Manufacturing)"
+  },
+  "Concrete mixer 14/10": {
+    "spec": "Tilting drum mixer. 14 cu ft drum, 10 cu ft batch — about 0.28 m3 per batch.",
+    "output": "3.5-4.5 m3/hr",
+    "basis": "12-15 batches an hour. The usual one-mixer site pour size.",
+    "running": "Diesel ~2-3 l/hr, or electric",
+    "source": "Concrete mixer capacity guides"
+  },
+  "Concrete mixer 21/14": {
+    "spec": "Tilting drum mixer. 21 cu ft drum, 14 cu ft batch — about 0.40 m3 per batch.",
+    "output": "5-6.5 m3/hr",
+    "basis": "12-15 batches an hour. Beyond roughly 30 m3 in a pour, ready-mix usually wins on cost and on cold-joint risk.",
+    "running": "Diesel ~3-4 l/hr, or electric",
+    "source": "Concrete mixer capacity guides"
+  },
+  "Mason": {
+    "spec": "Skilled bricklayer or blocklayer, normally working with one helper.",
+    "output": "About 10 m2/day blockwork, or ~600 bricks/day",
+    "basis": "8-hour day with 1 helper, walling to 3 m height. Plastering by the same trade: about 12 m2/day internal, 8 m2/day external.",
+    "running": "Gang: 1 mason + 1 labourer",
+    "source": "Standard labour output tables (out-turn work schedules)"
+  },
+  "Carpenter": {
+    "spec": "Skilled formwork and joinery carpenter, normally with one helper.",
+    "output": "5.5-6.5 m2/day general; about 14 m2/day slab shuttering",
+    "basis": "8-hour day with 1 helper. Slab soffits run faster than columns and beams, which are cut-heavy.",
+    "running": "Gang: 1 carpenter + 1 labourer",
+    "source": "Standard labour output tables"
+  },
+  "Steelfixer": {
+    "spec": "Reinforcement cutter, bender and fixer, normally with one helper.",
+    "output": "150-200 kg/day cut, bent and placed",
+    "basis": "8-hour day with 1 helper. Where steel arrives cut and bent, placing alone runs far higher: about 320 kg/day in slabs, 380 in columns and beams, 450-520 in foundations and rafts.",
+    "running": "Gang: 1 steelfixer + 1 labourer",
+    "source": "Standard labour output tables"
+  },
+  "Tiler": {
+    "spec": "Floor and wall tiler, normally with one helper.",
+    "output": "12 m2/day vitrified floor, 10 m2/day ceramic floor, 8 m2/day ceramic wall",
+    "basis": "8-hour day with 1 helper. Wall tiling is slower than floor; small formats and cut-heavy rooms slower again.",
+    "running": "Gang: 1 tiler + 1 labourer",
+    "source": "Standard labour output tables"
+  },
+  "Foreman": {
+    "spec": "Trade foreman. Runs the working face: sets out, allocates gangs, checks quality and keeps the programme.",
+    "output": "No direct output — governs everyone else's",
+    "basis": "Normally one per 20-40 operatives. Under-manning supervision is a common cause of the output figures elsewhere in this library not being met.",
+    "running": "Supervisory; costed as a fixed head on the gang, not per unit",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Headman": {
+    "spec": "Charge hand or ganger. Working supervisor over an unskilled gang.",
+    "output": "Works at about half a labourer's output while supervising",
+    "basis": "Normally one per 8-15 labourers.",
+    "running": "Gang: 1 headman over 8-15 labourers",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "MEP foreman": {
+    "spec": "Mechanical, electrical and plumbing foreman. Coordinates services against the builder's work.",
+    "output": "No direct output — governs the MEP gangs",
+    "basis": "Normally one per 15-30 MEP operatives. Services work is sequencing-heavy, so supervision carries more weight here than on civils.",
+    "running": "Supervisory; fixed head on the gang",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Labourer": {
+    "spec": "General unskilled operative. Handles materials, mixes, barrows, cleans and assists trades.",
+    "output": "4-6 m3/day moved by barrow, or supports one tradesman continuously",
+    "basis": "8-hour day, 20-30 m barrow run. Output falls away sharply beyond about 40 m — past that a dumper is cheaper than more labourers.",
+    "running": "Usually costed in a gang rather than alone",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Semi skilled": {
+    "spec": "Operative working under direction on repetitive tasks: simple formwork, block handling, backfill.",
+    "output": "About 60-75% of a tradesman's output on the same task",
+    "basis": "8-hour day under a skilled tradesman or charge hand.",
+    "running": "Gang: paired with a skilled trade",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Skilled/Artisan": {
+    "spec": "General skilled tradesman where the trade is not separately listed.",
+    "output": "Priced against the specific trade — see the named trades for figures",
+    "basis": "8-hour day. Use this only where the work does not fall to a named trade; a named trade carries a firmer output.",
+    "running": "Gang: normally 1 artisan + 1 labourer",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Glazier": {
+    "spec": "Glass and glazing fixer, working with one helper.",
+    "output": "8-12 m2/day fixed glazing",
+    "basis": "8-hour day with 1 helper, panes to about 2 m2 at low level. Large panes and anything needing a lift or scaffold run well below this.",
+    "running": "Gang: 1 glazier + 1 labourer",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Welder": {
+    "spec": "Site welder, arc or MIG, working to structural or pipework standards.",
+    "output": "25-40 m/day single-pass fillet; 8-15 m/day multi-pass structural butt",
+    "basis": "8-hour day at ground level. Overhead, positional and site-tested welds fall to the bottom of the range or below. Add for grinding, preparation and NDT standing time.",
+    "running": "Gang: 1 welder + 1 helper; consumables and machine costed separately",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Electrician (skilled)": {
+    "spec": "Installation electrician: conduit, wiring, accessories and terminations.",
+    "output": "16-20 m/day conduit, or 10-14 points/day",
+    "basis": "8-hour day, first or final fix, normal domestic and commercial heights. Wiring pulled into installed conduit runs far faster, about 200 m/day.",
+    "running": "Gang: 1 electrician + 1 mate",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Electrician mate": {
+    "spec": "Assists the electrician: chases, pulls, fetches, holds and cleans.",
+    "output": "No separate output — the gang rate assumes one mate per electrician",
+    "basis": "8-hour day. The electrician figures in this library already include a mate; do not count the output twice.",
+    "running": "Gang: 1 mate per electrician",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Wireman / cable puller": {
+    "spec": "Pulls and dresses cable into installed containment.",
+    "output": "About 200 m/day of wiring pulled",
+    "basis": "8-hour day into conduit or tray already in place, straight runs. Heavy multicore, long draws and tight bends cut this substantially.",
+    "running": "Gang: normally 2 working together on a draw",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Plumber (skilled)": {
+    "spec": "Installation plumber: water supply, waste and sanitary fittings.",
+    "output": "8-10 m/day supply pipe, 6-8 m/day drain pipe, or about 3 toilets/day",
+    "basis": "8-hour day with helpers. Buried 150 mm uPVC drainage to 1 m deep, including dig, bed, lay and backfill, runs 30-35 m/day as a complete operation.",
+    "running": "Gang: 1 plumber + 1.5 to 2 helpers",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Plumber mate": {
+    "spec": "Assists the plumber: carries, cuts, holds, chases and tests.",
+    "output": "No separate output — the plumber's gang rate assumes a mate",
+    "basis": "8-hour day. Counted in the plumber figures already; do not add it twice.",
+    "running": "Gang: 1.5 to 2 mates per plumber",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Pipefitter (PPR fusion and uPVC solvent welding)": {
+    "spec": "Fitter working in PPR by heat fusion and uPVC by solvent weld.",
+    "output": "30-60 joints/day, or 20-30 m/day of run pipe",
+    "basis": "8-hour day, 20-63 mm pipe at accessible heights. Fusion needs the joint held to cool; solvent needs cure time before pressure — both cap how fast a run can close.",
+    "running": "Gang: 1 pipefitter + 1 helper",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Heavy plant operator": {
+    "spec": "Operates tracked and heavy wheeled plant: dozers, excavators, graders, large loaders.",
+    "output": "No output of its own — the machine's output is the operator's",
+    "basis": "8-hour day. Operator skill is one of the largest single variables in every plant figure in this library; the published ranges assume a competent, regular operator.",
+    "running": "One per machine, plus a banksman on blind or trafficked areas",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Light plant operator": {
+    "spec": "Operates small plant: mixers, pumps, compactors, small loaders, hoists.",
+    "output": "No output of its own — the machine's output is the operator's",
+    "basis": "8-hour day. One operator commonly runs several small items on a small site.",
+    "running": "One per machine or group of small machines",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Heavy vehicle driver": {
+    "spec": "Drives tipper lorries, low-loaders and heavy haulage.",
+    "output": "No output of its own — the vehicle's cycle is the output",
+    "basis": "8-hour day. Haulage output is set by cycle time, not by the driver: load, haul, tip, return.",
+    "running": "One per vehicle",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Light vehicle driver": {
+    "spec": "Drives pick-ups, vans and small tippers for site logistics.",
+    "output": "No output of its own — the vehicle's cycle is the output",
+    "basis": "8-hour day.",
+    "running": "One per vehicle",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Excavator-JCB 3C or similar model": {
+    "spec": "Backhoe loader, JCB 3CX class. About 100 hp, 1.0 m3 front loader bucket, roughly 0.3 m3 rear backhoe bucket, digging depth to about 5.9 m.",
+    "output": "20-40 m3/hr excavating; higher on loading duties",
+    "basis": "Trench and general excavation in common earth, spoil alongside. The most versatile machine on a small site, but slower than a tracked excavator of the same weight on sustained bulk dig.",
+    "running": "Diesel ~8-12 l/hr",
+    "source": "JCB 3CX published specifications; earthmoving productivity tables"
+  },
+  "Excavator 635": {
+    "spec": "Tracked hydraulic excavator, smaller class — around 0.6-0.8 m3 bucket, roughly 15-20 t.",
+    "output": "40-70 m3/hr",
+    "basis": "Bulk dig in common earth, loading to lorry alongside. NOTE: 635 is a local size code, not a manufacturer model — confirm the bucket size of the machine actually hired, as output moves with it almost proportionally.",
+    "running": "Diesel ~12-18 l/hr",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Excavator 935": {
+    "spec": "Tracked hydraulic excavator, larger class — around 1.0-1.4 m3 bucket, roughly 20-30 t.",
+    "output": "70-110 m3/hr",
+    "basis": "Bulk dig in common earth, loading alongside. NOTE: 935 is a local size code, not a manufacturer model — confirm the bucket size of the machine hired.",
+    "running": "Diesel ~18-25 l/hr",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Payloader 635": {
+    "spec": "Wheeled or crawler loader, smaller class — around 0.8-1.0 m3 bucket.",
+    "output": "50-80 m3/hr loose material",
+    "basis": "Stockpile loading to lorry, short travel. Based on a 0.45-0.55 minute basic cycle at about 75% job efficiency. NOTE: 635 is a local size code, not a manufacturer model.",
+    "running": "Diesel ~10-15 l/hr",
+    "source": "Caterpillar wheel loader productivity method; standard productivity tables"
+  },
+  "Payloader 935": {
+    "spec": "Loader, Cat 935 class — about 1.0 m3 heaped bucket, roughly 8.8 t operating weight.",
+    "output": "70-100 m3/hr loose material",
+    "basis": "Stockpile loading with short travel, 0.45-0.55 minute cycle at about 75% efficiency. Output falls quickly once travel exceeds about 30 m — past that, load to a lorry instead of carrying.",
+    "running": "Diesel ~12-18 l/hr",
+    "source": "Caterpillar 935C published specifications; Cat wheel loader productivity method"
+  },
+  "Grader (Cat 140G)": {
+    "spec": "Cat 140G motor grader. 150 hp Cat 3306, 12 ft (3.7 m) moldboard, about 12.6 t, built 1987-95 and common secondhand in West Africa.",
+    "output": "500-1,500 m2/hr trimming; 3-6 km/day of formation",
+    "basis": "Fine trimming to level on sub-base. Spreading and heavy cutting are slower; a light finishing pass is faster. Several passes are normal, so divide by the number of passes for net progress.",
+    "running": "Diesel ~15-22 l/hr",
+    "source": "Caterpillar 140G published specifications; standard productivity tables"
+  },
+  "Plate compactor": {
+    "spec": "Walk-behind vibrating plate, petrol or diesel, typically 60-90 kg.",
+    "output": "300-600 m2/hr",
+    "basis": "100-150 mm loose layer, 3-4 passes, granular fill. For trench and edge work where a roller cannot reach. Not a substitute for a roller on layers over about 150 mm.",
+    "running": "Petrol ~1-2 l/hr",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Dumper": {
+    "spec": "Site dumper, forward tipping, typically 1-9 t payload.",
+    "output": "15-30 m3/hr over short site hauls",
+    "basis": "100-200 m round trip on site roads. Displaces about 4-6 barrow labourers over that distance; the crossover is around 40 m.",
+    "running": "Diesel ~3-6 l/hr",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Tipping lorry-10 ton": {
+    "spec": "Rigid tipper, about 10 t payload — roughly 6-7 m3 of loose earth.",
+    "output": "3-5 loads/day at 20 km; 8-12 loads/day at 5 km",
+    "basis": "Round trip including load, haul, tip and return. Haul distance governs everything: match the number of lorries to the loader so neither waits.",
+    "running": "Diesel ~15-25 l/hr running",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Tipping lorry-20 ton": {
+    "spec": "Rigid tipper, about 20 t payload — roughly 12-14 m3 of loose earth.",
+    "output": "3-5 loads/day at 20 km; 7-10 loads/day at 5 km",
+    "basis": "Round trip including load, haul, tip and return. Fewer, larger loads cut cycle count but need a loader big enough not to become the bottleneck.",
+    "running": "Diesel ~25-35 l/hr running",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Tipping lorry-30 ton": {
+    "spec": "Rigid or articulated tipper, about 30 t payload — roughly 18-20 m3 of loose earth.",
+    "output": "3-4 loads/day at 20 km; 6-9 loads/day at 5 km",
+    "basis": "Round trip. Worth it only on long hauls and good roads; on short site hauls the loading wait cancels the payload gain.",
+    "running": "Diesel ~35-45 l/hr running",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Barge (100 ton capacity)": {
+    "spec": "Flat-top marine barge, 100 t payload, normally towed or pushed.",
+    "output": "1-3 round trips/day depending on the crossing",
+    "basis": "Governed by tide, loading facilities and tow speed rather than by the barge. Used where a road haul is impossible or far longer.",
+    "running": "Tug fuel and crew costed separately",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Crane-80 ton - crawler track type.": {
+    "spec": "Crawler-mounted lattice or telescopic crane, 80 t maximum rated capacity.",
+    "output": "15-25 lifts/day",
+    "basis": "Rated capacity is at minimum radius. Safe load falls steeply with radius — at working radius an 80 t crane may lift only 10-20 t, which is the figure that matters when planning.",
+    "running": "Diesel ~20-30 l/hr; plus assembly and dismantling time",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Crane-120 ton - crawler track type.": {
+    "spec": "Crawler-mounted lattice crane, 120 t maximum rated capacity.",
+    "output": "12-20 lifts/day",
+    "basis": "Rated at minimum radius; derate heavily for working radius. Allow separate days for erection and dismantling — often several.",
+    "running": "Diesel ~25-40 l/hr; plus assembly and dismantling",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Crane-150 ton - crawler track type.": {
+    "spec": "Crawler-mounted lattice crane, 150 t maximum rated capacity.",
+    "output": "10-18 lifts/day",
+    "basis": "Rated at minimum radius. At this size, ground bearing pressure and crane mats usually need designing, and that cost belongs in the rate.",
+    "running": "Diesel ~30-45 l/hr; plus assembly and dismantling",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Mobile crane-30 ton": {
+    "spec": "Truck or all-terrain mobile crane, 30 t maximum rated capacity.",
+    "output": "20-30 lifts/day",
+    "basis": "Rated at minimum radius. Sets up in under an hour on firm level ground, which is why it beats a crawler for short duration work.",
+    "running": "Diesel ~10-18 l/hr",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Mobile crane-60 ton": {
+    "spec": "All-terrain mobile crane, 60 t maximum rated capacity.",
+    "output": "15-25 lifts/day",
+    "basis": "Rated at minimum radius; outrigger loads need checking against slabs and buried services.",
+    "running": "Diesel ~15-25 l/hr",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Mobile crane-80 ton": {
+    "spec": "All-terrain mobile crane, 80 t maximum rated capacity.",
+    "output": "12-20 lifts/day",
+    "basis": "Rated at minimum radius. May need counterweight delivered separately, which is an extra vehicle movement to price.",
+    "running": "Diesel ~20-30 l/hr",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Paving Machine 4 - 8 ft laying width.": {
+    "spec": "Asphalt paver, 1.2-2.4 m variable screed width.",
+    "output": "40-100 t/hr laid",
+    "basis": "Continuous supply at a steady speed. At this width it suits car parks, estate roads and patching; highway pavers of 3-4 m reach 200-400 t/hr. Output is set by the lorries feeding it, not the paver.",
+    "running": "Diesel ~10-18 l/hr; plus rollers following",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Compressor": {
+    "spec": "Towable diesel air compressor, typically 100-250 cfm.",
+    "output": "Runs 2-3 jack hammers at once",
+    "basis": "Each hammer needs roughly 60-90 cfm. Sizing on the number of tools, not the pressure, is what keeps them all working.",
+    "running": "Diesel ~8-15 l/hr",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Jack - Hammer (Small)": {
+    "spec": "Handheld pneumatic or electric breaker, roughly 10-15 kg.",
+    "output": "0.5-1.5 m3/hr concrete broken",
+    "basis": "Unreinforced concrete and screed, working from a free edge. Reinforcement roughly halves it. Needs about 60 cfm of air.",
+    "running": "Air from compressor, or electric",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Jack - Hammer (Medium)": {
+    "spec": "Handheld pneumatic breaker, roughly 20-25 kg.",
+    "output": "1-2.5 m3/hr concrete broken",
+    "basis": "Mass concrete and slabs from a free edge. Reinforcement roughly halves it. About 75 cfm of air.",
+    "running": "Air from compressor",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Jack - Hammer (Big)": {
+    "spec": "Heavy handheld pneumatic breaker, roughly 30-40 kg.",
+    "output": "2-4 m3/hr concrete broken",
+    "basis": "Heavy mass concrete and rock. Two operators normally rotate — the limit is the man, not the tool. About 90 cfm of air.",
+    "running": "Air from compressor; operators rotate",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Concrete cutting machine": {
+    "spec": "Walk-behind or handheld disc saw for concrete and asphalt.",
+    "output": "20-40 m/hr at 50-75 mm depth",
+    "basis": "Straight cuts in unreinforced slab. Depth and reinforcement both cut this sharply; a full-depth cut through a reinforced slab may run under 10 m/hr. Blade wear is a real consumable cost.",
+    "running": "Petrol or electric; water feed and blades costed separately",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Cutting machine": {
+    "spec": "Abrasive cut-off saw for steel bar, section and pipe.",
+    "output": "60-120 cuts/hr in bar up to 25 mm",
+    "basis": "Bench work, straight square cuts. Large sections and stainless run far slower and eat discs.",
+    "running": "Electric; cutting discs are the running cost",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Poker vibrator (electrical)": {
+    "spec": "Immersion poker with electric drive, typically 25-60 mm head.",
+    "output": "4-20 m3/hr compacted",
+    "basis": "Insert vertically, hold 5-15 seconds until air stops rising, withdraw slowly, repeat at about 500 mm centres. The wide range is real: placing method governs it more than the poker does.",
+    "running": "Electric, from mains or generator",
+    "source": "Concrete compaction guidance (poker vibrator technique); standard productivity tables"
+  },
+  "Poker vibrator (mechanical)": {
+    "spec": "Immersion poker driven by a petrol or diesel unit, typically 25-60 mm head.",
+    "output": "4-30 m3/hr compacted",
+    "basis": "As the electric poker, but independent of a power supply — the usual choice where no generator is on the pour. Same 500 mm insertion spacing and 5-15 second dwell.",
+    "running": "Petrol ~1-2 l/hr",
+    "source": "Concrete compaction guidance; standard productivity tables"
+  },
+  "Concrete pumping machine (Dry - mix)": {
+    "spec": "Trailer or static concrete pump fed with a dry or semi-dry mix.",
+    "output": "20-40 m3/hr placed",
+    "basis": "Rated output is 30-50 m3/hr; expect 60-80% of rating in practice. Dry mixes block more readily, so line cleaning and downtime belong in the rate.",
+    "running": "Diesel ~10-18 l/hr; plus line, cleaning and standby",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Concrete pumping machine (Wet - mix)": {
+    "spec": "Line or boom concrete pump fed with a pumpable wet mix.",
+    "output": "40-70 m3/hr placed",
+    "basis": "Line pumps rate 60-90 m3/hr and boom pumps 60-130; expect 60-80% of rating. Needs a designed pump mix with extra sand and cement — pricing it as ordinary concrete understates the material cost.",
+    "running": "Diesel ~15-25 l/hr; plus line, cleaning and standby",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Welding machine (small)": {
+    "spec": "Portable arc welding set, roughly 140-250 A.",
+    "output": "Supports one welder continuously on light work",
+    "basis": "Duty cycle is the limit: at 60% a set welds six minutes in ten. Light fabrication, handrails, brackets.",
+    "running": "Electric or petrol; electrodes costed separately",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Welding machine (big)": {
+    "spec": "Heavy-duty or engine-driven welding set, roughly 300-600 A.",
+    "output": "Supports one to two welders on structural work",
+    "basis": "Higher duty cycle and heavier electrodes for structural and pipework. Engine-driven sets suit sites with no reliable power.",
+    "running": "Diesel ~3-6 l/hr if engine-driven; electrodes separate",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Gas torch and 50 or 70mm burner.": {
+    "spec": "Oxy-acetylene cutting and heating set with 50 or 70 mm burner nozzle.",
+    "output": "10-20 m/hr cutting in 10-20 mm plate",
+    "basis": "Straight cuts in mild steel. Thicker plate, bevels and overhead work run slower. Gas is a significant consumable — meter it rather than treating the set as a flat hire.",
+    "running": "Oxygen and acetylene costed separately",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Pipe threading machine; up to 50mm": {
+    "spec": "Powered pipe threading machine for steel pipe to 50 mm.",
+    "output": "40-80 threads/day",
+    "basis": "8-hour day, bench mounted, cut and thread. Larger diameters and site work well below this. Dies and cutting oil are consumables.",
+    "running": "Electric",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "PPR fusion welding machine; 20 to 63mm": {
+    "spec": "Socket fusion welder for PPR pipe, 20-63 mm.",
+    "output": "Supports 30-60 joints/day by one fitter",
+    "basis": "Each joint is heated, joined and held to cool — the cooling hold is what caps the rate, not the machine.",
+    "running": "Electric; heating shoes per diameter",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Cable rod set and draw tape": {
+    "spec": "Glass-fibre rod set and steel or nylon draw tape for pulling cable through conduit.",
+    "output": "Supports about 200 m/day of cable pulling",
+    "basis": "Straight runs in installed conduit. Long draws and multiple bends need two operatives and a lubricant.",
+    "running": "Hand tool; no fuel",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Earth resistance tester (megger)": {
+    "spec": "Earth resistance and insulation resistance tester.",
+    "output": "20-40 test points/day",
+    "basis": "Testing and certification, not installation. Instrument needs periodic calibration, and an uncalibrated instrument fails a witnessed test — carry that cost.",
+    "running": "Battery; calibration is the running cost",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Sand Pot for sand blasting": {
+    "spec": "Pressure pot abrasive blasting unit, fed from a compressor.",
+    "output": "10-20 m2/hr blast cleaned",
+    "basis": "Steel to a bright commercial finish. Heavy mill scale and pitting run at the bottom of the range. Abrasive consumption is substantial and is usually the largest cost, not the pot hire.",
+    "running": "Compressed air plus abrasive; abrasive is the main consumable",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Respiratory gear for sand blasting": {
+    "spec": "Air-fed blasting hood with breathing-air filtration.",
+    "output": "No output — mandatory protection for the blasting operative",
+    "basis": "One set per blasting operative. Silica exposure without it is a serious and irreversible health risk, so it is a required item on any blasting rate rather than an option.",
+    "running": "Filters and air supply are the running cost",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Spraying machine": {
+    "spec": "Airless or conventional paint spraying unit.",
+    "output": "200-400 m2/day sprayed",
+    "basis": "Large uninterrupted surfaces, one coat. Roughly three to four times brush and roller output, but masking, edging and overspray protection claw much of that back on cut-up work.",
+    "running": "Electric or petrol; tips and filters are consumables",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  },
+  "Power Brush": {
+    "spec": "Powered wire brush or rotary surface cleaner.",
+    "output": "30-60 m2/hr surface prepared",
+    "basis": "Light rust, laitance and loose material. Where a specification calls for a blast standard, brushing will not achieve it.",
+    "running": "Electric; brushes are consumables",
+    "source": "Standard productivity of construction machinery tables; manufacturer published specifications"
+  },
+  "Terrazzo Machine": {
+    "spec": "Rotary terrazzo grinding and polishing machine, water fed.",
+    "output": "30-60 m2/day ground and polished",
+    "basis": "Multiple passes through progressively finer stones, plus grouting between passes. First cut on green terrazzo is the slowest.",
+    "running": "Electric; stones and water are the running cost",
+    "source": "Standard labour output tables (out-turn work schedules); MEP production rate tables"
+  }
+}

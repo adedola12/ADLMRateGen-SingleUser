@@ -968,6 +968,131 @@
         </Setter>
     </Style>
 
+    <!-- The quiet half of a pair. Same shape and height as PrimaryButton so the
+         two sit level, but outlined rather than filled, because the pair asks a
+         question and neither answer should shout over the other. -->
+    <!-- The mark applied to a CAPTURED image rather than to the screen. Heavier
+         than the on-screen brush: nobody is trying to read figures through it,
+         and it has to survive being cropped, resized and re-compressed. -->
+    <ImageBrush x:Key="WatermarkStampBrush"
+                ImageSource="/Resources/adlm_rate_generator_logo_small.png"
+                Opacity="0.08"
+                TileMode="Tile"
+                Viewbox="-0.34,-0.34,1.68,1.68"
+                ViewboxUnits="RelativeToBoundingBox"
+                Viewport="0,0,360,360"
+                ViewportUnits="Absolute"
+                Stretch="Uniform"
+                AlignmentX="Center"
+                AlignmentY="Center">
+        <ImageBrush.RelativeTransform>
+            <RotateTransform Angle="-30" CenterX="0.5" CenterY="0.5" />
+        </ImageBrush.RelativeTransform>
+    </ImageBrush>
+
+    <!-- Screen watermark. Tiled and rotated so it cannot be cropped out of a
+         partial capture, and drawn in the app itself rather than stamped onto a
+         screenshot afterwards: no Windows API lets a process reach into what
+         Snipping Tool or a phone camera captured, so the only mark that reliably
+         survives every route off the screen is one that is genuinely on it.
+
+         Opacity is a compromise — high enough to read in a photograph of the
+         monitor, low enough not to fight the figures underneath. The asset is
+         per-theme because a navy logo at this opacity vanishes on a dark page. -->
+    <ImageBrush x:Key="WatermarkBrush"
+                ImageSource="/Resources/adlm_rate_generator_logo_small.png"
+                Opacity="0.08"
+                TileMode="Tile"
+                Viewbox="-0.34,-0.34,1.68,1.68"
+                ViewboxUnits="RelativeToBoundingBox"
+                Viewport="0,0,440,440"
+                ViewportUnits="Absolute"
+                Stretch="Uniform"
+                AlignmentX="Center"
+                AlignmentY="Center">
+        <ImageBrush.RelativeTransform>
+            <RotateTransform Angle="-30" CenterX="0.5" CenterY="0.5" />
+        </ImageBrush.RelativeTransform>
+    </ImageBrush>
+
+    <!-- Text sitting on a filled dark button. Not BackgroundBrush: this theme
+         repurposes white as its page colour (#313E45), which read as dark grey
+         on the #173A67 button. -->
+    <SolidColorBrush x:Key="OnDarkButtonText" Color="#EAF2FF" />
+
+    <!-- Outlined-button surface. BorderBrushLight is the divider colour, which
+         here equals the card background, so an outlined control needs its own
+         pair or it vanishes into whatever it sits on. -->
+    <SolidColorBrush x:Key="SecondaryBtnBg" Color="#122A4A" />
+    <SolidColorBrush x:Key="SecondaryBtnBorder" Color="#3D5F8C" />
+
+    <!-- Price movement, lifted for legibility against the navy card. -->
+    <SolidColorBrush x:Key="PriceUpBrush" Color="#FB923C" />
+    <SolidColorBrush x:Key="PriceDownBrush" Color="#4ADE80" />
+
+    <Style x:Key="SecondaryButton"
+           TargetType="Button"
+           BasedOn="{StaticResource RectButton}">
+        <Setter Property="Background"
+                Value="{DynamicResource SecondaryBtnBg}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource SecondaryBtnBorder}" />
+        <Setter Property="BorderThickness"
+                Value="1.2" />
+        <Setter Property="FontSize"
+                Value="19" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource Blue900Brush}" />
+        <Setter Property="MinWidth"
+                Value="150" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="brd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="12">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}"
+                                          RecognizesAccessKey="True"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="brd"
+                                    Property="Background"
+                                    Value="{DynamicResource HoverLightBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="False">
+                            <Setter TargetName="brd"
+                                    Property="Opacity"
+                                    Value="0.45" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Companion to BtnText, which paints itself for a filled button. -->
+    <Style x:Key="BtnTextSecondary"
+           TargetType="TextBlock">
+        <Setter Property="FontSize"
+                Value="19" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="TextAlignment"
+                Value="Center" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource Blue900Brush}" />
+    </Style>
+
     <Style x:Key="PrimaryButtonCus"
            TargetType="Button"
            BasedOn="{StaticResource RectButton}">

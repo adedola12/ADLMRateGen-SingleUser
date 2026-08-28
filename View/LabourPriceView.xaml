@@ -63,6 +63,9 @@
             Padding="56,44"
             SnapsToDevicePixels="True">
 
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="0,0,6,0">
         <StackPanel>
 
             <!-- Title -->
@@ -149,6 +152,25 @@
             <TextBox Text="{Binding NewLabourCategory}"
                      Style="{StaticResource FigmaInputReadOnly}" />
 
+            <!-- Notes: the estimator's own specification for a rate they added.
+                 Optional, and the panel below shows it in place of the bundled
+                 reference — a rate you added yourself has no bundled entry. -->
+            <TextBlock Text="Specification / notes (optional)"
+                       FontFamily="{DynamicResource AppFont}"
+                       FontSize="12.8"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource HintGrey}"
+                       Margin="0,18,0,8" />
+            <TextBox Text="{Binding NewLabourNote, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource FigmaInput}"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     VerticalContentAlignment="Top"
+                     MinHeight="86"
+                     MaxHeight="150"
+                     VerticalScrollBarVisibility="Auto"
+                     ToolTip="What the item is and what it produces in a day — so anyone pricing against this rate can see what it has to cover." />
+
             <!-- Save / Update Button -->
             <Button Margin="0,32,0,0"
                     HorizontalAlignment="Stretch"
@@ -195,12 +217,95 @@
                                    FontFamily="{DynamicResource AppFont}"
                                    FontSize="18"
                                    FontWeight="Medium"
-                                   Foreground="{DynamicResource BackgroundBrush}"
+                                   Foreground="{DynamicResource OnDarkButtonText}"
                                    TextAlignment="Center" />
                     </DataTemplate>
                 </Button.ContentTemplate>
             </Button>
 
+            <!-- ── Reference: what this item is, and what it produces ──
+
+                 Read-only, and deliberately below the save button: it informs the
+                 rate above it without competing with the fields. Hidden entirely
+                 when nothing is recorded, rather than showing an empty frame. -->
+            <Border Margin="0,28,0,0"
+                    Padding="18,16"
+                    CornerRadius="14"
+                    Background="{DynamicResource BgInput}"
+                    BorderBrush="{DynamicResource BorderBrushLight}"
+                    BorderThickness="1"
+                    Visibility="{Binding HasSpec, Converter={StaticResource BoolVis}}">
+                <StackPanel>
+
+                    <TextBlock Text="Specification &amp; expected output"
+                               FontFamily="{DynamicResource AppFont}"
+                               FontSize="12.8"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource Blue900Brush}"
+                               Margin="0,0,0,10" />
+
+                    <TextBlock Text="{Binding Spec.Spec}"
+                               FontFamily="{DynamicResource AppFont}"
+                               FontSize="12"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource CellTextBrush}" />
+
+                    <!-- The output is the figure people came for, so it is the one
+                         thing here given any weight. -->
+                    <StackPanel Margin="0,12,0,0">
+                        <TextBlock Text="Expected output"
+                                   FontFamily="{DynamicResource AppFont}"
+                                   FontSize="10.5"
+                                   FontWeight="SemiBold"
+                                   Opacity="0.65"
+                                   Foreground="{DynamicResource CellTextBrush}" />
+                        <TextBlock Text="{Binding Spec.Output}"
+                                   FontFamily="{DynamicResource AppFont}"
+                                   FontSize="13.5"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap"
+                                   Foreground="{DynamicResource Blue900Brush}" />
+                    </StackPanel>
+
+                    <!-- Never shown without the basis: soil, haul and gang move
+                         these figures more than the machine does. -->
+                    <TextBlock Text="{Binding Spec.Basis}"
+                               FontFamily="{DynamicResource AppFont}"
+                               FontSize="11.5"
+                               Margin="0,6,0,0"
+                               TextWrapping="Wrap"
+                               Opacity="0.85"
+                               Foreground="{DynamicResource CellTextBrush}" />
+
+                    <TextBlock Margin="0,12,0,0"
+                               FontFamily="{DynamicResource AppFont}"
+                               FontSize="11.5"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource CellTextBrush}">
+                        <Run Text="Running: "
+                             FontWeight="SemiBold" /><Run Text="{Binding Spec.Running, Mode=OneWay}" />
+                    </TextBlock>
+
+                    <TextBlock Text="{Binding Spec.Source}"
+                               FontFamily="{DynamicResource AppFont}"
+                               FontSize="10.5"
+                               Margin="0,10,0,0"
+                               TextWrapping="Wrap"
+                               Opacity="0.6"
+                               FontStyle="Italic"
+                               Foreground="{DynamicResource CellTextBrush}" />
+
+                    <TextBlock Text="Indicative only. Site conditions, operator and gang make-up change these figures substantially — treat them as a sense check on your rate, not a guarantee."
+                               FontFamily="{DynamicResource AppFont}"
+                               FontSize="10.5"
+                               Margin="0,10,0,0"
+                               TextWrapping="Wrap"
+                               Opacity="0.6"
+                               Foreground="{DynamicResource CellTextBrush}" />
+                </StackPanel>
+            </Border>
+
         </StackPanel>
+        </ScrollViewer>
     </Border>
 </UserControl>

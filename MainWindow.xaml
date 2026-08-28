@@ -218,19 +218,9 @@
                                            Visibility="{Binding DataContext.IsSidebarCollapsed, ElementName=Root, Converter={StaticResource InvBoolVis}}" />
                             </StackPanel>
                         </Button>
-                        <!-- ── Sync button ── -->
-                        <Button Command="{Binding RefreshCloudDataCommand}"
-                                ToolTip="Sync from Cloud"
-                                Width="38" Height="32"
-                                Margin="0,4"
-                                Style="{StaticResource SidebarSubButton}">
-                            <fa:IconImage Icon="SyncAlt" Width="16" Height="16" />
-                        </Button>
-                        <TextBlock Text="{Binding CloudSyncStatus}"
-                                   Margin="8,0,0,0"
-                                   VerticalAlignment="Center"
-                                   Opacity="0.8"
-                                   Visibility="{Binding IsSidebarCollapsed, Converter={StaticResource InvBoolVis}}" />
+                        <!-- Sync from Cloud moved to the header action group, where the
+                             other app-wide actions live. Its status now rides on that
+                             button's tooltip. -->
                         <!-- ── Section label (Figma: Mont SemiBold 16px, #091E39) ── -->
                         <TextBlock Text="Item of works"
                                    FontFamily="{DynamicResource AppFont}"
@@ -403,17 +393,30 @@
                                                Visibility="{Binding DataContext.IsSidebarCollapsed, ElementName=Root, Converter={StaticResource InvBoolVis}}" />
                                 </StackPanel>
                             </Button>
+                            <!-- Coloured, because it is the one item here that ends
+                                 the session rather than navigating. It sits in a list
+                                 of look-alike navigation rows and should not be
+                                 reachable by a mis-click. -->
                             <Button Style="{DynamicResource SidebarSubButton}"
                                     Command="{Binding LogoutCommand}"
                                     ToolTip="Log out" Margin="0,10,0,0">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <fa:IconBlock Icon="RightFromBracket" Width="16" Height="16"
-                                                  Foreground="{DynamicResource Blue900Brush}" />
+                                                  Foreground="{DynamicResource DangerBrush}" />
                                     <TextBlock Text="Log out" Margin="8,0,0,0"
                                                Style="{DynamicResource BtnSidebarText}"
+                                               Foreground="{DynamicResource DangerBrush}"
                                                Visibility="{Binding DataContext.IsSidebarCollapsed, ElementName=Root, Converter={StaticResource InvBoolVis}}" />
                                 </StackPanel>
                             </Button>
+
+                            <!-- Closes the sidebar the way the design does. -->
+                            <Rectangle Height="2"
+                                       Margin="4,18,4,4"
+                                       RadiusX="1"
+                                       RadiusY="1"
+                                       Fill="{DynamicResource DataPrimaryBrush}"
+                                       Visibility="{Binding DataContext.IsSidebarCollapsed, ElementName=Root, Converter={StaticResource InvBoolVis}}" />
                         </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
@@ -468,6 +471,8 @@
                             Margin="12 0 12 10"
                             Height="250"
                             CornerRadius="18"
+                            Visibility="{Binding IsWelcomeBannerVisible,
+                                                 Converter={StaticResource BoolVis}}"
                             SnapsToDevicePixels="True">
                         <Border.Background>
                             <ImageBrush ImageSource="/Resources/Backdrop.png"
@@ -584,5 +589,13 @@
             <view:PopupHost x:Name="PopupHost"
                             Visibility="Collapsed"
                             Panel.ZIndex="99" />
+
+            <!--────────  SCREEN WATERMARK  ─────────
+                 Deliberately NOT drawn on screen. The mark is applied to the
+                 captured image instead — see Services/ScreenshotWatermark.cs —
+                 so the app stays clean to work in and a screenshot still carries
+                 its source. WatermarkBrush is kept in the themes for the day
+                 someone wants the always-on version back; it covers a photograph
+                 of the monitor, which the clipboard route cannot. -->
     </Grid>
 </Window>

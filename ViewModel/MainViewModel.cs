@@ -378,6 +378,26 @@ namespace ADLMRateGen.ViewModel
         public ICommand SelectedSteelworkViewCommand { get; }
         public ICommand SelectedCustomRateInputViewCommand { get; }
         public ICommand SelectedCustomRateViewCommand { get; }
+        /* ───────── dashboard chrome ───────── */
+        private readonly UiPreferences _uiPreferences = UiPreferences.Load();
+
+        /// <summary>
+        /// Welcome banner on the dashboard. Collapsing it hands its 260px back to the
+        /// rate table below, which roughly doubles the rows visible at once.
+        /// </summary>
+        public bool IsWelcomeBannerVisible
+        {
+            get => _uiPreferences.ShowWelcomeBanner;
+            set
+            {
+                if (_uiPreferences.ShowWelcomeBanner == value) return;
+                _uiPreferences.ShowWelcomeBanner = value;
+                _uiPreferences.Save();
+                RaisePropertyChanged();
+            }
+        }
+
+        public ICommand ToggleWelcomeBannerCommand { get; }
         public ICommand LogoutCommand { get; }
         public ICommand OpenYoutubeCommand { get; }
         public ICommand HelpCommand { get; }
@@ -594,6 +614,7 @@ namespace ADLMRateGen.ViewModel
             });
             OpenYoutubeCommand = new RelayCommand(_ => OpenYoutube());
             HelpCommand = new RelayCommand(_ => SendHelpEmail());
+            ToggleWelcomeBannerCommand = new RelayCommand(_ => IsWelcomeBannerVisible = !IsWelcomeBannerVisible);
             ExportAllRatesCommand = new RelayCommand(_ => ExportAllToExcel());
             ExportBillCsvCommand = new RelayCommand(_ => ExportBillToCsv());
 
@@ -695,6 +716,25 @@ namespace ADLMRateGen.ViewModel
             return ok;
         }
 
+        /// <summary>
+        /// One-line reason for a sync step that threw. Unwraps the aggregate/inner
+        /// exception so the caller sees the server's message rather than a wrapper.
+        /// </summary>
+        private static string Describe(Exception ex)
+        {
+            var e = ex;
+            while (e.InnerException != null && (e is AggregateException || string.IsNullOrWhiteSpace(e.Message)))
+                e = e.InnerException;
+
+            var msg = (e.Message ?? "").Trim();
+            if (e is TaskCanceledException || e is TimeoutException)
+                msg = string.IsNullOrWhiteSpace(msg) ? "Timed out." : msg;
+            if (string.IsNullOrWhiteSpace(msg))
+                msg = e.GetType().Name;
+
+            return msg.Length > 200 ? msg.Substring(0, 200) + "…" : msg;
+        }
+
         private static bool Is404(Exception ex)
         {
             if (ex is HttpRequestException hre)
@@ -752,7 +792,7 @@ namespace ADLMRateGen.ViewModel
                         return;
                     }
 
-                    results.Add($"Rates: FAIL");
+                    results.Add($"Rates: FAIL — {Describe(ex)}");
                 }
 
                 // ✅ 2) Compute Catalog
@@ -782,7 +822,7 @@ namespace ADLMRateGen.ViewModel
                     if (Is404(ex))
                         results.Add("Compute: SKIPPED (404 Not Found)");
                     else
-                        results.Add("Compute: FAIL");
+                        results.Add($"Compute: FAIL — {Describe(ex)}");
                 }
 
                 // ✅ 3) Materials/labour master prices — single source of truth.
@@ -809,12 +849,24 @@ namespace ADLMRateGen.ViewModel
                     if (Is404(ex))
                         results.Add("Master prices: SKIPPED (404 Not Found)");
                     else
-                        results.Add("Master prices: FAIL");
+                        // The exception already carries the HTTP status and the
+                        // server's own error text; discarding it left the dialog
+                        // saying only "FAIL", which is undiagnosable from a
+                        // customer's screenshot.
+                        results.Add($"Master prices: FAIL — {Describe(ex)}");
                 }
 
                 // Refresh local UI
                 MaterialLibraryViewModel.ReloadFromDisk();
                 LabourLibraryViewModel.ReloadFromDisk();
+
+                // The sync is what learns the account's pricing location: the server
+                // answers with the state it priced from and MasterLibrarySyncService
+                // persists it. Until now only navigating into the library re-read
+                // that, so a user already sitting on the library watched the note
+                // keep the old state while the prices underneath were the new one.
+                LibraryShellViewModel?.RefreshLocationNote();
+
                 _index.Rebuild(this);
 
                 LastCloudSyncAt = DateTime.Now;
