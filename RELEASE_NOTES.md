@@ -1,6 +1,6 @@
 # ADLM Rate Gen — Release Notes
 
-## v2.8.2
+## v2.9.1
 
 ### Fixed: "Build with AI" was missing after the update
 
@@ -16,8 +16,14 @@ the one machine where it appeared was the development machine, which had the
 variable set by hand. The feature shipped invisible.
 
 The app now falls back to the deployed service address, so a plain install has
-the AI panel with nothing to configure. Update to 2.8.2 and it is there; no
+the AI panel with nothing to configure. Update to 2.9.1 and it is there; no
 environment variable, registry entry or reinstall is needed.
+
+This is a patch on top of 2.9.0 and carries nothing else. It is numbered 2.9.1
+rather than folded into 2.9.0 because InstallerHub decides whether to offer an
+update by comparing the published version string: republishing under 2.9.0
+would have left everyone already on 2.9.0 — which is everyone — never offered
+the fix.
 
 Using it still requires being signed in with an active subscription — the
 service checks your licence on every request and says so plainly if it
@@ -40,7 +46,16 @@ declines.
   release can change it.
 - 11 new test cases in `Tests/ADLMRateGen.Tests` covering the empty environment, both
   overrides, the off switch and blank values. `InternalsVisibleTo` added so the
-  test project can see `AppEnvironment`.
+  test project can see `AppEnvironment`. Suite is 35 cases, all passing.
+- `scripts/push-installer-update.mjs` publishes a build to InstallerHub in one
+  command: it hashes the package, reads the deployment record, uploads to R2 and
+  writes `packageUri`, `version` and `sha256` back together. It reads the record
+  before writing because a `PUT` to `/admin/deployments/:productKey` replaces
+  rather than patches — sending only the changed fields silently wipes the
+  install operations — and it refuses a push that would change the package kind,
+  because the operations and the package have to agree. RateGen's deployment is
+  a ZIP containing `app/`, which InstallerHub extracts itself; the Inno installer
+  is the manual-download artifact and is not what this channel consumes.
 
 ---
 
