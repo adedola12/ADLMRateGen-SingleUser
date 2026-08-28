@@ -1,5 +1,49 @@
 # ADLM Rate Gen — Release Notes
 
+## v2.8.2
+
+### Fixed: "Build with AI" was missing after the update
+
+The AI panel on the Custom Rate form did not appear for anyone who installed
+the update. Nothing was wrong with the feature itself — it was hidden.
+
+The panel is shown only when the app knows where the ADLM AI Service is, and
+that address was read from an `ADLM_AI_URL` environment variable with no
+fallback. Nothing sets that variable on a user's machine: the installer does
+not write it and the app does not create it. So the address came back empty on
+every install, the AI client was never created, and the section was hidden —
+the one machine where it appeared was the development machine, which had the
+variable set by hand. The feature shipped invisible.
+
+The app now falls back to the deployed service address, so a plain install has
+the AI panel with nothing to configure. Update to 2.8.2 and it is there; no
+environment variable, registry entry or reinstall is needed.
+
+Using it still requires being signed in with an active subscription — the
+service checks your licence on every request and says so plainly if it
+declines.
+
+### Technical detail
+
+- `AppEnvironment.AiServiceUrl` resolves in the same order as `ApiBaseUrl`: the
+  product override (`ADLM_RATEGEN_AI_URL`), then the fleet-wide variable
+  (`ADLM_AI_URL`), then the new `DefaultAiServiceUrl` constant. Trailing
+  slashes are trimmed, since the SDK appends `/api/ai/...` verbatim.
+- Either variable set to `off` (or `none`/`disabled`/`false`/`0`) disables AI
+  deliberately and hides the panel. That is now the only way it disappears; a
+  blank value is ignored rather than read as "off", so an installer writing an
+  empty string cannot switch the feature off by accident.
+- Deliberately *not* fixed in the installer. Writing the address into
+  `HKCU\Environment` would recreate the stale-variable problem v2.6.0 had to
+  clean up after with the retired API host: a value baked in at install time
+  outlives the machine it was right for. The default lives in the app, where a
+  release can change it.
+- 11 new test cases in `Tests/ADLMRateGen.Tests` covering the empty environment, both
+  overrides, the off switch and blank values. `InternalsVisibleTo` added so the
+  test project can see `AppEnvironment`.
+
+---
+
 ## v2.6.2
 
 ### Fixed: saving a rate could not add to your library, and risked losing rows

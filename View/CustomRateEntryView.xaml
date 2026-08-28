@@ -325,7 +325,7 @@
                           PanningMode="VerticalOnly">
                 <StackPanel>
 
-                    <!-- ── AI assist (ADLM AI add-on; hidden unless configured) ── -->
+                    <!-- ── AI assist (ADLM AI add-on; hidden only when switched off) ── -->
                     <Border Visibility="{Binding IsAiAvailable, Converter={StaticResource BoolToVis}}"
                             Background="{DynamicResource BgInput}"
                             BorderBrush="{DynamicResource BorderBrushLight}"

@@ -15,7 +15,10 @@ namespace ADLMRateGen.Services
 	/// RateGen library on the server.
 	///
 	/// Availability rules:
-	///  - Hidden entirely until ADLM_AI_URL is configured.
+	///  - On by default: the endpoint falls back to
+	///    AppEnvironment.DefaultAiServiceUrl, so an ordinary install has AI. It
+	///    is hidden only when ADLM_AI_URL (or ADLM_RATEGEN_AI_URL) is set to
+	///    "off" — the deliberate opt-out.
 	///  - Auth uses the signed-in user's cached licence token (which carries
 	///    the `ai` add-on entitlement); ADLM_AI_TOKEN overrides for dev/test.
 	///  - Never throws for AI availability problems — check
@@ -56,7 +59,7 @@ namespace ADLMRateGen.Services
 			}
 		}
 
-		/// <summary>True when ADLM_AI_URL is configured (controls UI visibility).</summary>
+		/// <summary>True unless AI has been switched off (controls UI visibility).</summary>
 		public bool IsConfigured => _client != null;
 
 		public async Task<AiRateResult> BuildRateAsync(
@@ -69,7 +72,8 @@ namespace ADLMRateGen.Services
 			if (_client == null)
 			{
 				return AiRateResult.Fail(AiStatus.Unavailable,
-					"AI is not configured. Set ADLM_AI_URL (and sign in, or set ADLM_AI_TOKEN).");
+					"AI is switched off on this machine (ADLM_AI_URL is set to \"off\"). "
+					+ "Clear that variable to use it.");
 			}
 			if (string.IsNullOrWhiteSpace(description))
 			{

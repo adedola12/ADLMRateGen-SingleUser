@@ -1,4 +1,9 @@
+using System.Runtime.CompilerServices;
 using System.Windows;
+
+// AppEnvironment and the other Helpers types are internal; the test project
+// needs to see them to cover configuration resolution.
+[assembly: InternalsVisibleTo("ADLMRateGen.Tests")]
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None,            //where theme specific resource dictionaries are located

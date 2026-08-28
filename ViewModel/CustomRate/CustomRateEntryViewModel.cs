@@ -204,7 +204,11 @@ namespace ADLMRateGen.ViewModel.CustomRate
             RaisePropertyChanged(nameof(HasAiWarnings));
         }
 
-        /// <summary>Hides the AI section entirely when ADLM_AI_URL is not configured.</summary>
+        /// <summary>
+        /// True on an ordinary install: the AI endpoint now has a default, so the
+        /// section is present unless AI has been switched off deliberately
+        /// (ADLM_AI_URL / ADLM_RATEGEN_AI_URL set to "off").
+        /// </summary>
         public bool IsAiAvailable => AiRateService.Instance.IsConfigured;
 
         public ICommand BuildWithAiCommand { get; private set; }
