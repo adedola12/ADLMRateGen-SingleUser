@@ -6,6 +6,9 @@ namespace ADLMRateGen.Helpers
     {
         public const string DefaultApiBaseUrl = "https://api.adlmstudio.net";
 
+        public const string DefaultAiServiceUrl =
+            "https://rced0gx4rj.execute-api.us-east-1.amazonaws.com";
+
         private const string RetiredApiHost = "adlmweb.onrender.com";
 
         /// <summary>
@@ -38,10 +41,36 @@ namespace ADLMRateGen.Helpers
 
         public static string? OfflineLicenseSharedSecret => GetOptional("ADLM_RATEGEN_OFFLINE_LICENSE_SECRET");
 
-        // ADLM AI Service. No default URL — AI features stay hidden until the
-        // operator configures the endpoint. Token normally comes from the
-        // signed-in licence token; ADLM_AI_TOKEN is a dev/test override.
-        public static string? AiServiceUrl => GetOptional("ADLM_AI_URL");
+        /// <summary>
+        /// ADLM AI Service endpoint — the one thing that decides whether the
+        /// "Build with AI" panel exists.
+        ///
+        /// It has a default, and must keep one. The endpoint is configuration,
+        /// not a secret: it is the same public API Gateway host every ADLM
+        /// product calls, and it refuses any request that arrives without a
+        /// licence token. Resolving it from ADLM_AI_URL alone meant it resolved
+        /// to nothing on an installed machine — nothing writes that variable, so
+        /// the only box where the panel appeared was the development one that had
+        /// it exported by hand, and every install hid the feature it had just
+        /// shipped.
+        ///
+        /// Order: the product-specific override, then the fleet-wide variable,
+        /// then the current default. Setting either to "off" (or none/disabled/
+        /// false/0) disables the feature deliberately and hides the panel, which
+        /// is now the only way it can disappear.
+        ///
+        /// The token normally comes from the signed-in licence token;
+        /// ADLM_AI_TOKEN is a dev/test override.
+        /// </summary>
+        public static string? AiServiceUrl
+        {
+            get
+            {
+                var configured = GetOptional("ADLM_RATEGEN_AI_URL") ?? GetOptional("ADLM_AI_URL");
+                if (configured == null) return DefaultAiServiceUrl;
+                return IsOff(configured) ? null : configured.TrimEnd('/');
+            }
+        }
 
         public static string? AiServiceTokenOverride => GetOptional("ADLM_AI_TOKEN");
 
@@ -112,6 +141,14 @@ namespace ADLMRateGen.Helpers
 
             return null;
         }
+
+        /// <summary>A value that asks for a feature to be off, rather than a URL.</summary>
+        private static bool IsOff(string value) =>
+            value.Equals("off", StringComparison.OrdinalIgnoreCase) ||
+            value.Equals("none", StringComparison.OrdinalIgnoreCase) ||
+            value.Equals("disabled", StringComparison.OrdinalIgnoreCase) ||
+            value.Equals("false", StringComparison.OrdinalIgnoreCase) ||
+            value.Equals("0", StringComparison.Ordinal);
 
         private static string Get(string name, string fallback)
         {

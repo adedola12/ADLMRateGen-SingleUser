@@ -11,9 +11,20 @@ namespace ADLMRateGen.Tests;
 public static class TestCollections
 {
     public const string LibraryState = "library-state";
+
+    /// <summary>
+    /// Tests that set or clear process environment variables. The environment is
+    /// process-wide, so two of them running at once read each other's values.
+    /// </summary>
+    public const string ProcessEnvironment = "process-environment";
 }
 
 [CollectionDefinition(TestCollections.LibraryState, DisableParallelization = true)]
 public class LibraryStateCollection
+{
+}
+
+[CollectionDefinition(TestCollections.ProcessEnvironment, DisableParallelization = true)]
+public class ProcessEnvironmentCollection
 {
 }

@@ -30,9 +30,13 @@
          day rate against an hourly quantity, fuel priced off the labourer rate at
          30 sites, and the tonne/m3 unit mismatch on aggregates. Minor rather than
          patch because every computed rate in the product changes. -->
-    <Version>2.8.1</Version>
-    <AssemblyVersion>2.8.1.0</AssemblyVersion>
-    <FileVersion>2.8.1.0</FileVersion>
+    <!-- v2.8.2: "Build with AI" is visible on an ordinary install. The AI
+         endpoint was read from ADLM_AI_URL with no default, and nothing on a
+         user's machine sets that variable, so the panel was hidden everywhere
+         but the development box. It now falls back to the deployed service. -->
+    <Version>2.8.2</Version>
+    <AssemblyVersion>2.8.2.0</AssemblyVersion>
+    <FileVersion>2.8.2.0</FileVersion>
   </PropertyGroup>
 
   <!-- The test project lives under this project's directory, so the SDK's
