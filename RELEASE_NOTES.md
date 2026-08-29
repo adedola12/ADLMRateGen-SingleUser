@@ -1,5 +1,53 @@
 # ADLM Rate Gen — Release Notes
 
+## v2.9.2
+
+### Build with AI now expects you to ask for a rate
+
+The prompt box only accepts a request that asks for a rate build-up in so many
+words — it has to contain both "rate" and "build". "Build a rate for 225mm
+hollow sandcrete blockwork in cement-sand mortar (1:6)" is the shape it wants.
+"Building", "builds", "rates" and "rebuild" all count.
+
+Every request spends part of your AI allowance, and the service will answer
+whatever it is given, so a question that is not a work item costs you a request
+and returns something RateGen cannot turn into a rate. The panel heading now
+carries an example, so the expected phrasing is visible before you type rather
+than after a request is refused.
+
+Note the trade this makes: a bare work item — "225mm blockwork in cement
+mortar" — is now turned away even though it is a perfectly good description.
+Put "Build a rate for" in front of it.
+
+### Technical detail
+
+- `CustomRateEntryViewModel.MentionsRateAndBuild` is a case-insensitive
+  substring check on the two stems, run before the request is sent, so a refused
+  prompt costs nothing.
+- It is a keyword check and not comprehension, which cuts both ways: "build a
+  rate for a birthday cake" satisfies it. Both that and the rejected bare work
+  item are pinned in `AiPromptGuardTests` so the limits of the guard are
+  recorded rather than rediscovered.
+
+### Already working, for the record
+
+Materials and labour drafted by AI are folded into your library when you save
+the rate, under their real names — the `[AI]` and `(plant)` tags are stripped
+first, so the library does not fill with tagged duplicates. Entries you already
+have are never overwritten, and only priced lines are taken. Harvested items are
+filed under the "Custom Rate" category.
+
+They are then reusable in both directions: they appear in the material and
+labour pickers, and on a later AI build any component matching one of them is
+priced from *your* library, with the AI's own figure discarded.
+
+One limit worth knowing: the AI service grounds on the master price library when
+it drafts, so it cannot propose an item you added yourself. Your entry is used
+when the draft happens to name the same thing, not because the service knows you
+have it.
+
+---
+
 ## v2.9.1
 
 ### Fixed: "Build with AI" was missing after the update
