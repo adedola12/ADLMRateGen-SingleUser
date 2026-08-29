@@ -428,8 +428,14 @@ namespace ADLMRateGen.ViewModel.CustomRate
         /// and the service will answer anything put to it, so a prompt that is
         /// not a work item spends a request to produce something RateGen cannot
         /// use. Requiring both words keeps the box pointed at what the product
-        /// does. "Building", "builds" and "rates" all satisfy it, since the
-        /// match is on the stem rather than the whole word.
+        /// does. "Building", "builds", "rebuild" and "rates" all satisfy it,
+        /// since the match is on the stem rather than the whole word.
+        ///
+        /// "Built" is checked separately because the stem does not cover it —
+        /// the d becomes a t — and "I need a rate built for 12mm screed" is
+        /// exactly how someone asks for this. A guard that turns away the
+        /// natural phrasing is worse than no guard: the user has no idea what
+        /// they said wrong.
         ///
         /// It is a keyword check, not comprehension: "build a rate for a
         /// birthday cake" passes it, and a bare work item a QS would naturally
@@ -441,7 +447,8 @@ namespace ADLMRateGen.ViewModel.CustomRate
         {
             var text = prompt ?? string.Empty;
             return text.IndexOf("rate", StringComparison.OrdinalIgnoreCase) >= 0
-                && text.IndexOf("build", StringComparison.OrdinalIgnoreCase) >= 0;
+                && (text.IndexOf("build", StringComparison.OrdinalIgnoreCase) >= 0
+                 || text.IndexOf("built", StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
         // UI thread's context after the await, so collection updates are safe.

@@ -39,10 +39,25 @@ public class AiPromptGuardTests
     [Fact]
     public void TheStemMatches_SoInflectionsCount()
     {
-        // "rated"/"builds" are not separate rules — the check is a substring on
-        // the stem, which is what lets "building" and "rates" through above.
+        // "builds"/"rebuild" are not separate rules — the check is a substring
+        // on the stem, which is what lets "building" and "rates" through above.
         Assert.True(CustomRateEntryViewModel.MentionsRateAndBuild("builds rates"));
         Assert.True(CustomRateEntryViewModel.MentionsRateAndBuild("rebuild the rate"));
+    }
+
+    [Fact]
+    public void BuiltIsCheckedSeparately_BecauseTheStemDoesNotReachIt()
+    {
+        // "built" does not contain "build" — the d becomes a t — so the stem
+        // match alone refused "I need a rate built for...", which is exactly how
+        // someone asks for this. Caught by a test that asserted the wrong thing
+        // and then failed on a real build machine; the guard was fixed rather
+        // than the expectation.
+        Assert.True(CustomRateEntryViewModel.MentionsRateAndBuild("I need a rate built for 12mm cement screed"));
+        Assert.True(CustomRateEntryViewModel.MentionsRateAndBuild("rate built up for excavation"));
+
+        // Still needs the other word: "built" alone is not a request for a rate.
+        Assert.False(CustomRateEntryViewModel.MentionsRateAndBuild("built a wall yesterday"));
     }
 
     [Fact]

@@ -178,12 +178,40 @@ const presigned = await api(base, token, `/admin/deployments/presign-package`, {
 // createPresignedPutUrl signs only ContentType, so it is the one header that
 // has to be replayed exactly as handed back — anything else breaks the
 // signature and R2 answers 403.
-const put = await fetch(presigned.uploadUrl, {
-  method: "PUT",
-  headers: presigned.headers,
-  body: bytes,
-});
-if (!put.ok) die(`R2 upload failed → ${put.status} ${put.statusText}`);
+//
+// Retried, because this leg is a single ~85 MB PUT over whatever connection the
+// build machine has, and it died once with ECONNRESET mid-transfer. A dropped
+// upload is safe — the deployment record is only written afterwards, so the
+// live version is untouched — but it costs a full re-run of build, zip and
+// login, and the token has 15 minutes on it. The presigned URL is good for 15
+// minutes too, so the same one can be reused for a retry.
+async function uploadWithRetry(attempts = 3) {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const put = await fetch(presigned.uploadUrl, {
+        method: "PUT",
+        headers: presigned.headers,
+        body: bytes,
+      });
+
+      // A refusal is not a flake: a 403 means the signature or Content-Type is
+      // wrong and every retry will fail identically. Only the transport is
+      // worth retrying.
+      if (!put.ok) die(`R2 upload failed → ${put.status} ${put.statusText}`);
+      return;
+    } catch (err) {
+      const reason = err?.cause?.code || err?.code || err?.message || String(err);
+      if (attempt === attempts) {
+        die(`R2 upload failed after ${attempts} attempts (${reason}). Nothing was published; the live version is unchanged.`);
+      }
+      const waitMs = attempt * 3000;
+      console.log(`  upload attempt ${attempt} failed (${reason}) — retrying in ${waitMs / 1000}s`);
+      await new Promise((r) => setTimeout(r, waitMs));
+    }
+  }
+}
+
+await uploadWithRetry();
 console.log(`Uploaded  ${presigned.packageUri}`);
 
 // ── 3. write the record back, whole ──────────────────────────────────────────
