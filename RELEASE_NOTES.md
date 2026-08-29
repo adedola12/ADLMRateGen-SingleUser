@@ -29,6 +29,30 @@ Put "Build a rate for" in front of it.
   item are pinned in `AiPromptGuardTests` so the limits of the guard are
   recorded rather than rediscovered.
 
+### Fixed: the same material could be saved into your library twice
+
+Library lookups matched on the exact string. So when the AI drafted a component
+as "Cement (Portland 42.5 R)" and your library held "Cement (Portland 42.5R)",
+the lookup missed — the line kept the AI's price, and saving the rate wrote it
+in as a **new** row. Build the same work item again next week, get another
+spelling, get a third cement. The same class of near-miss cost two material
+lookups in v2.8.0, where one missing space priced a component at zero.
+
+Names are now compared with case, spacing and stylistic punctuation set aside,
+so a component that differs only in how it was written finds the row you already
+have. An exact name still wins over a near match.
+
+What is deliberately *not* collapsed: sizes and mixes. 1.2mm and 12mm roofing
+sheet stay separate items, as do mortar (1:6) and (1:3), and "Cement" and
+"Coloured Cement". Merging those would misprice a rate rather than tidy a
+library, so the decimal point, the slash and the colon are all kept.
+
+**And the AI is now told what you have.** Each build request carries your own
+library's names — your additions first — and the service is instructed to name a
+component exactly as you hold it. So the duplicate is prevented at both ends:
+the model reuses your name, and if it does not, the tolerant match catches it
+anyway. Names and units only; no prices leave your machine.
+
 ### Already working, for the record
 
 Materials and labour drafted by AI are folded into your library when you save
@@ -41,10 +65,9 @@ They are then reusable in both directions: they appear in the material and
 labour pickers, and on a later AI build any component matching one of them is
 priced from *your* library, with the AI's own figure discarded.
 
-One limit worth knowing: the AI service grounds on the master price library when
-it drafts, so it cannot propose an item you added yourself. Your entry is used
-when the draft happens to name the same thing, not because the service knows you
-have it.
+Until this release the AI service could not see any of that: it grounds on the
+master price library, so it had no way to propose an item you had added
+yourself. Sending your library with the request, above, is what closes that.
 
 ---
 

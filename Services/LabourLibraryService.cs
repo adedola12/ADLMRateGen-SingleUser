@@ -71,14 +71,28 @@ namespace ADLMRateGen.Services
             }
         }
 
+        /// <summary>
+        /// The library row for a name, matched exactly first and then on
+        /// <see cref="RateLineLibrary.NormaliseKey"/>, so a name differing only
+        /// in spacing, brackets or case still finds the row it means rather
+        /// than being harvested as a near-duplicate. Exact wins over normalised.
+        /// </summary>
         public static LabourModel? FindByName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return null;
             lock (_sync)
             {
                 EnsureLoaded();
-                return _labours.FirstOrDefault(l =>
+
+                var exact = _labours.FirstOrDefault(l =>
                     string.Equals(l.LabourName, name, StringComparison.OrdinalIgnoreCase));
+                if (exact != null) return exact;
+
+                var key = RateLineLibrary.NormaliseKey(name);
+                if (key.Length == 0) return null;
+
+                return _labours.FirstOrDefault(l =>
+                    RateLineLibrary.NormaliseKey(l.LabourName) == key);
             }
         }
 

@@ -48,6 +48,49 @@ namespace ADLMRateGen.Services
         }
 
         /// <summary>
+        /// The comparison key for a library name: what is left after case,
+        /// spacing and stylistic punctuation are taken out.
+        ///
+        /// Library lookups used to be exact string equality, so a component the
+        /// AI named "Cement (Portland 42.5 R)" did not match the library's
+        /// "Cement (Portland 42.5R)". The line kept the AI's price, and on save
+        /// Harvest wrote it as a NEW row — leaving the user with two cements,
+        /// then three, one per spelling the model happened to produce. The same
+        /// class of near-miss cost this product two material lookups in v2.8.0,
+        /// where a single missing space before a bracket priced a component at
+        /// zero.
+        ///
+        /// Deliberately conservative about what it removes. Brackets, commas,
+        /// apostrophes, quotes and hyphens vary by who typed the row and never
+        /// distinguish two real items. Decimal points, slashes and colons are
+        /// KEPT, because they carry size and mix: dropping the point would make
+        /// 1.2mm roofing sheet and 12mm sheet the same key, and merging those
+        /// would misprice a rate rather than merely tidy the library.
+        /// </summary>
+        public static string NormaliseKey(string? description)
+        {
+            var name = CleanName(description);
+            if (name.Length == 0) return string.Empty;
+
+            var sb = new System.Text.StringBuilder(name.Length);
+            foreach (var ch in name)
+            {
+                if (char.IsWhiteSpace(ch)) continue;
+                if (ch is '(' or ')' or '[' or ']' or ',' or '\'' or '"' or '-' or '_') continue;
+                sb.Append(char.ToLowerInvariant(ch));
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>True when two library names refer to the same item.</summary>
+        public static bool SameItem(string? a, string? b)
+        {
+            var keyA = NormaliseKey(a);
+            return keyA.Length > 0 && keyA == NormaliseKey(b);
+        }
+
+        /// <summary>
         /// Adds every priced line that is not already in the library.
         /// Entries that already exist are left untouched — a one-off rate must
         /// never silently rewrite the master price list.
@@ -81,7 +124,7 @@ namespace ADLMRateGen.Services
                 var name = CleanName(item?.Description);
                 if (name.Length == 0 || item!.UnitPrice <= 0m) continue;
                 if (MaterialLibraryService.FindByName(name) != null) continue;
-                if (added.Any(m => string.Equals(m.MaterialName, name, StringComparison.OrdinalIgnoreCase))) continue;
+                if (added.Any(m => SameItem(m.MaterialName, name))) continue;
 
                 added.Add(new MaterialModel
                 {
@@ -108,7 +151,7 @@ namespace ADLMRateGen.Services
                 var name = CleanName(item?.Description);
                 if (name.Length == 0 || item!.UnitPrice <= 0m) continue;
                 if (LabourLibraryService.FindByName(name) != null) continue;
-                if (added.Any(l => string.Equals(l.LabourName, name, StringComparison.OrdinalIgnoreCase))) continue;
+                if (added.Any(l => SameItem(l.LabourName, name))) continue;
 
                 added.Add(new LabourModel
                 {

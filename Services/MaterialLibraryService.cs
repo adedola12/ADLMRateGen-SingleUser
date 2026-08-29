@@ -121,12 +121,32 @@ namespace ADLMRateGen.Services
             RaiseChanged();
         }
 
+        /// <summary>
+        /// The library row for a name, matched exactly first and then on
+        /// <see cref="RateLineLibrary.NormaliseKey"/> — so a name differing only
+        /// in spacing, brackets or case still finds the row it means.
+        ///
+        /// Exact equality alone is what let an AI-drafted "Cement (Portland
+        /// 42.5 R)" miss the library's "Cement (Portland 42.5R)" and be
+        /// harvested as a second cement. The exact pass runs first so an exact
+        /// name always wins over a normalised near-match.
+        /// </summary>
         public static MaterialModel? FindByName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return null;
+
             lock (_sync)
-                return _materials.FirstOrDefault(m =>
+            {
+                var exact = _materials.FirstOrDefault(m =>
                     string.Equals(m.MaterialName, name, StringComparison.OrdinalIgnoreCase));
+                if (exact != null) return exact;
+
+                var key = RateLineLibrary.NormaliseKey(name);
+                if (key.Length == 0) return null;
+
+                return _materials.FirstOrDefault(m =>
+                    RateLineLibrary.NormaliseKey(m.MaterialName) == key);
+            }
         }
 
     }

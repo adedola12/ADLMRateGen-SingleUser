@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,6 +64,81 @@ namespace ADLMRateGen.Services
 		/// <summary>True unless AI has been switched off (controls UI visibility).</summary>
 		public bool IsConfigured => _client != null;
 
+		/// <summary>
+		/// How many of this machine's own library rows travel with a request.
+		/// The service caps at 300; staying under it means the cap never
+		/// silently decides which of the user's items the model gets told about.
+		/// </summary>
+		private const int LibraryContextLimit = 250;
+
+		/// <summary>
+		/// The library names sent with a build request, so the model can name a
+		/// component the way this machine already holds it.
+		///
+		/// Sends the user's OWN rows first — the "Custom Rate" category, which is
+		/// what Harvest stamps on anything folded in from a saved rate. Those are
+		/// exactly the rows the service cannot know about: it grounds on ADLM's
+		/// master price lists, so a master row spends prompt budget telling it
+		/// what it already has. Remaining slots go to the rest of the library, so
+		/// a smaller library still sends everything.
+		///
+		/// Names and units only — no prices leave the machine. The caller
+		/// re-prices every matched line locally regardless, so a price would buy
+		/// nothing and a user's price list is their commercial position.
+		/// </summary>
+		private static List<LibraryItemRef> CollectLibraryContext()
+		{
+			try
+			{
+				var items = new List<LibraryItemRef>(LibraryContextLimit);
+
+				void TakeMaterials(bool ownRows)
+				{
+					foreach (var m in MaterialLibraryService.GetAllMaterials())
+					{
+						if (items.Count >= LibraryContextLimit) return;
+						if (string.IsNullOrWhiteSpace(m.MaterialName)) continue;
+						if (IsOwnRow(m.MaterialCategory) != ownRows) continue;
+						items.Add(new LibraryItemRef
+						{
+							Kind = "material", Name = m.MaterialName, Unit = m.MaterialUnit,
+						});
+					}
+				}
+
+				void TakeLabours(bool ownRows)
+				{
+					foreach (var l in LabourLibraryService.GetAllLabours())
+					{
+						if (items.Count >= LibraryContextLimit) return;
+						if (string.IsNullOrWhiteSpace(l.LabourName)) continue;
+						if (IsOwnRow(l.LabourCategory) != ownRows) continue;
+						items.Add(new LibraryItemRef
+						{
+							Kind = "labour", Name = l.LabourName, Unit = l.LabourUnit,
+						});
+					}
+				}
+
+				TakeMaterials(ownRows: true);
+				TakeLabours(ownRows: true);
+				TakeMaterials(ownRows: false);
+				TakeLabours(ownRows: false);
+
+				return items;
+			}
+			catch (Exception ex)
+			{
+				// Context is a naming hint, not part of the answer. A library
+				// that will not enumerate must not cost the user their build-up.
+				Debug.WriteLine($"[AiRateService] library context unavailable: {ex}");
+				return new List<LibraryItemRef>();
+			}
+		}
+
+		private static bool IsOwnRow(string? category) =>
+			string.Equals(category, RateLineLibrary.HarvestedCategory, StringComparison.OrdinalIgnoreCase);
+
 		public async Task<AiRateResult> BuildRateAsync(
 			string description,
 			string? unit = null,
@@ -80,7 +157,8 @@ namespace ADLMRateGen.Services
 				return AiRateResult.Fail(AiStatus.BadRequest, "Describe the work item first.");
 			}
 
-			var res = await _client.RateBuildupAsync(description, zone, unit, progress, ct)
+			var res = await _client
+				.RateBuildupAsync(description, zone, unit, CollectLibraryContext(), progress, ct)
 				.ConfigureAwait(false);
 
 			if (!res.IsSuccess || res.Value == null)
