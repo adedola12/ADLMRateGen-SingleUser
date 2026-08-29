@@ -59,6 +59,126 @@ declines.
 
 ---
 
+## v2.9.0
+
+### The library now says what a rate is meant to produce
+
+A day rate is a proxy for an output, but the library only ever showed the
+money. Deciding whether ₦250,000 a day is right for a D6 meant knowing from
+memory that a D6 shifts 150–250 m³ an hour.
+
+The labour edit popup now carries a reference panel: what the item is, what it
+produces, what that assumes, and what it burns or who staffs it. All 84 labour
+and plant rates have one. Every output is given as a range with its basis,
+because published sources disagree by up to a factor of two on the same
+machine, and a single number would imply a precision that does not exist.
+
+It is read-only and feeds no calculation. It is there to sanity-check a rate,
+not to drive one.
+
+Rates you add yourself can now carry a note of your own — your plant, on your
+terms. Your note wins over the bundled entry, since you know your own machine
+better than a published table does, and a rate you added has no bundled entry
+at all. Notes travel with the rate to the website.
+
+The catalogue also moves from three categories to 24, and sorts by size rather
+than alphabetically, so 12mm comes before 100mm.
+
+### Published prices can be accepted one row at a time
+
+The price notice was a one-line bar with two buttons that applied to everything
+at once. It named the affected rates but never showed a figure, so the only way
+to judge an offer was to accept it and go and look. It could not be dismissed
+either — it sat above the library until answered.
+
+It is now a card, one row per rate: a tick box, the unit, the price you typed,
+the price since published, and the percentage between them, coloured by
+direction. Both buttons act on ticked rows only, so you can take the new cement
+price and keep your own on diesel. Whatever you leave unticked stays pending
+and the card stays up with the remainder. The header has a select-all, the
+footer counts what you have selected.
+
+Closing it hides it without deciding. The rows stay pending, and a pinned card
+in the notifications popup brings the review back.
+
+### Sync moved to the header, and now says why a step failed
+
+Sync sits with the other app-wide actions in the header instead of in the
+sidebar, with its status on the button's tooltip.
+
+It also explains itself. A failed step used to read "Master prices: FAIL" with
+no reason — the error handling replaced the exception with that literal string
+and threw away a message that already carried the HTTP status and the server's
+own text. And an empty response was indistinguishable from a crash, so "the
+server had nothing for you" arrived looking like a fault. Both now say what
+actually happened.
+
+**Fixed: sync could die on a duplicated library row.** Merging your rows onto
+the master list appended a twin instead of folding your price onto the matching
+row, so any item you had priced could end up in the library twice. Six pairs had
+built up this way, and the duplicate then crashed the sync outright. Existing
+duplicates clear themselves on the next sync.
+
+### The rate tables have room
+
+A paying user reported seeing only one line of a rate table at a time. The
+welcome banner takes 260px off the top, and every rate view carried a negative
+bottom margin that pushed its card past the workspace, clipping the last row in
+half.
+
+A chevron in the header now collapses the banner and hands its height to the
+table, and the negative margins are gone. The choice persists between sessions,
+and is kept out of the file that is cleared on sign-out, so signing out does not
+reset it.
+
+### Screenshots carry their source
+
+A captured price list is now marked with its origin. Earlier in this release the
+mark was drawn over the window itself, which worked but sat over the figures all
+day; it now goes onto the captured image instead, so the app is clean to work in.
+PrintScreen, Alt+PrintScreen and Win+Shift+S all route through the clipboard,
+which is where the mark is applied.
+
+Note the limit honestly: a photograph of a monitor carries no mark, and no
+software control reaches that route.
+
+### Fixed: names, locations and dark mode
+
+- **Roller and grader names corrected.** "Vibratory whelled roller" was not a
+  word, and a pneumatic roller runs on tyres. "Grader (Cat 1406)" is now
+  "Grader (Cat 140G)" — 1406 is not a Caterpillar model, and the G was being
+  read as a 6. A rate name is a lookup key, so the old spellings are aliased:
+  an installation that has not yet updated still prices these rates instead of
+  silently costing them at zero.
+- **The pricing-location note keeps up with the sync.** The library could read
+  "Lagos: priced from south west rates" for an account whose profile says Imo.
+  Nothing was mispriced — only the sentence was stale, because it was re-read
+  on the way into the library and never again.
+- **Dark mode.** The Material Name and Labour Item columns went blank, the
+  price review was unreadable, and the save button and sign-out took the wrong
+  colour. These set a brush that resolves once at load and never follows a
+  theme change.
+
+### Technical detail
+
+- `PriceConflictRow` wraps the price-conflict DTO rather than extending it: that
+  type is written to disk and compared by value, and a tick box has no business
+  in a persisted record.
+- The banner state lives in `ui.preferences.json` under `AppPaths.UserDataDir`,
+  deliberately apart from `AppConfig`, which is rewritten on sign-in and cleared
+  on sign-out.
+- The duplicate-row crash was `FindEdits` emitting two edits sharing a `RowKey`
+  while every consumer builds a dictionary off that key. The merge now folds a
+  matching user row onto its master row, `FindEdits` dedupes the way its incoming
+  side already did, and the four `RowKey` dictionary builds group first.
+- `GetJsonRawAsync` turns 404 and 204 into `"[]"`, so an empty response reached
+  `SyncAsync` as a JSON array and every `TryGetProperty` threw — which also made
+  the `Is404` "SKIPPED" branch unreachable. The root kind is checked now.
+- `csproj` and `Installer.iss` move together, so a package cannot install 2.9.0
+  binaries while announcing 2.8.1.
+
+---
+
 ## v2.6.2
 
 ### Fixed: saving a rate could not add to your library, and risked losing rows
