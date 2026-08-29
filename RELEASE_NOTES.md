@@ -179,6 +179,216 @@ software control reaches that route.
 
 ---
 
+## v2.8.1
+
+### Fixed: the stale API host is now removed, not just ignored
+
+Older RateGen installers wrote the retired `adlmweb.onrender.com` host into your
+machine's environment. v2.6.0 taught the app to step over that value, which is
+what has kept affected machines working — but ignoring it is permanent: the
+variable stays on the machine forever, and the guard has to live forever to keep
+stepping over it.
+
+It is now deleted on startup, so the cause goes away rather than being routed
+around. The app deletes rather than corrects, because the right value is not the
+app's to decide: with the variable gone, the address falls through to the current
+default.
+
+### Open any component in the library, from any section
+
+Clicking a component in a rate breakdown opens it in the library, ready to edit
+its price. This worked in Carbon and Others only; it now works in all ten
+sections, through one shared implementation rather than ten copies.
+
+That matters more than the feature does. There are ten near-identical breakdown
+line types, and threading this through each of them by hand would have been ten
+chances to repeat a mistake the first version already made: a binding that
+resolves against the wrong object gives a link that looks right and quietly does
+nothing.
+
+### Pricing location comes from your website profile, and only from there
+
+The state picker is gone from the library. Pricing location is set once, on your
+ADLM profile on the website, and arrives on the next sign-in.
+
+Two places could otherwise disagree about where you price from. Worse, the app
+was still sending its own stored state to the server, and the server prefers the
+state it is given — so changing your profile on the website would appear to do
+nothing, silently and permanently. The setting shipped defaulted to "Lagos", so
+this would have applied to every user who never touched it: exactly the people
+most likely to rely on the website picker.
+
+The sync now asks for "my prices" without naming a state at all, and reads back
+the state the server actually priced from.
+
+### The library Undo has its own button
+
+The header's existing Undo arrow belongs to "reset all rate edits", which throws
+away every section's quantity edits app-wide. The library restore now has its own
+icon that reads as "go back to an earlier point", so two destructive actions no
+longer look like one. It appears only on the Library screen.
+
+### Technical detail
+
+- Released as 2.8.1 rather than folded into 2.8.0 because 2.8.0 was already live
+  on the Hub. Two different binaries answering to the same version make it
+  impossible to tell from a user's machine which one they are running.
+- `Helpers/LibraryLink` holds the breakdown-link command and each line binds it
+  against its own data context — no `RelativeSource`, no `Tag`, nothing
+  per-section. The Carbon-specific command, event and Tag hack are removed.
+
+---
+
+## v2.8.0
+
+### Fixed: signing in destroyed prices you had edited
+
+The cloud sync wrote back "master rows, plus the rows you added yourself". A
+price you had edited **on a master row** was in neither list, so it was destroyed
+on every sign-in — silently, with no way back. This was happening to everyone,
+not only when changing location.
+
+Your edits are now carried forward. The app records what the server last sent,
+which is the only way to tell a price you typed from a price the server sent, and
+that difference is what it preserves.
+
+Where the server has genuinely moved a price on a row you edited, your figure
+still wins and the disagreement is parked for you to accept or ignore from the
+library. Rows the server has not moved are kept with no prompt at all — asking on
+every launch would only train you to click through the dialog.
+
+**Undo, for the whole library.** Both libraries are snapshotted before any sync,
+location change or price acceptance, and the last 20 sit behind an Undo button. A
+restore snapshots the current state first, so the undo is itself undoable.
+
+### Fixed: Carbon and Others rendered empty
+
+The server had its 26 items, enabled and resolving correctly, and the section
+showed nothing.
+
+Each of the ten sections refreshed the shared item store with only its own
+section's items, last writer wins — and a section with no cloud items of its own
+wrote an empty file, wiping everything. All 26 cloud items belong to Carbon, so
+any other section syncing emptied the store. The other nine sections are
+hardcoded and merely append cloud items, so losing them changed nothing on
+screen; Carbon and Others is the only entirely cloud-driven section, so it was
+the only one that went blank.
+
+### Rates that had been costing nothing
+
+An audit of all 326 material and 461 labour lookups across every engine found
+four names that do not exist in the catalogue. A missing name prices the
+component at zero and reports it nowhere, so the rate looks fine.
+
+- Two were typos with an exact row sitting in the catalogue: a formwork plywood
+  size missing a space, used by Blockwork and Concretework, and a window size
+  with its dimensions transposed.
+- **Door ironmongery** had no row at all — the code carried a placeholder
+  comment saying so. There is now a Door Ironmongery category: the set, brass
+  butt hinges and a door stop, with the lock left as the catalogue's existing
+  Mortise Lock.
+
+Both typos predate the master reseed, so nothing here was caused by that change.
+
+### Structural steelwork and roof carpentry
+
+The steel section had three items and all three were surface preparation — the
+product could clean steel but could not price any. Nine build-ups added:
+universal beam and column, angle and channel each per tonne and per kg, plate
+for gussets and base plates, and a 6mm fillet weld per metre. Both units are
+offered because steelwork is taken off both ways. Each is supply, fabricate and
+erect, the way a Nigerian bill measures it.
+
+The roof section priced the covering and nothing holding it up: all 16 items were
+sheeting, cappings, felt and zinc, and several of their own descriptions said
+"laid on purlins (measured separately)" while nothing measured them. Six
+build-ups added — wall plate, rafters, purlins and the rest — with the timber
+grades they need restored.
+
+### Price by state
+
+The library prices against a state, chosen beside the tabs since it governs
+materials and labour together, with the zone the price actually came from shown
+underneath. All 36 states and the FCT.
+
+The setting was always a state; it was only called Zone. It shipped defaulted to
+"Lagos", which is not one of the six geopolitical zone keys, so the server
+rejected it and quietly fell back to the account zone — meaning the value you
+could see was never the value that priced your work. (This picker is removed
+again in 2.8.1, in favour of the website profile.)
+
+### Technical detail
+
+- `SyncBaseline` records the server's last-sent state; `PriceConflicts` holds
+  disagreements; `LibraryArchive` keeps the snapshots. Materials and labour save
+  back to back, so the archive coalesces to one snapshot per sync rather than two,
+  half of them useless.
+- The compute-store refresh now always persists the full catalogue, with the
+  section key deciding only what a reader filters to — the readers previously
+  iterated the whole store with no filter of their own, which is why the bug
+  looked like working behaviour.
+
+---
+
+## v2.7.0
+
+### The first full price refresh since launch
+
+All 568 catalogue rows recalibrated against three independently priced 2026
+bills, with the primary commodities then set from observed market prices:
+cement ₦4,300 → ₦11,500/bag, HT rebar ₦350,000 → ₦1,700,000/tonne, labourer
+₦1,800 → ₦5,400/day.
+
+Aggregates were corrected too — sharp sand ₦4,500 → ₦6,500/m³, granite 15–25mm
+₦17,400 → ₦9,500/m³. The granite figure had drifted to nearly double the
+observed price because it was the dominant free lever in the concrete fit and had
+absorbed the residual error of every other term. Correcting it moves reinforced
+concrete from +16.6% to +9.7% against the bills it was calibrated on.
+
+15–25mm granite and hardcore filling also change unit from tonne to m³, matching
+how the engine has always consumed them.
+
+**Your edited prices are kept.** The refresh three-way merges against a frozen
+baseline: untouched rows refresh, rows you edited are preserved, missing rows are
+re-added.
+
+### An MEP section, and an engine to price it
+
+67 material rows across 11 new categories, every one from a verified priced line
+in the three 2026 bills, plus 37 build-ups across 9 sections.
+
+These are **installed** rates — the bills price MEP as "supply, fix, connect &
+commission" — so every category name carries "(supply & install)" and the engine
+adds no labour line of its own. Adding one would double-count the fixing.
+
+Pipes are not included: no pipe price exists anywhere in the three bills, and
+none were invented from an index. One source figure is flagged rather than
+silently replaced — a 12W LED ceiling fitting billed at 2.6× the same book's
+600×600 LED panel, which is implausible for a 12W fitting. It ships as billed.
+
+### Fixed: three costing defects that shipped with the old prices
+
+- Concrete mixing labour was charged at a full day rate against an hourly
+  quantity.
+- Fuel was priced off the labourer rate rather than the Diesel material.
+- The tonne/m³ unit mismatch on aggregates, above.
+
+The first two had to be fixed in the same release as the new prices. Shipping
+tripled wages against the mixing bug would have diverged every concrete rate in
+the product.
+
+### Technical detail
+
+- Delivery runs through the existing `DataMigrator` as version 4 rather than a
+  parallel mechanism. Its `MergeDefaults` was add-only, so it had never refreshed
+  the price of a row it already knew about — every existing install would have
+  kept its 2022 prices indefinitely.
+- The working catalogue moved to `%AppData%\ADLMRateGen` via `AppPaths`, not
+  beside the executable, so the merge writes somewhere it is allowed to.
+- Minor rather than patch: every computed rate in the product changes.
+
+---
+
 ## v2.6.2
 
 ### Fixed: saving a rate could not add to your library, and risked losing rows
