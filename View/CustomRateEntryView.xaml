@@ -363,7 +363,9 @@
                             </Style>
                         </Border.Style>
                         <StackPanel>
-                            <TextBlock Text="Build with AI — describe the work item"
+                            <!-- Names the phrasing the guard requires, so the rule is
+                                 visible before the request is refused rather than after. -->
+                            <TextBlock Text="Build with AI — e.g. &quot;Build a rate for 225mm blockwork in cement mortar (1:6)&quot;"
                                        Style="{StaticResource FLabel}" Margin="0,0,0,8" />
                             <Grid>
                                 <Grid.ColumnDefinitions>

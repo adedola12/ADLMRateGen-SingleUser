@@ -421,6 +421,29 @@ namespace ADLMRateGen.ViewModel.CustomRate
 
         // ── AI assist ───────────────────────────────────────────────────────
         // Calls the ADLM AI Service and fills the form for review. Runs on the
+        /// <summary>
+        /// True when the prompt asks for a rate build-up in so many words.
+        ///
+        /// The panel bills against the account's AI allowance on every request,
+        /// and the service will answer anything put to it, so a prompt that is
+        /// not a work item spends a request to produce something RateGen cannot
+        /// use. Requiring both words keeps the box pointed at what the product
+        /// does. "Building", "builds" and "rates" all satisfy it, since the
+        /// match is on the stem rather than the whole word.
+        ///
+        /// It is a keyword check, not comprehension: "build a rate for a
+        /// birthday cake" passes it, and a bare work item a QS would naturally
+        /// type — "225mm blockwork in cement mortar" — does not. The example in
+        /// the message therefore shows the expected phrasing rather than just
+        /// naming the rule.
+        /// </summary>
+        internal static bool MentionsRateAndBuild(string? prompt)
+        {
+            var text = prompt ?? string.Empty;
+            return text.IndexOf("rate", StringComparison.OrdinalIgnoreCase) >= 0
+                && text.IndexOf("build", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         // UI thread's context after the await, so collection updates are safe.
         private async Task BuildWithAiAsync()
         {
@@ -428,7 +451,15 @@ namespace ADLMRateGen.ViewModel.CustomRate
             var prompt = (AiPrompt ?? string.Empty).Trim();
             if (prompt.Length < 8)
             {
-                AiStatus = "Describe the work item first, e.g. \"225mm hollow sandcrete blockwork in cement-sand mortar (1:6)\".";
+                AiStatus = "Describe the work item first, e.g. \"Build a rate for 225mm hollow sandcrete blockwork in cement-sand mortar (1:6)\".";
+                return;
+            }
+
+            if (!MentionsRateAndBuild(prompt))
+            {
+                AiStatus =
+                    "Ask for a rate build-up: the request has to contain the words \"rate\" and \"build\". " +
+                    "For example: \"Build a rate for 225mm hollow sandcrete blockwork in cement-sand mortar (1:6)\".";
                 return;
             }
 
