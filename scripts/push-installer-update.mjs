@@ -16,6 +16,8 @@
  *   3. presigns an R2 upload and PUTs the bytes straight to the bucket
  *   4. writes the record back with the new packageUri, version and sha256
  *   5. reads it again and checks all three landed
+ *      (or, when the release gate stages it for the approver, checks the
+ *      staged build the server echoes back and prints where to approve it)
  *
  * Two things this exists to get right:
  *
@@ -228,13 +230,25 @@ payload.packageKind = presigned.packageKind || "file";
 payload.version = args.version;
 payload.sha256 = sha256;
 
-const { item: saved } = await api(base, token, `/admin/deployments/${args.product}`, {
+// Since 22 Sep 2026 the API gates releases (ADLMWebsite docs/RELEASE_GATE.md):
+// a PUT that changes the package answers 202 with pendingApproval, and `item`
+// is the STAGED build, not the live record. Customers keep `live` until the
+// release approver signs it off, and the release notice is only created on
+// approval, so nothing here may claim it is live or send that notice. There
+// is deliberately no flag to skip the gate.
+const putResp = await api(base, token, `/admin/deployments/${args.product}`, {
   method: "PUT",
   body: payload,
 });
+const saved = putResp.item;
+const pending = putResp.pendingApproval === true;
 
 // ── 4. verify ────────────────────────────────────────────────────────────────
-const { item: check } = await api(base, token, `/admin/deployments/${args.product}`);
+// Pending: check the staged build the server echoed back, since the live
+// record has (correctly) not moved.
+const check = pending
+  ? saved
+  : (await api(base, token, `/admin/deployments/${args.product}`)).item;
 const problems = [];
 if (check.version !== args.version) problems.push(`version is ${check.version}`);
 if (check.sha256 !== sha256) problems.push(`sha256 is ${check.sha256 || "(unset)"}`);
@@ -248,7 +262,18 @@ if ((saved.operations?.length ?? 0) !== (current.operations?.length ?? 0)) {
 }
 
 if (problems.length) {
-  die(`Record did not land as expected: ${problems.join("; ")}`);
+  die(`${pending ? "Staged build" : "Record"} did not land as expected: ${problems.join("; ")}`);
+}
+
+if (pending) {
+  console.log(`\n… ${args.product} ${args.version} is STAGED for release sign-off — NOT live yet.`);
+  if (putResp.message) console.log(`  ${putResp.message}`);
+  console.log(`  candidate  ${putResp.candidateId}`);
+  console.log(`  live now   version ${putResp.live?.version || "(none)"}  ${putResp.live?.packageUri || ""}`);
+  console.log("  approve at https://www.adlmstudio.net/admin/releases");
+  console.log("  The approver's own InstallerHub is offered this build to test first;");
+  console.log("  customers get it, and the release email is queued, only once it is approved.");
+  process.exit(0);
 }
 
 console.log(`\n✓ ${args.product} ${args.version} is live for users.`);
